@@ -1,5 +1,5 @@
 module.exports = (req, res) => {
-    req.json({
+    res.json({
         body: "hola",
         query: req.query,
         cookies: req.cookies
