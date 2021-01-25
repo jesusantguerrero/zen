@@ -3,12 +3,20 @@
   <div class="mx-10 mt-5">
     <div class="text-left flex">
       <div class="zen__view w-8/12 mr-10">
-        <header class="flex justify-between mb-5"> 
+        <header class="flex justify-between"> 
           <h1 class="text-2xl font-bold text-blue-500"> Task Title</h1>
-          <div class="font-bold text-2xl"> 25:00 </div>
+          <time-tracker></time-tracker>
         </header>
 
-        <div class="mt-4 py-2">
+        <div class="mt-10">
+          <quick-add 
+            mode="reminder"
+            class="zen__reminder" 
+            title="Things bear in mind after the zen"
+            placeholder="Add a reminder"
+          >
+            
+          </quick-add>
           <div class="zen__datails">
             <div class="task__description mb-4">
               Lorem ipsum dolor sit, amet consectetur adipisicing elit. Error atque, molestiae beatae est assumenda ipsam explicabo corporis? Facilis suscipit quo corrupti animi amet ad illo ea! Nemo cupiditate expedita recusandae.
@@ -34,30 +42,21 @@
             </div>
           </div>
 
-          <quick-add 
-            mode="reminder"
-            class="zen__reminder mt-10" 
-            title="Things bear in mind after the zen"
-            placeholder="Add a reminder"
-          >
-            
-          </quick-add>
+        
         </div>
       </div>
 
       <div class="zen__comming-up w-4/12 ml-5">
-        <header class="text-right mb-5">
+        <header class="text-right mb-2">
           <h1 class="text-2xl font-bold text-blue-500"> Line Up</h1>
-          <div class="task-new">
-
-          </div>
         </header>
 
         <div class="comming-up__list divide-y-2 divide-gray-200 divide-dashed">
-          <div class="quick__add mb-5">
+          <div class="quick__add mb-4">
             <h4 class="font-bold mb-2">Quick Add</h4>
             <quick-add></quick-add>
           </div>
+
           <div class="commig-up__today mt-6 py-3">
             <h4 class="mb-2 font-bold"> Todo</h4>
             <TaskItem 
@@ -91,12 +90,12 @@
 import { defineProps, reactive } from 'vue'
 import TaskItem from "../components/molecules/TaskItem.vue"
 import QuickAdd from "../components/molecules/QuickAdd.vue"
+import TimeTracker from "../components/organisms/TimeTracker.vue"
 
 defineProps({
   msg: String
 })
 
-const state = reactive({ count: 0 })
 </script>
 
 <style scoped>

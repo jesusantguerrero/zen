@@ -10,7 +10,7 @@
       </div>
 
       <div class="w-full">
-        <input type="text" class="focus:outline-none w-full px-2" placeholder="Add quick task">
+        <input type="text" class="focus:outline-none w-full px-2" :placeholder="placeholder">
       </div>
     </div>
 
@@ -35,6 +35,9 @@ const props = defineProps({
     mode: {
       Type: String,
       default: 'task'
+    },
+    placeholder: {
+      default: "Add quick task"
     }
 })
 
