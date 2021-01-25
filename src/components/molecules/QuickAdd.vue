@@ -14,7 +14,11 @@
       </div>
     </div>
 
-    <div class="task-item__controls flex">
+    <div class="task-item__controls flex" v-if="!isReminder">
+      <div class="mx-2">
+        <i class="fa fa-calendar"></i>
+      </div>
+
       <div class="mx-2">
         <i class="fa fa-clock"></i>
       </div>
@@ -43,6 +47,9 @@ const props = defineProps({
 
 
 const title = reactive("My Team")
+const isReminder = computed(() => {
+  return props.mode == 'reminder'
+})
 const icon = computed(() => {
   return props.mode == 'reminder' ? 'fa fa-bell' : 'fa fa-plus'
 })

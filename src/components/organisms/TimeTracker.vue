@@ -33,8 +33,8 @@ const state = reactive({
             color: 'text-green-400'
         },
         promodoro: {
-            min: 0,
-            sec: 10,
+            min: 25,
+            sec: 0,
             color: 'text-red-400'
         },
         rest: {

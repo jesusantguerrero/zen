@@ -4,12 +4,18 @@
     <div class="text-left flex">
       <div class="zen__view w-8/12 mr-10">
         <header class="flex justify-between"> 
-          <h1 class="text-2xl font-bold text-blue-500"> Task Title</h1>
+          <h1 class="text-2xl font-bold text-blue-500"> 
+            Task Title
+            <span 
+              class="text-sm select-none cursor-pointer text-gray-600 hover:text-blue-400 transition-colors"
+               @click="toggleReminder"> Add Reminder <i class="fa fa-bell"></i></span>
+          </h1>
           <time-tracker></time-tracker>
         </header>
 
         <div class="mt-10">
           <quick-add 
+            v-if="state.showReminder"
             mode="reminder"
             class="zen__reminder" 
             title="Things bear in mind after the zen"
@@ -57,26 +63,21 @@
             <quick-add></quick-add>
           </div>
 
-          <div class="commig-up__today mt-6 py-3">
-            <h4 class="mb-2 font-bold"> Todo</h4>
-            <TaskItem 
-              v-for="task in [1,2,3,4,5]" 
-              :key="task" 
-              :task="{}"
-            >
-            </TaskItem>
-          </div>
+          <task-group
+            title="Todo"
+            :tasks="state.todo"
+          >
 
-          <div class="comming-up__scheduled mt-6 py-3">
-            <h4 class="mb-2 font-bold"> Scheduled</h4>
-            <TaskItem 
-              class="opacity-60 hover:opacity-100"
-              v-for="task in [1,2,3]" 
-              :key="task" 
-              :task="{}"
-            >
-            </TaskItem>
-          </div>
+          </task-group>
+          
+          <task-group
+            title="Scheduled"
+            :tasks="state.scheduled"
+            :active="false"
+            class="opacity-60 hover:opacity-100"
+          >
+
+          </task-group>
         </div>
       </div>
     </div>
@@ -88,13 +89,43 @@
 
 <script setup>
 import { defineProps, reactive } from 'vue'
-import TaskItem from "../components/molecules/TaskItem.vue"
+import TaskGroup from "../components/organisms/TaskGroup.vue"
 import QuickAdd from "../components/molecules/QuickAdd.vue"
 import TimeTracker from "../components/organisms/TimeTracker.vue"
 
 defineProps({
   msg: String
 })
+
+const state = reactive({
+  todo: [
+    {
+      title: 'Prueba 1',
+      description: 'Lorem Ipsum',
+      done: false,
+      commited_at: null,
+      due_date: null,
+      matrix: 'todo',
+      tags: ['MCTekk', 'Kanvasu']
+    }
+  ],
+  scheduled: [
+    {
+      title: 'Prueba 2',
+      description: 'Lorem Ipsum',
+      done: false,
+      commited_at: null,
+      due_date: null,
+      matrix: 'todo',
+      tags: ['MCTekk', 'Kanvasu']
+    }
+  ],
+   showReminder: false
+})
+
+const toggleReminder = () => {
+  state.showReminder = !state.showReminder
+}
 
 </script>
 

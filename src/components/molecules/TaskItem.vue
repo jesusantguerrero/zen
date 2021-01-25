@@ -5,11 +5,18 @@
       <div class="mx-3 rounded-md bg-blue-100 px-2 py-1 text-blue-500"> 
           <i class="fa fa-sticky-note"></i>
       </div>
-      <h4>Task Title</h4>
+      <h4> {{ task.title }}</h4>
     </div>
     <div class="task-item__controls flex">
-      <div class="mx-2">Time</div>
-      <div class="mx-2">Tags</div>
+      <div class="mx-2">
+        <i class="fa fa-calendar"></i>
+      </div>
+      <div class="mx-2">
+        <i class="fa fa-clock"></i>
+      </div>
+      <div class="mx-2">
+        <i class="fa fa-tags"></i>
+      </div>
       <div class="mx-2">
           <i class="fa fa-ellipsis-v"></i>
       </div>
@@ -18,9 +25,11 @@
 </template>
 
 <script setup>
-import { defineProps } from "vue"
+import { defineProps, toRefs } from "vue"
 
-defineProps({
+const props = defineProps({
     task: Object
 })
+
+const { task } = toRefs(props)
 </script>
