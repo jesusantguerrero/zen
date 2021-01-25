@@ -1,11 +1,13 @@
 <template>
 <div class="text-center">
-  <HelloWorld msg="Hello Vue 3 + Vite" />
+  <app-header />
+  <zen-board class="pt-24" />
 </div>
 </template>
 
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import ZenBoard from './views/ZenBoard.vue'
+import AppHeader from './components/organisms/AppHeader.vue'
 </script>
 
 <style>
@@ -15,6 +17,5 @@ import HelloWorld from './components/HelloWorld.vue'
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
