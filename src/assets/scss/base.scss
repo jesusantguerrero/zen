@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.login-container {
+    background-image: image("./zen.jpg");
+}
