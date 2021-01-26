@@ -23,13 +23,16 @@
                 <input type="password" v-model="formData.password" class="block border-2 border-gray-300 w-full h-10 px-2"  required>
             </div>
             
-            <div class="text-left w-full mt-5">
+            <div class="text-left w-full mt-5" v-if="mode!='login'">
                 <label for="" class="block">Confirm Password</label>
                 <input type="password" v-model="formData.password" class="block border-2 border-gray-300 w-full h-10 px-2"  required>
             </div>
 
             
-            <button class="mt-5 bg-blue-500 w-full h-10 text-white font-bold" @click="loginUser()" v-if="mode=='login'">
+            <button class="mt-5 bg-blue-500 w-full h-10 text-white font-bold" 
+                @click="loginUser()" 
+                v-if="mode=='login'"
+            >
                 Login
             </button>
             <button class="mt-5 bg-blue-500 w-full h-10 text-white font-bold" @click="registerUser()" v-else>
@@ -41,14 +44,15 @@
 </template>
 
 <script setup="props, { emit }">
-import {reactive} from "vue";
+import {reactive, ref} from "vue";
 import { register, login }  from "../utils/useFirebase";
+    
+const mode = ref('login')
 
 const formData = reactive({
     email: '',
     password: '',
     confirmPassword: '',
-    mode: 'login',
 });
 
 const registerUser = () => {
