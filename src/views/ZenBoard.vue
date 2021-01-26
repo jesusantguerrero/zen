@@ -1,8 +1,8 @@
 <template>
 <div>
   <div class="mx-10 mt-5">
-    <div class="text-left flex">
-      <div class="zen__view w-8/12 mr-10">
+    <div class="text-left flex mx-24">
+      <div class="zen__view w-8/12 mr-28">
         <header class="flex justify-between"> 
           <h1 class="text-2xl font-bold text-blue-500"> 
             Task Title
@@ -53,14 +53,19 @@
       </div>
 
       <div class="zen__comming-up w-4/12 ml-5">
-        <header class="text-right mb-2">
-          <h1 class="text-2xl font-bold text-blue-500"> Line Up</h1>
+        <header class="mb-2">
+          <div class="flex justify-between">
+            <h1 class="text-2xl font-bold text-blue-500"> Line Up</h1>
+            <button class="text-2xl font-bold text-blue-500"> 
+              <i class="fa fa-chevron-down"></i>
+            </button>
+          </div>
         </header>
 
         <div class="comming-up__list divide-y-2 divide-gray-200 divide-dashed">
           <div class="quick__add mb-4">
             <h4 class="font-bold mb-2">Quick Add</h4>
-            <quick-add></quick-add>
+            <quick-add @saved="addTask"></quick-add>
           </div>
 
           <task-group
@@ -125,6 +130,10 @@ const state = reactive({
 
 const toggleReminder = () => {
   state.showReminder = !state.showReminder
+}
+
+const addTask = (task) => {
+  state.todo.push(task);
 }
 
 </script>

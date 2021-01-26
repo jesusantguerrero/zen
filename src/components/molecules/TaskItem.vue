@@ -10,6 +10,7 @@
     <div class="task-item__controls flex">
       <div class="mx-2">
         <i class="fa fa-calendar"></i>
+        <span> {{ formattedDate }}</span>
       </div>
       <div class="mx-2">
         <i class="fa fa-clock"></i>
@@ -25,11 +26,14 @@
 </template>
 
 <script setup>
-import { defineProps, toRefs } from "vue"
+import { defineProps, toRefs, ref } from "vue"
+import { useDateTime } from "../../utils/useDateTime";
 
 const props = defineProps({
     task: Object
 })
 
 const { task } = toRefs(props)
+
+const { formattedDate } = useDateTime(ref(task.value.due_date))
 </script>

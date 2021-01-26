@@ -1,39 +1,68 @@
 <template>
-  <div class="task-item flex justify-between mb-2 shadow-md border-gray-200 border-2 px-4 py-3 rounded-md items-center cursor-default">
-    <div class="flex items-center w-full">
-      <div class="mx-3 rounded-md bg-blue-100 px-2 py-1 text-blue-500"> 
-          <i :class="icon"> 
-            <span class="ml-2">
-              {{ mode }}
-            </span>
-          </i>
+  <form class="task-item  mb-2 shadow-md border-gray-200 border-2 px-4 py-3 rounded-md items-center cursor-default"
+     @submit.prevent="save()"
+     @keydown.ctrl.enter="save()"
+     @blur="toggleExpanded()"
+    >
+    <div class="flex justify-between">
+      <div class="flex items-center w-full">
+        <div class="mx-3 rounded-md bg-blue-100 px-2 py-1 text-blue-500"> 
+            <i :class="icon"> 
+              <span class="ml-2">
+                {{ mode }}
+              </span>
+            </i>
+        </div>
+
+        <div class="w-full">
+          <input 
+            type="text" 
+            class="focus:outline-none w-full px-2" 
+            :placeholder="placeholder" 
+            v-model="task.title"
+            @click="state.isExpanded = true"
+          >
+        </div>
       </div>
 
-      <div class="w-full">
-        <input type="text" class="focus:outline-none w-full px-2" :placeholder="placeholder">
+      <div class="task-item__controls flex" v-if="!isReminder">
+        <div class="mx-2">
+          <date-select 
+            v-model="task.due_date" 
+          />    
+        </div>
+
+        <div class="mx-2">
+          <i class="fa fa-clock"></i>
+        </div>
+        <div class="mx-2">
+          <i class="fa fa-tags cursor-pointer"></i>
+        </div>
+        <div class="mx-2">
+            <i class="fa fa-ellipsis-v cursor-pointer"></i>
+        </div>
       </div>
     </div>
+    
+    <el-collapse-transition>
+      <div class="task-item__body w-full p-3" v-if="state.isExpanded">
+        <textarea 
+          v-model="task.description"
+          class="task-item__description w-full pt-2 focus:outline-none" 
+          placeholder="Add a short description">
+        </textarea>
+        
+        <div class="task-item__checklist">
 
-    <div class="task-item__controls flex" v-if="!isReminder">
-      <div class="mx-2">
-        <i class="fa fa-calendar"></i>
+        </div>
       </div>
-
-      <div class="mx-2">
-        <i class="fa fa-clock"></i>
-      </div>
-      <div class="mx-2">
-        <i class="fa fa-tags cursor-pointer"></i>
-      </div>
-      <div class="mx-2">
-          <i class="fa fa-ellipsis-v cursor-pointer"></i>
-      </div>
-    </div>
-  </div>
+    </el-collapse-transition>
+  </form>
 </template>
 
 <script setup="props">
-import { computed, reactive, defineProps } from "vue"
+import DateSelect from "../atoms/DateSelect.vue"
+import { computed, reactive, defineProps, defineEmit} from "vue"
 
 const props = defineProps({
     mode: {
@@ -44,13 +73,49 @@ const props = defineProps({
       default: "Add quick task"
     }
 })
+const emit =  defineEmit({
+  'saved': (task) => {}
+})
 
+const task = reactive({
+  title: "",
+  description: "",
+  due_date: "",
+  duration: "",
+  tags: [],
+  matrix: "todo",
+})
 
-const title = reactive("My Team")
+// UI
+const state = reactive({
+  isExpanded: false
+})
+
 const isReminder = computed(() => {
   return props.mode == 'reminder'
 })
+
 const icon = computed(() => {
   return props.mode == 'reminder' ? 'fa fa-bell' : 'fa fa-plus'
 })
+
+
+// functionnality flow
+const clearForm = () => {
+  task.title = "";
+  task.description = "";
+  task.due_date = "";
+  task.duration = "";
+  task.matrix = "todo";
+  task.tags = [];
+  task.checklist = [];
+}
+
+const save = () => {
+  emit('saved', {...task})
+  clearForm()
+}
+
+
+
 </script>
