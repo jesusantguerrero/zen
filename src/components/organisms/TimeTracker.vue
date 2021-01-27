@@ -33,7 +33,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, reactive, watch } from "vue";
+import { computed, onBeforeUnmount, reactive, watch, ref } from "vue";
 import { Duration, Interval, DateTime } from "luxon";
 
 // state
@@ -158,10 +158,13 @@ const play = () => {
 const stop = (shouldCallNextMode = true) => {
   save();
   clearInterval(state.timer);
-  state.now = null;
-  if (state.mode == "promodoro") {
+  const wasRunning = Boolean(state.now);
+  
+  if (wasRunning.value && state.mode == "promodoro") {
+    state.now = null;
     confirm("Stopped");
   }
+
   if (shouldCallNextMode) {
     nextMode();
   }
@@ -181,12 +184,15 @@ const nextMode = () => {
 
 const clearTrack = () => {
   clearInterval(state.timer);
-  state.now = null;
   track.started_at = null;
   track.ended_at = null;
   track.duration = null;
   track.target_time = null;
 };
+
+onBeforeUnmount(() => {
+    stop()    
+})
 
 const save = () => {
   // save to db.

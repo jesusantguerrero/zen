@@ -28,26 +28,19 @@ export const firebaseState = reactive({
 })
 
 export const register = async (email, password) => {
-    await firebase.auth().createUserWithEmailAndPassword(email, password).catch((e) => {
-        console.log(e)
+    return firebase.auth().createUserWithEmailAndPassword(email, password).catch(reason => {
+        throw new Error(reason.message);
     })
 }
 
 export const login = async (email, password) => {
-    await firebase.auth().signInWithEmailAndPassword(email, password).catch((e) => {
-        console.log(e)
+    return firebase.auth().signInWithEmailAndPassword(email, password).catch((reason) => {
+        throw new Error(reason.message);
     })
 }
 
 export const logout = () => {
-    firebase.auth().signOut()
-    .then(() => {
-        debugger
-
-    }).catch((e) => {
-        debugger
-        console.log(e)
-    })
+    return firebase.auth().signOut()
 }
 
 firebase.auth().onAuthStateChanged((user) => {
