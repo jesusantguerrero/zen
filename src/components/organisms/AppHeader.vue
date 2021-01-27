@@ -7,7 +7,7 @@
       <div class="flex items-center ml-4" v-if="user">
         <menu-item class="mx-2 pl-2" to="/">Dashboard </menu-item>
         <menu-item class="ml-2 px-2" to="/standup">Stand Up</menu-item>
-        <menu-item class="mx-2 px-2" to="/matrix">Plan Ahead</menu-item>
+        <menu-item class="mx-2 px-2" to="/matrix">Matrix</menu-item>
       </div>
     </div>
 
