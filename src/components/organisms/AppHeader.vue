@@ -3,9 +3,9 @@
     class="flex items-center justify-between h-16 fixed shadow-sm w-full bg-white px-32"
   >
     <div class="flex items-baseline">
-      <router-link class="text-2xl font-bold" to="/"> Zen App </router-link>
+      <router-link class="text-2xl font-bold" to="/"> Zen.</router-link>
       <div class="flex items-center ml-4" v-if="user">
-        <menu-item class="mx-2 pl-2" to="/">Zen </menu-item>
+        <menu-item class="mx-2 pl-2" to="/">Dashboard </menu-item>
         <menu-item class="ml-2 px-2" to="/standup">Stand Up</menu-item>
         <menu-item class="mx-2 px-2" to="/matrix">Plan Ahead</menu-item>
       </div>
