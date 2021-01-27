@@ -1,5 +1,6 @@
 import ZenBoard from "./views/ZenBoard.vue";
 import Matrix from  "./views/Matrix.vue";
+import Standup from  "./views/Standup.vue";
 import { createRouter, createWebHistory } from "vue-router"
 
 // 2. Define some routes
@@ -8,6 +9,7 @@ import { createRouter, createWebHistory } from "vue-router"
 const routes = [
   { path: '/', component: ZenBoard },
   { path: '/matrix', component: Matrix },
+  { path: '/standup', component: Standup },
 ]
 
 export default createRouter({

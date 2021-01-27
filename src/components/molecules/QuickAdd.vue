@@ -107,6 +107,7 @@ const typeColor = computed(() => {
   const colors = {
     todo: 'bg-green-100 text-green-500',
     schedule: 'bg-blue-100 text-blue-500',
+    reminder: 'bg-blue-100 text-blue-500',
     delegate: 'bg-yellow-100 text-yellow-500',
     delete: 'bg-red-100 text-red-500',
     backlog: 'bg-gray-100 text-gray-500'

@@ -1,6 +1,6 @@
 <template>
 <router-link :to="to">
-    <h2 class="text-lg font-bold cursor-pointer pb-2 border-b-4 border-white hover:border-blue-500">
+    <h2 class="text-lg font-bold cursor-pointer text-gray-400 hover:text-gray-600">
         <slot></slot>
     </h2>
 </router-link>
