@@ -9,7 +9,7 @@
     </div>
     <div class="task-item__controls flex">
       <div class="mx-2">
-        <i class="fa fa-calendar"></i>
+        <i class="fa fa-calendar mr-2"></i>
         <span> {{ formattedDate }}</span>
       </div>
       <div class="mx-2">

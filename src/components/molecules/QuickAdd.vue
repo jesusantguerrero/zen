@@ -1,6 +1,6 @@
 <template>
   <form class="task-item  mb-2 shadow-md border-gray-200 border-2 px-4 py-3 rounded-md items-center cursor-default"
-     @submit.prevent="save()"
+     @submit.prevent
      @keydown.ctrl.enter="save()"
      @blur="toggleExpanded()"
     >
@@ -25,7 +25,7 @@
         </div>
       </div>
 
-      <div class="task-item__controls flex" v-if="!isReminder">
+      <div class="task-item__controls flex items-center" v-if="!isReminder">
         <div class="mx-2">
           <date-select 
             v-model="task.due_date" 
@@ -33,14 +33,16 @@
         </div>
 
         <div class="mx-2">
-          <i class="fa fa-clock"></i>
+          <i class="fa fa-clock"> </i>
         </div>
         <div class="mx-2">
-          <i class="fa fa-tags cursor-pointer"></i>
+          <tags-select /> 
         </div>
-        <div class="mx-2">
+
+        <button class="mx-2">
             <i class="fa fa-ellipsis-v cursor-pointer"></i>
-        </div>
+        </button>
+        
       </div>
     </div>
     
@@ -62,6 +64,7 @@
 
 <script setup="props">
 import DateSelect from "../atoms/DateSelect.vue"
+import TagsSelect from "../atoms/TagsSelect.vue"
 import { computed, reactive, defineProps, defineEmit} from "vue"
 
 const props = defineProps({
