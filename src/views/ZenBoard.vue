@@ -4,7 +4,7 @@
     <div class="text-left flex mx-24">
       <div class="zen__view w-8/12 mr-28">
         <header class="flex justify-between"> 
-          <h1 class="text-2xl font-bold text-blue-500"> 
+          <h1 class="text-2xl font-bold text-gray-400"> 
             Task Title
             <span 
               class="text-sm ml-4 select-none cursor-pointer text-gray-600 hover:text-blue-400 transition-colors"
@@ -17,6 +17,7 @@
           <quick-add 
             v-if="state.showReminder"
             mode="reminder"
+            type="reminder"
             class="zen__reminder" 
             title="Things bear in mind after the zen"
             placeholder="Add a reminder"
@@ -28,7 +29,7 @@
               Lorem ipsum dolor sit, amet consectetur adipisicing elit. Error atque, molestiae beatae est assumenda ipsam explicabo corporis? Facilis suscipit quo corrupti animi amet ad illo ea! Nemo cupiditate expedita recusandae.
             </div>
 
-            <div class="task__checlikst mb-4">
+            <div class="task__checlikst mb-6">
               <div v-for="i in [1,2,3]" :key="i">
                 <label for="">
                   <input type="checkbox" name="" id="">
@@ -38,28 +39,27 @@
             </div>
 
             <div class="task__promodoros flex">
-              <div class="task__target rounded-full bg-red-200 h-10 w-10 flex justify-center items-center font-bold text-gray-500">
-                3
+              <div class="task__target rounded-full bg-red-200 text-red-400 h-16 w-16 flex justify-center items-center font-bold">
+                <span class="text-xl">
+                  3
+                </span>
+                <i class="fas fa-stopwatch ml-1" /> 
               </div>
 
               <div class="sessions ml-10 flex items-center">
                 Totals: 30 minutes, 1 session
               </div>
             </div>
-          </div>
-
-        
+          </div>        
         </div>
       </div>
 
       <div class="zen__comming-up w-4/12 ml-5">
-        <header class="mb-2">
-          <div class="flex justify-between">
-            <h1 class="text-2xl font-bold text-blue-500"> Line Up</h1>
-            <button class="text-2xl font-bold text-blue-500"> 
+        <header class="mb-2 flex justify-between text-gray-400 font-bold">
+            <h1 class="text-2xl"> Line Up</h1>
+            <button class="text-2xl"> 
               <i class="fa fa-chevron-down"></i>
             </button>
-          </div>
         </header>
 
         <div class="comming-up__list divide-y-2 divide-gray-200 divide-dashed">
