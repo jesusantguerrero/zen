@@ -1,5 +1,5 @@
 <template>
-  <div class="task-item flex justify-between mb-2 shadow-md border-gray-200 border-2 px-4 py-3 rounded-md items-center cursor-default">
+  <div class="task-item flex justify-between mb-2 shadow-md bg-white border-gray-200 border-2 px-4 py-3 rounded-md items-center cursor-default">
     <div class="flex items-center">
       <div><i class="fa fa-chevron-down cursor-pointer"></i></div>
       <div class="mx-3 rounded-md bg-blue-100 px-2 py-1 text-blue-500"> 

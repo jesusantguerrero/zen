@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex items-center justify-between h-16 fixed w-full bg-white px-28"
+    class="flex items-center justify-between h-16 fixed shadow-sm w-full bg-white px-28"
   >
     <div class="text-2xl font-bold">
         Zen App
