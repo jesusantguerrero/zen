@@ -1,7 +1,6 @@
 <template>
-<div>
-  <div class="mx-10 pt-28">
-    <div class="text-left flex mx-24">
+  <div class="pt-28 mx-28">
+    <div class="text-left flex">
       <div class="zen__view w-8/12 mr-28">
         <header class="flex justify-between"> 
           <h1 class="text-2xl font-bold text-gray-400"> 
@@ -70,6 +69,7 @@
 
           <task-group
             title="Todo"
+            class="mt-6 py-3"
             :tasks="state.todo"
           >
 
@@ -80,7 +80,7 @@
             :tasks="state.scheduled"
             :active="false"
             type="schedule"
-            class="opacity-60 hover:opacity-100"
+            class="opacity-60 hover:opacity-100  mt-6 py-3"
           >
 
           </task-group>
@@ -88,9 +88,6 @@
       </div>
     </div>
   </div>
-
-</div>
-
 </template>
 
 <script setup>

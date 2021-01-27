@@ -2,7 +2,7 @@
 <div class="pt-28 mx-28">
   <div class="flex">
   
-    <div class="w-full ml-20">
+    <div class="w-full">
         <task-group
             title="Committed tasks yesterday"
             type="backlog"

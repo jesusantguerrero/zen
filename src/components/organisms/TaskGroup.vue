@@ -1,5 +1,5 @@
 <template>
-  <div class="commig-up__today mt-6 py-3">
+  <div class="commig-up__today">
     <div class="flex justify-between cursor-pointer items-center">
       <h4 class="mb-2 font-bold" :class="[isQuadrant ? `text-2xl font-bold ${color} capitalize`: '']"> {{ title }}</h4>
       
