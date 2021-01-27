@@ -10,7 +10,8 @@
     "element-plus": "^1.0.2-beta.30",
     "firebase": "^8.2.4",
     "luxon": "^1.25.0",
-    "vue": "^3.0.5"
+    "vue": "^3.0.5",
+    "vue-router": "^4.0.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^1.1.2",

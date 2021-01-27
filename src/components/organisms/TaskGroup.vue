@@ -1,16 +1,22 @@
 <template>
   <div class="commig-up__today mt-6 py-3">
-    <div class="flex justify-between cursor-pointer" @click="toggleExpanded">
-      <h4 class="mb-2 font-bold"> {{ title }}</h4>
+    <div class="flex justify-between cursor-pointer items-center">
+      <h4 class="mb-2 font-bold" :class="[isQuadrant ? `text-2xl font-bold ${color} capitalize`: '']"> {{ title }}</h4>
       
-      <div>
+      <div @click="toggleExpanded">
          <icon-expand v-if="!isExpanded"/>
          <icon-collapse v-else/>
       </div>
     </div>
     <el-collapse-transition>
       <div v-show="isExpanded">
-        <task-item v-for="task in tasks" :key="task" :task="task" />
+        <slot></slot>
+        <task-item 
+          v-for="task in tasks" 
+          :key="task" 
+          :task="task" 
+          :type="type"
+        />
       </div>
     </el-collapse-transition>
   </div>
@@ -29,7 +35,10 @@ const props = defineProps({
             return []
         }
     },
-    title: String
+    isQuadrant: Boolean,
+    color: String,
+    title: String,
+    type: String
 })
 
 const isExpanded = ref(true);

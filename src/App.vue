@@ -4,7 +4,7 @@
   <login v-if="!firebaseState.user && isLoaded">
 
   </login>
-  <zen-board  v-else-if="isLoaded" class="pt-24" />
+  <router-view v-else-if="isLoaded"></router-view>
 </div>
 </template>
 

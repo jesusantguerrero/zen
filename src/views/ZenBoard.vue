@@ -1,13 +1,13 @@
 <template>
 <div>
-  <div class="mx-10 mt-5">
+  <div class="mx-10 pt-28">
     <div class="text-left flex mx-24">
       <div class="zen__view w-8/12 mr-28">
         <header class="flex justify-between"> 
           <h1 class="text-2xl font-bold text-blue-500"> 
             Task Title
             <span 
-              class="text-sm select-none cursor-pointer text-gray-600 hover:text-blue-400 transition-colors"
+              class="text-sm ml-4 select-none cursor-pointer text-gray-600 hover:text-blue-400 transition-colors"
                @click="toggleReminder"> Add Reminder <i class="fa fa-bell"></i></span>
           </h1>
           <time-tracker></time-tracker>
@@ -79,6 +79,7 @@
             title="Scheduled"
             :tasks="state.scheduled"
             :active="false"
+            type="schedule"
             class="opacity-60 hover:opacity-100"
           >
 

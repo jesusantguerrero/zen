@@ -6,9 +6,9 @@
         Zen App
     </div>
     <div class="flex" v-if="user">
-        <menu-item class="mx-2 pl-2">Zen </menu-item>
-        <menu-item class="ml-2 px-2">Stand Up</menu-item>
-        <menu-item class="mx-2 px-2">Plan Ahead</menu-item>
+        <menu-item class="mx-2 pl-2" to="/">Zen </menu-item>
+        <menu-item class="ml-2 px-2" to="/standup">Stand Up</menu-item>
+        <menu-item class="mx-2 px-2" to="/matrix">Plan Ahead</menu-item>
     </div>
 
     <div class="flex" v-if="user">
