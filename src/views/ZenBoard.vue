@@ -4,7 +4,7 @@
       <div class="zen__view w-8/12 mr-28">
         <header class="flex justify-between"> 
           <h1 class="text-2xl font-bold text-gray-400"> 
-            Task Title
+            {{ currentTask.title || 'No task selected'}}
             <span 
               class="text-sm ml-4 select-none cursor-pointer text-gray-600 hover:text-blue-400 transition-colors"
                @click="toggleReminder"> Add Reminder <i class="fa fa-bell"></i></span>
@@ -25,11 +25,11 @@
           </quick-add>
           <div class="zen__datails">
             <div class="task__description mb-4">
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Error atque, molestiae beatae est assumenda ipsam explicabo corporis? Facilis suscipit quo corrupti animi amet ad illo ea! Nemo cupiditate expedita recusandae.
+              {{ currentTask.description }}
             </div>
 
-            <div class="task__checlikst mb-6">
-              <div v-for="i in [1,2,3]" :key="i">
+            <div class="task__checlikst mb-6" v-if="currentTask.checklist">
+              <div v-for="i in currentTask.checklist" :key="i">
                 <label for="">
                   <input type="checkbox" name="" id="">
                   Checklist Item {{ i }}
@@ -37,10 +37,10 @@
               </div>
             </div>
 
-            <div class="task__promodoros flex">
+            <div class="task__promodoros flex" v-if="currentTask.title">
               <div class="task__target rounded-full bg-red-200 text-red-400 h-16 w-16 flex justify-center items-center font-bold">
                 <span class="text-xl">
-                  3
+                  {{ Number(currentTask.promodoros || 0) }}
                 </span>
                 <i class="fas fa-stopwatch ml-1" /> 
               </div>
@@ -71,6 +71,8 @@
             title="Todo"
             class="mt-6 py-3"
             :tasks="state.todo"
+            @deleted="destroyTask"
+            @selected="setCurrentTask"
           >
 
           </task-group>
@@ -81,6 +83,7 @@
             :active="false"
             type="schedule"
             class="opacity-60 hover:opacity-100  mt-6 py-3"
+            @deleted="destroyTask"
           >
 
           </task-group>
@@ -93,7 +96,8 @@
 <script setup>
 import axios from "axios";
 import { useTaskFirestore } from "../utils/useTaskFirestore"
-import { defineProps, reactive } from 'vue'
+import { computed, defineProps, reactive, ref } from 'vue'
+import { ElMessageBox, ElNotification } from "element-plus"
 import TaskGroup from "../components/organisms/TaskGroup.vue"
 import QuickAdd from "../components/molecules/QuickAdd.vue"
 import TimeTracker from "../components/organisms/TimeTracker.vue"
@@ -102,7 +106,7 @@ defineProps({
   msg: String
 })
 
-const { saveTask, getAllFromUser } = useTaskFirestore()
+const { saveTask, getAllFromUser, deleteTask } = useTaskFirestore()
 
 const state = reactive({
   todo: [
@@ -137,6 +141,32 @@ console.log(data)
 const toggleReminder = () => {
   state.showReminder = !state.showReminder
 }
+
+const destroyTask = async (task) => {
+  const canDelete = await ElMessageBox.confirm("Are you sure you want to delete this task?", "Delete Task")
+  if (canDelete) {
+    deleteTask(task).then(() => {
+      state.todo = state.todo.filter(localTask => task.uid != localTask.uid)
+      ElNotification({
+        type: "success",
+        message: "Task deleted",
+        title: "Task deleted"
+      })
+    })
+  }
+} 
+const currentTask = ref({});
+const setCurrentTask = (task) => {
+  currentTask.value = task
+}
+
+const currentPromodoros = computed(() => {
+  return Number(currentTask.value.promodoros || 0)
+})
+
+const taskDuration = computed(() => {
+  return Number(currentTask.value.duration || 0)
+})
 
 getAllFromUser().then(taks => {
   state.todo = taks

@@ -12,13 +12,13 @@
         <i class="fa fa-calendar mr-2 text-gray-400 hover:text-gray-600"></i>
         <span> {{ formattedDate }}</span>
       </div>
-      <div class="mx-2 text-gray-400 hover:text-gray-600">
+      <div class="mx-2 text-gray-400 hover:text-gray-600" @click="emitSelected()">
         <i class="fa fa-clock"></i>
       </div>
       <div class="mx-2 text-gray-400 hover:text-gray-600">
         <i class="fa fa-tags"></i>
       </div>
-      <div class="mx-2 text-gray-400 hover:text-gray-600">
+      <div class="mx-2 text-gray-400 hover:text-gray-600" @click="emitDeleted">
           <i class="fa fa-ellipsis-v"></i>
       </div>
     </div>
@@ -26,12 +26,17 @@
 </template>
 
 <script setup>
-import { defineProps, toRefs, ref, computed } from "vue"
+import { defineProps, toRefs, ref, computed, defineEmit } from "vue"
 import { useDateTime } from "../../utils/useDateTime";
 
 const props = defineProps({
   task: Object,
   type: String
+})
+
+const emit = defineEmit({
+  deleted: Object,
+  selected: Object
 })
 
 const typeColor = computed(() => {
@@ -45,6 +50,13 @@ const typeColor = computed(() => {
 
   return colors[props.type] || colors['todo']
 })
+
+const emitDeleted = (task) => {
+  emit('deleted', task)
+}
+const emitSelected = (task) => {
+  emit('selected', task)
+}
 
 const { task } = toRefs(props)
 

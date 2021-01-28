@@ -17,6 +17,8 @@
           :key="task" 
           :task="task" 
           :type="type"
+          @selected="emitSelected(task)"
+          @deleted="emitDeleted(task)"
         />
       </div>
     </el-collapse-transition>
@@ -42,7 +44,21 @@ const props = defineProps({
     type: String
 })
 
+const emit = defineEmit({
+  deleted: Object,
+  selected: Object
+})
+
+const emitDeleted = (task) => {
+  emit('deleted', task)
+}
+
+const emitSelected = (task) => {
+  emit('selected', task)
+}
+
 const isExpanded = ref(true);
+
 const toggleExpanded = () => {
   isExpanded.value = !isExpanded.value;
 }
