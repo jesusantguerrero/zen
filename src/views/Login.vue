@@ -70,12 +70,13 @@
             </div>
 
             <button
-                class="btn btn-action capitalize"
+                class="btn btn-action capitalize rounded-sm"
                 type="submit"
             >
                 {{ mode }}
                 <i v-if="isLoading" class="fa fa-spinner fa-pulse ml-2"></i>
             </button>
+
             <p class="text-center">
                 <small v-if="mode=='register'"> Already have an account?
                     <button  @click.prevent.stop="mode='login'"> Login </button>
@@ -85,7 +86,7 @@
                     <button  @click.prevent.stop="mode='register'"> Create one </button>
                 </small>
             </p>
-            <p class="copyrights">&copy; 2020-{{ currentYear }}</p>
+            <p class="copyrights pt-10">&copy; {{ currentYear }}</p>
         </form>
     </div>
 
@@ -193,10 +194,9 @@ const loginWithGoogle = () => {
         color: white;
         border: none;
         margin: 10px 0;
-        border-radius: 0 0 0 0 !important;
         transition: all ease 0.3s;
         border: 2px solid white;
-        height: 37px;
+        height: 40px;
 
         &:hover {
             @apply bg-gray-700;
@@ -204,11 +204,11 @@ const loginWithGoogle = () => {
     }
 
     input {
-        border-radius: 0 0 0 0;
+        @apply rounded-sm;
         font-weight: bolder;
         min-width: 250px;
         width: 100%;
-        height: 37px;
+        height: 40px;
 
         &:hover,
         &:focus {

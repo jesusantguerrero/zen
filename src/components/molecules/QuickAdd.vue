@@ -87,7 +87,7 @@ const task = reactive({
   due_date: "",
   duration: "",
   tags: [],
-  matrix: "todo",
+  matrix: props.type || "backlog",
 })
 
 // UI
@@ -122,7 +122,7 @@ const clearForm = () => {
   task.description = "";
   task.due_date = "";
   task.duration = "";
-  task.matrix = "todo";
+  task.matrix = props.type || "backlog";
   task.tags = [];
   task.checklist = [];
 }

@@ -8,9 +8,10 @@
          <icon-collapse v-else/>
       </div>
     </div>
+
+    <slot></slot>
     <el-collapse-transition>
       <div v-show="isExpanded">
-        <slot></slot>
         <task-item 
           v-for="task in tasks" 
           :key="task" 

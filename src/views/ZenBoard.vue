@@ -91,6 +91,8 @@
 </template>
 
 <script setup>
+import axios from "axios";
+import { useTaskFirestore } from "../utils/useTaskFirestore"
 import { defineProps, reactive } from 'vue'
 import TaskGroup from "../components/organisms/TaskGroup.vue"
 import QuickAdd from "../components/molecules/QuickAdd.vue"
@@ -99,6 +101,8 @@ import TimeTracker from "../components/organisms/TimeTracker.vue"
 defineProps({
   msg: String
 })
+
+const { saveTask, getAllFromUser } = useTaskFirestore()
 
 const state = reactive({
   todo: [
@@ -123,15 +127,25 @@ const state = reactive({
       tags: ['MCTekk', 'Kanvasu']
     }
   ],
-   showReminder: false
+  showReminder: false
+})
+
+axios('/api/tracks').then(({data}) => {
+console.log(data)
 })
 
 const toggleReminder = () => {
   state.showReminder = !state.showReminder
 }
 
+getAllFromUser().then(taks => {
+  state.todo = taks
+});
+
 const addTask = (task) => {
-  state.todo.push(task);
+  saveTask(task).then(() => {
+    state.todo.push(task);
+  })
 }
 
 </script>

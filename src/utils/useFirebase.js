@@ -1,5 +1,6 @@
 import firebase from "firebase/app";
 import "firebase/auth";
+import "firebase/firestore";
 import CONFIG from "../config/";
 
 import { ref, reactive } from "vue";
@@ -42,6 +43,8 @@ export const login = async (email, password) => {
 export const logout = () => {
     return firebase.auth().signOut()
 }
+
+export const db = firebase.firestore();
 
 firebase.auth().onAuthStateChanged((user) => {
     firebaseState.user = user;

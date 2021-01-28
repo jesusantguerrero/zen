@@ -6,7 +6,7 @@
           <task-group
             :title="name"
             :type="name"
-            :tasks="state.todo"
+            :tasks="matrix[name]"
             :color="quadrant.color"
             :is-quadrant="true"
           >
@@ -24,7 +24,7 @@
         <task-group
             title="backlog"
             type="backlog"
-            :tasks="state.todo"
+            :tasks="matrix['backlog']"
             color="text-gray-400"
             :is-quadrant="true"
           >
@@ -42,7 +42,9 @@
 </template>
 
 <script setup>
-import { defineProps, reactive } from 'vue'
+import { computed, defineProps, reactive } from 'vue'
+import { useDateTime } from "../utils/useDateTime"
+import { useTaskFirestore } from "../utils/useTaskFirestore"
 import TaskGroup from "../components/organisms/TaskGroup.vue"
 import QuickAdd from "../components/molecules/QuickAdd.vue"
 import TimeTracker from "../components/organisms/TimeTracker.vue"
@@ -84,8 +86,31 @@ const toggleReminder = () => {
   state.showReminder = !state.showReminder
 }
 
+// firebase store
+const { toISO } = useDateTime() 
+const { getAllFromUser, saveTask } = useTaskFirestore()
+
+getAllFromUser().then(taks => {
+    state.todo = taks
+});
+
+const matrix = computed(() => {
+  return state.todo.reduce((matrix, task) => {
+    if (!matrix[task.matrix]) {
+      matrix[task.matrix] = [task];
+    } else {
+      matrix[task.matrix].push(task);
+    }
+    return matrix
+  }, {})
+})
+
 const addTask = (task) => {
-  state.todo.push(task);
+  const formattedTask = {...task}
+  formattedTask.due_date = toISO(formattedTask.due_date)
+  saveTask(formattedTask).then(() => {
+    state.todo.push(task);
+  })
 }
 
 </script>
