@@ -2,18 +2,19 @@
 <el-collapse-transition>
     <div class="login-box">
         <form class="form-signin md:w-1/2 w-full" @submit.prevent="loginUser">
-            <div class="w-100 flex justify-center mb-3">
+            <div class="w-full flex justify-center items-center mb-20 sm:pt-20">
                 <div class="text-8xl text-center zen">
                     Zen.
                 </div>
+                <!-- <div class="h-24 bg-white w-2 ml-5" />  -->
 
+                <!-- <h3 class="login-title w-full capitalize"> {{ modeLabel}}</h3> -->
             </div>
-            <h3 class="login-title">Sign in</h3>
 
             <div
                 class="form-group"
             >
-                <label for="email">Email</label>
+                <label for="email" class="inline-block mb-2">Email</label>
                 <p :class="{ control: true }">
                     <input
                         v-model.trim="formData.email"
@@ -91,6 +92,54 @@
 </el-collapse-transition>
 </template>
 
+
+<script setup>
+import { reactive, ref, computed } from "vue";
+import { register, login }  from "../utils/useFirebase";
+import { ElNotification } from "element-plus"
+    
+const mode = ref('login')
+const isLoading = ref(false)
+
+const formData = reactive({
+    email: '',
+    password: '',
+    confirmPassword: '',
+});
+
+const modeLabel = computed(() =>{
+    return mode.value == 'login' ? "Sign In" : "Sign Up"
+})
+
+const currentYear = computed(() =>{
+    const date = new Date();
+    return date.getFullYear();
+})
+
+const loginUser = () => {
+    const loginFunction = mode.value == 'login' ? login : register;
+    isLoading.value = true;
+
+    loginFunction(formData.email, formData.password).catch(errorMessage => {
+
+        ElNotification({
+            title: "Error",
+            message: errorMessage.message,
+            type: "error"
+        })
+        isLoading.value = false
+    })
+}
+
+const registerWithTwitter = () => {
+    
+}
+
+const loginWithGoogle = () => {
+
+}
+</script>
+
 <style lang="scss" scoped>
 :root {
     --primary-color: blue;
@@ -128,7 +177,7 @@
     form {
         color: white;
         padding: 15px;
-        max-width: 350px;
+        max-width: 450px;
         border-radius: 4px;
         // box-shadow: 0 0 10px 4px rgba($color: #000000, $alpha: 0.2);
         z-index: 2;
@@ -139,7 +188,7 @@
     }
 
     .btn-action {
-        background:#087a9c;
+        @apply bg-gray-800;
         width: 100%;
         color: white;
         border: none;
@@ -150,7 +199,7 @@
         height: 37px;
 
         &:hover {
-            background: #1fa1d0;
+            @apply bg-gray-700;
         }
     }
 
@@ -217,6 +266,7 @@
         }
     }
 }
+
 .form-control {
     @apply text-gray-400 px-2;
 
@@ -255,46 +305,3 @@
     }
 }
 </style>
-
-<script setup>
-import { reactive, ref, computed } from "vue";
-import { register, login }  from "../utils/useFirebase";
-import { ElNotification } from "element-plus"
-    
-const mode = ref('login')
-const isLoading = ref(false)
-
-const formData = reactive({
-    email: '',
-    password: '',
-    confirmPassword: '',
-});
-
-const currentYear = computed(() =>{
-    const date = new Date();
-    return date.getFullYear();
-})
-
-const loginUser = () => {
-    const loginFunction = mode.value == 'login' ? login : register;
-    isLoading.value = true;
-
-    loginFunction(formData.email, formData.password).catch(errorMessage => {
-
-        ElNotification({
-            title: "Error",
-            message: errorMessage.message,
-            type: "error"
-        })
-        isLoading.value = false
-    })
-}
-
-const registerWithTwitter = () => {
-    
-}
-
-const loginWithGoogle = () => {
-
-}
-</script>
