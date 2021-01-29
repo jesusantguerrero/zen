@@ -3,6 +3,7 @@
   <div class="text-center" v-else-if="isLoaded">
     <app-header :user="firebaseState.user" class="z-50" @logout="logoutUser" />
     <router-view></router-view>
+    <app-footer></app-footer>
   </div>
 </template>
 
@@ -10,6 +11,7 @@
 import ZenBoard from './views/ZenBoard.vue'
 import Login from './views/Login.vue'
 import AppHeader from './components/organisms/AppHeader.vue'
+import AppFooter from './components/organisms/AppFooter.vue'
 import { reactive, ref } from 'vue'
 import { firebaseState, logout, setLoaded } from "./utils/useFirebase"
 

@@ -4,9 +4,16 @@
     title="click here to start"
   >
     <div class="flex items-start justify-between">
+      <div 
+        :class="`${trackerMode.color} ${trackerMode.colorBorder}`" 
+        class="border-2 mr-2 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer"
+        @click="toggleTracker"
+        >
+        <i class="fa fa-play text-sm" :class="trackerIcon"></i>
+      </div>
       <div
         class="select-none cursor-pointer"
-        :class="trackerColor"
+        :class="trackerMode.color"
         @click="toggleTracker"
       >
         {{ currentTime }}
@@ -64,18 +71,21 @@ const state = reactive({
       sec: 0,
       color: "text-green-400",
       colorBg: "bg-green-400",
+      colorBorder: "border-green-400",
     },
     promodoro: {
       min: 25,
       sec: 0,
       color: "text-red-400",
       colorBg: "bg-red-400",
+      colorBorder: "border-red-400",
     },
     rest: {
       min: 5,
       sec: 0,
       color: "text-blue-400",
       colorBg: "bg-blue-400",
+      colorBorder: "border-blue-400",
     },
   },
   now: null,
@@ -91,7 +101,8 @@ const setDurationTarget = () => {
 
 setDurationTarget();
 
-const trackerColor = computed(() => state.modes[state.mode].color);
+const trackerIcon = computed(() => state.now ? 'fa fa-stop': 'fa fa-play' );
+const trackerMode = computed(() => state.modes[state.mode]);
 const promodoroTotal = computed(() => {
   return state.template
     .map((mode, index) => {
@@ -159,9 +170,9 @@ const stop = (shouldCallNextMode = true) => {
   save();
   clearInterval(state.timer);
   const wasRunning = Boolean(state.now);
+  state.now = null;
   
   if (wasRunning.value && state.mode == "promodoro") {
-    state.now = null;
     confirm("Stopped");
   }
 
