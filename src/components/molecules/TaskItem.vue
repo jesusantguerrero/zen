@@ -8,12 +8,17 @@
       <h4> {{ task.title }}</h4>
     </div>
     <div class="task-item__controls flex">
+      
+      <el-tooltip class="item" effect="dark" content="Add to zen" placement="top">
+        <div class="mx-2 text-gray-400 hover:text-gray-600 cursor-pointer" @click="emitSelected()"
+          title="Add to zen"
+          >
+          <i class="fa fa-clock"></i>
+        </div>
+      </el-tooltip>
       <div class="mx-2">
         <i class="fa fa-calendar mr-2 text-gray-400 hover:text-gray-600"></i>
         <span> {{ formattedDate }}</span>
-      </div>
-      <div class="mx-2 text-gray-400 hover:text-gray-600" @click="emitSelected()">
-        <i class="fa fa-clock"></i>
       </div>
       <div class="mx-2 text-gray-400 hover:text-gray-600">
         <i class="fa fa-tags"></i>

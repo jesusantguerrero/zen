@@ -159,6 +159,7 @@ const loginWithGoogle = () => {
     align-items: center;
     background: linear-gradient(#1fa1d0, #087a9c);
     background: url(../assets/zen-photo.jpg);
+    background-position: center;
     background-size: cover;
     background-size: cover;
     filter: blur(5px), grayscale(70%);
@@ -166,11 +167,12 @@ const loginWithGoogle = () => {
 
     &::after {
         content: "";
+        @apply bg-gray-800;
         display: block;
         position: absolute;
         width: 100%;
         top: 0;
-        background: rgba(0, 0, 0, 0.7);
+        opacity: .85;
         left: 0;
         height: 100%;
     }

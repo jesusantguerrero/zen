@@ -1,14 +1,16 @@
 <template>
-  <div class="pt-28 mx-28">
-    <div class="text-left flex">
-      <div class="zen__view w-8/12 mr-28">
+  <div class="pt-28 mx-5 md:mx-28">
+    <div class="text-left md:flex">
+      <div class="zen__view md:w-8/12 md:mr-28">
         <header class="flex justify-between"> 
-          <h1 class="text-2xl font-bold text-gray-400"> 
+          <h1 class="hidden md:block text-2xl font-bold text-gray-400"> 
             {{ currentTask.title || 'No task selected'}}
             <span 
               class="text-sm ml-4 select-none cursor-pointer text-gray-600 hover:text-blue-400 transition-colors"
                @click="toggleReminder"> Add Reminder <i class="fa fa-bell"></i></span>
           </h1>
+
+          <task-select v-model="currentTask" :items="state.todo" class="md:hidden" />
           <time-tracker></time-tracker>
         </header>
 
@@ -23,8 +25,12 @@
           >
             
           </quick-add>
-          <div class="zen__datails">
-            <div class="task__description mb-4">
+          <div class="zen__datails shadow-md bg-white px-5 py-3 border-2 border-gray-100 rounded-md">
+             <h1 class="text-2xl font-bold text-gray-400"> 
+              {{ currentTask.title }}
+          </h1>
+            
+            <div class="task__description mb-4 mt-5">
               {{ currentTask.description }}
             </div>
 
@@ -36,8 +42,9 @@
                 </label>
               </div>
             </div>
+          </div>   
 
-            <div class="task__promodoros flex" v-if="currentTask.title">
+          <div class="task__promodoros flex shadow-md bg-white px-5 py-3 border-2 border-gray-100 rounded-md mt-10" v-if="currentTask.title">
               <div class="task__target rounded-full bg-red-200 text-red-400 h-16 w-16 flex justify-center items-center font-bold">
                 <span class="text-xl">
                   {{ Number(currentTask.promodoros || 0) }}
@@ -48,12 +55,11 @@
               <div class="sessions ml-10 flex items-center">
                 Totals: 30 minutes, 1 session
               </div>
-            </div>
-          </div>        
+          </div>     
         </div>
       </div>
 
-      <div class="zen__comming-up w-4/12 ml-5">
+      <div class="zen__comming-up hidden mt-10 md:block md:mt-0 md:w-4/12 md:ml-5">
         <header class="mb-2 flex justify-between text-gray-400 font-bold">
             <h1 class="text-2xl"> Line Up</h1>
             <button class="text-2xl"> 
@@ -98,6 +104,7 @@ import axios from "axios";
 import { useTaskFirestore } from "../utils/useTaskFirestore"
 import { computed, defineProps, reactive, ref } from 'vue'
 import { ElMessageBox, ElNotification } from "element-plus"
+import TaskSelect from "../components/atoms/TaskSelect.vue"
 import TaskGroup from "../components/organisms/TaskGroup.vue"
 import QuickAdd from "../components/molecules/QuickAdd.vue"
 import TimeTracker from "../components/organisms/TimeTracker.vue"
@@ -183,5 +190,10 @@ const addTask = (task) => {
 <style scoped>
 a {
   color: #42b983;
+}
+
+.zen__datails {
+  min-height: 400px;
+
 }
 </style>

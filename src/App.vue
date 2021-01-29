@@ -1,11 +1,9 @@
 <template>
-<div class="text-center">
-  <app-header :user="firebaseState.user" class="z-50" @logout="logoutUser" />
-  <login v-if="!firebaseState.user && isLoaded">
-
-  </login>
-  <router-view v-else-if="isLoaded"></router-view>
-</div>
+  <login v-if="!firebaseState.user && isLoaded"></login>
+  <div class="text-center" v-else-if="isLoaded">
+    <app-header :user="firebaseState.user" class="z-50" @logout="logoutUser" />
+    <router-view></router-view>
+  </div>
 </template>
 
 <script setup>
