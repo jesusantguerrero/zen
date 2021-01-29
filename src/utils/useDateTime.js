@@ -8,6 +8,10 @@ export function useDateTime(dateRef) {
         return date.value ? toISO(date.value) : "" 
     })
 
+    const formatDate = (date, format) => {
+       return DateTime.fromJSDate(date || new Date()).toFormat(format || "yyyy-MM-dd");
+    }
+
     const toISO = (date) => {
        return date ? DateTime.fromJSDate(date).toISODate() : "" 
     }
@@ -19,6 +23,7 @@ export function useDateTime(dateRef) {
     return {
         formattedDate,
         toISO,
+        formatDate,
         formatDurationFromMs,
         date: date.value
     }

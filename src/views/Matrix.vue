@@ -72,16 +72,13 @@ const state = reactive({
    showReminder: false
 })
 
-const toggleReminder = () => {
-  state.showReminder = !state.showReminder
-}
 
 // firebase store
 const { toISO } = useDateTime() 
-const { getAllFromUser, saveTask } = useTaskFirestore()
+const { getUncommitedTasks, saveTask } = useTaskFirestore()
 
-getAllFromUser().then(taks => {
-    state.todo = taks
+getUncommitedTasks().then(tasks => {
+    state.todo = tasks
 });
 
 const matrix = computed(() => {

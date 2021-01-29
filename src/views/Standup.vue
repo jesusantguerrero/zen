@@ -6,7 +6,7 @@
         <task-group
             title="Committed tasks yesterday"
             type="backlog"
-            :tasks="state.todo"
+            :tasks="state.committed"
             color="text-gray-400"
             :is-quadrant="true"
           >
@@ -22,47 +22,20 @@ import { defineProps, reactive } from 'vue'
 import TaskGroup from "../components/organisms/TaskGroup.vue"
 import QuickAdd from "../components/molecules/QuickAdd.vue"
 import TimeTracker from "../components/organisms/TimeTracker.vue"
+import { useTaskFirestore } from '../utils/useTaskFirestore'
 
 defineProps({
   msg: String
 })
 
 const state = reactive({
-  todo: [
-    {
-      title: 'Prueba 1',
-      description: 'Lorem Ipsum',
-      done: false,
-      commited_at: null,
-      due_date: null,
-      matrix: 'todo',
-      tags: ['MCTekk', 'Kanvasu']
-    }
-  ],
-  quadrants: {
-    todo: {
-      color: 'text-green-400'
-    },
-    schedule: {
-      color: 'text-blue-400'
-    },
-    delegate: {
-      color: 'text-yellow-400'
-    },
-    delete: {
-      color: 'text-red-400'
-    }
-  },
-   showReminder: false
+  committed: [],
 })
 
-const toggleReminder = () => {
-  state.showReminder = !state.showReminder
-}
-
-const addTask = (task) => {
-  state.todo.push(task);
-}
+const  { getCommitedTasks } = useTaskFirestore()
+getCommitedTasks().then(tasks => {
+  state.committed = tasks;
+})
 
 </script>
 

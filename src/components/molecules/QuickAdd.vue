@@ -84,6 +84,9 @@ const task = reactive({
   due_date: "",
   duration: "",
   tags: [],
+  checklist: [],
+  done: false,
+  commit_date: null,
   matrix: props.type || "backlog",
 })
 
