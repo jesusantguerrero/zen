@@ -13,11 +13,7 @@ export function useTaskFirestore() {
     }
 
     const deleteTask = (task) => {
-        console.log(task)
         return db.collection("tasks").doc(task.uid).delete()
-        .then(docRef => {
-            return docRef.id
-        })
         .catch(function(error) {
             console.error("Error adding document: ", error);
         });
@@ -25,7 +21,7 @@ export function useTaskFirestore() {
 
     const getAllFromUser = async (where = {}) => {
         const tasks = [];
-        await db.collection('tasks').get().then(querySnapshot => {
+        await db.collection('tasks').where("user_uid", "==", firebaseState.user.uid).get().then(querySnapshot => {
             querySnapshot.forEach((doc) => {
                 tasks.push({...doc.data(), uid: doc.id });
             });

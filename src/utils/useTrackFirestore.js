@@ -31,7 +31,7 @@ export function useTrackFirestore() {
         const tracks = [];
         await db.collection('tracks').where(
             'task_uid', '==', taskId 
-        ).get().then(querySnapshot => {
+        ).where("user_uid", "==", firebaseState.user.uid).get().then(querySnapshot => {
             querySnapshot.forEach((doc) => {
                 tracks.push({...doc.data(), uid: doc.id });
             });
