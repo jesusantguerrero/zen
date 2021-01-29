@@ -23,39 +23,19 @@
             title="Things bear in mind after the zen"
             placeholder="Add a reminder"
           >
-            
           </quick-add>
-          <div class="zen__datails shadow-md bg-white px-5 py-3 border-2 border-gray-100 rounded-md">
-             <h1 class="text-2xl font-bold text-gray-400"> 
-              {{ currentTask.title }}
-          </h1>
-            
-            <div class="task__description mb-4 mt-5">
-              {{ currentTask.description }}
-            </div>
 
-            <div class="task__checlikst mb-6" v-if="currentTask.checklist">
-              <div v-for="i in currentTask.checklist" :key="i">
-                <label for="">
-                  <input type="checkbox" name="" id="">
-                  Checklist Item {{ i }}
-                </label>
+          <task-view :task="currentTask">
+            <template #empty>
+              <div class="w-6/12 mx-auto mt-10 text-center">
+                <img src="../assets/undraw_following.svg" class="w-7/12 mx-auto"> 
+                <div class="mt-5 text-gray-500 font-bold"> Select item from "todo" or go to 
+                   <router-link to="/planahead" class="font-bolder">Planahead</router-link>  
+                  </div> 
               </div>
-            </div>
-          </div>   
-
-          <div class="task__promodoros flex shadow-md bg-white px-5 py-3 border-2 border-gray-100 rounded-md mt-10" v-if="currentTask.title">
-              <div class="task__target rounded-full bg-red-200 text-red-400 h-16 w-16 flex justify-center items-center font-bold">
-                <span class="text-xl">
-                  {{ Number(currentTask.promodoros || 0) }}
-                </span>
-                <i class="fas fa-stopwatch ml-1" /> 
-              </div>
-
-              <div class="sessions ml-10 flex items-center">
-                Totals: 30 minutes, 1 session
-              </div>
-          </div>     
+            </template>
+          </task-view>  
+          <task-track-view :task="currentTask"></task-track-view>     
         </div>
       </div>
 
@@ -108,6 +88,8 @@ import TaskSelect from "../components/atoms/TaskSelect.vue"
 import TaskGroup from "../components/organisms/TaskGroup.vue"
 import QuickAdd from "../components/molecules/QuickAdd.vue"
 import TimeTracker from "../components/organisms/TimeTracker.vue"
+import TaskView from "../components/organisms/TaskView.vue"
+import TaskTrackView from "../components/organisms/TaskTrackView.vue"
 
 defineProps({
   msg: String
