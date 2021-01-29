@@ -15,6 +15,7 @@ import AppFooter from './components/organisms/AppFooter.vue'
 import { reactive, ref } from 'vue'
 import { firebaseState, logout, setLoaded } from "./utils/useFirebase"
 
+
 const isLoaded = ref(false);
 
 const logoutUser = () => {

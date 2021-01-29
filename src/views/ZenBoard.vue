@@ -11,7 +11,7 @@
           </h1>
 
           <task-select v-model="currentTask" :items="state.todo" class="md:hidden mr-5" />
-          <time-tracker></time-tracker>
+          <time-tracker :task="currentTask"></time-tracker>
         </header>
 
         <div class="mt-8">
@@ -82,7 +82,8 @@
 <script setup>
 import axios from "axios";
 import { useTaskFirestore } from "../utils/useTaskFirestore"
-import { computed, defineProps, reactive, ref } from 'vue'
+import { useTrackFirestore } from "../utils/useTrackFirestore"
+import { computed, defineProps, reactive, ref, watch} from 'vue'
 import { ElMessageBox, ElNotification } from "element-plus"
 import TaskSelect from "../components/atoms/TaskSelect.vue"
 import TaskGroup from "../components/organisms/TaskGroup.vue"
@@ -96,6 +97,7 @@ defineProps({
 })
 
 const { saveTask, getAllFromUser, deleteTask } = useTaskFirestore()
+const { getAllTracksOfTask, deleteTrack } = useTrackFirestore()
 
 const state = reactive({
   todo: [
@@ -148,6 +150,14 @@ const currentTask = ref({});
 const setCurrentTask = (task) => {
   currentTask.value = task
 }
+
+watch(currentTask, () => {
+  if (currentTask.value.uid) {
+    getAllTracksOfTask(currentTask.value.uid).then((tracks) => {
+      currentTask.value.tracks = tracks
+    })
+  }
+})
 
 const currentPromodoros = computed(() => {
   return Number(currentTask.value.promodoros || 0)

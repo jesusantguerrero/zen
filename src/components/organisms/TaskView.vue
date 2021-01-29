@@ -13,10 +13,16 @@
                 <i class="fa fa-check"></i>
                 </div>
             </el-tooltip>
+            
             <div class="mx-2">
                 <i class="fa fa-calendar mr-2 text-gray-400 hover:text-gray-600"></i>
                 <span> {{ formattedDate }}</span>
             </div>
+
+            <div class="mx-2 text-gray-400 hover:text-gray-600" @click="emitDeleted">
+                <i class="fa fa-chevron-right"></i>
+            </div>
+            
             <div class="mx-2 text-gray-400 hover:text-gray-600" @click="emitDeleted">
                 <i class="fa fa-ellipsis-v"></i>
             </div>

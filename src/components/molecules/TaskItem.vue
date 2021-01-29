@@ -7,8 +7,8 @@
       </div>
       <h4> {{ task.title }}</h4>
     </div>
-    <div class="task-item__controls flex">
-      
+
+    <div class="task-item__controls flex">  
       <el-tooltip class="item" effect="dark" content="Add to zen" placement="top">
         <div class="mx-2 text-gray-400 hover:text-gray-600 cursor-pointer" @click="emitSelected()"
           title="Add to zen"

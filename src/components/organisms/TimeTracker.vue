@@ -40,16 +40,27 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, reactive, watch, ref } from "vue";
+import { computed, onBeforeUnmount, reactive, watch, defineProps } from "vue";
 import { Duration, Interval, DateTime } from "luxon";
+import { useTrackFirestore } from "./../../utils/useTrackFirestore";
+import { ElNotification } from "element-plus";
+
+const { saveTrack, updateTrack } = useTrackFirestore();
+const props = defineProps({
+  task: {
+    type: Object
+  }
+})
 
 // state
 const track = reactive({
+  uid: null,
+  task_uid: null,
   started_at: null,
   ended_at: null,
-  target_time: null,
   type: "promodoro",
   duration: null,
+  target_time: null
 });
 
 const state = reactive({
@@ -121,19 +132,15 @@ const currentStateColor = computed(() => {
 // Time manipulation
 const targetTime = computed(() => {
   if (track.started_at && state.now) {
-    const targetTime = DateTime.fromJSDate(track.started_at).plus(
-      state.durationTarget
-    );
+    const targetTime = DateTime.fromJSDate(track.started_at).plus(state.durationTarget);
     return targetTime;
   }
   return null;
 });
+
 const currentTime = computed(() => {
   if (track.started_at && state.now && state.durationTarget) {
-    let duration = Interval.fromDateTimes(
-      track.started_at,
-      state.now
-    ).toDuration();
+    let duration = Interval.fromDateTimes(track.started_at, state.now).toDuration();
     if (duration) {
       duration = state.durationTarget.minus(duration);
       return duration.as("seconds") < 0 ? "00:00" : duration.toFormat("mm:ss");
@@ -159,15 +166,51 @@ const toggleTracker = () => {
   track.started_at ? stop() : play();
 };
 
+const createTrack = () => {
+  track.task_uid = props.task.uid;
+  track.description = props.task.title;
+  track.target_time = state.durationTarget.toISO();
+  const formData = { ...track }
+  saveTrack(formData)
+    .then(uid => {
+      track.uid = uid;
+    })
+}
+
+const isPromodoro = () => {
+  return state.mode == 'promodoro';
+}
+
+const validatePlay = () => {
+  return isPromodoro() && props.task.title;
+}
+
 const play = () => {
-  track.started_at = new Date();
+  const tempTime = new Date()
+  if (isPromodoro() && !validatePlay()) {
+      ElNotification({
+        title: "Select a task",
+        message: "Must select a task to start promodoro",
+        type: "info"
+      })
+    return  
+  } else if (validatePlay()) {
+    track.started_at = tempTime;
+    createTrack(track)
+  }
+
+  track.started_at = tempTime
   state.timer = setInterval(() => {
     state.now = new Date();
   }, 100);
 };
 
 const stop = (shouldCallNextMode = true) => {
-  save();
+  track.ended_at = new Date();
+  if (validatePlay() && state.now) {
+    updateTrackFromLocal({...track});
+  }
+  clearTrack()
   clearInterval(state.timer);
   const wasRunning = Boolean(state.now);
   state.now = null;
@@ -205,9 +248,18 @@ onBeforeUnmount(() => {
     stop()    
 })
 
-const save = () => {
-  // save to db.
-  clearTrack();
+const updateTrackFromLocal = (track) => {
+  const formData = { ...track }
+  const duration = Interval.fromDateTimes(formData.started_at, formData.ended_at).toDuration();
+  formData.duration_ms = duration.as('milliseconds'),
+  formData.duration_iso = duration.toISO(),
+  updateTrack(formData).then(() => {
+    ElNotification({
+      title: "Promodoro Saved",
+      message: "Promodoro saved",
+      type: "success"
+    })
+  })
 };
 </script>
 
