@@ -1,8 +1,8 @@
 <template>
-<div class="pt-28 mx-28">
-  <div class="flex">
-    <div class="grid grid-cols-2 gap-10 w-8/12">
-      <div class="zen__comming-up w-full" v-for="(quadrant, name) in state.quadrants" :key="quadrant">
+<div class="pt-24 mx-5 md:pt-28 md:mx-28">
+  <div class="mb-20 md:flex">
+    <div class="grid md:grid-cols-2 md:gap-10 md:w-8/12">
+      <div class="zen__comming-up w-full mb-10 md:mb-0" v-for="(quadrant, name) in state.quadrants" :key="quadrant">
           <task-group
             :title="name"
             :type="name"
@@ -20,7 +20,7 @@
       </div>
     </div>
 
-    <div class="w-4/12 ml-20">
+    <div class="md:w-4/12 md:ml-20">
         <task-group
             title="backlog"
             type="backlog"
@@ -54,17 +54,7 @@ defineProps({
 })
 
 const state = reactive({
-  todo: [
-    {
-      title: 'Prueba 1',
-      description: 'Lorem Ipsum',
-      done: false,
-      commited_at: null,
-      due_date: null,
-      matrix: 'todo',
-      tags: ['MCTekk', 'Kanvasu']
-    }
-  ],
+  todo: [],
   quadrants: {
     todo: {
       color: 'text-green-400'

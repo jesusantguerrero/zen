@@ -1,20 +1,20 @@
 <template>
-  <div class="pt-28 mx-5 md:mx-28">
+  <div class="pt-24 md:pt-28 pb-20 mx-5 md:mx-28">
     <div class="text-left md:flex">
       <div class="zen__view md:w-8/12 md:mr-28">
         <header class="flex justify-between"> 
           <h1 class="hidden md:block text-2xl font-bold text-gray-400"> 
-            {{ currentTask.title || 'No task selected'}}
+            {{ 'Main task' || 'No task selected'}}
             <span 
               class="text-sm ml-4 select-none cursor-pointer text-gray-600 hover:text-blue-400 transition-colors"
                @click="toggleReminder"> Add Reminder <i class="fa fa-bell"></i></span>
           </h1>
 
-          <task-select v-model="currentTask" :items="state.todo" class="md:hidden" />
-          <time-tracker></time-tracker>
+          <task-select v-model="currentTask" :items="state.todo" class="md:hidden mr-5" />
+          <time-tracker :task="currentTask"></time-tracker>
         </header>
 
-        <div class="mt-10">
+        <div class="mt-8">
           <quick-add 
             v-if="state.showReminder"
             mode="reminder"
@@ -26,10 +26,10 @@
           </quick-add>
 
           <task-view :task="currentTask">
-            <template #empty>
-              <div class="w-6/12 mx-auto mt-10 text-center">
-                <img src="../assets/undraw_following.svg" class="w-7/12 mx-auto"> 
-                <div class="mt-5 text-gray-500 font-bold"> Select item from "todo" or go to 
+            <template #empty v-if="!currentTask.title">
+              <div class="w-8/12 md:w-6/12 mx-auto mt-10 text-center">
+                <img src="../assets/undraw_following.svg" class="w-12/12 md:w-7/12 mx-auto"> 
+                <div class="mt-10 md:mt-5 text-gray-500 font-bold"> Select item from "todo" or go to 
                    <router-link to="/planahead" class="font-bolder">Planahead</router-link>  
                   </div> 
               </div>
@@ -82,7 +82,8 @@
 <script setup>
 import axios from "axios";
 import { useTaskFirestore } from "../utils/useTaskFirestore"
-import { computed, defineProps, reactive, ref } from 'vue'
+import { useTrackFirestore } from "../utils/useTrackFirestore"
+import { computed, defineProps, reactive, ref, watch} from 'vue'
 import { ElMessageBox, ElNotification } from "element-plus"
 import TaskSelect from "../components/atoms/TaskSelect.vue"
 import TaskGroup from "../components/organisms/TaskGroup.vue"
@@ -96,30 +97,11 @@ defineProps({
 })
 
 const { saveTask, getAllFromUser, deleteTask } = useTaskFirestore()
+const { getAllTracksOfTask, deleteTrack } = useTrackFirestore()
 
 const state = reactive({
-  todo: [
-    {
-      title: 'Prueba 1',
-      description: 'Lorem Ipsum',
-      done: false,
-      commited_at: null,
-      due_date: null,
-      matrix: 'todo',
-      tags: ['MCTekk', 'Kanvasu']
-    }
-  ],
-  scheduled: [
-    {
-      title: 'Prueba 2',
-      description: 'Lorem Ipsum',
-      done: false,
-      commited_at: null,
-      due_date: null,
-      matrix: 'todo',
-      tags: ['MCTekk', 'Kanvasu']
-    }
-  ],
+  todo: [],
+  scheduled: [],
   showReminder: false
 })
 
@@ -148,6 +130,14 @@ const currentTask = ref({});
 const setCurrentTask = (task) => {
   currentTask.value = task
 }
+
+watch(currentTask, () => {
+  if (currentTask.value.uid) {
+    getAllTracksOfTask(currentTask.value.uid).then((tracks) => {
+      currentTask.value.tracks = tracks || []
+    })
+  }
+})
 
 const currentPromodoros = computed(() => {
   return Number(currentTask.value.promodoros || 0)

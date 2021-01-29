@@ -11,7 +11,7 @@
       <div class="sessions ml-5 flex  text-2xl items-center text-gray-400">
         <div v-if="task.title">
           Totals: 
-          <span class="font-bold ml-2">30 minutes</span>, <span class="font-bold mr-2">1</span> session
+          <span class="font-bold ml-2">{{ timeTracked }}</span> <span class="font-bold mx-2">{{ task.tracks.length }}</span> session
         </div>
         <div v-else class="text-lg">
           No track data to show
@@ -22,13 +22,28 @@
 </template>
 
 <script setup>
-import { defineProps } from "vue";
+import { computed, defineProps, toRefs } from "vue";
+import { useDateTime } from "../../utils/useDateTime"
 
+const { formatDurationFromMs } = useDateTime()
 const props = defineProps({
   task: {
     type: Object,
   },
 });
+
+const { task }= toRefs(props)
+
+const timeTracked = computed(() => {
+  if (task.value.tracks) {
+    const time = task.value.tracks.reduce((milliseconds, task)=> {
+      return milliseconds + Number(task.duration_ms || 0);
+    }, 0)
+
+    return formatDurationFromMs(time).toFormat("hh:mm:ss");
+  }
+  return 0
+})
 </script>
 
 <style></style>

@@ -5,11 +5,11 @@
     <div class="w-full text-center">
       Zen.
     </div>
-    <div class="w-full text-center">
+    <div class="w-full text-center hidden md:block">
       Jesus Guerrero
     </div>
 
-    <div class="w-full text-center text-white">
+    <div class="w-full text-center text-white hidden md:block">
       2021
     </div>
   </div>

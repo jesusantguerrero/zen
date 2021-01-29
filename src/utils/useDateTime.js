@@ -1,4 +1,4 @@
-import { DateTime } from "luxon";
+import { DateTime, Duration } from "luxon";
 import { computed, ref} from "vue";
 
 export function useDateTime(dateRef) {
@@ -12,9 +12,14 @@ export function useDateTime(dateRef) {
        return date ? DateTime.fromJSDate(date).toISODate() : "" 
     }
 
+    const formatDurationFromMs = (ms) => {
+        return Duration.fromMillis(ms)
+    }
+
     return {
         formattedDate,
         toISO,
+        formatDurationFromMs,
         date: date.value
     }
 }

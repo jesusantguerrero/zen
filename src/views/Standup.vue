@@ -1,5 +1,5 @@
 <template>
-<div class="pt-28 mx-28">
+<div class="pt-24 mx-5 md:pt-28 md:mx-28">
   <div class="flex">
   
     <div class="w-full">
@@ -10,13 +10,7 @@
             color="text-gray-400"
             :is-quadrant="true"
           >
-            <div class="quick__add mb-4">
-              <quick-add 
-                @saved="addTask"
-                type="backlog"
-              ></quick-add>
-            </div>
-          </task-group>
+        </task-group>
     </div>
   </div>
 </div>
