@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-28 mx-5 md:mx-28">
+  <div class="pt-24 md:pt-28 pb-20 mx-5 md:mx-28">
     <div class="text-left md:flex">
       <div class="zen__view md:w-8/12 md:mr-28">
         <header class="flex justify-between"> 
@@ -10,7 +10,7 @@
                @click="toggleReminder"> Add Reminder <i class="fa fa-bell"></i></span>
           </h1>
 
-          <task-select v-model="currentTask" :items="state.todo" class="md:hidden" />
+          <task-select v-model="currentTask" :items="state.todo" class="md:hidden mr-5" />
           <time-tracker></time-tracker>
         </header>
 
@@ -27,9 +27,9 @@
 
           <task-view :task="currentTask">
             <template #empty>
-              <div class="w-6/12 mx-auto mt-10 text-center">
-                <img src="../assets/undraw_following.svg" class="w-7/12 mx-auto"> 
-                <div class="mt-5 text-gray-500 font-bold"> Select item from "todo" or go to 
+              <div class="w-8/12 md:w-6/12 mx-auto mt-10 text-center">
+                <img src="../assets/undraw_following.svg" class="w-12/12 md:w-7/12 mx-auto"> 
+                <div class="mt-10 md:mt-5 text-gray-500 font-bold"> Select item from "todo" or go to 
                    <router-link to="/planahead" class="font-bolder">Planahead</router-link>  
                   </div> 
               </div>

@@ -1,7 +1,7 @@
 <template>
   <div class="commig-up__today">
     <div class="flex justify-between cursor-pointer items-center">
-      <h4 class="mb-2 font-bold" :class="[isQuadrant ? `text-2xl font-bold ${color} capitalize`: '']"> {{ title }}</h4>
+      <h4 class="mb-2 font-bold" :class="[isQuadrant ? `md:text-2xl font-bold ${color} capitalize`: '']"> {{ title }}</h4>
       
       <div @click="toggleExpanded">
          <icon-expand v-if="!isExpanded"/>
