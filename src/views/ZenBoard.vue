@@ -4,7 +4,7 @@
       <div class="zen__view md:w-8/12 md:mr-28">
         <header class="flex justify-between"> 
           <h1 class="hidden md:block text-2xl font-bold text-gray-400"> 
-            {{ currentTask.title || 'No task selected'}}
+            {{ 'Main task' || 'No task selected'}}
             <span 
               class="text-sm ml-4 select-none cursor-pointer text-gray-600 hover:text-blue-400 transition-colors"
                @click="toggleReminder"> Add Reminder <i class="fa fa-bell"></i></span>
@@ -14,7 +14,7 @@
           <time-tracker></time-tracker>
         </header>
 
-        <div class="mt-10">
+        <div class="mt-8">
           <quick-add 
             v-if="state.showReminder"
             mode="reminder"
@@ -26,7 +26,7 @@
           </quick-add>
 
           <task-view :task="currentTask">
-            <template #empty>
+            <template #empty v-if="!currentTask.title">
               <div class="w-8/12 md:w-6/12 mx-auto mt-10 text-center">
                 <img src="../assets/undraw_following.svg" class="w-12/12 md:w-7/12 mx-auto"> 
                 <div class="mt-10 md:mt-5 text-gray-500 font-bold"> Select item from "todo" or go to 
