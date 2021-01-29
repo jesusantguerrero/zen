@@ -25,7 +25,7 @@
           >
           </quick-add>
 
-          <task-view :task="currentTask">
+          <task-view :task="currentTask" @done="onDone">
             <template #empty v-if="!currentTask.title">
               <div class="w-8/12 md:w-6/12 mx-auto mt-10 text-center">
                 <img src="../assets/undraw_following.svg" class="w-12/12 md:w-7/12 mx-auto"> 
@@ -50,7 +50,7 @@
         <div class="comming-up__list divide-y-2 divide-gray-200 divide-dashed">
           <div class="quick__add mb-4">
             <h4 class="font-bold mb-2">Quick Add</h4>
-            <quick-add @saved="addTask"></quick-add>
+            <quick-add @saved="addTask" type="todo"></quick-add>
           </div>
 
           <task-group
@@ -96,7 +96,7 @@ defineProps({
   msg: String
 })
 
-const { saveTask, getAllFromUser, deleteTask } = useTaskFirestore()
+const { saveTask, getAllFromUser, deleteTask, updateTask, getTaskByMatrix} = useTaskFirestore()
 const { getAllTracksOfTask, deleteTrack } = useTrackFirestore()
 
 const state = reactive({
@@ -147,8 +147,16 @@ const taskDuration = computed(() => {
   return Number(currentTask.value.duration || 0)
 })
 
-getAllFromUser().then(taks => {
-  state.todo = taks
+const onDone = (task) => {
+  updateTask(task);
+}
+
+getTaskByMatrix('todo').then(tasks => {
+  state.todo = tasks
+});
+
+getTaskByMatrix('schedule').then(tasks => {
+  state.scheduled = tasks
 });
 
 const addTask = (task) => {

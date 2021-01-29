@@ -11,7 +11,7 @@
       <div class="sessions ml-5 flex  text-2xl items-center text-gray-400">
         <div v-if="task.title">
           Totals: 
-          <span class="font-bold ml-2">{{ timeTracked }}</span> <span class="font-bold mx-2">{{ task.tracks.length }}</span> session
+          <span class="font-bold ml-2">{{ timeTracked }}</span> <span class="font-bold mx-2">{{ task.tracks && task.tracks.length }}</span> session
         </div>
         <div v-else class="text-lg">
           No track data to show

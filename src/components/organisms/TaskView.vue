@@ -7,8 +7,11 @@
 
         <div class="task-item__controls flex text-lg">  
             <el-tooltip class="item" effect="dark" content="Add to zen" placement="top">
-                <div class="mx-2 text-gray-400 hover:text-gray-600 cursor-pointer" @click="emitSelected()"
-                title="Mark as done"
+                <div 
+                  class="mx-2 text-gray-400 hover:text-gray-600 cursor-pointer"
+                  @click="markAsDone()"
+                  :class="{'text-green-400 font-extrabold': task.commit_date}"
+                  title="Mark as done"
                 >
                 <i class="fa fa-check"></i>
                 </div>
@@ -48,13 +51,28 @@
 </template>
 
 <script setup>
-import { defineProps } from "vue";
+import { defineProps, toRefs, defineEmit } from "vue";
+import { useDateTime } from "../../utils/useDateTime";
+
+const { formatDate, formattedDate } = useDateTime();
+
+const emit = defineEmit({
+  done: (task) => {}
+})
 
 const props = defineProps({
   task: {
     type: Object,
   },
 });
+
+const { task } = toRefs(props)
+
+const markAsDone = () => {
+  task.value.commit_date = formatDate();
+  task.value.done = true;
+  emit('done', task.value)
+}
 </script>
 
 <style></style>
