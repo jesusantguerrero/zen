@@ -12,10 +12,11 @@
     </div>
 
     <div class="flex" v-if="user">
+       <menu-item class="mx-2 px-2" to="/about">?</menu-item>
       <div class="mx-2">
         <i class="fa fa-bell"></i>
       </div>
-      <div class="ml-2">Jesus Guerrero</div>
+      <div class="ml-2">{{ profileName }}</div>
 
       <button class="ml-2" @click.prevent="logout">
         <i class="fa fa-power-off cursor-pointer"></i>
@@ -25,19 +26,25 @@
 </template>
 
 <script setup>
-import { defineEmit } from "vue";
+import { computed, defineEmit, toRefs } from "vue";
 import MenuItem from "../molecules/MenuItem.vue";
 
-defineProps({
+const props = defineProps({
   user: {
     type: Object,
   },
 });
 
+const { user } = toRefs(props)
+
 const emit = defineEmit({
   logout: Function,
 });
 
+const profileName = computed(() => {
+  const provider = user.value.providerData[0];
+  return provider.displayName || provider.email;
+})
 const logout = () => {
   emit("logout");
 };
