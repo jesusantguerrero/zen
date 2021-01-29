@@ -1,8 +1,3 @@
-# zen
-
-Keep yourself in the zone and focus in the moment.
-
-
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
@@ -12,7 +7,7 @@ Keep yourself in the zone and focus in the moment.
   <h3 align="center">Zen.</h3>
 
   <p align="center">
-    An awesome README template to jumpstart your projects!
+    Keep yourself in the zone and focus in the moment.
     <br />
 </p>
 
@@ -20,11 +15,10 @@ Keep yourself in the zone and focus in the moment.
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-![Zen. Screen Shot](./src/assets/zen.vercel.app_login.png)
-![Zen. Screen Shot](./src/assets/zen.vercel.app_board.png)
-![Zen. Screen Shot](./src/assets/zen.vercel.app_matrix.png)
+![Zen. Screen Shot](./src/assets/login2.png)
+![Zen. Screen Shot](./src/assets/zenboard-jan-29.png)
 
-There are many great README templates available on GitHub, however, I didn't find one that really suit my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need -- I think this is it.
+__Zen.__ is a productivity app that aim to keep the users with foucus in the most important things/tasks for the day, plan your day routine and provide a standup summary to tell in those agile meetings in a granular way.
 
 Sections:
 * Zen Board
@@ -55,11 +49,6 @@ I used the following.
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-
-To get a local copy up and running follow these simple example steps.
-
-
 ### Prerequisites
 
 This is an example of how to list things you need to use the software and how to install them.
@@ -70,14 +59,22 @@ This is an example of how to list things you need to use the software and how to
 
 ### Installation
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+1. Clone the repo
    ```sh
    git clone https://github.com/your_username_/Project-Name.git
    ```
-3. Install NPM packages
+2. Install NPM packages
    ```sh
    npm install
+   ```
+3. Run in development mode
+   ```sh
+   npm run dev
+   ```
+
+3. Build
+   ```sh
+   npm run build
    ```
 
 <!-- USAGE EXAMPLES -->
