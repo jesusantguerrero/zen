@@ -13,7 +13,7 @@ export function useDateTime(dateRef) {
     }
 
     const formatDurationFromMs = (ms) => {
-        return Duration.fromMillis(ms).as('mi')
+        return Duration.fromMillis(ms)
     }
 
     return {

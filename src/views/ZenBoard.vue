@@ -100,28 +100,8 @@ const { saveTask, getAllFromUser, deleteTask } = useTaskFirestore()
 const { getAllTracksOfTask, deleteTrack } = useTrackFirestore()
 
 const state = reactive({
-  todo: [
-    {
-      title: 'Prueba 1',
-      description: 'Lorem Ipsum',
-      done: false,
-      commited_at: null,
-      due_date: null,
-      matrix: 'todo',
-      tags: ['MCTekk', 'Kanvasu']
-    }
-  ],
-  scheduled: [
-    {
-      title: 'Prueba 2',
-      description: 'Lorem Ipsum',
-      done: false,
-      commited_at: null,
-      due_date: null,
-      matrix: 'todo',
-      tags: ['MCTekk', 'Kanvasu']
-    }
-  ],
+  todo: [],
+  scheduled: [],
   showReminder: false
 })
 
@@ -154,7 +134,7 @@ const setCurrentTask = (task) => {
 watch(currentTask, () => {
   if (currentTask.value.uid) {
     getAllTracksOfTask(currentTask.value.uid).then((tracks) => {
-      currentTask.value.tracks = tracks
+      currentTask.value.tracks = tracks || []
     })
   }
 })

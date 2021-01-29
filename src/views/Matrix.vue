@@ -54,17 +54,7 @@ defineProps({
 })
 
 const state = reactive({
-  todo: [
-    {
-      title: 'Prueba 1',
-      description: 'Lorem Ipsum',
-      done: false,
-      commited_at: null,
-      due_date: null,
-      matrix: 'todo',
-      tags: ['MCTekk', 'Kanvasu']
-    }
-  ],
+  todo: [],
   quadrants: {
     todo: {
       color: 'text-green-400'
