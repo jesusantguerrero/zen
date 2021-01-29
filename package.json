@@ -1,6 +1,6 @@
 {
-  "name": "Zen",
-  "version": "0.0.0",
+  "name": "zen",
+  "version": "0.0.1",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -23,5 +23,24 @@
     "sass": "^1.32.5",
     "tailwindcss": "^2.0.2",
     "vite": "^2.0.0-beta.55"
-  }
+  },
+  "description": "Keep yourself in the zone and focus in the moment.",
+  "main": "postcss.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jesusantguerrero/zen.git"
+  },
+  "keywords": [
+    "Productivity",
+    "Promodoro",
+    "Tasks",
+    "Heisenhower",
+    "Matrix"
+  ],
+  "author": "Jesus Guerrero",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jesusantguerrero/zen/issues"
+  },
+  "homepage": "https://github.com/jesusantguerrero/zen#readme"
 }
