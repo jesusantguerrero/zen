@@ -33,9 +33,6 @@
         </div>
 
         <div class="mx-2 text-gray-400 hover:text-gray-600">
-          <i class="fa fa-clock"> </i>
-        </div>
-        <div class="mx-2 text-gray-400 hover:text-gray-600">
           <tags-select /> 
         </div>
 
