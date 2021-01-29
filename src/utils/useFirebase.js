@@ -40,6 +40,32 @@ export const login = async (email, password) => {
     })
 }
 
+export const loginWithProvider = async(providerName) => {
+    firebase.auth().getRedirectResult().then(result => {
+        firebaseState.user = result.user
+    })
+
+    firebase.auth().signInWithPopup(getProvider(providerName))
+}
+
+const getProvider = (providerName) => {
+    const providers = {
+        google: {
+            method: new firebase.auth.GoogleAuthProvider,
+            scopes: ['profile', 'email']
+        }
+    }
+    const providerData = providers[providerName]
+    if (providerData) {
+        const provider = providerData.method;
+        providerData.scopes.forEach(() => {
+            provider.addScope('profile');
+            provider.addScope('email');
+        })
+        return provider;
+    }
+}
+
 export const logout = () => {
     return firebase.auth().signOut()
 }
