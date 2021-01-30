@@ -16,7 +16,7 @@
 ## About The Project
 
 ![Zen. Screen Shot](./src/assets/login2.png)
-![Zen. Screen Shot](./src/assets/zenboard-jan-29.png)
+![Zen. Screen Shot](./src/assets/zenboard.png)
 
 __Zen.__ is a productivity app that aim to keep the users with foucus in the most important things/tasks for the day, plan your day routine and provide a standup summary to tell in those agile meetings in a granular way.
 

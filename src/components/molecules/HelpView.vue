@@ -4,7 +4,7 @@
     
     <div class="image mx-2">
         <img  v-if="isSelected('planahead')" src="../../assets/undraw_following.svg" alt="" class="w-full mx-auto">
-        <img  v-if="isSelected('zenboard')" src="../../assets/zenboard-jan-29.PNG" alt="" class="w-full mx-auto">
+        <img  v-if="isSelected('zenboard')" src="../../assets/zenboard.png" alt="" class="w-full mx-auto">
         <img  v-if="isSelected('standup')" src="../../assets/undraw_following.svg" alt="" class="w-full mx-auto">
         <img  v-if="isSelected('matrix')" src="../../assets/undraw_following.svg" alt="" class="w-full mx-auto">
     </div>
