@@ -9,7 +9,7 @@
             :tasks="state.quadrants[matrix].tasks"
             :color="state.quadrants[matrix].color"
             :handle-mode="true"
-            @change="orderTask"
+            @change="handleDragChanges"
             @move="onMove"
             :is-quadrant="true"
           >
@@ -31,7 +31,7 @@
             color="text-gray-400"
             :handle-mode="true"
             :is-quadrant="true"
-            @change="orderTask"
+            @change="handleDragChanges"
             @move="onMove"
           >
             <div class="quick__add mb-4">
@@ -47,18 +47,15 @@
 </template>
 
 <script setup>
-import { computed, defineProps, reactive, watch } from 'vue'
+import { reactive, watch } from 'vue'
 import { useDateTime } from "../utils/useDateTime"
 import { useTaskFirestore } from "../utils/useTaskFirestore"
+import { ElNotification } from 'element-plus'
 import TaskGroup from "../components/organisms/TaskGroup.vue"
 import QuickAdd from "../components/molecules/QuickAdd.vue"
 import TimeTracker from "../components/organisms/TimeTracker.vue"
-import { ElNotification } from 'element-plus'
 
-defineProps({
-  msg: String
-})
-
+// state and ui
 const state = reactive({
   tasks: [],
   matrix: ['todo', 'schedule', 'delegate', 'delete'],
@@ -87,15 +84,13 @@ const state = reactive({
   showReminder: false
 })
 
-
-// firebase store
+// Tasks manipulation
 const { toISO } = useDateTime() 
 const { getUncommitedTasks, saveTask, updateTask } = useTaskFirestore()
 
 getUncommitedTasks().then(tasks => {
     state.tasks = tasks
 });
-
 
 watch(() => state.tasks, () => {
   state.tasks.forEach(task => {
@@ -115,7 +110,7 @@ const addTask = (task) => {
   })
 }
 
-const orderTask = (e, matrix) => {
+const handleDragChanges = (e, matrix) => {
   if (e.added) {
     e.added.element.matrix = matrix;
     updateTask(e.added.element).then(() => {
@@ -125,15 +120,6 @@ const orderTask = (e, matrix) => {
     })
   }
 }
-
-const onMove = (e) => {
-    if (evt.added) {
-    }
-    console.log(evt, 'moved', matrix)
-		console.log(evt.dragged, 'moved')
-		return true;
-}
-
 </script>
 
 <style lang="scss" scoped>

@@ -19,28 +19,20 @@
 
 <script setup>
 import { defineProps, reactive } from 'vue'
+import { useTaskFirestore } from '../utils/useTaskFirestore'
 import TaskGroup from "../components/organisms/TaskGroup.vue"
 import QuickAdd from "../components/molecules/QuickAdd.vue"
 import TimeTracker from "../components/organisms/TimeTracker.vue"
-import { useTaskFirestore } from '../utils/useTaskFirestore'
 
-defineProps({
-  msg: String
-})
-
+// state and ui
 const state = reactive({
   committed: [],
 })
 
+// tasks manipulation
 const  { getCommitedTasks } = useTaskFirestore()
 getCommitedTasks().then(tasks => {
   state.committed = tasks;
 })
 
 </script>
-
-<style scoped>
-a {
-  color: #42b983;
-}
-</style>

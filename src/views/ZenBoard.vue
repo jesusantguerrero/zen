@@ -80,10 +80,9 @@
 </template>
 
 <script setup>
-import axios from "axios";
 import { useTaskFirestore } from "../utils/useTaskFirestore"
 import { useTrackFirestore } from "../utils/useTrackFirestore"
-import { computed, defineProps, reactive, ref, watch} from 'vue'
+import { reactive, ref, watch} from 'vue'
 import { ElMessageBox, ElNotification } from "element-plus"
 import { startFireworks } from "../utils/useConfetti"
 import TaskSelect from "../components/atoms/TaskSelect.vue"
@@ -93,40 +92,21 @@ import TimeTracker from "../components/organisms/TimeTracker.vue"
 import TaskView from "../components/organisms/TaskView.vue"
 import TaskTrackView from "../components/organisms/TaskTrackView.vue"
 
-defineProps({
-  msg: String
-})
-
 const { saveTask, deleteTask, updateTask, getTaskByMatrix} = useTaskFirestore()
 const { getAllTracksOfTask } = useTrackFirestore()
 
+// state and ui
 const state = reactive({
   todo: [],
   scheduled: [],
   showReminder: false
 })
 
-axios('/api/tracks').then(({data}) => {
-console.log(data)
-})
-
 const toggleReminder = () => {
   state.showReminder = !state.showReminder
 }
 
-const destroyTask = async (task) => {
-  const canDelete = await ElMessageBox.confirm("Are you sure you want to delete this task?", "Delete Task")
-  if (canDelete) {
-    deleteTask(task).then(() => {
-      state.todo = state.todo.filter(localTask => task.uid != localTask.uid)
-      ElNotification({
-        type: "success",
-        message: "Task deleted",
-        title: "Task deleted"
-      })
-    })
-  }
-} 
+// Current task
 const currentTask = ref({});
 const setCurrentTask = (task) => {
   currentTask.value = task
@@ -140,14 +120,6 @@ watch(currentTask, () => {
   }
 })
 
-const currentPromodoros = computed(() => {
-  return Number(currentTask.value.promodoros || 0)
-})
-
-const taskDuration = computed(() => {
-  return Number(currentTask.value.duration || 0)
-})
-
 const onDone = (task) => {
   updateTask(task);
   const taskIndex = state.todo.findIndex(localTask => localTask.uid == task.uid);
@@ -155,6 +127,9 @@ const onDone = (task) => {
   currentTask.value = state.todo[0];
   startFireworks()
 }
+
+
+// Tasks manipulation 
 
 getTaskByMatrix('todo').then(tasks => {
   state.todo = tasks
@@ -171,13 +146,23 @@ const addTask = (task) => {
   })
 }
 
+const destroyTask = async (task) => {
+  const canDelete = await ElMessageBox.confirm("Are you sure you want to delete this task?", "Delete Task")
+  if (canDelete) {
+    deleteTask(task).then(() => {
+      state.todo = state.todo.filter(localTask => task.uid != localTask.uid)
+      ElNotification({
+        type: "success",
+        message: "Task deleted",
+        title: "Task deleted"
+      })
+    })
+  }
+}
+
 </script>
 
 <style scoped>
-a {
-  color: #42b983;
-}
-
 .zen__datails {
   min-height: 400px;
 

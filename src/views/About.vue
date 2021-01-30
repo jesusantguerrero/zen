@@ -56,11 +56,6 @@ const state = reactive({
         thanks: "Thanks to",
         licence: "License",
     },
-    // text: {
-    //     info,
-    //     thanks,
-    //     tutorial
-    // }
 })
 
 </script>
@@ -122,7 +117,9 @@ const state = reactive({
         border: 2px solid #999;
     }
     button.selected {
-        @apply bg-gray-500 border-gray-500 text-gray-100;
+        @apply bg-gray-500;
+        @apply border-gray-500;
+        @apply text-gray-100;
     }
 }
 
