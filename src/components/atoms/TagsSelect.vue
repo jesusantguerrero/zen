@@ -39,7 +39,7 @@
             <button 
                 ref="button"
                 :class="{'text-blue-400': formattedTags }" 
-                class="flex my-auto focus:outline-none"
+                class="flex focus:outline-none"
                 @click.stop="" 
                 @mousedown.prevent
                 @focus.prevent="focusButton"

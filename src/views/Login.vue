@@ -77,6 +77,16 @@
                 <i v-if="isLoading" class="fa fa-spinner fa-pulse ml-2"></i>
             </button>
 
+            <button
+                class="btn btn-action capitalize rounded-sm flex google-btn"
+                type="submit"
+                @click.prevent.stop="loginWithProvider('google')"
+            >
+                <img src="./../assets/btn_google_light.svg" alt="">
+                Sign in With Google
+                <i v-if="isLoading" class="fa fa-spinner fa-pulse ml-2"></i>
+            </button>
+
             <p class="text-center">
                 <small v-if="mode=='register'"> Already have an account?
                     <button  @click.prevent.stop="mode='login'"> Login </button>
@@ -96,7 +106,7 @@
 
 <script setup>
 import { reactive, ref, computed } from "vue";
-import { register, login }  from "../utils/useFirebase";
+import { register, login, loginWithProvider }  from "../utils/useFirebase";
 import { ElNotification } from "element-plus"
     
 const mode = ref('login')
@@ -132,13 +142,6 @@ const loginUser = () => {
     })
 }
 
-const registerWithTwitter = () => {
-    
-}
-
-const loginWithGoogle = () => {
-
-}
 </script>
 
 <style lang="scss" scoped>
@@ -228,6 +231,15 @@ const loginWithGoogle = () => {
     .password-label {
         display: flex;
         justify-content: space-between;
+    }
+
+    .google-btn {
+        @apply text-gray-400 items-center;
+        padding: 0 0 0 0 !important;
+        background: white !important;
+        height: 47px !important;
+        font-weight: bolder;
+        font-family: 'Roboto', sans-serif;
     }
 }
 

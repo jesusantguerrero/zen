@@ -1,7 +1,8 @@
 <template>
   <div class="task-item flex justify-between mb-2 shadow-md bg-white border-gray-200 border-2 px-4 py-3 rounded-md items-center cursor-default">
     <div class="flex items-center">
-      <div><i class="fa fa-chevron-down cursor-pointer"></i></div>
+      <div v-if="handleMode" class="handle text-gray-300 cursor-move"><i class="fa fa-arrows-alt"></i></div>
+      <div v-else><i class="fa fa-chevron-down cursor-pointer"></i></div>
       <div class="mx-3 rounded-md px-2 py-1" :class="typeColor"> 
           <i class="fa fa-sticky-note"></i>
       </div>
@@ -36,7 +37,8 @@ import { useDateTime } from "../../utils/useDateTime";
 
 const props = defineProps({
   task: Object,
-  type: String
+  type: String,
+  handleMode: Boolean
 })
 
 const emit = defineEmit({

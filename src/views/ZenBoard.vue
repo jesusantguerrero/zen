@@ -85,6 +85,7 @@ import { useTaskFirestore } from "../utils/useTaskFirestore"
 import { useTrackFirestore } from "../utils/useTrackFirestore"
 import { computed, defineProps, reactive, ref, watch} from 'vue'
 import { ElMessageBox, ElNotification } from "element-plus"
+import { startFireworks } from "../utils/useConfetti"
 import TaskSelect from "../components/atoms/TaskSelect.vue"
 import TaskGroup from "../components/organisms/TaskGroup.vue"
 import QuickAdd from "../components/molecules/QuickAdd.vue"
@@ -96,8 +97,8 @@ defineProps({
   msg: String
 })
 
-const { saveTask, getAllFromUser, deleteTask, updateTask, getTaskByMatrix} = useTaskFirestore()
-const { getAllTracksOfTask, deleteTrack } = useTrackFirestore()
+const { saveTask, deleteTask, updateTask, getTaskByMatrix} = useTaskFirestore()
+const { getAllTracksOfTask } = useTrackFirestore()
 
 const state = reactive({
   todo: [],
@@ -149,6 +150,10 @@ const taskDuration = computed(() => {
 
 const onDone = (task) => {
   updateTask(task);
+  const taskIndex = state.todo.findIndex(localTask => localTask.uid == task.uid);
+  state.todo.splice(taskIndex, 1);
+  currentTask.value = state.todo[0];
+  startFireworks()
 }
 
 getTaskByMatrix('todo').then(tasks => {
@@ -160,7 +165,8 @@ getTaskByMatrix('schedule').then(tasks => {
 });
 
 const addTask = (task) => {
-  saveTask(task).then(() => {
+  saveTask(task).then((uid) => {
+    task.uid = uid
     state.todo.push(task);
   })
 }
