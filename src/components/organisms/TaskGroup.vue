@@ -14,9 +14,9 @@
 
     <slot></slot>
     <el-collapse-transition>
-      <div class="">
+      <div class="list-group w-full ic-scroller" ref="listGroup">
         <draggable 
-          class="dragArea list-group w-full ic-scroller" 
+          class="dragArea" 
           :list="tasks" 
           handle=".handle"
           :group="{name: type, pull: true, put: true }"
@@ -41,7 +41,7 @@
 </template>
 
 <script setup>
-import { defineProps, reactive, ref, toRefs, watch } from "vue"
+import { defineProps, onMounted, reactive, ref, toRefs, watch } from "vue"
 import { VueDraggableNext as Draggable } from "vue-draggable-next"
 import TaskItem from "../molecules/TaskItem.vue"
 import IconExpand from "../atoms/IconExpand.vue"
@@ -59,7 +59,19 @@ const props = defineProps({
     title: String,
     type: String,
     icons: Array,
-    handleMode: Boolean
+    handleMode: Boolean,
+    maxHeight: {
+      default: 340,
+      type: Number
+    }
+})
+
+const listGroup = ref(null);
+
+onMounted(() => {
+  if (props.maxHeight && listGroup.value) {
+    listGroup.value.style.setProperty("--max-height", `${props.maxHeight}px`);
+  }
 })
 
 const emit = defineEmit({
@@ -103,8 +115,12 @@ const toggleExpanded = () => {
 </script>
 
 <style lang="scss" scoped>
+:root {
+--max-height: 340px;
+}
+
 .list-group {
-  max-height: 340px;
+  max-height: var(--max-height);
   overflow: auto;
 }
 </style>
