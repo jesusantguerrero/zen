@@ -1,19 +1,22 @@
 <template>
-<div class="pt-24 mx-5 md:pt-28 md:mx-28">
-  <div class="mb-20 md:flex">
-    <div class="grid md:grid-cols-2 md:gap-10 md:w-8/12">
-      <div class="zen__comming-up w-full mb-10 md:mb-0" v-for="(quadrant, name) in state.quadrants" :key="quadrant">
+<div class="pt-24 mx-5 md:pt-28 md:mx-10 lg:mx-28">
+  <div class="mb-20 md:block lg:flex">
+    <div class="grid md:grid-cols-2 sm:w-full md:gap-10 lg:w-8/12">
+      <div class="zen__comming-up w-full mb-10 md:mb-0" v-for="matrix in state.matrix" :key="matrix">
           <task-group
-            :title="name"
-            :type="name"
-            :tasks="matrix[name]"
-            :color="quadrant.color"
+            :title="matrix"
+            :type="matrix"
+            :tasks="state.quadrants[matrix].tasks"
+            :color="state.quadrants[matrix].color"
+            :handle-mode="true"
+            @change="orderTask"
+            @move="onMove"
             :is-quadrant="true"
           >
             <div class="quick__add mb-4">
               <quick-add 
                 @saved="addTask"
-                :type="name"
+                :type="matrix"
               ></quick-add>
             </div>
           </task-group>
@@ -24,9 +27,12 @@
         <task-group
             title="backlog"
             type="backlog"
-            :tasks="matrix['backlog']"
+            :tasks="state.quadrants['backlog'].tasks"
             color="text-gray-400"
+            :handle-mode="true"
             :is-quadrant="true"
+            @change="orderTask"
+            @move="onMove"
           >
             <div class="quick__add mb-4">
               <quick-add 
@@ -38,72 +44,101 @@
     </div>
   </div>
 </div>
-
 </template>
 
 <script setup>
-import { computed, defineProps, reactive } from 'vue'
+import { computed, defineProps, reactive, watch } from 'vue'
 import { useDateTime } from "../utils/useDateTime"
 import { useTaskFirestore } from "../utils/useTaskFirestore"
 import TaskGroup from "../components/organisms/TaskGroup.vue"
 import QuickAdd from "../components/molecules/QuickAdd.vue"
 import TimeTracker from "../components/organisms/TimeTracker.vue"
+import { ElNotification } from 'element-plus'
 
 defineProps({
   msg: String
 })
 
 const state = reactive({
-  todo: [],
+  tasks: [],
+  matrix: ['todo', 'schedule', 'delegate', 'delete'],
   quadrants: {
     todo: {
-      color: 'text-green-400'
+      color: 'text-green-400',
+      tasks: []
     },
     schedule: {
-      color: 'text-blue-400'
+      color: 'text-blue-400',
+       tasks: []
     },
     delegate: {
-      color: 'text-yellow-400'
+      color: 'text-yellow-400',
+       tasks: []
     },
     delete: {
-      color: 'text-red-400'
+      color: 'text-red-400',
+      tasks: []
+    },
+    backlog: {
+      color: '',
+      tasks: []
     }
   },
-   showReminder: false
+  showReminder: false
 })
 
 
 // firebase store
 const { toISO } = useDateTime() 
-const { getUncommitedTasks, saveTask } = useTaskFirestore()
+const { getUncommitedTasks, saveTask, updateTask } = useTaskFirestore()
 
 getUncommitedTasks().then(tasks => {
-    state.todo = tasks
+    state.tasks = tasks
 });
 
-const matrix = computed(() => {
-  return state.todo.reduce((matrix, task) => {
-    if (!matrix[task.matrix]) {
-      matrix[task.matrix] = [task];
-    } else {
-      matrix[task.matrix].push(task);
+
+watch(() => state.tasks, () => {
+  state.tasks.forEach(task => {
+    if (state.quadrants[task.matrix] && !state.quadrants[task.matrix].tasks) {
+      state.quadrants[task.matrix].tasks = [task];
+    } else if (state.quadrants[task.matrix]) {
+      state.quadrants[task.matrix].tasks.push(task);
     }
-    return matrix
-  }, {})
+  })
 })
 
 const addTask = (task) => {
   const formattedTask = {...task}
   formattedTask.due_date = toISO(formattedTask.due_date)
   saveTask(formattedTask).then(() => {
-    state.todo.push(task);
+    state.tasks.push(task);
   })
+}
+
+const orderTask = (e, matrix) => {
+  if (e.added) {
+    e.added.element.matrix = matrix;
+    updateTask(e.added.element).then(() => {
+      ElNotification({
+        message: `Moved to ${matrix}`
+      })
+    })
+  }
+}
+
+const onMove = (e) => {
+    if (evt.added) {
+    }
+    console.log(evt, 'moved', matrix)
+		console.log(evt.dragged, 'moved')
+		return true;
 }
 
 </script>
 
-<style scoped>
-a {
-  color: #42b983;
+<style lang="scss" scoped>
+.zen__comming-up {
+  max-height: 500px;
+  overflow: auto;
 }
 </style>

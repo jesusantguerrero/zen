@@ -9,6 +9,9 @@ export function useTaskFirestore() {
             user_uid: firebaseState.user.uid,
             created_at: new Date()
         })
+        .then((docRef) => {
+            return docRef.id;
+        })
         .catch(function(error) {
             console.error("Error adding document: ", error);
         });

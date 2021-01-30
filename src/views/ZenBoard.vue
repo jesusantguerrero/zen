@@ -96,8 +96,8 @@ defineProps({
   msg: String
 })
 
-const { saveTask, getAllFromUser, deleteTask, updateTask, getTaskByMatrix} = useTaskFirestore()
-const { getAllTracksOfTask, deleteTrack } = useTrackFirestore()
+const { saveTask, deleteTask, updateTask, getTaskByMatrix} = useTaskFirestore()
+const { getAllTracksOfTask } = useTrackFirestore()
 
 const state = reactive({
   todo: [],
@@ -160,7 +160,8 @@ getTaskByMatrix('schedule').then(tasks => {
 });
 
 const addTask = (task) => {
-  saveTask(task).then(() => {
+  saveTask(task).then((uid) => {
+    task.uid = uid
     state.todo.push(task);
   })
 }
