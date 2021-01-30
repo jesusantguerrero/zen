@@ -16,7 +16,7 @@
     <el-collapse-transition>
       <div class="">
         <draggable 
-          class="dragArea list-group w-full ic-scroll" 
+          class="dragArea list-group w-full ic-scroller" 
           :list="tasks" 
           handle=".handle"
           :group="{name: type, pull: true, put: true }"
@@ -35,7 +35,6 @@
             @deleted="emitDeleted(task)"
           /> 
         </draggable>
-
       </div>
     </el-collapse-transition>
   </div>

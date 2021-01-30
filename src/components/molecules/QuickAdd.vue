@@ -52,17 +52,18 @@
         </textarea>
         
         <div class="task-item__checklist">
-
+          <checklist-container :items="task.checklist"></checklist-container>
         </div>
       </div>
     </el-collapse-transition>
   </form>
 </template>
 
-<script setup="props">
+<script setup>
+import { computed, reactive, defineProps, defineEmit} from "vue"
 import DateSelect from "../atoms/DateSelect.vue"
 import TagsSelect from "../atoms/TagsSelect.vue"
-import { computed, reactive, defineProps, defineEmit} from "vue"
+import ChecklistContainer from "../organisms/ListContainer.vue";
 
 const props = defineProps({
     mode: {
