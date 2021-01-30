@@ -1,14 +1,14 @@
 <template>
     <div class="date-select">
         <button
-            @click.stop="focusInput()"
+            @click.stop="focusInput"
             data-name="button"
             tabindex="-1"
-            :class="{'text-blue-400 w-24': formattedDate }" 
-            class="flex items-center my-auto focus:outline-none" 
+            :class="{'text-blue-400 w-20': formattedDate }" 
+            class="flex items-center focus:outline-none" 
         >
-            <i class="fa fa-calendar mr-2 px-2"></i>
-            <span class="text-xs" > {{ formattedDate }} </span>
+            <i class="fa fa-calendar mr-2 px-2" v-if="!formattedDate"></i>
+            <span class="text-sm font-bold" > {{ formattedDate }} </span>
             <el-date-picker
                 v-model="date"
                 ref="input"
@@ -41,12 +41,9 @@ onMounted(() => {
 })
 
 const focusInput = (evt) => {
-    // todo to prevent open on click
-    if (evt) {
-        const inputElement = input.value && input.value.$el.nextSibling.querySelector('.el-input__inner')
-        if (inputElement) {
-            inputElement.focus();
-        }
+    const inputElement = input.value && input.value.$el.nextSibling.querySelector('.el-input__inner')
+    if (inputElement) {
+        inputElement.focus();
     }
 }
 

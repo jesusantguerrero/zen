@@ -2,17 +2,14 @@
   <form class="task-item  mb-2 shadow-md bg-white border-gray-200 border-2 px-4 py-3 rounded-md items-center cursor-default"
      @submit.prevent
      @keydown.ctrl.enter="save()"
+     @keydown.enter.prevent.exact
      @blur="toggleExpanded()"
     >
     <div class="flex justify-between">
       <div class="flex items-center w-full">
-        <div class="mx-3 rounded-md px-2 py-1 " :class="typeColor"> 
-            <i :class="icon"> 
-              <span class="ml-2">
-                {{ mode }}
-              </span>
-            </i>
-        </div>
+        <button class="mx-3 rounded-md px-2 py-1 " :class="typeColor"> 
+            <i :class="icon"> </i>
+        </button>
 
         <div class="w-full">
           <input 
