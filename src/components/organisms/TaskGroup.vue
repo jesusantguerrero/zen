@@ -16,7 +16,7 @@
     <el-collapse-transition>
       <div class="">
         <draggable 
-          class="dragArea list-group w-full " 
+          class="dragArea list-group w-full ic-scroll" 
           :list="tasks" 
           handle=".handle"
           :group="{name: type, pull: true, put: true }"
