@@ -33,28 +33,25 @@ const emit = defineEmit({
     'update:modelValue': Date
 })
 
-const date = ref(null)
-const input = ref(null)
+watch(() => props.modelValue, (value) => {
+    date.value = value
+})
 
+const date = ref(null)
+const { formattedDate } = useDateTime(date);
+const emitDate = () => {
+    emit('update:modelValue', date.value);
+}
+
+const input = ref(null)
 onMounted(() => {
     input.tabIndex = -1;
 })
-
 const focusInput = (evt) => {
     const inputElement = input.value && input.value.$el.nextSibling.querySelector('.el-input__inner')
     if (inputElement) {
         inputElement.focus();
     }
-}
-
-const { formattedDate } = useDateTime(date);
-
-watch(() => props.modelValue, (value) => {
-    date.value = value
-})
-
-const emitDate = () => {
-    emit('update:modelValue', date.value);
 }
 </script>
 

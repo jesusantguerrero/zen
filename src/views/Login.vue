@@ -6,9 +6,6 @@
                 <div class="text-8xl text-center zen">
                     Zen.
                 </div>
-                <!-- <div class="h-24 bg-white w-2 ml-5" />  -->
-
-                <!-- <h3 class="login-title w-full capitalize"> {{ modeLabel}}</h3> -->
             </div>
 
             <div
@@ -108,7 +105,8 @@
 import { reactive, ref, computed } from "vue";
 import { register, login, loginWithProvider }  from "../utils/useFirebase";
 import { ElNotification } from "element-plus"
-    
+
+// state and ui
 const mode = ref('login')
 const isLoading = ref(false)
 
@@ -118,15 +116,12 @@ const formData = reactive({
     confirmPassword: '',
 });
 
-const modeLabel = computed(() =>{
-    return mode.value == 'login' ? "Sign In" : "Sign Up"
-})
-
 const currentYear = computed(() =>{
     const date = new Date();
     return date.getFullYear();
 })
 
+// auth manipulation
 const loginUser = () => {
     const loginFunction = mode.value == 'login' ? login : register;
     isLoading.value = true;
@@ -234,7 +229,8 @@ const loginUser = () => {
     }
 
     .google-btn {
-        @apply text-gray-400 items-center;
+        @apply text-gray-400;
+        align-items: center;
         padding: 0 0 0 0 !important;
         background: white !important;
         height: 47px !important;
@@ -276,13 +272,16 @@ const loginUser = () => {
     &--error {
         @apply text-red-400;
         input {
-            @apply shadow-sm border-2 border-red-300;
+            @apply shadow-sm;
+            @apply border-2;
+            @apply border-red-300;
         }
     }
 }
 
 .form-control {
-    @apply text-gray-400 px-2;
+    @apply text-gray-400;
+    @apply px-2;
 
     &:focus {
         outline: none;

@@ -76,13 +76,17 @@ watch(() => task.value, (task) => {
     margin: 5px 0;
 
     .item-title {
-        @apply text-left w-full font-bold text-gray-400;
+        @apply text-gray-400;
+        text-align: left;
+        width: 100%;
+        font-weight: bold;
     }
 }
 
 .el-select {
     .el-input__inner {
-        @apply rounded-md border-gray-400;
+        @apply rounded-md;
+        @apply border-gray-400;
         border-radius: none !important;
         border-width: 2px;
 
