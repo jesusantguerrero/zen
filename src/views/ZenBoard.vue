@@ -30,7 +30,7 @@
               <div class="w-8/12 md:w-6/12 mx-auto mt-10 text-center">
                 <img src="../assets/undraw_following.svg" class="w-12/12 md:w-7/12 mx-auto"> 
                 <div class="mt-10 md:mt-5 text-gray-500 font-bold"> Select item from "todo" or go to 
-                   <router-link to="/planahead" class="font-bolder">Planahead</router-link>  
+                   <router-link to="/plan-ahead" class="font-bolder">Planahead</router-link>  
                   </div> 
               </div>
             </template>
@@ -76,6 +76,10 @@
         </div>
       </div>
     </div>
+
+    <welcome-modal :is-open="state.isWelcomeOpen" @closed="closeWelcomeModal">
+
+    </welcome-modal>
   </div>
 </template>
 
@@ -83,6 +87,7 @@
 import { useTaskFirestore } from "../utils/useTaskFirestore"
 import { useTrackFirestore } from "../utils/useTrackFirestore"
 import { reactive, ref, watch} from 'vue'
+import { useRouter } from "vue-router"
 import { ElMessageBox, ElNotification } from "element-plus"
 import { startFireworks } from "../utils/useConfetti"
 import TaskSelect from "../components/atoms/TaskSelect.vue"
@@ -91,6 +96,7 @@ import QuickAdd from "../components/molecules/QuickAdd.vue"
 import TimeTracker from "../components/organisms/TimeTracker.vue"
 import TaskView from "../components/organisms/TaskView.vue"
 import TaskTrackView from "../components/organisms/TaskTrackView.vue"
+import WelcomeModal from "../components/organisms/WelcomeModal.vue"
 
 const { saveTask, deleteTask, updateTask, getTaskByMatrix} = useTaskFirestore()
 const { getAllTracksOfTask } = useTrackFirestore()
@@ -99,7 +105,8 @@ const { getAllTracksOfTask } = useTrackFirestore()
 const state = reactive({
   todo: [],
   scheduled: [],
-  showReminder: false
+  showReminder: false,
+  isWelcomeOpen: !Boolean(Number(localStorage.getItem("zen::hide-welcome")))
 })
 
 const toggleReminder = () => {
@@ -158,6 +165,15 @@ const destroyTask = async (task) => {
       })
     })
   }
+}
+
+const { push } = useRouter()
+const closeWelcomeModal = () => {
+  localStorage.setItem("zen::hide-welcome", 1);
+  state.isWelcomeOpen = false;
+  push({
+    name: 'planAhead'
+  })
 }
 
 </script>
