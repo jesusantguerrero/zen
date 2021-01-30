@@ -1,0 +1,157 @@
+<template>
+  <div class="mb-20 md:block lg:flex">
+    <div 
+        class="grid md:grid-cols-2 md:gap-10" 
+        :class="{'w-full':isLineUp, 'sm:w-full lg:w-8/12': isMatrix}"
+        v-if="isMatrix || isLineUp">
+      <div class="zen__comming-up w-full mb-10 md:mb-0" v-for="matrix in state.matrix" :key="matrix">
+          <task-group
+            v-if="!isLineUp || isLineUpMatrix(matrix)"
+            :title="matrix"
+            :type="matrix"
+            :tasks="state.quadrants[matrix].tasks"
+            :color="state.quadrants[matrix].color"
+            :handle-mode="true"
+            @change="handleDragChanges"
+            @move="onMove"
+            :is-quadrant="true"
+          >
+            <div class="quick__add mb-4">
+              <quick-add 
+                @saved="addTask"
+                :type="matrix"
+              ></quick-add>
+            </div>
+          </task-group>
+      </div>
+    </div>
+
+    <div :class="{'md:w-full': isBacklog, 'md:w-4/12 md:ml-20': isMatrix}" v-if="isBacklog || isMatrix">
+        <task-group
+            title="backlog"
+            type="backlog"
+            :tasks="state.quadrants['backlog'].tasks"
+            color="text-gray-400"
+            :handle-mode="true"
+            :is-quadrant="true"
+            :max-height="isBacklog ? 0 : 350"
+            @change="handleDragChanges"
+            @move="onMove"
+          >
+            <div class="quick__add mb-4">
+              <quick-add 
+                @saved="addTask"
+                type="backlog"
+              ></quick-add>
+            </div>
+        </task-group>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { computed, defineProps, reactive, watch } from 'vue'
+import { ElNotification } from 'element-plus'
+import { useTaskFirestore } from "../../utils/useTaskFirestore"
+import { useDateTime } from "../../utils/useDateTime"
+import TaskGroup from "../organisms/TaskGroup.vue"
+import QuickAdd from "../molecules/QuickAdd.vue"
+
+
+// state and ui
+const props = defineProps({
+    mode: {
+        type: String,
+        default: 'matrix'
+    }
+})
+
+const isBacklog = computed(() => {
+    return props.mode == 'backlog'
+})
+
+const isMatrix = computed(() => {
+    return props.mode == 'matrix'
+})
+
+const isLineUp = computed(() => {
+    return props.mode == 'lineup'
+})
+
+const isLineUpMatrix = (matrix) => {
+    return isLineUp && ['todo','schedule'].includes(matrix)
+}
+
+
+const state = reactive({
+  tasks: [],
+  matrix: ['todo', 'schedule', 'delegate', 'delete'],
+  quadrants: {
+    todo: {
+      color: 'text-green-400',
+      tasks: []
+    },
+    schedule: {
+      color: 'text-blue-400',
+       tasks: []
+    },
+    delegate: {
+      color: 'text-yellow-400',
+       tasks: []
+    },
+    delete: {
+      color: 'text-red-400',
+      tasks: []
+    },
+    backlog: {
+      color: '',
+      tasks: []
+    }
+  },
+  showReminder: false
+})
+
+// Tasks manipulation
+const { toISO } = useDateTime() 
+const { getUncommitedTasks, saveTask, updateTask } = useTaskFirestore()
+
+getUncommitedTasks().then(tasks => {
+    state.tasks = tasks
+});
+
+watch(() => state.tasks, () => {
+  state.tasks.forEach(task => {
+    if (state.quadrants[task.matrix] && !state.quadrants[task.matrix].tasks) {
+      state.quadrants[task.matrix].tasks = [task];
+    } else if (state.quadrants[task.matrix]) {
+      state.quadrants[task.matrix].tasks.push(task);
+    }
+  })
+})
+
+const addTask = (task) => {
+  const formattedTask = {...task}
+  formattedTask.due_date = toISO(formattedTask.due_date)
+  saveTask(formattedTask).then(() => {
+    state.quadrants[task.matrix].tasks.push(task);
+  })
+}
+
+const handleDragChanges = (e, matrix) => {
+  if (e.added) {
+    e.added.element.matrix = matrix;
+    updateTask(e.added.element).then(() => {
+      ElNotification({
+        message: `Moved to ${matrix}`
+      })
+    })
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.zen__comming-up {
+  max-height: 500px;
+  overflow: auto;
+}
+</style>

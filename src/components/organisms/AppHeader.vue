@@ -11,9 +11,12 @@
       </div>
     </div>
 
-    <div class="flex" v-if="user">
-       <menu-item class="mx-2 px-2" to="/about">?</menu-item>
-      <div class="mx-2">
+    <div class="flex items-center" v-if="user">
+      <router-link to="/plan-ahead" class="inline-block mr-2 rounded-md ring ring-gray-400 ring-offset-0 px-5 py-1 text-white bg-gray-600 hover:bg-gray-700"> Plan Ahead</router-link>
+       <menu-item class="mx-2 px-2" to="/about">
+        <i class="fa fa-question"></i>
+       </menu-item>
+      <div class="mx-2 text-gray-400 text-lg">
         <i class="fa fa-bell"></i>
       </div>
       <div class="ml-2">{{ profileName }}</div>
