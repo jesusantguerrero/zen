@@ -132,7 +132,8 @@ watch(() => state.tasks, () => {
 const addTask = (task) => {
   const formattedTask = {...task}
   formattedTask.due_date = toISO(formattedTask.due_date)
-  saveTask(formattedTask).then(() => {
+  saveTask(formattedTask).then((uid) => {
+    task.uid = uid;
     state.quadrants[task.matrix].tasks.push(task);
   })
 }
