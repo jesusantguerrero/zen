@@ -19,7 +19,7 @@ export function useTaskFirestore() {
 
     const updateTask = (task) => {
         const trackRef = db.collection(collectionName).doc(task.uid)
-        return trackRef.set(task, { merge: true })
+        return trackRef.update(task, { merge: true })
         .then(() => {
             return task.uid;
         })
