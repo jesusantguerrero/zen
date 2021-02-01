@@ -11,7 +11,11 @@
           </h1>
 
           <task-select v-model="currentTask" :items="state.todo" class="md:hidden mr-5" />
-          <time-tracker :task="currentTask"></time-tracker>
+          <time-tracker 
+            :task="currentTask"
+            v-model:currentTimer="currentTimer"
+          >
+          </time-tracker>
         </header>
 
         <div class="mt-8">
@@ -35,7 +39,11 @@
               </div>
             </template>
           </task-view>  
-          <task-track-view :task="currentTask"></task-track-view>     
+          <task-track-view 
+            :task="currentTask"
+            :current-timer="currentTimer"
+            >
+          </task-track-view>     
         </div>
       </div>
 
@@ -106,7 +114,8 @@ const state = reactive({
   todo: [],
   scheduled: [],
   showReminder: false,
-  isWelcomeOpen: !Boolean(Number(localStorage.getItem("zen::hide-welcome")))
+  isWelcomeOpen: !Boolean(Number(localStorage.getItem("zen::hide-welcome"))),
+  track: null
 })
 
 const toggleReminder = () => {
@@ -135,6 +144,8 @@ const onDone = (task) => {
   startFireworks()
 }
 
+// Timer
+const currentTimer = ref({});
 
 // Tasks manipulation 
 

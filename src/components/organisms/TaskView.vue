@@ -59,7 +59,7 @@ const emit = defineEmit({
 const props = defineProps({
   task: {
     type: Object,
-  },
+  }
 });
 
 const { task } = toRefs(props)
