@@ -1,7 +1,6 @@
 <template>
-<el-collapse-transition>
     <div class="login-box">
-        <form class="form-signin md:w-1/2 w-full" @submit.prevent="loginUser">
+        <form class="form-signin md:w-1/2 w-full px-12" @submit.prevent="loginUser">
             <div class="w-full flex justify-center items-center mb-20 sm:pt-20">
                 <div class="text-8xl text-center zen">
                     Zen.
@@ -96,8 +95,6 @@
             <p class="copyrights pt-10">&copy; {{ currentYear }}</p>
         </form>
     </div>
-
-</el-collapse-transition>
 </template>
 
 
@@ -106,6 +103,7 @@ import { reactive, ref, computed } from "vue";
 import { register, login, loginWithProvider }  from "../utils/useFirebase";
 import { ElNotification } from "element-plus"
 
+console.log("here")
 // state and ui
 const mode = ref('login')
 const isLoading = ref(false)
@@ -177,7 +175,6 @@ const loginUser = () => {
 
     form {
         color: white;
-        padding: 15px;
         max-width: 450px;
         border-radius: 4px;
         // box-shadow: 0 0 10px 4px rgba($color: #000000, $alpha: 0.2);

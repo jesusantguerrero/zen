@@ -11,8 +11,12 @@
       </div>
     </div>
 
-    <div class="flex items-center" v-if="user">
-      <router-link to="/plan-ahead" class="inline-block mr-2 rounded-md ring ring-gray-400 ring-offset-0 px-5 py-1 text-white bg-gray-600 hover:bg-gray-700"> Plan Ahead</router-link>
+    <div class="hidden md:flex md:items-center" v-if="user">
+      <router-link 
+        to="/plan-ahead" 
+        class="hidden lg:inline-block mr-2 rounded-md ring ring-gray-400 ring-offset-0 px-5 py-1 text-white bg-gray-600 hover:bg-gray-700">
+         Plan Ahead
+      </router-link>
        <menu-item class="mx-2 px-2" to="/about">
         <i class="fa fa-question"></i>
        </menu-item>

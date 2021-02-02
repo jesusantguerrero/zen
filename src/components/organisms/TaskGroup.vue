@@ -36,6 +36,9 @@
             :icons="icons"
             @selected="emitSelected(task)"
             @deleted="emitDeleted(task)"
+            @edited="emitEdited(task)"
+            @up="emitUp(task)"
+            @down="emitDown(task)"
           />
         </draggable>
       </div>
@@ -82,6 +85,9 @@ onMounted(() => {
 const emit = defineEmit({
   deleted: Object,
   selected: Object,
+  edited: Object,
+  up: Object,
+  down: Object,
   move: Object,
   change: Object
 })
@@ -96,6 +102,16 @@ const emitDeleted = (task) => {
 
 const emitSelected = (task) => {
   emit('selected', task)
+}
+
+const emitEdited = (task) => {
+  emit('edited', task)
+}
+const emitUp = (task) => {
+  emit('up', task)
+}
+const emitDown = (task) => {
+  emit('down', task)
 }
 
 const isExpanded = ref(true);

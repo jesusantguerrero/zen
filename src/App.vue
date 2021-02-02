@@ -1,18 +1,17 @@
 <template>
-  <login v-if="!firebaseState.user && isLoaded"></login>
-  <div class="text-center" v-else-if="isLoaded">
-    <app-header :user="firebaseState.user" class="z-50" @logout="logoutUser" />
-    <router-view></router-view>
-    <app-footer></app-footer>
+  <div class="text-center">
+    <app-header :user="firebaseState.user" class="z-50" @logout="logoutUser" v-if="firebaseState.user"/>
+    <router-view>
+
+    </router-view>
+    <app-footer v-if="firebaseState.user"></app-footer>
   </div>
 </template>
 
 <script setup>
-import ZenBoard from './views/ZenBoard.vue'
-import Login from './views/Login.vue'
 import AppHeader from './components/organisms/AppHeader.vue'
 import AppFooter from './components/organisms/AppFooter.vue'
-import { reactive, ref } from 'vue'
+import { ref } from 'vue'
 import { firebaseState, logout, setLoaded } from "./utils/useFirebase"
 
 
