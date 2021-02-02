@@ -1,4 +1,5 @@
 import ZenBoard from "./views/ZenBoard.vue";
+import Login from "./views/Login.vue";
 import Matrix from "./views/Matrix.vue";
 import Standup from "./views/Standup.vue";
 import About from "./views/About.vue";
@@ -12,6 +13,7 @@ import { isAuthenticated } from "./utils/useFirebase";
 const routes = [
   { 
     path: "/", 
+    name: "home",
     component: ZenBoard,
 
   },
@@ -32,7 +34,7 @@ const routes = [
   },
   {
     path: "/login",
-    component: ZenBoard,
+    component: Login,
     name: "login",
     meta: {
       requiresAuth: false,
@@ -40,7 +42,7 @@ const routes = [
   },
   {
     path: "/register",
-    component: ZenBoard,
+    component: Login,
     name: "register",
     meta: {
       requiresAuth: false,
@@ -57,7 +59,9 @@ myRouter.beforeEach(async (to, from, next) => {
   const user = await isAuthenticated();
   if (to.meta.requiresAuth !== false && !user) {
     next('login')
-  } else {
+  } else if (to.meta.requiresAuth == false && user) {
+    next('home')
+  }else {
     next();
   }
 });

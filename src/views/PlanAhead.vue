@@ -1,16 +1,33 @@
 <template>
 <div class="pt-24 mx-5 md:pt-28 md:mx-10 lg:mx-28">
-  <div class="flex justify-end space-x-2">
-    <button @click="previuosPosition" class="bg-gray-600 text-white hover:bg-gray-700 px-5 py-2 w-30 rounded-md">
-      Previous 
-    </button>
-    <button @click="nextPosition" v-if="!isLastPosition" class="bg-gray-600 hover:bg-gray-700 text-white px-5 py-2 w-30 rounded-md"> 
-      Next 
-    </button>
-    <button @click="done" v-else class="bg-green-400 hover:bg-green-600 text-white px-5 py-2 w-30 rounded-md"> 
-      <i class="fa-fa-check"></i>
-      Start my Zen. 
-    </button>
+
+  <div class="flex justify-between mb-10">
+    <h4 class="text-2xl font-bold"> Plan Ahead</h4>
+    <div class="flex space-x-2">
+    <div
+      class="h-2 w-40 rounded-md"
+      v-for="(section, index) in state.list"
+      :class="[index <= state.position ? 'bg-green-400' : 'bg-gray-400']"
+      :key="section"
+    >
+      <div class="mt-2 capitalize font-bold">
+        {{  section }}
+
+      </div>
+    </div>
+  </div>
+    <div class="flex justify-end space-x-2">
+      <button @click="previuosPosition" class="bg-gray-600 text-white hover:bg-gray-700 px-5 py-2 w-40 rounded-md focus:outline-none">
+        Previous 
+      </button>
+      <button @click="nextPosition" v-if="!isLastPosition" class="bg-gray-600 hover:bg-gray-700 text-white px-5 py-2 w-40 rounded-md focus:outline-none"> 
+        Next 
+      </button>
+      <button @click="done" v-else class="bg-green-400 hover:bg-green-600 text-white px-5 py-2 w-40 rounded-md focus:outline-none"> 
+        <i class="fa-fa-check"></i>
+        Start my Zen. 
+      </button>
+    </div>
   </div>
   
   <matrix-board :mode="currentMode"></matrix-board>

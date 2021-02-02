@@ -40,7 +40,7 @@
                 ref="button"
                 :class="{'text-blue-400': formattedTags }" 
                 class="flex focus:outline-none"
-                @click.stop="" 
+                @click.stop="addTag" 
                 @mousedown.prevent
                 @focus.prevent="focusButton"
             >
@@ -61,7 +61,6 @@ const props = defineProps({
         return ["rojo", "blanco"]
     }
 })
-const { tags } = toRefs(props)
 const input = ref(null);
 const button = ref(null);
 
@@ -72,18 +71,17 @@ const emit = defineEmit({
 const state = reactive({
     searchText: "",
     cursor: 0,
-    isOpen: false
+    isOpen: false,
+    tags: []
 })
 
 // Tags
 const formattedTags = computed(() => {
-    return tags
+    return state.tags.join(" ")
 });
 
 const filteredTags = computed(() => {
-    const tagsData = tags || ["red", "green"]
-    
-    return tagsData.filter(tag => {
+    return state.tags.filter(tag => {
         return tag.includes(state.searchText)
     })
 });
@@ -128,8 +126,7 @@ const selectTag = () => {
 
 const addTag = () => {
     emit('tag-added', state.searchText);
-    tags.push(state.searchText)
+    state.tags.push(state.searchText)
     state.searchText = "";
-
 }
 </script>

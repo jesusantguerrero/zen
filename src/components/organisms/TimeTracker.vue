@@ -1,6 +1,6 @@
 <template>
   <div
-    class="font-bold text-2xl text-center text-center"
+    class="font-bold text-2xl text-center"
     title="click here to start"
   >
     <div class="flex items-start justify-between">
@@ -21,10 +21,7 @@
           <div
             class="bg-red h-1 w-full mr-1"
             v-for="stage in promodoroTotal"
-            :class="{
-              [`${currentStateColor}`]:
-                state.currentStep >= stage.originalIndex,
-            }"
+            :class="[state.currentStep >= stage.originalIndex ? currentStateColor : '']"
             :key="stage"
           ></div>
         </div>

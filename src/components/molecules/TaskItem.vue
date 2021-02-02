@@ -30,10 +30,10 @@
         </div>
       <template #dropdown>
         <el-dropdown-menu>
-          <el-dropdown-item command="edit" icon="el-icon-plus">Edit</el-dropdown-item>
-          <el-dropdown-item command="delete" icon="el-icon-circle-plus">Delete</el-dropdown-item>
-          <el-dropdown-item command="up" icon="el-icon-circle-plus-outline">Move Up</el-dropdown-item>
-          <el-dropdown-item command="down" icon="el-icon-check">Move down</el-dropdown-item>
+          <el-dropdown-item command="edit" icon="el-icon-edit">Edit</el-dropdown-item>
+          <el-dropdown-item command="delete" icon="el-icon-delete">Delete</el-dropdown-item>
+          <el-dropdown-item command="up" icon="el-icon-circle-up">Move Up</el-dropdown-item>
+          <el-dropdown-item command="down" icon="el-icon-down">Move down</el-dropdown-item>
         </el-dropdown-menu>
       </template>
     </el-dropdown>
@@ -53,7 +53,10 @@ const props = defineProps({
 
 const emit = defineEmit({
   deleted: Object,
-  selected: Object
+  selected: Object,
+  edited: Object,
+  up: Object,
+  down: Object,
 })
 
 const typeColor = computed(() => {
@@ -68,10 +71,6 @@ const typeColor = computed(() => {
   return colors[props.type] || colors['todo']
 })
 
-const emitDeleted = (task) => {
-  emit('deleted', task)
-}
-
 const emitSelected = (task) => {
   emit('selected', task)
 }
@@ -83,9 +82,17 @@ const { formattedDate } = useDateTime(ref(task.value.due_date))
 const handleCommand = (commandName) => {
   switch (commandName) {
     case 'delete':
-      emitDeleted(task);
+      emit('deleted', task);
       break;
-  
+    case 'edit':
+      emit('edited', task)
+      break
+    case 'up':
+      emit('up', task)
+      break
+    case 'down':
+      emit('down', task)
+      break
     default:
       break;
   }

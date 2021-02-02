@@ -75,7 +75,9 @@
             :tasks="state.todo"
             :search="state.search"
             @deleted="destroyTask"
+            @edited="setTaskToEdit"
             @selected="setCurrentTask"
+            @down="moveTo($event, 'schedule')"
           >
 
           </task-group>
@@ -88,6 +90,8 @@
             type="schedule"
             class="opacity-60 hover:opacity-100  mt-6 py-3"
             @deleted="destroyTask"
+            @edited="setTaskToEdit"
+            @up="moveTo($event, 'todo')"
           >
 
           </task-group>
@@ -95,9 +99,12 @@
       </div>
     </div>
 
-    <welcome-modal :is-open="state.isWelcomeOpen" @closed="closeWelcomeModal">
-
-    </welcome-modal>
+    <welcome-modal :is-open="state.isWelcomeOpen" @closed="closeWelcomeModal"></welcome-modal>
+    <task-modal 
+      v-model:is-open="state.isTaskModalOpen" 
+      :task-data="taskToEdit" 
+      @closed="closeWelcomeModal"
+    ></task-modal>
   </div>
 </template>
 
@@ -115,18 +122,20 @@ import TimeTracker from "../components/organisms/TimeTracker.vue"
 import TaskView from "../components/organisms/TaskView.vue"
 import TaskTrackView from "../components/organisms/TaskTrackView.vue"
 import WelcomeModal from "../components/organisms/WelcomeModal.vue"
+import TaskModal from "../components/organisms/TaskModal.vue"
 import { firebaseState, updateSettings} from "../utils/useFirebase"
 
 const { saveTask, deleteTask, updateTask, getTaskByMatrix} = useTaskFirestore()
 const { getAllTracksOfTask } = useTrackFirestore()
 
-const isWelcomeOpen = !firebaseState.settings.hide_welcome
+const isWelcomeOpen = !firebaseState.settings || !firebaseState.settings.hide_welcome
 // state and ui
 const state = reactive({
   todo: [],
   scheduled: [],
   showReminder: false,
   isWelcomeOpen: isWelcomeOpen,
+  isTaskModalOpen: false,
   track: null,
   search: ""
 })
@@ -141,6 +150,21 @@ const setCurrentTask = (task) => {
   currentTask.value = task
 }
 
+// Edit task
+const taskToEdit = ref({});
+const setTaskToEdit = (task) => {
+  taskToEdit.value = task
+  state.isTaskModalOpen = false;
+  state.isTaskModalOpen = true;
+}
+
+if (firebaseState.settings && firebaseState.settings.last_task_uid) {
+  const lastTask = state.todo.find((task) => task.uid == firebaseState.settings.last_task_uid);
+  if (lastTask) {
+    setCurrentTask(lastTask)
+  }
+}
+
 watch(currentTask, () => {
   if (currentTask.value.uid) {
     getAllTracksOfTask(currentTask.value.uid).then((tracks) => {
@@ -153,7 +177,14 @@ const onDone = (task) => {
   updateTask(task);
   const taskIndex = state.todo.findIndex(localTask => localTask.uid == task.uid);
   state.todo.splice(taskIndex, 1);
-  currentTask.value = state.todo[0];
+  if (state.todo.length) {
+    currentTask.value = state.todo[0];
+    updateSettings({
+      last_task_uid: currentTask.value.uid
+    });
+  } else {
+    currentTask.value = {}
+  }
   startFireworks()
 }
 
@@ -188,6 +219,22 @@ const destroyTask = async (task) => {
       })
     })
   }
+}
+
+const moveTo = async (task, matrix) => {
+    const oldMatrix = task.matrix;
+    task.matrix = matrix
+    updateTask(task).then(() => {
+      state[oldMatrix] = state[oldMatrix].filter(localTask => task.uid != localTask.uid)
+      state[oldMatrix] = state.todo.filter(localTask => task.uid != localTask.uid)
+      state.todo = state.todo.filter(localTask => task.uid != localTask.uid)
+      ElNotification({
+        type: "success",
+        message: "Task deleted",
+        title: "Task deleted"
+      })
+
+    })
 }
 
 const { push } = useRouter()

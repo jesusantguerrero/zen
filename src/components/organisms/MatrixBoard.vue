@@ -40,12 +40,14 @@
             @change="handleDragChanges"
             @move="onMove"
           >
-            <div class="quick__add mb-4">
-              <quick-add 
-                @saved="addTask"
-                type="backlog"
-              ></quick-add>
-            </div>
+            <template #addForm>
+              <div class="quick__add mb-4">
+                <quick-add 
+                  @saved="addTask"
+                  type="backlog"
+                ></quick-add>
+              </div>
+            </template>
         </task-group>
     </div>
   </div>
