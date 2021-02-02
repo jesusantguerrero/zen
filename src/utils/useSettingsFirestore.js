@@ -1,12 +1,9 @@
-import { DateTime } from "luxon";
-import { db, firebaseState } from "./useFirebase";
+import { db } from "./useFirebase";
 const collectionName = "settings";
 
 export function useSettingsFirestore() {
     const updateUserSettings = (setting) => {
-        return db.collection(collectionName).doc(setting.uid).set({
-            ...setting
-        }, { merge: true })
+        return db.collection(collectionName).doc(setting.uid).set(setting, { merge: true })
         .then(() => {
             return setting;
         })
@@ -15,12 +12,20 @@ export function useSettingsFirestore() {
         });
     }
 
-    const getUserSettings = (uid) => {
-        return db.collection(collectionName).doc(uid)
-            .get()
-            .then((doc) => {
-                return doc.data()
-            });
+    const getUserSettings = async (uid) => {
+        const settings = await db.collection(collectionName)
+        .where('user_uid', '==', uid)
+        .limit(1)
+        .get()
+        .then((snap) => {
+            let docData = null;
+            snap.forEach((doc) => {
+                docData = doc.data()
+            })
+            console.log(docData)
+            return docData;
+        });
+        return settings;
     }
 
     return {

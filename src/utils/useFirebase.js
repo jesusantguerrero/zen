@@ -1,10 +1,11 @@
+import { ref, reactive } from "vue";
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import CONFIG from "../config/";
+import { useSettingsFirestore } from "./useSettingsFirestore"
 
-import { ref, reactive } from "vue";
-
+const { getUserSettings, updateUserSettings } = useSettingsFirestore()
 const firebaseConfig = {
   apiKey: CONFIG.FIREBASE_API_KEY,
   authDomain: `${CONFIG.FIREBASE_PROJECT_ID}.firebaseapp.com`,
@@ -25,7 +26,8 @@ export const setLoaded = (loadedCallback) => {
 
 export const firebaseState = reactive({
     user: null,
-    uid: null
+    uid: null,
+    settings: {}
 })
 
 export const register = async (email, password) => {
@@ -72,8 +74,31 @@ export const logout = () => {
 
 export const db = firebase.firestore();
 
-firebase.auth().onAuthStateChanged((user) => {
-    firebaseState.user = user;
-    onLoaded.value && onLoaded.value()
+export const updateSettings = (settings) => {
+    updateUserSettings({
+        user_uid: firebaseState.user.uid,
+        uid: firebaseState.user.uid,
+        ...settings
+    }).then( async () => {
+        firebaseState.settings = await getUserSettings(user.uid)
+    })
+
+}
+
+
+const initFirebase =  new Promise(resolve => {
+    firebase.auth().onAuthStateChanged(async (user) => {
+        if (user) {
+            const settings = await getUserSettings(user.uid)
+            firebaseState.settings = settings;
+            firebaseState.user = user;
+            onLoaded.value && onLoaded.value()
+        }
+        resolve(user);
+    })
 })
+
+export const isAuthenticated = () => {
+    return initFirebase;
+}
 

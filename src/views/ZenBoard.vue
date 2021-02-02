@@ -105,16 +105,18 @@ import TimeTracker from "../components/organisms/TimeTracker.vue"
 import TaskView from "../components/organisms/TaskView.vue"
 import TaskTrackView from "../components/organisms/TaskTrackView.vue"
 import WelcomeModal from "../components/organisms/WelcomeModal.vue"
+import { firebaseState, updateSettings} from "../utils/useFirebase"
 
 const { saveTask, deleteTask, updateTask, getTaskByMatrix} = useTaskFirestore()
 const { getAllTracksOfTask } = useTrackFirestore()
 
+const isWelcomeOpen = !firebaseState.settings.hide_welcome
 // state and ui
 const state = reactive({
   todo: [],
   scheduled: [],
   showReminder: false,
-  isWelcomeOpen: !Boolean(Number(localStorage.getItem("zen::hide-welcome"))),
+  isWelcomeOpen: isWelcomeOpen,
   track: null
 })
 
@@ -146,7 +148,6 @@ const onDone = (task) => {
 
 // Timer
 const currentTimer = ref({});
-
 // Tasks manipulation 
 
 getTaskByMatrix('todo').then(tasks => {
@@ -180,6 +181,9 @@ const destroyTask = async (task) => {
 
 const { push } = useRouter()
 const closeWelcomeModal = () => {
+  updateSettings({
+    hide_welcome: true 
+  })
   localStorage.setItem("zen::hide-welcome", 1);
   state.isWelcomeOpen = false;
   push({

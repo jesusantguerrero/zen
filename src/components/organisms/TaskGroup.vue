@@ -1,5 +1,5 @@
 <template>
-  <div class="commig-up__today">
+  <div class="task-group">
     <div class="flex justify-between cursor-pointer items-center">
       <h4 class="mb-2 font-bold" :class="[isQuadrant ? `md:text-2xl font-bold ${color} capitalize`: '']">
          {{ title }}
@@ -12,10 +12,10 @@
       </div>
     </div>
 
-    <slot></slot>
+    <slot name="addForm"></slot>
     <el-collapse-transition>
       <div class="list-group w-full ic-scroller" ref="listGroup">
-        <draggable 
+        <draggable
           class="dragArea" 
           :list="tasks" 
           handle=".handle"
@@ -33,7 +33,7 @@
             :icons="icons"
             @selected="emitSelected(task)"
             @deleted="emitDeleted(task)"
-          /> 
+          />
         </draggable>
       </div>
     </el-collapse-transition>
@@ -122,5 +122,10 @@ const toggleExpanded = () => {
 .list-group {
   max-height: var(--max-height);
   overflow: auto;
+}
+
+.dragArea {
+  min-height: 200px;
+  border: dashed 1px #ddd;
 }
 </style>

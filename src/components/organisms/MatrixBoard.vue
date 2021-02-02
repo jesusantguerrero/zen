@@ -16,12 +16,14 @@
             @move="onMove"
             :is-quadrant="true"
           >
-            <div class="quick__add mb-4">
-              <quick-add 
-                @saved="addTask"
-                :type="matrix"
-              ></quick-add>
-            </div>
+            <template #addForm>
+              <div class="quick__add mb-4">
+                <quick-add 
+                  @saved="addTask"
+                  :type="matrix"
+                ></quick-add>
+              </div>
+            </template>
           </task-group>
       </div>
     </div>
