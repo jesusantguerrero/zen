@@ -17,6 +17,9 @@
       <div class="list-group w-full ic-scroller" ref="listGroup">
         <draggable
           class="dragArea" 
+          tag="transition-group" 
+          :component-data="{name:'fade'}"
+          :sort="true"
           :list="tasks" 
           handle=".handle"
           :group="{name: type, pull: true, put: true }"
@@ -25,7 +28,7 @@
           v-show="isExpanded"
         >
           <task-item 
-            v-for="task in tasks" 
+            v-for="task in filteredList" 
             :key="task" 
             :task="task" 
             :type="type"
@@ -41,11 +44,12 @@
 </template>
 
 <script setup>
-import { defineProps, onMounted, reactive, ref, toRefs, watch } from "vue"
+import { computed, defineProps, onMounted, reactive, ref, toRefs, watch } from "vue"
 import { VueDraggableNext as Draggable } from "vue-draggable-next"
 import TaskItem from "../molecules/TaskItem.vue"
 import IconExpand from "../atoms/IconExpand.vue"
 import IconCollapse from "../atoms/IconCollapse.vue"
+import { useFuseSearch } from "../../utils/useFuseSearch"
 
 const props = defineProps({
     tasks: {
@@ -60,6 +64,7 @@ const props = defineProps({
     type: String,
     icons: Array,
     handleMode: Boolean,
+    search: String,
     maxHeight: {
       default: 340,
       type: Number
@@ -81,7 +86,9 @@ const emit = defineEmit({
   change: Object
 })
 
-const { tasks } = toRefs(props)
+const { tasks, search } = toRefs(props)
+
+const { filteredList } = useFuseSearch(search, tasks);
 
 const emitDeleted = (task) => {
   emit('deleted', task)

@@ -25,6 +25,23 @@ export function useTaskFirestore() {
         })
     }
 
+    const updateTaskBatch = (tasks) => {
+        const batch = db.batch()
+        tasks.forEach((task) => {
+            const trackRef = db.collection(collectionName).doc(task.uid)
+            trackRef.update({
+                order: task.order
+            }, { merge: true })
+
+        })
+        return batch.commit().then(() => {
+            return
+        })
+        .then(() => {
+            return tasks;
+        })
+    }
+
     const deleteTask = (task) => {
         return db.collection(collectionName).doc(task.uid).delete()
         .catch(function(error) {
@@ -65,6 +82,7 @@ export function useTaskFirestore() {
         await db.collection(collectionName)
         .where("user_uid", "==", firebaseState.user.uid)
         .where("done", "==", false)
+        .orderBy("order")
         .get()
         .then(querySnapshot => {
             querySnapshot.forEach((doc) => {
@@ -93,6 +111,7 @@ export function useTaskFirestore() {
     return {
         saveTask,
         updateTask,
+        updateTaskBatch,
         deleteTask,
         getTaskByMatrix,
         getUncommitedTasks,

@@ -48,23 +48,32 @@
       </div>
 
       <div class="zen__comming-up hidden mt-10 md:block md:mt-0 md:w-4/12 md:ml-5">
-        <header class="mb-2 flex justify-between text-gray-400 font-bold">
+        <header class="mb-2 flex justify-between text-gray-400 font-bold items-center">
             <h1 class="text-2xl"> Line Up</h1>
-            <button class="text-2xl"> 
-              <i class="fa fa-chevron-down"></i>
-            </button>
+
+            <div class="flex itemx-center">
+                <input type="search" 
+                  v-model="state.search" 
+                  class="px-2 text-sm h-8 rounded-md focus:outline-none border-2 border-gray-200"
+                  placeholder="search task"  
+                >
+              <button class="text-2xl"> 
+                <i class="fa fa-chevron-down ml-2"></i>
+              </button>
+            </div>
         </header>
 
         <div class="comming-up__list divide-y-2 divide-gray-200 divide-dashed">
           <div class="quick__add mb-4">
             <h4 class="font-bold mb-2">Quick Add</h4>
-            <quick-add @saved="addTask" type="todo"></quick-add>
+            <quick-add @saved="addTask" type="todo" :allow-edit="true"></quick-add>
           </div>
 
           <task-group
             title="Todo"
             class="mt-6 py-3"
             :tasks="state.todo"
+            :search="state.search"
             @deleted="destroyTask"
             @selected="setCurrentTask"
           >
@@ -75,6 +84,7 @@
             title="Scheduled"
             :tasks="state.scheduled"
             :active="false"
+            :search="state.search"
             type="schedule"
             class="opacity-60 hover:opacity-100  mt-6 py-3"
             @deleted="destroyTask"
@@ -117,7 +127,8 @@ const state = reactive({
   scheduled: [],
   showReminder: false,
   isWelcomeOpen: isWelcomeOpen,
-  track: null
+  track: null,
+  search: ""
 })
 
 const toggleReminder = () => {

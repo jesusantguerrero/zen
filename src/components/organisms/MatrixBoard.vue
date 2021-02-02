@@ -115,7 +115,7 @@ const state = reactive({
 
 // Tasks manipulation
 const { toISO } = useDateTime() 
-const { getUncommitedTasks, saveTask, updateTask } = useTaskFirestore()
+const { getUncommitedTasks, saveTask, updateTask, updateTaskBatch } = useTaskFirestore()
 
 getUncommitedTasks().then(tasks => {
     state.tasks = tasks
@@ -148,6 +148,18 @@ const handleDragChanges = (e, matrix) => {
         message: `Moved to ${matrix}`
       })
     })
+  }
+
+  if (e.moved) {
+    updateTaskBatch(state.quadrants[matrix].tasks.map((task, index) => {
+      task.order = index
+      return task
+    })).then(() => {
+      ElNotification({
+        message: `Moved to ${matrix}`
+      })
+    })
+
   }
 }
 </script>

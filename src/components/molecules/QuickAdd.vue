@@ -45,7 +45,7 @@
         </textarea>
         
         <div class="task-item__checklist">
-          <checklist-container :items="task.checklist"></checklist-container>
+          <checklist-container :items="task.checklist" :allow-edit="allowEdit"></checklist-container>
         </div>
       </div>
     </el-collapse-transition>
@@ -67,7 +67,8 @@ const props = defineProps({
     placeholder: {
       default: "Add quick task"
     },
-    type: String
+    type: String,
+    allowEdit: Boolean
 })
 const emit =  defineEmit({
   'saved': (task) => {}

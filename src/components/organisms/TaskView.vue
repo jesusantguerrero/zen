@@ -58,7 +58,10 @@ const emit = defineEmit({
 
 const props = defineProps({
   task: {
-    type: Object,
+    type: [Object, String],
+    default() {
+      return {}
+    }
   }
 });
 
