@@ -11,7 +11,11 @@
           </h1>
 
           <task-select v-model="currentTask" :items="state.todo" class="md:hidden mr-5" />
-          <time-tracker :task="currentTask"></time-tracker>
+          <time-tracker 
+            :task="currentTask"
+            v-model:currentTimer="currentTimer"
+          >
+          </time-tracker>
         </header>
 
         <div class="mt-8">
@@ -35,28 +39,41 @@
               </div>
             </template>
           </task-view>  
-          <task-track-view :task="currentTask"></task-track-view>     
+          <task-track-view 
+            :task="currentTask"
+            :current-timer="currentTimer"
+            >
+          </task-track-view>     
         </div>
       </div>
 
       <div class="zen__comming-up hidden mt-10 md:block md:mt-0 md:w-4/12 md:ml-5">
-        <header class="mb-2 flex justify-between text-gray-400 font-bold">
+        <header class="mb-2 flex justify-between text-gray-400 font-bold items-center">
             <h1 class="text-2xl"> Line Up</h1>
-            <button class="text-2xl"> 
-              <i class="fa fa-chevron-down"></i>
-            </button>
+
+            <div class="flex itemx-center">
+                <input type="search" 
+                  v-model="state.search" 
+                  class="px-2 text-sm h-8 rounded-md focus:outline-none border-2 border-gray-200"
+                  placeholder="search task"  
+                >
+              <button class="text-2xl"> 
+                <i class="fa fa-chevron-down ml-2"></i>
+              </button>
+            </div>
         </header>
 
         <div class="comming-up__list divide-y-2 divide-gray-200 divide-dashed">
           <div class="quick__add mb-4">
             <h4 class="font-bold mb-2">Quick Add</h4>
-            <quick-add @saved="addTask" type="todo"></quick-add>
+            <quick-add @saved="addTask" type="todo" :allow-edit="true"></quick-add>
           </div>
 
           <task-group
             title="Todo"
             class="mt-6 py-3"
             :tasks="state.todo"
+            :search="state.search"
             @deleted="destroyTask"
             @selected="setCurrentTask"
           >
@@ -67,6 +84,7 @@
             title="Scheduled"
             :tasks="state.scheduled"
             :active="false"
+            :search="state.search"
             type="schedule"
             class="opacity-60 hover:opacity-100  mt-6 py-3"
             @deleted="destroyTask"
@@ -97,16 +115,20 @@ import TimeTracker from "../components/organisms/TimeTracker.vue"
 import TaskView from "../components/organisms/TaskView.vue"
 import TaskTrackView from "../components/organisms/TaskTrackView.vue"
 import WelcomeModal from "../components/organisms/WelcomeModal.vue"
+import { firebaseState, updateSettings} from "../utils/useFirebase"
 
 const { saveTask, deleteTask, updateTask, getTaskByMatrix} = useTaskFirestore()
 const { getAllTracksOfTask } = useTrackFirestore()
 
+const isWelcomeOpen = !firebaseState.settings.hide_welcome
 // state and ui
 const state = reactive({
   todo: [],
   scheduled: [],
   showReminder: false,
-  isWelcomeOpen: !Boolean(Number(localStorage.getItem("zen::hide-welcome")))
+  isWelcomeOpen: isWelcomeOpen,
+  track: null,
+  search: ""
 })
 
 const toggleReminder = () => {
@@ -135,7 +157,8 @@ const onDone = (task) => {
   startFireworks()
 }
 
-
+// Timer
+const currentTimer = ref({});
 // Tasks manipulation 
 
 getTaskByMatrix('todo').then(tasks => {
@@ -169,6 +192,9 @@ const destroyTask = async (task) => {
 
 const { push } = useRouter()
 const closeWelcomeModal = () => {
+  updateSettings({
+    hide_welcome: true 
+  })
   localStorage.setItem("zen::hide-welcome", 1);
   state.isWelcomeOpen = false;
   push({

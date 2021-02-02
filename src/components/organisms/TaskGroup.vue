@@ -1,5 +1,5 @@
 <template>
-  <div class="commig-up__today">
+  <div class="task-group">
     <div class="flex justify-between cursor-pointer items-center">
       <h4 class="mb-2 font-bold" :class="[isQuadrant ? `md:text-2xl font-bold ${color} capitalize`: '']">
          {{ title }}
@@ -12,11 +12,14 @@
       </div>
     </div>
 
-    <slot></slot>
+    <slot name="addForm"></slot>
     <el-collapse-transition>
       <div class="list-group w-full ic-scroller" ref="listGroup">
-        <draggable 
+        <draggable
           class="dragArea" 
+          tag="transition-group" 
+          :component-data="{name:'fade'}"
+          :sort="true"
           :list="tasks" 
           handle=".handle"
           :group="{name: type, pull: true, put: true }"
@@ -25,7 +28,7 @@
           v-show="isExpanded"
         >
           <task-item 
-            v-for="task in tasks" 
+            v-for="task in filteredList" 
             :key="task" 
             :task="task" 
             :type="type"
@@ -33,7 +36,7 @@
             :icons="icons"
             @selected="emitSelected(task)"
             @deleted="emitDeleted(task)"
-          /> 
+          />
         </draggable>
       </div>
     </el-collapse-transition>
@@ -41,11 +44,12 @@
 </template>
 
 <script setup>
-import { defineProps, onMounted, reactive, ref, toRefs, watch } from "vue"
+import { computed, defineProps, onMounted, reactive, ref, toRefs, watch } from "vue"
 import { VueDraggableNext as Draggable } from "vue-draggable-next"
 import TaskItem from "../molecules/TaskItem.vue"
 import IconExpand from "../atoms/IconExpand.vue"
 import IconCollapse from "../atoms/IconCollapse.vue"
+import { useFuseSearch } from "../../utils/useFuseSearch"
 
 const props = defineProps({
     tasks: {
@@ -60,6 +64,7 @@ const props = defineProps({
     type: String,
     icons: Array,
     handleMode: Boolean,
+    search: String,
     maxHeight: {
       default: 340,
       type: Number
@@ -81,7 +86,9 @@ const emit = defineEmit({
   change: Object
 })
 
-const { tasks } = toRefs(props)
+const { tasks, search } = toRefs(props)
+
+const { filteredList } = useFuseSearch(search, tasks);
 
 const emitDeleted = (task) => {
   emit('deleted', task)
@@ -122,5 +129,10 @@ const toggleExpanded = () => {
 .list-group {
   max-height: var(--max-height);
   overflow: auto;
+}
+
+.dragArea {
+  min-height: 200px;
+  border: dashed 1px #ddd;
 }
 </style>

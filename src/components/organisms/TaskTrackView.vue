@@ -11,7 +11,8 @@
       <div class="sessions ml-5 flex  text-2xl items-center text-gray-400">
         <div v-if="task.title">
           Totals: 
-          <span class="font-bold ml-2">{{ timeTracked }}</span> <span class="font-bold mx-2">{{ task.tracks && task.tracks.length }}</span> session
+          <span class="font-bold ml-2">{{ timeTracked }} - </span> 
+          <span class="font-bold mx-2">{{ task.tracks && task.tracks.length }}</span> Sessions
         </div>
         <div v-else class="text-lg">
           No track data to show
@@ -22,7 +23,7 @@
 </template>
 
 <script setup>
-import { computed, defineProps, toRefs } from "vue";
+import { computed, defineProps, toRefs, watch, ref } from "vue";
 import { useDateTime } from "../../utils/useDateTime"
 
 const { formatDurationFromMs } = useDateTime()
@@ -30,19 +31,40 @@ const props = defineProps({
   task: {
     type: Object,
   },
+  currentTimer: {
+    type: Object
+  }
 });
 
-const { task }= toRefs(props)
+const { task, currentTimer } = toRefs(props)
 
-const timeTracked = computed(() => {
+const savedTime = computed(() => {
   if (task.value.tracks) {
     const time = task.value.tracks.reduce((milliseconds, task)=> {
       return milliseconds + Number(task.duration_ms || 0);
     }, 0)
+    
+    return time;
+  } 
+  return 0 
+})
 
-    return formatDurationFromMs(time).toFormat("hh:mm:ss");
-  }
-  return 0
+const activeTimer = ref(0);
+
+const getActiveTimer = () => {
+    const duration = currentTimer && currentTimer.value && currentTimer.value.currentTime
+    if (duration) {
+      return duration.as("milliseconds");
+    }
+    return 0;
+}
+
+watch(() => currentTimer.value.currentTime, () => {
+  activeTimer.value = getActiveTimer()
+}, { immediate: true })
+
+const timeTracked = computed(() => {
+    return formatDurationFromMs(savedTime.value + activeTimer.value).toFormat("hh:mm:ss");
 })
 </script>
 

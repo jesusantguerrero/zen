@@ -16,12 +16,14 @@
             @move="onMove"
             :is-quadrant="true"
           >
-            <div class="quick__add mb-4">
-              <quick-add 
-                @saved="addTask"
-                :type="matrix"
-              ></quick-add>
-            </div>
+            <template #addForm>
+              <div class="quick__add mb-4">
+                <quick-add 
+                  @saved="addTask"
+                  :type="matrix"
+                ></quick-add>
+              </div>
+            </template>
           </task-group>
       </div>
     </div>
@@ -113,7 +115,7 @@ const state = reactive({
 
 // Tasks manipulation
 const { toISO } = useDateTime() 
-const { getUncommitedTasks, saveTask, updateTask } = useTaskFirestore()
+const { getUncommitedTasks, saveTask, updateTask, updateTaskBatch } = useTaskFirestore()
 
 getUncommitedTasks().then(tasks => {
     state.tasks = tasks
@@ -146,6 +148,18 @@ const handleDragChanges = (e, matrix) => {
         message: `Moved to ${matrix}`
       })
     })
+  }
+
+  if (e.moved) {
+    updateTaskBatch(state.quadrants[matrix].tasks.map((task, index) => {
+      task.order = index
+      return task
+    })).then(() => {
+      ElNotification({
+        message: `Moved to ${matrix}`
+      })
+    })
+
   }
 }
 </script>

@@ -9,7 +9,7 @@
       <h4> {{ task.title }}</h4>
     </div>
 
-    <div class="task-item__controls flex">  
+    <div class="task-item__controls flex items-center">  
       <el-tooltip class="item" effect="dark" content="Add to zen" placement="top">
         <div class="mx-2 text-gray-400 hover:text-gray-600 cursor-pointer" @click="emitSelected()"
           title="Add to zen"
@@ -24,9 +24,19 @@
       <div class="mx-2 text-gray-400 hover:text-gray-600">
         <i class="fa fa-tags"></i>
       </div>
-      <div class="mx-2 text-gray-400 hover:text-gray-600" @click="emitDeleted">
+      <el-dropdown trigger="click" @command="handleCommand">
+        <div class="mx-2 text-gray-400 hover:text-gray-600">
           <i class="fa fa-ellipsis-v"></i>
-      </div>
+        </div>
+      <template #dropdown>
+        <el-dropdown-menu>
+          <el-dropdown-item command="edit" icon="el-icon-plus">Edit</el-dropdown-item>
+          <el-dropdown-item command="delete" icon="el-icon-circle-plus">Delete</el-dropdown-item>
+          <el-dropdown-item command="up" icon="el-icon-circle-plus-outline">Move Up</el-dropdown-item>
+          <el-dropdown-item command="down" icon="el-icon-check">Move down</el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
     </div>
   </div>
 </template>
@@ -61,6 +71,7 @@ const typeColor = computed(() => {
 const emitDeleted = (task) => {
   emit('deleted', task)
 }
+
 const emitSelected = (task) => {
   emit('selected', task)
 }
@@ -68,4 +79,15 @@ const emitSelected = (task) => {
 const { task } = toRefs(props)
 
 const { formattedDate } = useDateTime(ref(task.value.due_date))
+
+const handleCommand = (commandName) => {
+  switch (commandName) {
+    case 'delete':
+      emitDeleted(task);
+      break;
+  
+    default:
+      break;
+  }
+}
 </script>

@@ -8,6 +8,7 @@
             type="backlog"
             :tasks="state.committed"
             color="text-gray-400"
+            :max-height="0"
             :is-quadrant="true"
           >
         </task-group>

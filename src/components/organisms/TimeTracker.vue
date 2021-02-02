@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, reactive, watch, defineProps } from "vue";
+import { computed, onBeforeUnmount, reactive, watch, defineProps, defineEmit } from "vue";
 import { Duration, Interval, DateTime } from "luxon";
 import { useTrackFirestore } from "./../../utils/useTrackFirestore";
 import { ElNotification } from "element-plus";
@@ -49,9 +49,14 @@ const { saveTrack, updateTrack } = useTrackFirestore();
 const props = defineProps({
   task: {
     type: Object
+  },
+  currentTimer: {
+    type: Object
   }
 })
-
+const emit = defineEmit({
+  "update:currentTimer": (timer) =>  timer
+})
 // state
 const track = reactive({
   uid: null,
@@ -140,9 +145,10 @@ const targetTime = computed(() => {
 
 const currentTime = computed(() => {
   if (track.started_at && state.now && state.durationTarget) {
-    let duration = Interval.fromDateTimes(track.started_at, state.now).toDuration();
+    let duration = Interval.fromDateTimes(track.started_at, state.now).toDuration()
+    track.currentTime = duration;
     if (duration) {
-      duration = state.durationTarget.minus(duration);
+      duration = state.durationTarget.minus(duration).plus({ seconds: 0.9 });
       return duration.as("seconds") < 0 ? "00:00" : duration.toFormat("mm:ss");
     }
     return "00:00";
@@ -151,14 +157,11 @@ const currentTime = computed(() => {
   }
 });
 
-watch(
-  () => state.now,
-  (now) => {
-    if (targetTime.value && now && targetTime.value.diffNow() < 0) {
-      stop();
-    }
+watch(() => state.now, (now) => {
+  if (targetTime.value && now && targetTime.value.diffNow() < 0) {
+    stop();
   }
-);
+});
 
 // controls
 
@@ -171,9 +174,11 @@ const createTrack = () => {
   track.description = props.task.title;
   track.target_time = state.durationTarget.toISO();
   const formData = { ...track }
+  delete formData.currentTime
   saveTrack(formData)
     .then(uid => {
       track.uid = uid;
+      emit("update:currentTimer", track)
     })
 }
 
@@ -186,20 +191,22 @@ const validatePlay = () => {
 }
 
 const play = () => {
-  const tempTime = new Date()
   if (isPromodoro() && !validatePlay()) {
-      ElNotification({
-        title: "Select a task",
+    ElNotification({
+      title: "Select a task",
         message: "Must select a task to start promodoro",
         type: "info"
       })
     return  
-  } else if (validatePlay()) {
-    track.started_at = tempTime;
+  }
+
+  track.started_at = new Date();
+  state.now = track.started_at;
+  
+  if (validatePlay()) {
     createTrack(track)
   }
 
-  track.started_at = tempTime
   state.timer = setInterval(() => {
     state.now = new Date();
   }, 100);
@@ -253,7 +260,10 @@ const updateTrackFromLocal = (track) => {
   const duration = Interval.fromDateTimes(formData.started_at, formData.ended_at).toDuration();
   formData.duration_ms = duration.as('milliseconds'),
   formData.duration_iso = duration.toISO(),
+  delete formData.currentTime;
   updateTrack(formData).then(() => {
+    emit("update:currentTimer", {})
+    props.task.tracks.push(formData);
     ElNotification({
       title: "Promodoro Saved",
       message: "Promodoro saved",

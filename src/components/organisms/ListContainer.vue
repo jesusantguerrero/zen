@@ -34,7 +34,7 @@
     <div class="text flex justify-between items-center border-2 border-gray-100 bg-gray-100 px-2 rounded-md shadow-sm"
         :class="{'border-gray-400': isFocused}"
         v-if="allowEdit"
-        >
+    >
         <input type="checkbox" disabled class="mr-2">
         <input 
             class="w-full h-8 bg-gray-100 focus:outline-none"

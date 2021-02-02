@@ -3,7 +3,7 @@
      @submit.prevent
      @keydown.ctrl.enter="save()"
      @keydown.enter.prevent.exact
-     @blur="toggleExpanded()"
+     ref="taskForm"
     >
     <div class="flex justify-between">
       <div class="flex items-center w-full">
@@ -18,6 +18,7 @@
             :placeholder="placeholder" 
             v-model="task.title"
             @click="state.isExpanded = true"
+          
           >
         </div>
       </div>
@@ -32,11 +33,6 @@
         <div class="mx-2 text-gray-400 hover:text-gray-600">
           <tags-select /> 
         </div>
-
-        <button class="mx-2 text-gray-400 hover:text-gray-600">
-            <i class="fa fa-ellipsis-v cursor-pointer"></i>
-        </button>
-
       </div>
     </div>
     
@@ -49,7 +45,7 @@
         </textarea>
         
         <div class="task-item__checklist">
-          <checklist-container :items="task.checklist"></checklist-container>
+          <checklist-container :items="task.checklist" :allow-edit="allowEdit"></checklist-container>
         </div>
       </div>
     </el-collapse-transition>
@@ -57,7 +53,8 @@
 </template>
 
 <script setup>
-import { computed, reactive, defineProps, defineEmit} from "vue"
+import { computed, reactive, defineProps, defineEmit, onMounted, ref} from "vue"
+import { onClickOutside } from  "@vueuse/core"
 import DateSelect from "../atoms/DateSelect.vue"
 import TagsSelect from "../atoms/TagsSelect.vue"
 import ChecklistContainer from "../organisms/ListContainer.vue";
@@ -70,7 +67,8 @@ const props = defineProps({
     placeholder: {
       default: "Add quick task"
     },
-    type: String
+    type: String,
+    allowEdit: Boolean
 })
 const emit =  defineEmit({
   'saved': (task) => {}
@@ -92,6 +90,16 @@ const task = reactive({
 const state = reactive({
   isExpanded: false
 })
+
+const taskForm = ref(null)
+
+onMounted(() => {
+  
+  onClickOutside(taskForm, () => {
+    state.isExpanded = false;
+  })
+})
+
 
 const isReminder = computed(() => {
   return props.mode == 'reminder'
