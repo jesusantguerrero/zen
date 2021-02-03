@@ -10,12 +10,13 @@
     </div>
     
     <div
-        class="bg-gray-50  h-20 mx-2 pb-5" 
+        class="bg-gray-50  h-30 mx-2 pb-5 mb-5 mt-2" 
         >
-        <span class="font-bold"> {{ item.title }} </span> {{ item.content }}
+        <span class="font-bold"> {{ item.title }} </span>
+        <div v-html="item.content"> </div>
     </div>
     
-    <div class="mb-5 text-left flex mx-2">
+    <div class="mb-5 text-left flex mx-2 mt-5">
         <div v-for="(item, itemName) in state.items" :key="itemName"
             class="list-item bg-gray-50 hover:bg-gray-200 w-full text-center" 
             :class="{'bg-gray-300': isSelected(itemName)}" 
@@ -47,12 +48,12 @@ const state = reactive({
         planahead: {
             image: '../assets/undraw_following.svg',
             title: "Plan Ahead",
-            content: "Add your pending tasks, prioritaze them following Heisenhower Matrix principle and set day line up"
+            content: `Add your pending tasks, prioritaze them following <a href="https://luxafor.com/the-eisenhower-matrix/" target="__blank">Heisenhower Matrix</a> principle and set the line up for today`
         },
         zenboard: {
             image: '../assets/undraw_following.svg',
             title: "Zen",
-            content: "Focus in your main task and activate promodoros sessions complete and follow your line up"
+            content: "Focus in your main task and activate promodoros sessions, complete and follow your line up"
         },
         standup: {
             image: '../assets/undraw_following.svg',

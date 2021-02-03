@@ -6,12 +6,19 @@
       {{ task.title }}
 
       <div class="task-item__controls flex text-lg" v-if="task.title">  
-          <el-tooltip class="item" effect="dark" content="Add to zen" placement="top">
+          <el-tooltip class="item" effect="dark" content="Save changes" placement="top">
+              <div 
+                class="mx-2 text-gray-400 hover:text-gray-600 cursor-pointer"
+                @click="saveChanges()"
+              >
+              <i class="fa fa-save"> </i>
+              </div>
+          </el-tooltip>
+          <el-tooltip class="item" effect="dark" content="Mark as done" placement="top">
               <div 
                 class="mx-2 text-gray-400 hover:text-gray-600 cursor-pointer"
                 @click="markAsDone()"
                 :class="{'text-green-400 font-extrabold': task.commit_date}"
-                title="Mark as done"
               >
               <i class="fa fa-check"></i>
               </div>
@@ -47,7 +54,8 @@ import { useDateTime } from "../../utils/useDateTime";
 import ChecklistContainer from "./ListContainer.vue";
 
 const emit = defineEmit({
-  done: (task) => {}
+  done: Object,
+  updated: Object 
 })
 
 const props = defineProps({
@@ -67,6 +75,10 @@ const markAsDone = () => {
   task.value.commit_date = formatDate();
   task.value.done = true;
   emit('done', task.value)
+}
+
+const saveChanges = () => {
+  emit('updated', task.value)
 }
 </script>
 

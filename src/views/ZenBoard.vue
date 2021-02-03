@@ -30,7 +30,7 @@
           >
           </quick-add>
 
-          <task-view :task="currentTask" @done="onDone">
+          <task-view :task="currentTask" @done="onDone" @updated="onTaskUpdated">
             <template #empty v-if="!currentTask.title">
               <div class="w-8/12 md:w-6/12 mx-auto mt-10 text-center">
                 <img src="../assets/undraw_following.svg" class="w-12/12 md:w-7/12 mx-auto"> 
@@ -54,7 +54,7 @@
 
             <div class="flex itemx-center">
                 <input type="search" 
-                  v-model="state.search" 
+                  v-model.trim="state.search" 
                   class="px-2 text-md h-8 rounded-md focus:outline-none border-2 border-gray-200"
                   placeholder="Search task"  
                 >
@@ -157,10 +157,9 @@ const setTaskToEdit = (task) => {
   state.isTaskModalOpen = false;
   state.isTaskModalOpen = true;
 }
-const onedittedtask = (task) => {
-  debugger
-  index = state[task.matrix].findIndex(localTask => localTask.uid == task.uid)
-  state[task.matrix][index] = task;
+const onEdittedTask = (task) => {
+  const index = state[task.matrix].findIndex(localTask => localTask.uid == task.uid)
+  state[task.matrix][index] = {...task};
   taskToEdit.value = null
 }
 
@@ -180,6 +179,7 @@ watch(currentTask, () => {
 })
 
 const onDone = (task) => {
+  task.tracks = []
   updateTask(task);
   const taskIndex = state.todo.findIndex(localTask => localTask.uid == task.uid);
   state.todo.splice(taskIndex, 1);
@@ -192,6 +192,17 @@ const onDone = (task) => {
     currentTask.value = {}
   }
   startFireworks()
+}
+
+const onTaskUpdated = (task) => {
+  const formData = {...task}
+  formData.tracks = []
+  updateTask(formData).then(() => {
+    ElNotification({
+      title: "Updated",
+      message: "Task updated"
+    })
+  })
 }
 
 // Timer
