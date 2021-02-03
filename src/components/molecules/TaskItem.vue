@@ -55,7 +55,6 @@
 
 <script setup>
 import { defineProps, toRefs, ref, computed, defineEmit, watch } from "vue"
-import { useDateTime } from "../../utils/useDateTime";
 import { useTracker } from "../../utils/useTracker";
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
 const { updateTask } = useTaskFirestore()
@@ -65,21 +64,23 @@ const props = defineProps({
   currentTask: Object,
   handleMode: Boolean,
   showSelect: Boolean,
-  showControls: Boolean
+  showControls: Boolean,
+  currentTimer: Object
 })
 
-const { task, currentTask, type } = toRefs(props)
+const { task, currentTask, currentTimer} = toRefs(props)
 
 const { timeTracked } = useTracker(task)
 
-watch(() => task.value.tracks, () => {
-  if (timeTracked.value != task.value.duration_ms && task.uid ) {
+watch(() => task.value.tracks.length, () => {
+  if (task.value.uid && task.value.duration_ms != timeTracked.value) {
     updateTask({
       uid: task.value.uid,
       duration_ms: timeTracked.value
     })
   }
 })
+
 
 const timeTrackedLabel = computed(() => {
   return task.value.tracks && !task.value.tracks.length && task.value.duration_ms ?  task.value.duration_ms : timeTracked.value
@@ -112,7 +113,6 @@ const emitSelected = (task) => {
 const isSelected = computed(( ) => {
   return currentTask.value && currentTask.value.uid == task.value.uid
 })
-
 
 const handleCommand = (commandName) => {
   switch (commandName) {

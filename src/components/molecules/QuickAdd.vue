@@ -88,6 +88,7 @@ const task = reactive({
   duration: "",
   tags: [],
   checklist: [],
+  tracks: [],
   order: 0,
   duration_ms: 0,
   done: false,
@@ -142,6 +143,7 @@ const clearForm = () => {
   task.order = 0;
   task.duration_ms = 0
   task.checklist = [];
+  task.tracks = [];
 }
 
 const save = () => {

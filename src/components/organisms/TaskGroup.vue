@@ -33,7 +33,8 @@
               :icons="icons"
               :show-select="showSelect"
               :show-controls="showControls"
-              :currentTask="currentTask"
+              :current-task="currentTask"
+              :current-timer="currentTimer"
               @selected="emitSelected(task)"
               @deleted="emitDeleted(task)"
               @edited="emitEdited(task)"
@@ -71,11 +72,12 @@ const props = defineProps({
     showControls: Boolean,
     showSelect: Boolean,
     currentTask: {
-      type: Boolean,
+      type: Object,
       default() {
         return {}
       }
     },
+    currentTimer: Object,
     maxHeight: {
       default: 340,
       type: Number
@@ -100,7 +102,7 @@ const emit = defineEmit({
   change: Object
 })
 
-const { tasks, search, showSelect, currentTask } = toRefs(props)
+const { tasks, search, showSelect, currentTask, currentTimer } = toRefs(props)
 
 const { filteredList } = useFuseSearch(search, tasks);
 

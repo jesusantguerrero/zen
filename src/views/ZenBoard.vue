@@ -78,6 +78,7 @@
             :show-select="true"
             :show-controls="true"
             :current-task="currentTask"
+            :current-timer="currentTimer"
             @deleted="destroyTask"
             @edited="setTaskToEdit"
             @selected="setCurrentTask"
