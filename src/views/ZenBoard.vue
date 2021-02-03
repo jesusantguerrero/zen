@@ -109,6 +109,7 @@
       v-model:is-open="state.isTaskModalOpen" 
       :task-data="taskToEdit" 
       @saved="onEdittedTask"
+      @closed="taskToEdit = null"
     >
     </task-modal>
 
