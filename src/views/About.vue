@@ -26,7 +26,11 @@
               </p>
 
               <div class="information-container">
-                  <div class="prose lg:prose-md w-full max-w-full"/>
+                <about-form v-if="state.selectedSection=='info'" hide-button="true"></about-form>
+                <help-view v-if="state.selectedSection=='tutorial'" hide-button="true"></help-view>
+                <div v-if="state.selectedSection=='license'" class="text-center font-bold mt-10">
+                    <h2 class="text-xl"> MIT </h2>
+                </div>
               </div>
 
               <div class="logos"></div>
@@ -45,6 +49,9 @@
 </template>
 
 <script setup>
+import WelcomeForm from "../components/molecules/WelcomeForm.vue"
+import AboutForm from "../components/molecules/AboutForm.vue"
+import HelpView from "../components/molecules/HelpView.vue"
 import { reactive } from "vue";
 
 const state = reactive({
@@ -53,8 +60,7 @@ const state = reactive({
     sections: {
         info: "Information",
         tutorial: "Tutorial",
-        thanks: "Thanks to",
-        licence: "License",
+        license: "License",
     },
 })
 

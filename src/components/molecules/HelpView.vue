@@ -26,7 +26,7 @@
         </div>
     </div>
 
-    <div class="text-center mb-10">
+    <div class="text-center mb-10" v-if="!hideButton">
         <button class="bg-green-400 text-white hover:bg-green-500 focus:outline-none rounded-md px-5 py-1" @click="emit('closed')">
             Start Building
             <i class="fa fa-chevron-right ml-2"></i>
@@ -37,9 +37,13 @@
 
 
 <script setup>
-import { computed, defineEmit, reactive} from "vue"
+import { computed, defineEmit, defineProps, reactive} from "vue"
 const emit = defineEmit({
     closed: Function
+})
+
+defineProps({
+    hideButton: Boolean
 })
 
 const state = reactive({
