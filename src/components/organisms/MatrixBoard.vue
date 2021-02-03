@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-20 md:block lg:flex">
+  <div class="mb-20 md:block lg:flex matrix">
     <div 
         class="grid md:grid-cols-2 md:gap-10" 
         :class="{'w-full':isLineUp, 'sm:w-full lg:w-8/12': isMatrix}"
@@ -9,6 +9,7 @@
             v-if="!isLineUp || isLineUpMatrix(matrix)"
             :title="matrix"
             :type="matrix"
+            :search="search"
             :tasks="state.quadrants[matrix].tasks"
             :color="state.quadrants[matrix].color"
             :handle-mode="true"
@@ -33,6 +34,7 @@
             title="backlog"
             type="backlog"
             :tasks="state.quadrants['backlog'].tasks"
+            :search="search"
             color="text-gray-400"
             :handle-mode="true"
             :is-quadrant="true"
@@ -67,7 +69,8 @@ const props = defineProps({
     mode: {
         type: String,
         default: 'matrix'
-    }
+    },
+    search: String
 })
 
 const isBacklog = computed(() => {

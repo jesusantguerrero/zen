@@ -4,9 +4,20 @@
       <h2 class="text-2xl font-bold text-gray-400 text-left">
          Standup
       </h2>  
-      <div class="space-x-2">
-         <input type="text" placeholder="search in matrix">
-         <button>Filters</button>
+      <div class="space-x-2 flex">
+          <div class="flex itemx-center">
+              <input type="search" 
+                v-model.trim="state.search" 
+                class="px-2 text-md h-10 rounded-md focus:outline-none border-2 border-gray-200"
+                placeholder="Search task"
+
+              >
+          </div>
+          <el-date-picker
+            v-model.lazy="state.date"
+            type="date"
+          >
+          </el-date-picker>
          <button title="help" class="bg-gray-700 text-white px-5 py-1 rounded-md ml-2">
             <i class="fa fa-question"></i>
          </button>
@@ -15,9 +26,11 @@
   <div class="flex">
     <div class="w-full">
         <task-group
-            title="Committed tasks yesterday"
+            title="Committed tasks"
             type="backlog"
+            :search="state.search"
             :tasks="state.committed"
+            :show-controls="false"
             color="text-gray-400"
             :max-height="0"
             :is-quadrant="true"
@@ -30,21 +43,27 @@
 </template>
 
 <script setup>
-import { defineProps, reactive } from 'vue'
+import { reactive, watch } from 'vue'
 import { useTaskFirestore } from '../utils/useTaskFirestore'
 import TaskGroup from "../components/organisms/TaskGroup.vue"
 import QuickAdd from "../components/molecules/QuickAdd.vue"
 import TimeTracker from "../components/organisms/TimeTracker.vue"
-
 // state and ui
 const state = reactive({
   committed: [],
+  date: new Date(),
+  search: ""
 })
 
 // tasks manipulation
 const  { getCommitedTasks } = useTaskFirestore()
-getCommitedTasks().then(tasks => {
-  state.committed = tasks;
-})
+
+
+watch(() => state.date , () => {
+  getCommitedTasks(state.date).then(tasks => {
+    state.committed = tasks;
+  })
+}, { immediate: true })
+
 
 </script>

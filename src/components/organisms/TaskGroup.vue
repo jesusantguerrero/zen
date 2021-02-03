@@ -32,6 +32,7 @@
               :handle-mode="handleMode"
               :icons="icons"
               :show-select="showSelect"
+              :show-controls="showControls"
               :currentTask="currentTask"
               @selected="emitSelected(task)"
               @deleted="emitDeleted(task)"
@@ -67,6 +68,7 @@ const props = defineProps({
     icons: Array,
     handleMode: Boolean,
     search: String,
+    showControls: Boolean,
     showSelect: Boolean,
     currentTask: {
       type: Boolean,
@@ -153,30 +155,32 @@ const toggleExpanded = () => {
   overflow: auto;
 }
 
-.dragArea {
-  min-height: 200px;
-
-  &.empty {
-    &::after {
-      width: 100%;
-      height: 100%;
-      position: relative;
-    }
-    &.todo::after {
-      @apply text-gray-400 font-bold;
-      content: "Important & Urgent Tasks"
-    }
-    &.schedule::after {
-      @apply text-gray-400 font-bold;
-      content: "Important but not urgent"
-    }
-    &.delegate::after {
-      @apply text-gray-400 font-bold;
-      content: "Urgent but not important"
-    }
-    &.delete::after {
-      @apply text-gray-400 font-bold;
-      content: "not Important & not urgent"
+.matrix {
+  .dragArea {
+    // min-height: 200px;
+  
+    &.empty {
+      &::after {
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+      &.todo::after {
+        @apply text-gray-400 font-bold;
+        content: "Important & Urgent Tasks"
+      }
+      &.schedule::after {
+        @apply text-gray-400 font-bold;
+        content: "Important but not urgent"
+      }
+      &.delegate::after {
+        @apply text-gray-400 font-bold;
+        content: "Urgent but not important"
+      }
+      &.delete::after {
+        @apply text-gray-400 font-bold;
+        content: "not Important & not urgent"
+      }
     }
   }
 }

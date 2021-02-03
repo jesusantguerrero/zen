@@ -6,18 +6,26 @@
          Heisenhower Matrix
       </h2>  
       <div class="space-x-2">
-         <input type="text" placeholder="search in matrix">
-         <button>Filters</button>
+         <input type="search" 
+            v-model.trim="search" 
+            class="px-2 text-md h-10 rounded-md focus:outline-none border-2 border-gray-200"
+            placeholder="Search task"  
+         >
          <button title="help" class="bg-gray-700 text-white px-5 py-1 rounded-md ml-2">
             <i class="fa fa-question"></i>
          </button>
       </div>
    </div>
 
-   <matrix-board></matrix-board>
+   <matrix-board :search="search">
+
+   </matrix-board>
 </div>
 </template>
 
 <script setup>
+import { ref } from "vue"
 import MatrixBoard from "../components/organisms/MatrixBoard.vue"
+
+const search = ref("")
 </script>
