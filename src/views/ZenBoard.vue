@@ -1,9 +1,11 @@
 <template>
   <div class="pt-24 md:pt-28 pb-20 mx-5 md:mx-28">
     <div class="text-left md:flex">
-      <div class="zen__view md:w-8/12 md:mr-28">
+      <div class="zen__view md:block md:w-8/12 md:mr-28"
+        :class="[state.mobileMode == 'zen' ? 'block' : 'hidden']"
+      >
         <header class="flex justify-between"> 
-          <h1 class="hidden md:block text-2xl font-bold text-gray-400"> 
+          <h1 class="md:block text-2xl font-bold text-gray-400"> 
             {{ 'Main task' || 'No task selected'}}
             <!-- <span 
               class="text-sm ml-4 select-none cursor-pointer text-gray-600 hover:text-blue-400 transition-colors"
@@ -11,7 +13,6 @@
             </span> -->
           </h1>
 
-          <task-select v-model="currentTask" :items="state.todo" class="md:hidden mr-5" />
           <time-tracker 
             :task="currentTask"
             v-model:currentTimer="currentTimer"
@@ -48,14 +49,16 @@
         </div>
       </div>
 
-      <div class="zen__comming-up hidden mt-10 md:block md:mt-0 md:w-4/12 md:ml-5">
+      <div class="zen__comming-up md:block md:mt-0 md:w-4/12 md:ml-5"
+        :class="[state.mobileMode == 'lineup' ? 'block' : 'hidden']"
+      >
         <header class="mb-2 flex justify-between text-gray-400 font-bold items-center">
             <h1 class="text-2xl"> Line Up</h1>
 
             <div class="flex itemx-center">
                 <input type="search" 
                   v-model.trim="state.search" 
-                  class="px-2 text-md h-8 rounded-md focus:outline-none border-2 border-gray-200"
+                  class="px-2 text-md h-10 rounded-md focus:outline-none border-2 border-gray-200"
                   placeholder="Search task"  
                 >
             </div>
@@ -73,6 +76,7 @@
             :tasks="state.todo"
             :search="state.search"
             :show-select="true"
+            :show-controls="true"
             :current-task="currentTask"
             @deleted="destroyTask"
             @edited="setTaskToEdit"
@@ -86,6 +90,7 @@
             title="Schedule"
             :tasks="state.schedule"
             :active="false"
+            :show-controls="true"
             :search="state.search"
             type="schedule"
             class="opacity-60 hover:opacity-100  mt-6 py-3"
@@ -99,12 +104,24 @@
     </div>
 
     <welcome-modal :is-open="state.isWelcomeOpen" @closed="closeWelcomeModal"></welcome-modal>
+    
     <task-modal 
       v-model:is-open="state.isTaskModalOpen" 
       :task-data="taskToEdit" 
       @saved="onEdittedTask"
+      @closed="taskToEdit = null"
     >
     </task-modal>
+
+    <!-- mobile nav -->
+    <div class="md:hidden bg-gray-600 text-white flex h-10 fixed bottom-0 w-full left-0">
+      <div 
+      class="text-xl font-bold text-center w-full h-full my-auto flex items-center justify-center"
+      :class="{'bg-gray-900': state.mobileMode == 'zen'}" 
+      @click="state.mobileMode='zen'">Zen</div>
+      <div class="text-xl font-bold text-center h-full w-full my-auto flex items-center justify-center" :class="{'bg-gray-900': state.mobileMode == 'lineup'}" 
+        @click="state.mobileMode='lineup'">Line Up</div>
+    </div>
   </div>
 </template>
 
@@ -137,7 +154,8 @@ const state = reactive({
   isWelcomeOpen: isWelcomeOpen,
   isTaskModalOpen: false,
   track: null,
-  search: ""
+  search: "",
+  mobileMode: 'zen'
 })
 
 const toggleReminder = () => {

@@ -7,12 +7,14 @@
         content-class="md:w-5/12"
     >
         <div class="w-full bg-white rounded-md modal__content">
-            <div class="modal__header flex justify-between px-5 py-4">
-                <h3> {{ title }} </h3>
-                <button @click="isOpenLocal=false">
-                    <i class="fa fa-times"></i>
-                </button>
-            </div>
+            <slot name="title">
+                <div class="modal__header flex justify-between px-5 py-4">
+                    <h3> {{ title }} </h3>
+                    <button @click="isOpenLocal=false">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+            </slot>
             <div class="modal__body ic-scroller">
                 <slot name="body"></slot>
             </div>

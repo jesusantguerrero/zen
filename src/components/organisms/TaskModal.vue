@@ -1,6 +1,11 @@
 <template>
 <div>
   <modal-base v-model:is-open="isOpenLocal" title="Edit task">
+      <template #title>
+        <div>
+          
+        </div>
+      </template>
       <template #body>
           <form 
               class="task-form mb-2 bg-white border-transparent border-2 px-4 py-3 rounded-md items-center cursor-default"
@@ -29,8 +34,9 @@
                           v-model="task.due_date" 
                       />    
                       </div>
-                      <div>
-                        <i class="fa fa-trash"></i>
+
+                      <div class="text-xl cursor-pointer hover:text-red-400 transition-colors">
+                        <i class="fa fa-times my-auto" @click="close()"></i>
                       </div>
                   </div>
               </div>
@@ -85,7 +91,8 @@ const props = defineProps({
 
 const emit = defineEmit({
     "update:isOpen": Boolean,
-    "saved": Object
+    "saved": Object,
+    "closed": Boolean
 })
 
 const isOpenLocal = ref(false)
@@ -132,7 +139,7 @@ const isReminder = computed(() => {
 })
 
 const icon = computed(() => {
-  return props.mode == 'reminder' ? 'fa fa-bell' : 'fa fa-plus'
+  return 'fa fa-edit'
 })
 
 const typeColor = computed(() => {
@@ -163,6 +170,7 @@ const { updateTask } = useTaskFirestore()
 const save = () => {
   const formData =  {...task}
   formData.tracks = [];
+  formData.due_date = formData.due_date && typeof formData.due_date != 'string' ? formatDate(formData.due_date, "yyyy-MM-dd") : formData.due_date
   updateTask(task).then(() => {
     emit('saved', task)
     clearForm()
@@ -170,6 +178,12 @@ const save = () => {
   }).catch(e => {
     console.log(e)
   })
+}
+
+const close = () => {
+    emit('closed')
+    clearForm()
+    isOpenLocal.value = false
 }
 </script>
 

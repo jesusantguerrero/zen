@@ -36,14 +36,14 @@
       <!-- <div class="mx-2 text-gray-400 hover:text-gray-600">
         <i class="fa fa-tags"></i>
       </div> -->
-      <el-dropdown trigger="click" @command="handleCommand">
+      <el-dropdown trigger="click" @command="handleCommand" v-if="showControls">
         <div class="mx-2 text-gray-400 hover:text-gray-600">
           <i class="fa fa-ellipsis-v"></i>
         </div>
       <template #dropdown>
         <el-dropdown-menu>
           <el-dropdown-item command="edit" icon="el-icon-edit">Edit</el-dropdown-item>
-          <el-dropdown-item command="delete" icon="el-icon-delete">Delete {{ type }}</el-dropdown-item>
+          <el-dropdown-item command="delete" icon="el-icon-delete">Delete </el-dropdown-item>
           <el-dropdown-item command="up" icon="el-icon-arrow-up" v-if="task.matrix=='schedule'">Move Up</el-dropdown-item>
           <el-dropdown-item command="down" icon="el-icon-arrow-down" v-if="task.matrix=='todo'">Move down</el-dropdown-item>
         </el-dropdown-menu>
@@ -64,7 +64,8 @@ const props = defineProps({
   type: String,
   currentTask: Object,
   handleMode: Boolean,
-  showSelect: Boolean
+  showSelect: Boolean,
+  showControls: Boolean
 })
 
 const { task, currentTask, type } = toRefs(props)

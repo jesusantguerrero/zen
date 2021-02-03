@@ -1,6 +1,7 @@
 <template>
+<div class="hidden md:fixed bottom-0 shadow-md w-full bg-gray-700 text-white  px-2 md:px-32">
   <div
-    class="flex items-center zen justify-between h-8 fixed bottom-0 shadow-md w-full bg-gray-700 text-white  px-2 md:px-32"
+    class="flex items-center zen justify-between h-8"
   >
     <div class="w-full text-center">
       Zen.
@@ -13,6 +14,7 @@
       2021
     </div>
   </div>
+</div>
 </template>
 
 <script setup>

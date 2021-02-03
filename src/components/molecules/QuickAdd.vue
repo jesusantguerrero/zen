@@ -30,8 +30,8 @@
           />    
         </div>
 
-        <div class="mx-2 text-gray-400 hover:text-gray-600">
-          <tags-select /> 
+        <div class="mx-2 text-gray-400 hover:text-red-400 text-lg" @click="clearForm()">
+          <i class="fa fa-times"></i>
         </div>
       </div>
     </div>
