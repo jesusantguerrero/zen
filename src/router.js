@@ -58,9 +58,9 @@ const myRouter = createRouter({
 myRouter.beforeEach(async (to, from, next) => {
   const user = await isAuthenticated();
   if (to.meta.requiresAuth !== false && !user) {
-    next('login')
+    next({name: "login"})
   } else if (to.meta.requiresAuth == false && user) {
-    next('home')
+    next({name: "home"})
   }else {
     next();
   }

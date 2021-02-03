@@ -23,10 +23,9 @@
 </template>
 
 <script setup>
-import { computed, defineProps, toRefs, watch, ref } from "vue";
-import { useDateTime } from "../../utils/useDateTime"
+import { defineProps, toRefs } from "vue";
+import { useTracker } from "../../utils/useTracker"
 
-const { formatDurationFromMs } = useDateTime()
 const props = defineProps({
   task: {
     type: Object,
@@ -38,34 +37,7 @@ const props = defineProps({
 
 const { task, currentTimer } = toRefs(props)
 
-const savedTime = computed(() => {
-  if (task.value.tracks) {
-    const time = task.value.tracks.reduce((milliseconds, task)=> {
-      return milliseconds + Number(task.duration_ms || 0);
-    }, 0)
-    
-    return time;
-  } 
-  return 0 
-})
-
-const activeTimer = ref(0);
-
-const getActiveTimer = () => {
-    const duration = currentTimer && currentTimer.value && currentTimer.value.currentTime
-    if (duration) {
-      return duration.as("milliseconds");
-    }
-    return 0;
-}
-
-watch(() => currentTimer.value.currentTime, () => {
-  activeTimer.value = getActiveTimer()
-}, { immediate: true })
-
-const timeTracked = computed(() => {
-    return formatDurationFromMs(savedTime.value + activeTimer.value).toFormat("hh:mm:ss");
-})
+const { timeTracked } = useTracker(task, currentTimer)
 </script>
 
 <style></style>

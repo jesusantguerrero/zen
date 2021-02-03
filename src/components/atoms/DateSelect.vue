@@ -60,6 +60,11 @@ const focusInput = (evt) => {
     .el-date-editor--date, .el-input__inner, .el-input__suffix, .el-input__preffix {
         width: 1px !important;
         opacity: 0;
+        padding: 0 0 0 0 !important;
+    }
+
+    .el-input__prefix {
+        width: 0;
     }
 }
 </style>

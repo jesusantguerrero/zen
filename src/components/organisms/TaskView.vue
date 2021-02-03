@@ -19,15 +19,11 @@
           
           <div class="mx-2">
               <i class="fa fa-calendar mr-2 text-gray-400 hover:text-gray-600"></i>
-              <span> {{ formattedDate }}</span>
+              <span> {{ task.due_date}}</span>
           </div>
 
-          <div class="mx-2 text-gray-400 hover:text-gray-600" @click="emitDeleted">
-              <i class="fa fa-chevron-right"></i>
-          </div>
-          
-          <div class="mx-2 text-gray-400 hover:text-gray-600" @click="emitDeleted">
-              <i class="fa fa-ellipsis-v"></i>
+          <div class="mx-2 text-gray-400 hover:text-red-400" @click="emitClosed">
+              <i class="fa fa-times"></i>
           </div>
       </div>
     </h1>
@@ -46,11 +42,9 @@
 </template>
 
 <script setup>
-import { defineProps, toRefs, defineEmit } from "vue";
+import { defineProps, toRefs, defineEmit, ref } from "vue";
 import { useDateTime } from "../../utils/useDateTime";
 import ChecklistContainer from "./ListContainer.vue";
-
-const { formatDate, formattedDate } = useDateTime();
 
 const emit = defineEmit({
   done: (task) => {}
@@ -66,6 +60,8 @@ const props = defineProps({
 });
 
 const { task } = toRefs(props)
+
+const { formatDate } = useDateTime();
 
 const markAsDone = () => {
   task.value.commit_date = formatDate();

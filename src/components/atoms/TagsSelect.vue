@@ -53,7 +53,7 @@
 </template>
 
 <script setup>
-import { computed, defineEmit, reactive, toRefs, watch, ref, onMounted } from "vue";
+import { computed, defineEmit, reactive, watch, ref } from "vue";
 
 const props = defineProps({
     tags: Array,

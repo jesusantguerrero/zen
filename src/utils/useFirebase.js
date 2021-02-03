@@ -47,7 +47,9 @@ export const loginWithProvider = async(providerName) => {
         firebaseState.user = result.user
     })
 
-    firebase.auth().signInWithPopup(getProvider(providerName))
+    firebase.auth().signInWithPopup(getProvider(providerName)).then(() => {
+        location.reload()
+    })
 }
 
 const getProvider = (providerName) => {

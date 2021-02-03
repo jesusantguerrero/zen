@@ -12,8 +12,7 @@
       </div>
     </div>
 
-    <slot name="addForm"></slot>
-    <el-collapse-transition>
+      <slot name="addForm"></slot>
       <div class="list-group w-full ic-scroller" ref="listGroup">
         <draggable
           class="dragArea" 
@@ -26,6 +25,7 @@
           @move="emitMove"
           @change="emitChange($event, type)"
           v-show="isExpanded"
+          v-if="filteredList.length"
         >
           <task-item 
             v-for="task in filteredList" 
@@ -34,6 +34,8 @@
             :type="type"
             :handle-mode="handleMode"
             :icons="icons"
+            :show-select="showSelect"
+            :currentTask="currentTask"
             @selected="emitSelected(task)"
             @deleted="emitDeleted(task)"
             @edited="emitEdited(task)"
@@ -42,7 +44,6 @@
           />
         </draggable>
       </div>
-    </el-collapse-transition>
   </div>
 </template>
 
@@ -68,6 +69,13 @@ const props = defineProps({
     icons: Array,
     handleMode: Boolean,
     search: String,
+    showSelect: Boolean,
+    currentTask: {
+      type: Boolean,
+      default() {
+        return {}
+      }
+    },
     maxHeight: {
       default: 340,
       type: Number
@@ -92,7 +100,7 @@ const emit = defineEmit({
   change: Object
 })
 
-const { tasks, search } = toRefs(props)
+const { tasks, search, showSelect, currentTask } = toRefs(props)
 
 const { filteredList } = useFuseSearch(search, tasks);
 

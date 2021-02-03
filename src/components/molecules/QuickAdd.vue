@@ -41,11 +41,16 @@
         <textarea 
           v-model="task.description"
           class="task-item__description w-full pt-2 focus:outline-none" 
-          placeholder="Add a short description">
+          placeholder="Add a short description"
+          @keydown.enter.exact.stop="">
         </textarea>
         
         <div class="task-item__checklist">
           <checklist-container :items="task.checklist" :allow-edit="allowEdit"></checklist-container>
+        </div>
+
+        <div class="mt-2 text-right">
+          <button class="px-5 py-2 rounded-md focus:outline-none transition-colors bg-green-400 hover:bg-green-500 text-white " type="submit" @click.prevent="save()"> Save</button>
         </div>
       </div>
     </el-collapse-transition>
@@ -55,9 +60,11 @@
 <script setup>
 import { computed, reactive, defineProps, defineEmit, onMounted, ref} from "vue"
 import { onClickOutside } from  "@vueuse/core"
+import { useDateTime } from "../../utils/useDateTime"
 import DateSelect from "../atoms/DateSelect.vue"
 import TagsSelect from "../atoms/TagsSelect.vue"
 import ChecklistContainer from "../organisms/ListContainer.vue";
+import { ElNotification } from "element-plus";
 
 const props = defineProps({
     mode: {
@@ -81,6 +88,8 @@ const task = reactive({
   duration: "",
   tags: [],
   checklist: [],
+  order: 0,
+  duration_ms: 0,
   done: false,
   commit_date: null,
   matrix: props.type || "backlog",
@@ -130,11 +139,23 @@ const clearForm = () => {
   task.duration = "";
   task.matrix = props.type || "backlog";
   task.tags = [];
+  task.order = 0;
+  task.duration_ms = 0
   task.checklist = [];
 }
 
 const save = () => {
-  emit('saved', {...task})
+  if (!task.title) {
+    ElNotification({
+      title: "Missing title",
+      message: "Title is required for a task"
+    })
+    return
+  }
+  const { formatDate } = useDateTime()
+  const formData = { ...task }
+  formData.due_date = formData.due_date ? formatDate(formData.due_date, "yyyy-MM-dd") : ""
+  emit('saved', formData)
   clearForm()
 }
 

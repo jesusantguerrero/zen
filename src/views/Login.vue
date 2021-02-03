@@ -99,7 +99,8 @@
 
 
 <script setup>
-import { reactive, ref, computed } from "vue";
+import { reactive, ref, computed, nextTick } from "vue";
+import { useRouter } from "vue-router"
 import { register, login, loginWithProvider }  from "../utils/useFirebase";
 import { ElNotification } from "element-plus"
 
@@ -119,13 +120,17 @@ const currentYear = computed(() =>{
     return date.getFullYear();
 })
 
+const { push } = useRouter()
 // auth manipulation
 const loginUser = () => {
     const loginFunction = mode.value == 'login' ? login : register;
     isLoading.value = true;
 
-    loginFunction(formData.email, formData.password).catch(errorMessage => {
-
+    loginFunction(formData.email, formData.password).then(() =>{
+        nextTick(() => {
+            location.reload()
+        })
+    }).catch(errorMessage => {
         ElNotification({
             title: "Error",
             message: errorMessage.message,

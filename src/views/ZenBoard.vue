@@ -5,9 +5,10 @@
         <header class="flex justify-between"> 
           <h1 class="hidden md:block text-2xl font-bold text-gray-400"> 
             {{ 'Main task' || 'No task selected'}}
-            <span 
+            <!-- <span 
               class="text-sm ml-4 select-none cursor-pointer text-gray-600 hover:text-blue-400 transition-colors"
-               @click="toggleReminder"> Add Reminder <i class="fa fa-bell"></i></span>
+               @click="toggleReminder"> Add Reminder <i class="fa fa-bell"></i>
+            </span> -->
           </h1>
 
           <task-select v-model="currentTask" :items="state.todo" class="md:hidden mr-5" />
@@ -54,12 +55,9 @@
             <div class="flex itemx-center">
                 <input type="search" 
                   v-model="state.search" 
-                  class="px-2 text-sm h-8 rounded-md focus:outline-none border-2 border-gray-200"
-                  placeholder="search task"  
+                  class="px-2 text-md h-8 rounded-md focus:outline-none border-2 border-gray-200"
+                  placeholder="Search task"  
                 >
-              <button class="text-2xl"> 
-                <i class="fa fa-chevron-down ml-2"></i>
-              </button>
             </div>
         </header>
 
@@ -74,6 +72,8 @@
             class="mt-6 py-3"
             :tasks="state.todo"
             :search="state.search"
+            :show-select="true"
+            :current-task="currentTask"
             @deleted="destroyTask"
             @edited="setTaskToEdit"
             @selected="setCurrentTask"
@@ -83,8 +83,8 @@
           </task-group>
           
           <task-group
-            title="Scheduled"
-            :tasks="state.scheduled"
+            title="Schedule"
+            :tasks="state.schedule"
             :active="false"
             :search="state.search"
             type="schedule"
@@ -93,7 +93,6 @@
             @edited="setTaskToEdit"
             @up="moveTo($event, 'todo')"
           >
-
           </task-group>
         </div>
       </div>
@@ -103,8 +102,9 @@
     <task-modal 
       v-model:is-open="state.isTaskModalOpen" 
       :task-data="taskToEdit" 
-      @closed="closeWelcomeModal"
-    ></task-modal>
+      @saved="onEdittedTask"
+    >
+    </task-modal>
   </div>
 </template>
 
@@ -132,7 +132,7 @@ const isWelcomeOpen = !firebaseState.settings || !firebaseState.settings.hide_we
 // state and ui
 const state = reactive({
   todo: [],
-  scheduled: [],
+  schedule: [],
   showReminder: false,
   isWelcomeOpen: isWelcomeOpen,
   isTaskModalOpen: false,
@@ -156,6 +156,12 @@ const setTaskToEdit = (task) => {
   taskToEdit.value = task
   state.isTaskModalOpen = false;
   state.isTaskModalOpen = true;
+}
+const onedittedtask = (task) => {
+  debugger
+  index = state[task.matrix].findIndex(localTask => localTask.uid == task.uid)
+  state[task.matrix][index] = task;
+  taskToEdit.value = null
 }
 
 if (firebaseState.settings && firebaseState.settings.last_task_uid) {
@@ -197,7 +203,7 @@ getTaskByMatrix('todo').then(tasks => {
 });
 
 getTaskByMatrix('schedule').then(tasks => {
-  state.scheduled = tasks
+  state.schedule = tasks
 });
 
 const addTask = (task) => {
@@ -211,7 +217,7 @@ const destroyTask = async (task) => {
   const canDelete = await ElMessageBox.confirm("Are you sure you want to delete this task?", "Delete Task")
   if (canDelete) {
     deleteTask(task).then(() => {
-      state.todo = state.todo.filter(localTask => task.uid != localTask.uid)
+      state[task.matrix] = state[task.matrix].filter(localTask => task.uid != localTask.uid)
       ElNotification({
         type: "success",
         message: "Task deleted",
@@ -222,16 +228,15 @@ const destroyTask = async (task) => {
 }
 
 const moveTo = async (task, matrix) => {
-    const oldMatrix = task.matrix;
+    const oldMatrix = task.matrix
     task.matrix = matrix
     updateTask(task).then(() => {
       state[oldMatrix] = state[oldMatrix].filter(localTask => task.uid != localTask.uid)
-      state[oldMatrix] = state.todo.filter(localTask => task.uid != localTask.uid)
-      state.todo = state.todo.filter(localTask => task.uid != localTask.uid)
+      state[matrix].push(task)
       ElNotification({
         type: "success",
-        message: "Task deleted",
-        title: "Task deleted"
+        message: "Task moved",
+        title: "Task moved"
       })
 
     })
