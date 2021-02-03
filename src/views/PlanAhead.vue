@@ -1,7 +1,7 @@
 <template>
 <div class="pt-24 mx-5 md:pt-28 md:mx-10 lg:mx-28">
 
-  <div class="flex justify-between mb-10">
+  <div class="md:flex justify-between mb-10">
     <div class="text-2xl font-bold divide-x-2 flex items-center">
       <div class="pr-2">
         Plan Ahead
@@ -30,7 +30,7 @@
       </button>
     </div>
 
-    <div class="flex justify-end space-x-2">
+    <div class="flex justify-end mt-5 space-x-2 md:mt-0">
       <button @click="previuosPosition" v-if="!isFirstPosition" class="bg-gray-400 text-white hover:bg-gray-700 px-5 py-2 w-40 rounded-md focus:outline-none">
         Previous 
       </button>
