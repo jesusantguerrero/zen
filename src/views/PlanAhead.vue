@@ -2,22 +2,36 @@
 <div class="pt-24 mx-5 md:pt-28 md:mx-10 lg:mx-28">
 
   <div class="flex justify-between mb-10">
-    <h4 class="text-2xl font-bold"> Plan Ahead</h4>
-    <div class="flex space-x-2">
-    <div
-      class="h-2 w-40 rounded-md"
-      v-for="(section, index) in state.list"
-      :class="[index <= state.position ? 'bg-green-400' : 'bg-gray-400']"
-      :key="section"
-    >
-      <div class="mt-2 capitalize font-bold">
-        {{  section }}
+    <div class="text-2xl font-bold divide-x-2 flex items-center">
+      <div class="pr-2">
+        Plan Ahead
+      </div> 
 
+      <div class="capitalize pl-2"> 
+        <span>
+          {{ state.list[state.position] }}
+        </span>
+        <div class="flex space-x-2 w-full">
+          <div
+            class="h-1 w-full"
+            v-for="(section, index) in state.list"
+            :class="[index <= state.position ? 'bg-green-400' : 'bg-gray-400']"
+            :key="section"
+          >
+            <div class="mt-2 capitalize font-bold">
+
+            </div>
+          </div>
+        </div>
       </div>
+
+      <button class="ml-5 bg-gray-700 px-5 py-1 text-white rounded-full">
+        <i class="fa fa-question text-sm float-right"></i>
+      </button>
     </div>
-  </div>
+
     <div class="flex justify-end space-x-2">
-      <button @click="previuosPosition" class="bg-gray-600 text-white hover:bg-gray-700 px-5 py-2 w-40 rounded-md focus:outline-none">
+      <button @click="previuosPosition" v-if="!isFirstPosition" class="bg-gray-400 text-white hover:bg-gray-700 px-5 py-2 w-40 rounded-md focus:outline-none">
         Previous 
       </button>
       <button @click="nextPosition" v-if="!isLastPosition" class="bg-gray-600 hover:bg-gray-700 text-white px-5 py-2 w-40 rounded-md focus:outline-none"> 
@@ -50,6 +64,10 @@ const currentMode = computed(() => {
 
 const isLastPosition = computed(() => {
   return state.position == state.list.length - 1;
+})
+
+const isFirstPosition = computed(() => {
+  return state.position == 0;
 })
 
 const nextPosition = () => {

@@ -27,11 +27,11 @@
         </div>
       </div>
 
-      <button
+      <!-- <button
         class="text-sm ml-4 hover:text-md text-gray-400 cursor-pointer mt-2"
       >
         <i class="fa fa-ellipsis-v"></i>
-      </button>
+      </button> -->
     </div>
   </div>
 </template>

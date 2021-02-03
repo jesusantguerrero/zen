@@ -82,7 +82,7 @@ export function useTaskFirestore() {
         await db.collection(collectionName)
         .where("user_uid", "==", firebaseState.user.uid)
         .where("done", "==", false)
-        .orderBy("order")
+        // .orderBy("order")s
         .get()
         .then(querySnapshot => {
             querySnapshot.forEach((doc) => {

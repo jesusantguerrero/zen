@@ -51,6 +51,7 @@
 </template>
 
 <script setup>
+import { ElNotification } from "element-plus";
 import { defineProps, ref } from "vue";
 import { VueDraggableNext as Draggable } from "vue-draggable-next"
 
@@ -70,6 +71,13 @@ const deleteItem = (index) => {
     props.items.splice(index, 1);
 }
 const saveItem = () => {
+    if (!checkItem.value.title) {
+        ElNotification({
+            title: "Missing Title",
+            message: "Title is required for a checklist item"
+        })
+        return
+    }
     props.items.push(checkItem.value);
     checkItem.value = {
         title: "",

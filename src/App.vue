@@ -1,24 +1,27 @@
 <template>
   <div class="text-center">
     <app-header :user="firebaseState.user" class="z-50" @logout="logoutUser" v-if="firebaseState.user"/>
-    <router-view>
-
-    </router-view>
+    <router-view> </router-view>
     <app-footer v-if="firebaseState.user"></app-footer>
   </div>
 </template>
 
 <script setup>
+import { nextTick, ref } from 'vue'
+import { useRouter } from "vue-router"
 import AppHeader from './components/organisms/AppHeader.vue'
 import AppFooter from './components/organisms/AppFooter.vue'
-import { ref } from 'vue'
 import { firebaseState, logout, setLoaded } from "./utils/useFirebase"
 
 
 const isLoaded = ref(false);
-
+const { push } = useRouter();
 const logoutUser = () => {
-  logout()
+  logout().then(() => {
+    nextTick(() => {
+      location.reload()
+    })
+  })
 }
 
 setLoaded(() => {

@@ -24,7 +24,7 @@ html {
     }
 
     &:before {
-        content: "\2718";
+        content: "";
         color: transparent;
         left: 5%;
         display: flex;
@@ -34,10 +34,12 @@ html {
     }
 
     &:checked, &:hover {
-        background: #655;
+        @apply bg-green-200;
+        @apply border-green-400;
+        @apply border-2;
 
         &:before {
-            content: "\2718";
+            content: "";
             color: #fff;
             left: 5%;
             display: flex;
@@ -51,9 +53,6 @@ html {
         }
     }
 
-  &:hover {
-      background: rgba(102, 85, 85, 0.527);;
-  }
 }
 
 

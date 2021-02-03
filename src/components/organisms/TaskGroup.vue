@@ -12,42 +12,41 @@
       </div>
     </div>
 
-    <slot name="addForm"></slot>
-    <el-collapse-transition>
-      <div class="list-group w-full ic-scroller" ref="listGroup">
-        <draggable
-          class="dragArea" 
-          tag="transition-group" 
-          :component-data="{name:'fade'}"
-          :sort="true"
-          :list="tasks" 
-          handle=".handle"
-          :group="{name: type, pull: true, put: true }"
-          @move="emitMove"
-          @change="emitChange($event, type)"
-          v-show="isExpanded"
-        >
-          <task-item 
-            v-for="task in filteredList" 
-            :key="task" 
-            :task="task" 
-            :type="type"
-            :handle-mode="handleMode"
-            :icons="icons"
-            @selected="emitSelected(task)"
-            @deleted="emitDeleted(task)"
-            @edited="emitEdited(task)"
-            @up="emitUp(task)"
-            @down="emitDown(task)"
-          />
-        </draggable>
-      </div>
-    </el-collapse-transition>
+      <slot name="addForm"></slot>
+      <el-collapse-transition>
+        <div class="list-group w-full ic-scroller" ref="listGroup"  v-show="isExpanded">
+          <draggable
+            class="dragArea"
+            :class="{empty: !tasks.length,  [type]: true }" 
+            :list="tasks" 
+            handle=".handle"
+            :group="{name: type, pull: true, put: true }"
+            @move="emitMove"
+            @change="emitChange($event, type)"
+          >
+            <task-item 
+              v-for="task in filteredList" 
+              :key="task" 
+              :task="task" 
+              :type="type"
+              :handle-mode="handleMode"
+              :icons="icons"
+              :show-select="showSelect"
+              :currentTask="currentTask"
+              @selected="emitSelected(task)"
+              @deleted="emitDeleted(task)"
+              @edited="emitEdited(task)"
+              @up="emitUp(task)"
+              @down="emitDown(task)"
+            />
+          </draggable>
+        </div>
+      </el-collapse-transition>
   </div>
 </template>
 
 <script setup>
-import { computed, defineProps, onMounted, reactive, ref, toRefs, watch } from "vue"
+import { defineProps, onMounted, ref, toRefs } from "vue"
 import { VueDraggableNext as Draggable } from "vue-draggable-next"
 import TaskItem from "../molecules/TaskItem.vue"
 import IconExpand from "../atoms/IconExpand.vue"
@@ -68,6 +67,13 @@ const props = defineProps({
     icons: Array,
     handleMode: Boolean,
     search: String,
+    showSelect: Boolean,
+    currentTask: {
+      type: Boolean,
+      default() {
+        return {}
+      }
+    },
     maxHeight: {
       default: 340,
       type: Number
@@ -92,7 +98,7 @@ const emit = defineEmit({
   change: Object
 })
 
-const { tasks, search } = toRefs(props)
+const { tasks, search, showSelect, currentTask } = toRefs(props)
 
 const { filteredList } = useFuseSearch(search, tasks);
 
@@ -137,7 +143,7 @@ const toggleExpanded = () => {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 :root {
 --max-height: 340px;
 }
@@ -149,6 +155,29 @@ const toggleExpanded = () => {
 
 .dragArea {
   min-height: 200px;
-  border: dashed 1px #ddd;
+
+  &.empty {
+    &::after {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    &.todo::after {
+      @apply text-gray-400 font-bold;
+      content: "Important & Urgent Tasks"
+    }
+    &.schedule::after {
+      @apply text-gray-400 font-bold;
+      content: "Important but not urgent"
+    }
+    &.delegate::after {
+      @apply text-gray-400 font-bold;
+      content: "Urgent but not important"
+    }
+    &.delete::after {
+      @apply text-gray-400 font-bold;
+      content: "not Important & not urgent"
+    }
+  }
 }
 </style>

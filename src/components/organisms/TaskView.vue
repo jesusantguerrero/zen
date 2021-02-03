@@ -6,12 +6,19 @@
       {{ task.title }}
 
       <div class="task-item__controls flex text-lg" v-if="task.title">  
-          <el-tooltip class="item" effect="dark" content="Add to zen" placement="top">
+          <el-tooltip class="item" effect="dark" content="Save changes" placement="top">
+              <div 
+                class="mx-2 text-gray-400 hover:text-gray-600 cursor-pointer"
+                @click="saveChanges()"
+              >
+              <i class="fa fa-save"> </i>
+              </div>
+          </el-tooltip>
+          <el-tooltip class="item" effect="dark" content="Mark as done" placement="top">
               <div 
                 class="mx-2 text-gray-400 hover:text-gray-600 cursor-pointer"
                 @click="markAsDone()"
                 :class="{'text-green-400 font-extrabold': task.commit_date}"
-                title="Mark as done"
               >
               <i class="fa fa-check"></i>
               </div>
@@ -19,15 +26,11 @@
           
           <div class="mx-2">
               <i class="fa fa-calendar mr-2 text-gray-400 hover:text-gray-600"></i>
-              <span> {{ formattedDate }}</span>
+              <span> {{ task.due_date}}</span>
           </div>
 
-          <div class="mx-2 text-gray-400 hover:text-gray-600" @click="emitDeleted">
-              <i class="fa fa-chevron-right"></i>
-          </div>
-          
-          <div class="mx-2 text-gray-400 hover:text-gray-600" @click="emitDeleted">
-              <i class="fa fa-ellipsis-v"></i>
+          <div class="mx-2 text-gray-400 hover:text-red-400" @click="emitClosed">
+              <i class="fa fa-times"></i>
           </div>
       </div>
     </h1>
@@ -46,14 +49,13 @@
 </template>
 
 <script setup>
-import { defineProps, toRefs, defineEmit } from "vue";
+import { defineProps, toRefs, defineEmit, ref } from "vue";
 import { useDateTime } from "../../utils/useDateTime";
 import ChecklistContainer from "./ListContainer.vue";
 
-const { formatDate, formattedDate } = useDateTime();
-
 const emit = defineEmit({
-  done: (task) => {}
+  done: Object,
+  updated: Object 
 })
 
 const props = defineProps({
@@ -67,10 +69,16 @@ const props = defineProps({
 
 const { task } = toRefs(props)
 
+const { formatDate } = useDateTime();
+
 const markAsDone = () => {
   task.value.commit_date = formatDate();
   task.value.done = true;
   emit('done', task.value)
+}
+
+const saveChanges = () => {
+  emit('updated', task.value)
 }
 </script>
 

@@ -1,40 +1,91 @@
 <template>
 <div>
-    <vue-final-modal 
-        v-model="isOpenLocal" 
-        name="welcome" 
-        classes="flex justify-center md:pt-20 w-full"
-        content-class="md:w-5/12"
-    >
-        <div class="w-full bg-white rounded-md modal__content">
-            <div class="modal__header flex justify-between px-5 py-4">
-                <h3> Edit Task</h3>
-                <button @click="isOpenLocal=false">
-                    <i class="fa fa-times"></i>
-                </button>
-            </div>
-            <div class="modal__body ic-scroller">
-                <task-form :task-data="taskData" @closed="isOpenLocal=false"></task-form>
-            </div>
-            <div class="modal__footer px-5 py-2 text-right">
-                <button class="bg-green-400 text-white focus:outline-none px-5 py-2 rounded-md"> Save </button>
-            </div>
-        </div>
-    </vue-final-modal>
+  <modal-base v-model:is-open="isOpenLocal" title="Edit task">
+      <template #body>
+          <form 
+              class="task-form mb-2 bg-white border-transparent border-2 px-4 py-3 rounded-md items-center cursor-default"
+              @submit.prevent
+              ref="taskForm"
+          >
+              <div class="flex justify-between">
+                  <div class="flex items-center w-full">
+                      <button class="mx-3 rounded-md px-2 py-1 " :class="typeColor"> 
+                          <i :class="icon"> </i>
+                      </button>
+
+                      <div class="w-full">
+                      <input 
+                          type="text" 
+                          class="focus:outline-none w-full px-2" 
+                          :placeholder="placeholder" 
+                          v-model="task.title"
+                      >
+                      </div>
+                  </div>
+
+                  <div class="task-item__controls flex items-center" v-if="!isReminder">
+                      <div class="mx-2 text-gray-400 hover:text-gray-600">
+                      <date-select 
+                          v-model="task.due_date" 
+                      />    
+                      </div>
+                      <div>
+                        <i class="fa fa-trash"></i>
+                      </div>
+                  </div>
+              </div>
+              
+              <div class="task-item__body w-full p-3">
+                  <textarea 
+                  v-model="task.description"
+                  class="task-item__description w-full pt-2 focus:outline-none h-20" 
+                  placeholder="Add a short description">
+                  </textarea>
+                  
+                  <div class="task-item__checklist">
+                  <checklist-container :items="task.checklist" :allow-edit="true"></checklist-container>
+                  </div>
+              </div>
+          </form>
+      </template>
+
+      <template #footer>
+          <div class="text-right">
+              <button class="bg-green-400 text-white focus:outline-none px-5 py-2 rounded-md" 
+              @click.prevent="save()"> 
+                Save 
+              </button>
+          </div>
+      </template>
+  </modal-base>
 </div>
 </template>
 
 <script setup>
-import { defineProps, ref, watch } from "vue"
-import TaskForm from "../molecules/TaskForm.vue"
+import { defineProps, ref, watch, computed, reactive, defineEmit, toRefs } from "vue"
+import { useTaskFirestore } from "./../../utils/useTaskFirestore"
+import DateSelect from "../atoms/DateSelect.vue"
+import TagsSelect from "../atoms/TagsSelect.vue"
+import ModalBase from "../molecules/ModalBase.vue";
+import ChecklistContainer from "./ListContainer.vue";
 
 const props = defineProps({
     isOpen: Boolean,
-    taskData: Object
+    taskData: Object,
+        mode: {
+      Type: String,
+      default: 'task'
+    },
+    placeholder: {
+      default: "Add a title"
+    },
+    type: String,
+    allowEdit: Boolean
 })
 
 const emit = defineEmit({
-    "update:isOpen": Boolean
+    "update:isOpen": Boolean,
+    "saved": Object
 })
 
 const isOpenLocal = ref(false)
@@ -47,11 +98,85 @@ watch(()=> isOpenLocal.value, (isOpen) => {
     emit("update:isOpen", isOpen)
 })
 
+// FormData
+
+const task = reactive({
+  title: "",
+  description: "",
+  due_date: "",
+  duration: "",
+  tags: [],
+  checklist: [],
+  done: false,
+  commit_date: null,
+  matrix: props.type || "backlog",
+})
+
+const { taskData } = toRefs(props);
+const setTaskData = (taskData) => {
+  if (taskData && task) {
+    const data = {...taskData};
+    Object.keys(taskData).forEach((key) => {
+      task[key] = taskData[key]
+    });
+  }
+}
+
+watch(() => taskData.value, (taskData) => {
+  setTaskData(taskData)
+}, { immediate: true, deep: true })
+
+
+const isReminder = computed(() => {
+  return props.mode == 'reminder'
+})
+
+const icon = computed(() => {
+  return props.mode == 'reminder' ? 'fa fa-bell' : 'fa fa-plus'
+})
+
+const typeColor = computed(() => {
+  const colors = {
+    todo: 'bg-green-100 text-green-500',
+    schedule: 'bg-blue-100 text-blue-500',
+    reminder: 'bg-blue-100 text-blue-500',
+    delegate: 'bg-yellow-100 text-yellow-500',
+    delete: 'bg-red-100 text-red-500',
+    backlog: 'bg-gray-100 text-gray-500'
+  }
+
+  return colors[props.type] || colors['todo']
+})
+
+// functionnality flow
+const clearForm = () => {
+  task.title = "";
+  task.description = "";
+  task.due_date = "";
+  task.duration = "";
+  task.matrix = props.type || "backlog";
+  task.tags = [];
+  task.checklist = [];
+}
+
+const { updateTask } = useTaskFirestore()
+const save = () => {
+  const formData =  {...task}
+  formData.tracks = [];
+  updateTask(task).then(() => {
+    emit('saved', task)
+    clearForm()
+    isOpenLocal.value = false
+  }).catch(e => {
+    console.log(e)
+  })
+}
 </script>
 
-<style lang="scss">
-.modal__body {
-    overflow: auto;
-    max-height: 500px;
+<style lang="scss" scoped>
+.task-form {
+  height: 400px;
+  width: 100%;
 }
 </style>
+
