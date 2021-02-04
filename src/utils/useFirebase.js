@@ -77,14 +77,12 @@ export const logout = () => {
 export const db = firebase.firestore();
 
 export const updateSettings = (settings) => {
-    updateUserSettings({
+    return updateUserSettings({
         user_uid: firebaseState.user.uid,
         uid: firebaseState.user.uid,
         ...settings
-    }).then( async () => {
-        getUserSettings(user.uid).then((settings) => {
-            firebaseState.settings =  settings
-        })
+    }).then(() => {
+        firebaseState.settings =  Object.assign(firebaseState.settings || {}, settings)
     })
 
 }

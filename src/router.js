@@ -36,6 +36,9 @@ const routes = [
     path: "/login",
     component: Login,
     name: "login",
+    props: {
+      mode: 'login'
+    },
     meta: {
       requiresAuth: false,
     },
@@ -44,6 +47,9 @@ const routes = [
     path: "/register",
     component: Login,
     name: "register",
+    props: {
+      mode: 'register'
+    },
     meta: {
       requiresAuth: false,
     },

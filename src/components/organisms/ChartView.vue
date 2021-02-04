@@ -1,5 +1,5 @@
 <template>
-    <div class="chart-container pt-2 ml-10">
+    <div class="chart-container pt-10 md:pt-2 md:ml-10">
         <div class="flex justify-between">
             <h1 class="text-gray-400 font-bold text-2xl"> Promodoro Info</h1>
             <button class="text-gray-400"> <i class="fa fa-times"></i></button>

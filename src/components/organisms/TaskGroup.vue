@@ -42,6 +42,7 @@
               @down="emitDown(task)"
             />
           </draggable>
+          <slot name="empty" v-if="!tasks.length"></slot>
         </div>
       </el-collapse-transition>
   </div>

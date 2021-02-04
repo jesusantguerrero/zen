@@ -27,8 +27,8 @@
       </div>
   </div> 
 
-  <div class="flex">
-    <div class="w-9/12">
+  <div class="md:flex">
+    <div class="w-full md:w-9/12">
         <task-group
             title="Committed tasks"
             type="backlog"
@@ -42,16 +42,21 @@
             :max-height="0"
             :is-quadrant="true"
           >
+            <template #empty v-if="!state.committed.length">
+            <div class="w-8/12 md:w-6/12 mx-auto mt-10 text-center">
+              <img src="../assets/undraw_following.svg" class="w-12/12 md:w-5/12 mx-auto"> 
+              <div class="mt-10 md:mt-5 text-gray-500 font-bold"> There's no tasks</div>
+            </div>
+          </template>
         </task-group>
     </div>
 
     <transition-group>
-      <div class="w-3/12">
+      <div class="w-full md:w-3/12">
         <chart-view 
           :series-data="currentTask.data"
           :current-task="currentTask"
         >
-
         </chart-view>
     </div>
     </transition-group>
@@ -103,3 +108,9 @@ watch(currentTask, () => {
   }
 })
 </script>
+
+<style lang="scss">
+.el-date-editor.el-input {
+  width: 100% !important;
+}
+</style>

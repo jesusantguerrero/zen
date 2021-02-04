@@ -153,14 +153,14 @@ const state = reactive({
   todo: [],
   schedule: [],
   showReminder: false,
-  isWelcomeOpen: true,
+  isWelcomeOpen: false,
   isTaskModalOpen: false,
   track: null,
   search: "",
   mobileMode: 'zen'
 })
 
-state.isWelcomeOpen = firebaseState.settings && !firebaseState.settings.hide_welcome
+state.isWelcomeOpen = state.isWelcomeOpen || !firebaseState.settings || !firebaseState.settings.hide_welcome
 
 const toggleReminder = () => {
   state.showReminder = !state.showReminder
@@ -244,7 +244,12 @@ getTaskByMatrix('schedule').then(tasks => {
   state.schedule = tasks
 });
 
+const getNextIndex = (list) => {
+  return Math.max(...list.map(item => Number(item.order || 0))) + 1;
+}
+
 const addTask = (task) => {
+  task.order = getNextIndex(state.todo);
   saveTask(task).then((uid) => {
     task.uid = uid
     state.todo.push(task);
@@ -284,11 +289,11 @@ const { push } = useRouter()
 const closeWelcomeModal = () => {
   updateSettings({
     hide_welcome: true 
-  })
-  localStorage.setItem("zen::hide-welcome", 1);
-  state.isWelcomeOpen = false;
-  push({
-    name: 'planAhead'
+  }).then(() => {
+    state.isWelcomeOpen = false;
+    push({
+      name: 'planAhead'
+    })
   })
 }
 
