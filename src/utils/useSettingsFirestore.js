@@ -22,7 +22,6 @@ export function useSettingsFirestore() {
             snap.forEach((doc) => {
                 docData = doc.data()
             })
-            console.log(docData)
             return docData;
         });
         return settings;

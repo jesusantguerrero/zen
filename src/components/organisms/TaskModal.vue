@@ -114,6 +114,7 @@ const task = reactive({
   duration: "",
   tags: [],
   checklist: [],
+  tracks: [],
   done: false,
   commit_date: null,
   matrix: props.type || "backlog",
@@ -175,8 +176,6 @@ const save = () => {
     emit('saved', task)
     clearForm()
     isOpenLocal.value = false
-  }).catch(e => {
-    console.log(e)
   })
 }
 

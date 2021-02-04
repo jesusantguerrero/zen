@@ -78,7 +78,6 @@ export function useTaskFirestore() {
     }
 
     const getUncommitedTasks = async (date) => {
-        console.log(date)
         const tasks = [];
         await db.collection(collectionName)
         .where("user_uid", "==", firebaseState.user.uid)
@@ -99,6 +98,7 @@ export function useTaskFirestore() {
             .where("user_uid", "==", firebaseState.user.uid)
             .where("done", "==", false)
             .where("matrix", "==", matrix)
+            .orderBy("order")
             .get()
             .then(querySnapshot => {
                 querySnapshot.forEach((doc) => {

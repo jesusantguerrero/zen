@@ -7,10 +7,10 @@
     <h4 class="text-center"> About Zen.</h4>
     
     <div class="mb-5">
-        Zen. is a productivity app that integrates Heisenhower Matrix, GTD principle and Promodoros in a unique way in order to boots up your dev routine.
+        Zen. is a productivity app that integrates Heisenhower Matrix, GTD principle and Promodoros in a unique way in order to improve your dev routine.
     </div>
 
-    <div class="text-center mb-10">
+    <div class="text-center mb-10" v-if="!hideButton">
         <button class="bg-gray-600 text-white hover:bg-gray-700 focus:outline-none rounded-md px-5 py-1" @click="emit('closed')">
             See how it works
             <i class="fa fa-chevron-right ml-2"></i>
@@ -21,6 +21,12 @@
 
 
 <script setup>
+import { defineProps } from "vue"
+
+
+defineProps({
+    hideButton: Boolean
+})
 const emit = defineEmit({
     closed: Function
 })

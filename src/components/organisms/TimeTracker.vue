@@ -27,11 +27,11 @@
         </div>
       </div>
 
-      <!-- <button
-        class="text-sm ml-4 hover:text-md text-gray-400 cursor-pointer mt-2"
+      <button
+        class="text-sm ml-4 hover:text-md text-gray-400 cursor-pointer mt-2 focus:outline-none"
       >
         <i class="fa fa-ellipsis-v"></i>
-      </button> -->
+      </button>
     </div>
   </div>
 </template>
@@ -40,6 +40,7 @@
 import { computed, onBeforeUnmount, reactive, watch, defineProps, defineEmit } from "vue";
 import { Duration, Interval, DateTime } from "luxon";
 import { useTrackFirestore } from "./../../utils/useTrackFirestore";
+import { usePromodoro } from "./../../utils/usePromodoro";
 import { ElNotification } from "element-plus";
 
 const { saveTrack, updateTrack } = useTrackFirestore();
@@ -54,6 +55,7 @@ const props = defineProps({
 const emit = defineEmit({
   "update:currentTimer": (timer) =>  timer
 })
+
 // state
 const track = reactive({
   uid: null,
@@ -126,10 +128,10 @@ const promodoroTotal = computed(() => {
     })
     .filter((mode) => mode.name.includes("promodoro"));
 });
-
 const currentStateColor = computed(() => {
   return state.modes[state.template[state.currentStep]].colorBg;
 });
+
 
 // Time manipulation
 const targetTime = computed(() => {
@@ -160,10 +162,12 @@ watch(() => state.now, (now) => {
   }
 });
 
+
 // controls
+const { playSound, stopSound } = usePromodoro()
 
 const toggleTracker = () => {
-  track.started_at ? stop() : play();
+  track.started_at ? stop(null, true) : play();
 };
 
 const createTrack = () => {
@@ -196,7 +200,8 @@ const play = () => {
       })
     return  
   }
-
+  
+  stopSound()
   track.started_at = new Date();
   state.now = track.started_at;
   
@@ -209,23 +214,30 @@ const play = () => {
   }, 100);
 };
 
-const stop = (shouldCallNextMode = true) => {
+const stop = (shouldCallNextMode = true, silent) => {
   track.ended_at = new Date();
   if (validatePlay() && state.now) {
     updateTrackFromLocal({...track});
   }
+
   clearTrack()
   clearInterval(state.timer);
   const wasRunning = Boolean(state.now);
+  const previousMode = state.mode;
   state.now = null;
   
-  if (wasRunning.value && state.mode == "promodoro") {
-    confirm("Stopped");
-  }
+  nextMode();
+  
+  if (!silent) {
+    playSound().then(() => {
+      if (wasRunning && previousMode == "promodoro") {
+        confirm("Stopped");
+      }
+    
+    });
 
-  if (shouldCallNextMode) {
-    nextMode();
   }
+  
 };
 
 const nextMode = () => {
@@ -249,9 +261,10 @@ const clearTrack = () => {
 };
 
 onBeforeUnmount(() => {
-    stop()    
+    stop(false, true)    
 })
 
+// Persistence
 const updateTrackFromLocal = (track) => {
   const formData = { ...track }
   const duration = Interval.fromDateTimes(formData.started_at, formData.ended_at).toDuration();
@@ -269,5 +282,3 @@ const updateTrackFromLocal = (track) => {
   })
 };
 </script>
-
-<style></style>

@@ -104,7 +104,6 @@ import { useRouter } from "vue-router"
 import { register, login, loginWithProvider }  from "../utils/useFirebase";
 import { ElNotification } from "element-plus"
 
-console.log("here")
 // state and ui
 const mode = ref('login')
 const isLoading = ref(false)
