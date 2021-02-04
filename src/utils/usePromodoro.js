@@ -71,7 +71,6 @@ export function usePromodoro() {
 
     const playSound = async (volume = 1) => {
         stopSound()
-        console.log("here")
         const audio = new Audio(`./audio/${promodoroState.alarmSound}.mp3`)
         audio.id = "audio"
         document.body.appendChild(audio);

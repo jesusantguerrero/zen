@@ -134,7 +134,6 @@ const onChange = ({ added, removed }, matrix) => {
 }
 
 const emitMove = (evt, originalEvent) => {
-  console.log(evt, 'modedasdsa')
   emit('move', evt, originalEvent)
 }
 

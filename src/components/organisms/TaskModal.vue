@@ -176,8 +176,6 @@ const save = () => {
     emit('saved', task)
     clearForm()
     isOpenLocal.value = false
-  }).catch(e => {
-    console.log(e)
   })
 }
 

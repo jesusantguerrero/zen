@@ -27,11 +27,11 @@
         </div>
       </div>
 
-      <!-- <button
-        class="text-sm ml-4 hover:text-md text-gray-400 cursor-pointer mt-2"
+      <button
+        class="text-sm ml-4 hover:text-md text-gray-400 cursor-pointer mt-2 focus:outline-none"
       >
         <i class="fa fa-ellipsis-v"></i>
-      </button> -->
+      </button>
     </div>
   </div>
 </template>
@@ -89,8 +89,8 @@ const state = reactive({
       colorBorder: "border-green-400",
     },
     promodoro: {
-      min: 0,
-      sec: 10,
+      min: 25,
+      sec: 0,
       color: "text-red-400",
       colorBg: "bg-red-400",
       colorBorder: "border-red-400",
@@ -167,7 +167,7 @@ watch(() => state.now, (now) => {
 const { playSound, stopSound } = usePromodoro()
 
 const toggleTracker = () => {
-  track.started_at ? stop() : play();
+  track.started_at ? stop(null, true) : play();
 };
 
 const createTrack = () => {
@@ -226,10 +226,10 @@ const stop = (shouldCallNextMode = true, silent) => {
   const previousMode = state.mode;
   state.now = null;
   
+  nextMode();
+  
   if (!silent) {
-    nextMode();
     playSound().then(() => {
-      
       if (wasRunning && previousMode == "promodoro") {
         confirm("Stopped");
       }

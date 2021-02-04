@@ -73,7 +73,7 @@ const { task, currentTask, currentTimer} = toRefs(props)
 const { timeTracked } = useTracker(task)
 
 watch(() => task.value.tracks.length, () => {
-  if (task.value.uid && task.value.duration_ms != timeTracked.value) {
+  if (task.value.uid && task.value.tracks.length && task.value.duration_ms != timeTracked.value) {
     updateTask({
       uid: task.value.uid,
       duration_ms: timeTracked.value

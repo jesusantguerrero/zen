@@ -199,23 +199,28 @@ watch(currentTask, () => {
 
 const onDone = (task) => {
   task.tracks = []
-  updateTask(task);
-  const taskIndex = state.todo.findIndex(localTask => localTask.uid == task.uid);
-  state.todo.splice(taskIndex, 1);
-  if (state.todo.length) {
-    currentTask.value = state.todo[0];
-    updateSettings({
-      last_task_uid: currentTask.value.uid
-    });
-  } else {
-    currentTask.value = {}
-  }
-  startFireworks()
+  delete task.duration_ms
+  
+  updateTask(task).then(() => {
+    const taskIndex = state.todo.findIndex(localTask => localTask.uid == task.uid);
+    state.todo.splice(taskIndex, 1);
+    if (state.todo.length) {
+      currentTask.value = state.todo[0];
+      updateSettings({
+        last_task_uid: currentTask.value.uid
+      });
+    } else {
+      currentTask.value = {}
+    }
+    startFireworks()
+  });
 }
 
 const onTaskUpdated = (task) => {
   const formData = {...task}
   formData.tracks = []
+  delete task.duration_ms
+  
   updateTask(formData).then(() => {
     ElNotification({
       title: "Updated",
