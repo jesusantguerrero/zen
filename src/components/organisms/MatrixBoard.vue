@@ -12,6 +12,8 @@
             :search="search"
             :tasks="state.quadrants[matrix].tasks"
             :color="state.quadrants[matrix].color"
+            :show-controls="true"
+            :allow-move="false"
             :handle-mode="true"
             @change="handleDragChanges"
             @move="onMove"

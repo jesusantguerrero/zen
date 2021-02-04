@@ -244,7 +244,12 @@ getTaskByMatrix('schedule').then(tasks => {
   state.schedule = tasks
 });
 
+const getNextIndex = (list) => {
+  return Math.max(...list.map(item => Number(item.order || 0))) + 1;
+}
+
 const addTask = (task) => {
+  task.order = getNextIndex(state.todo);
   saveTask(task).then((uid) => {
     task.uid = uid
     state.todo.push(task);

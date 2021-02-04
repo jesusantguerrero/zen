@@ -21,14 +21,12 @@
     </div>
 
     <div class="task-item__controls flex items-center">  
-      <el-tooltip class="item" effect="dark" content="Add to zen" placement="top">
-        <div class="mx-2 text-gray-400 hover:text-gray-600 cursor-pointer"
-          title="Add to zen"
-          >
-          <i class="fa fa-clock mr-1"></i>
-          <span> {{ timeTrackedLabel }}</span>
-        </div>
-      </el-tooltip>
+      <div class="mx-2 text-gray-400 hover:text-gray-600 cursor-pointer"
+        title="Time tracked"
+        >
+        <i class="fa fa-clock mr-1"></i>
+        <span> {{ timeTrackedLabel }}</span>
+      </div>
       <div class="mx-2">
         <i class="fa fa-calendar mr-1 text-gray-400 hover:text-gray-600"></i>
         <span> {{ task.due_date }}</span>
