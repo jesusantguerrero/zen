@@ -8,7 +8,7 @@
     title="Zen."
     v-model="drawer"
     size="50%"
-    direction="ltr">
+    direction="rtl">
         <template #title>
              <router-link class="text-2xl font-bold zen" to="/"> Zen.</router-link>
         </template>

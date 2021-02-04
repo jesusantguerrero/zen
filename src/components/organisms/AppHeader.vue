@@ -3,12 +3,6 @@
     class="flex items-center justify-between h-16 fixed shadow-md w-full bg-white border-gray-400 border-b-2  px-2 md:px-32"
   >
     <div class="flex items-baseline">
-      <mobile-menu>
-        <button class="text-sm lg:text-lg font-bold cursor-pointer text-gray-400 hover:text-gray-600 mt-4" @click.prevent="logout">
-          Logout
-        </button>
-      </mobile-menu>
-
       <router-link class="text-2xl font-bold zen" to="/"> Zen.</router-link>
       <div class="hidden md:flex md:items-center md:ml-4" v-if="user">
         <menu-item class="mx-2 pl-2" to="/">Dashboard </menu-item>
@@ -17,6 +11,11 @@
       </div>
     </div>
 
+      <mobile-menu>
+        <button class="text-sm lg:text-lg font-bold cursor-pointer text-gray-400 hover:text-gray-600 mt-4" @click.prevent="logout">
+          Logout
+        </button>
+      </mobile-menu>
     <div class="hidden md:flex md:items-center" v-if="user">
       <router-link 
         to="/plan-ahead" 

@@ -127,11 +127,12 @@
 </template>
 
 <script setup>
-import { useTaskFirestore } from "../utils/useTaskFirestore"
-import { useTrackFirestore } from "../utils/useTrackFirestore"
-import { reactive, ref, watch} from 'vue'
+import { nextTick, reactive, ref, watch} from 'vue'
 import { useRouter } from "vue-router"
 import { ElMessageBox, ElNotification } from "element-plus"
+import { useTaskFirestore } from "../utils/useTaskFirestore"
+import { useTrackFirestore } from "../utils/useTrackFirestore"
+import { firebaseState, updateSettings} from "../utils/useFirebase"
 import { startFireworks } from "../utils/useConfetti"
 import TaskSelect from "../components/atoms/TaskSelect.vue"
 import TaskGroup from "../components/organisms/TaskGroup.vue"
@@ -141,23 +142,25 @@ import TaskView from "../components/organisms/TaskView.vue"
 import TaskTrackView from "../components/organisms/TaskTrackView.vue"
 import WelcomeModal from "../components/organisms/WelcomeModal.vue"
 import TaskModal from "../components/organisms/TaskModal.vue"
-import { firebaseState, updateSettings} from "../utils/useFirebase"
 
 const { saveTask, deleteTask, updateTask, getTaskByMatrix} = useTaskFirestore()
 const { getAllTracksOfTask } = useTrackFirestore()
 
-const isWelcomeOpen = !firebaseState.settings || !firebaseState.settings.hide_welcome
+nextTick(() => {
+  })
 // state and ui
 const state = reactive({
   todo: [],
   schedule: [],
   showReminder: false,
-  isWelcomeOpen: isWelcomeOpen,
+  isWelcomeOpen: true,
   isTaskModalOpen: false,
   track: null,
   search: "",
   mobileMode: 'zen'
 })
+
+state.isWelcomeOpen = firebaseState.settings && !firebaseState.settings.hide_welcome
 
 const toggleReminder = () => {
   state.showReminder = !state.showReminder
@@ -208,7 +211,7 @@ const onDone = (task) => {
       currentTask.value = state.todo[0];
       updateSettings({
         last_task_uid: currentTask.value.uid
-      });
+      })
     } else {
       currentTask.value = {}
     }
