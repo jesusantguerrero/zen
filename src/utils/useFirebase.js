@@ -82,7 +82,9 @@ export const updateSettings = (settings) => {
         uid: firebaseState.user.uid,
         ...settings
     }).then( async () => {
-        firebaseState.settings = await getUserSettings(user.uid)
+        getUserSettings(user.uid).then((settings) => {
+            firebaseState.settings =  settings
+        })
     })
 
 }

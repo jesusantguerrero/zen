@@ -25,32 +25,49 @@
           </button>
           </div>
       </div>
-   </div>  
+  </div> 
+
   <div class="flex">
-    <div class="w-full">
+    <div class="w-9/12">
         <task-group
             title="Committed tasks"
             type="backlog"
             :search="state.search"
             :tasks="state.committed"
             :show-controls="false"
+            :show-select="true"
+            :current-task="currentTask"
+            @selected="setCurrentTask"
             color="text-gray-400"
             :max-height="0"
             :is-quadrant="true"
           >
         </task-group>
     </div>
+
+    <transition-group>
+      <div class="w-3/12">
+        <chart-view 
+          :series-data="currentTask.data"
+          :current-task="currentTask"
+        >
+
+        </chart-view>
+    </div>
+    </transition-group>
   </div>
 </div>
 
 </template>
 
 <script setup>
-import { reactive, watch } from 'vue'
+import { reactive, watch, ref } from 'vue'
 import { useTaskFirestore } from '../utils/useTaskFirestore'
+import { useTrackFirestore } from '../utils/useTrackFirestore'
 import TaskGroup from "../components/organisms/TaskGroup.vue"
 import QuickAdd from "../components/molecules/QuickAdd.vue"
 import TimeTracker from "../components/organisms/TimeTracker.vue"
+import ChartView from "../components/organisms/ChartView.vue"
 // state and ui
 const state = reactive({
   committed: [],
@@ -60,13 +77,29 @@ const state = reactive({
 
 // tasks manipulation
 const  { getCommitedTasks } = useTaskFirestore()
-
-
 watch(() => state.date , () => {
   getCommitedTasks(state.date).then(tasks => {
     state.committed = tasks;
   })
 }, { immediate: true })
 
+// Current task
+const  { getAllTracksOfTask } = useTrackFirestore()
+const currentTask = ref({});
+const setCurrentTask = (task) => {
+  currentTask.value = task
+}
 
+watch(currentTask, () => {
+  if (currentTask.value.uid) {
+    getAllTracksOfTask(currentTask.value.uid).then((tracks) => {
+      currentTask.value.tracks = tracks || []
+
+      currentTask.value.data = [
+        tracks.length,
+        tracks.filter( track => track.completed).length
+      ]
+    })
+  }
+})
 </script>

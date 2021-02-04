@@ -10,7 +10,6 @@
           <form 
               class="task-form mb-2 bg-white border-transparent border-2 px-4 py-3 rounded-md items-center cursor-default"
               @submit.prevent
-              ref="taskForm"
           >
               <div class="flex justify-between">
                   <div class="flex items-center w-full">

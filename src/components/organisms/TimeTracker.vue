@@ -64,7 +64,8 @@ const track = reactive({
   ended_at: null,
   type: "promodoro",
   duration: null,
-  target_time: null
+  target_time: null,
+  completed: false
 });
 
 const state = reactive({
@@ -158,10 +159,10 @@ const currentTime = computed(() => {
 
 watch(() => state.now, (now) => {
   if (targetTime.value && now && targetTime.value.diffNow() < 0) {
+    track.completed = true;
     stop();
   }
 });
-
 
 // controls
 const { playSound, stopSound } = usePromodoro()
@@ -227,7 +228,6 @@ const stop = (shouldCallNextMode = true, silent) => {
   state.now = null;
   
   nextMode();
-  
   if (!silent) {
     playSound().then(() => {
       if (wasRunning && previousMode == "promodoro") {
@@ -258,6 +258,7 @@ const clearTrack = () => {
   track.ended_at = null;
   track.duration = null;
   track.target_time = null;
+  track.completed = false
 };
 
 onBeforeUnmount(() => {
