@@ -15,7 +15,7 @@
                     <input
                         v-model.trim="formData.email"
                         class="form-control input"
-                        :class="{ 'is-danger': false }"
+                        :class="{ 'border-red-400 border-2': false }"
                         name="email"
                         type="text"
                         required
@@ -26,11 +26,7 @@
             <div
                 class="form-group"
             >
-                <label for="password" class="password-label"
-                    ><span>Password</span>
-                    <small
-                        ><a href="/forgot-password" tabindex="5">Forgot password?</a></small
-                    ></label
+                <label for="password" class="password-label"><span>Password</span></label
                 >
                 <p :class="{ control: true }">
                     <input
@@ -38,7 +34,7 @@
                         id="password"
                         v-model="formData.password"
                         class="form-control input"
-                        :class="{ 'is-danger': false }"
+                        :class="{ 'border-red-400 border-2': false }"
                         name="password"
                         required
                     />
@@ -52,13 +48,14 @@
                 <label for="password" class="password-label">
                     <span>Confirm Password</span>
                 </label>
-                <p :class="{ control: true }">
+                <p class="true">
                     <input
                         type="password"
                         id="confirm-password"
-                        v-model="formData.confirm_password"
+                        v-model="formData.confirmPassword"
                         class="form-control input"
-                        :class="{ 'is-danger': false }"
+                        @blur="isDirty=true"
+                        :class="{ 'border-red-400 border-2': isConfirmationValid }"
                         name="confirm-password"
                         required
                     />
@@ -79,8 +76,7 @@
                 @click.prevent.stop="loginWithProvider('google')"
             >
                 <img src="./../assets/btn_google_light.svg" alt="">
-                Sign in With Google
-                <i v-if="isLoading" class="fa fa-spinner fa-pulse ml-2"></i>
+                {{ modeLabel }} With Google
             </button>
 
             <p class="text-center">
@@ -89,7 +85,7 @@
                 </small>
 
                  <small v-else> Dont have an account?
-                    <button  @click.prevent.stop="mode='register'"> Create one </button>
+                    <router-link  to="/register"> Create one </router-link>
                 </small>
             </p>
             <p class="copyrights pt-10">&copy; {{ currentYear }}</p>
@@ -99,14 +95,22 @@
 
 
 <script setup>
-import { reactive, ref, computed, nextTick } from "vue";
+import { reactive, ref, computed, nextTick, defineProps, toRefs } from "vue";
 import { useRouter } from "vue-router"
 import { register, login, loginWithProvider }  from "../utils/useFirebase";
 import { ElNotification } from "element-plus"
 
 // state and ui
-const mode = ref('login')
+const props = defineProps({
+    mode: {
+        type: String,
+        default: "login"
+    }
+})
+
+const { mode } = toRefs(props)
 const isLoading = ref(false)
+
 
 const formData = reactive({
     email: '',
@@ -119,8 +123,18 @@ const currentYear = computed(() =>{
     return date.getFullYear();
 })
 
-const { push } = useRouter()
+const modeLabel = computed(() => {
+    return mode.value == 'register' ? 'Sign Up' : 'Sign In';
+})
+
+// validation
+const isDirty = ref(false)
+const isConfirmationValid = computed(() => {
+    return isDirty.value && mode.value == 'register' && formData.password != formData.confirmPassword;
+})
+
 // auth manipulation
+const { push } = useRouter()
 const loginUser = () => {
     const loginFunction = mode.value == 'login' ? login : register;
     isLoading.value = true;
@@ -235,7 +249,7 @@ const loginUser = () => {
         padding: 0 0 0 0 !important;
         background: white !important;
         height: 47px !important;
-        font-weight: bolder;
+        font-weight: 500;
         font-family: 'Roboto', sans-serif;
     }
 }
