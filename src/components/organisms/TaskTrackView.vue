@@ -3,7 +3,7 @@
   <div class="flex">
       <div class="task__target rounded-full border-4 border-gray-400 text-gray-400 h-16 w-16 flex justify-center items-center font-extrabold">
         <span class="text-xl">
-          {{ Number(task.promodoros || 0) }}
+          {{ completedPromodoros }}
         </span>
         <i class="fas fa-stopwatch ml-1" /> 
       </div>
@@ -11,8 +11,8 @@
       <div class="sessions ml-5 md:flex md:text-2xl items-center text-gray-400">
         <div v-if="task.title" class="md:flex">
           Totals: 
-          <span class="font-bold ml-2">{{ timeTracked }} - </span> 
-          <div class="font-bold mx-2">{{ task.tracks && task.tracks.length }} Sessions</div>
+          <span class="font-bold ml-2">{{ timeTracked }} </span> 
+          <div class="font-bold mx-2" v-if="!hideSessions">{{ task.tracks && task.tracks.length }} Sessions</div>
         </div>
         
         <div v-else class="text-lg">
@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { defineProps, toRefs } from "vue";
+import { computed, defineProps, toRefs } from "vue";
 import { useTracker } from "../../utils/useTracker"
 
 const props = defineProps({
@@ -33,11 +33,17 @@ const props = defineProps({
   },
   currentTimer: {
     type: Object
+  },
+  hideSessions: {
+    type: Boolean
   }
 });
 
 const { task, currentTimer } = toRefs(props)
 
+const completedPromodoros = computed(() => {
+  return task.value.tracks ? task.value.tracks.filter(track => track.completed).length : 0
+})
 const { timeTracked } = useTracker(task, currentTimer)
 </script>
 
