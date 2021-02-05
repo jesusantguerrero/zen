@@ -47,6 +47,7 @@
 </template>
 
 <script setup>
+import { ElNotification } from "element-plus";
 import { defineProps, toRefs, defineEmit, computed } from "vue";
 import { useDateTime } from "../../utils/useDateTime";
 import ChecklistContainer from "./ListContainer.vue";
@@ -76,14 +77,22 @@ const { task, currentTimer } = toRefs(props)
 const { formatDate } = useDateTime();
 
 const isDisabled = computed(() => {
-  return currentTimer.value && currentTimer.value.task_uid;
+  return currentTimer.value && currentTimer.value.task_uid == task.value.uid;
 })
 
 const markAsDoneLabel = computed(() => {
-  return isDisabled ? 'Stop timer first to mark as done' : 'Mark as done'
+  return isDisabled.value ? 'Stop timer first to mark as done' : 'Mark as done'
 })
 
 const markAsDone = () => {
+  if (isDisabled.value) {
+    ElNotification({
+      type: "info",
+      message: "Stop timer first to mark as done"
+    })
+    return 
+  }
+
   task.value.commit_date = formatDate();
   task.value.done = true;
   emit('done', task.value)
