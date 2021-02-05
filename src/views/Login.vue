@@ -55,10 +55,11 @@
                         v-model="formData.confirmPassword"
                         class="form-control input"
                         @blur="isDirty=true"
-                        :class="{ 'border-red-400 border-2': isConfirmationValid }"
+                        :class="{ 'error-input': isConfirmationInvalid }"
                         name="confirm-password"
                         required
                     />
+                    <small v-if="isConfirmationInvalid" class="text-red-200"> Passwords are not equal </small>
                 </p>
             </div>
 
@@ -129,7 +130,7 @@ const modeLabel = computed(() => {
 
 // validation
 const isDirty = ref(false)
-const isConfirmationValid = computed(() => {
+const isConfirmationInvalid = computed(() => {
     return isDirty.value && mode.value == 'register' && formData.password != formData.confirmPassword;
 })
 
@@ -228,6 +229,10 @@ const loginUser = () => {
         &:hover,
         &:focus {
             //
+        }
+
+        &.error-input {
+           @apply border-red-400  text-red-400 border-2
         }
     }
 

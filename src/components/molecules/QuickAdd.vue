@@ -50,6 +50,7 @@
         </div>
 
         <div class="mt-2 text-right">
+          <span class="text-sm mr-2 font-bold text-green-400">Shortcut: ctrl + enter to save</span>
           <button class="px-5 py-2 rounded-md focus:outline-none transition-colors bg-green-400 hover:bg-green-500 text-white " type="submit" @click.prevent="save()"> Save</button>
         </div>
       </div>
@@ -158,7 +159,6 @@ const save = () => {
   const formData = { ...task }
   formData.due_date = formData.due_date ? formatDate(formData.due_date, "yyyy-MM-dd") : ""
   emit('saved', formData)
-  state.isExpanded = false;
   clearForm()
 }
 
