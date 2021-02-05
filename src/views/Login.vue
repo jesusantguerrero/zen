@@ -66,6 +66,7 @@
             <button
                 class="btn btn-action capitalize rounded-sm"
                 type="submit"
+                :disabled="isConfirmationInvalid"
             >
                 {{ mode }}
                 <i v-if="isLoading" class="fa fa-spinner fa-pulse ml-2"></i>
@@ -137,6 +138,11 @@ const isConfirmationInvalid = computed(() => {
 // auth manipulation
 const { push } = useRouter()
 const loginUser = () => {
+ 
+    if (!validateRegistration()) {
+        return
+    }
+
     const loginFunction = mode.value == 'login' ? login : register;
     isLoading.value = true;
 
@@ -152,6 +158,18 @@ const loginUser = () => {
         })
         isLoading.value = false
     })
+}
+
+const validateRegistration = () => {
+   if (mode.value == 'register' && formData.password != formData.confirmPassword) {
+         ElNotification({
+            title: "Error",
+            message: errorMessage.message,
+            type: "error"
+        })
+        return false
+    }
+    return true
 }
 
 </script>
