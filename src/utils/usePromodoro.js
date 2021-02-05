@@ -48,25 +48,20 @@ export function usePromodoro() {
     const setSettings = (settings) => {
         const localSettings = settings;
         if (localSettings.promodoro_template) {
-            promodoroState.template = JSON.parse(localSettings.promodoro_template)
+            promodoroState.template = localSettings.promodoro_template
         }
 
-        const modes = localSettings.promodoro_modes.trim() && JSON.parse(localSettings.promodoro_modes);
-        
+        const modes = localSettings.promodoro_modes;
         const { promodoro, rest, long } = promodoroState.modes;
         
         if (modes) {
-            promodoro.minutes = modes.session.minutes;
-            promodoro.seconds = modes.session.seconds;
-            rest.minutes = modes.rest.minutes;
-            rest.seconds =   modes.rest.seconds;
-            long.minutes = modes.break.minutes;
-            long.seconds = modes.break.seconds
+            promodoro.min = modes.promodoro.min;
+            promodoro.sec = modes.promodoro.sec;
+            rest.min = modes.rest.min;
+            rest.sec = modes.rest.sec;
+            long.min = modes.long.min;
+            long.sec = modes.long.sec
         }
-
-        return new Promise(() => {
-            resolve(promodoroState)
-        })
     }
 
     const playSound = async (volume = 1) => {
@@ -92,6 +87,7 @@ export function usePromodoro() {
     return {
         playSound,
         stopSound,
-        setSettings
+        setSettings,
+        promodoroState
     }
 }

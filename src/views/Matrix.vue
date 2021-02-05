@@ -3,7 +3,7 @@
    
    <div class="section-header md:flex justify-between items-center mb-10">
       <h2 class="text-2xl font-bold text-gray-400 text-left">
-         Heisenhower Matrix
+         Eisenhower Matrix
       </h2>  
       <div class="space-x-2 flex">
          <input type="search" 

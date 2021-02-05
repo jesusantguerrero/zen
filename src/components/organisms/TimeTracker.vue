@@ -1,9 +1,9 @@
 <template>
   <div
-    class="font-bold text-2xl text-center"
+    class="text-center"
     title="click here to start"
   >
-    <div class="flex items-start justify-between">
+    <div class="flex items-start justify-between font-bold text-2xl">
       <div 
         :class="`${trackerMode.color} ${trackerMode.colorBorder}`" 
         class="border-2 mr-2 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer"
@@ -27,21 +27,41 @@
         </div>
       </div>
 
-      <button
-        class="text-sm ml-4 hover:text-md text-gray-400 cursor-pointer mt-2 focus:outline-none"
-      >
-        <i class="fa fa-ellipsis-v"></i>
-      </button>
+       <el-dropdown trigger="click" @command="handleCommand">
+        <button
+          class="text-sm ml-4 hover:text-md text-gray-400 cursor-pointer mt-2 focus:outline-none"
+        >
+          <i class="fa fa-ellipsis-v"></i>
+        </button>
+      <template #dropdown>
+        <el-dropdown-menu>
+          <el-dropdown-item command="configuration" icon="el-icon-edit">Configuration</el-dropdown-item>
+          <el-dropdown-item command="nextmode" icon="el-icon-arrow-right">Next mode</el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
+      
     </div>
+
+    <time-tracker-modal
+      v-model:is-open="isModalOpen"
+      :settings="state"
+      @cancel="isModalOpen=false"
+      @saved="onSettingsSaved"
+    >
+    </time-tracker-modal>
   </div>
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, reactive, watch, defineProps, defineEmit } from "vue";
+import { computed, onBeforeUnmount, reactive, watch, defineProps, defineEmit, ref} from "vue";
 import { Duration, Interval, DateTime } from "luxon";
 import { useTrackFirestore } from "./../../utils/useTrackFirestore";
 import { usePromodoro } from "./../../utils/usePromodoro";
+import { firebaseState } from "./../../utils/useFirebase";
 import { ElNotification } from "element-plus";
+import TimeTrackerModal from "./TimeTrackerModal.vue";
+import { useTitle } from "@vueuse/core";
 
 const { saveTrack, updateTrack } = useTrackFirestore();
 const props = defineProps({
@@ -133,7 +153,6 @@ const currentStateColor = computed(() => {
   return state.modes[state.template[state.currentStep]].colorBg;
 });
 
-
 // Time manipulation
 const targetTime = computed(() => {
   if (track.started_at && state.now) {
@@ -157,6 +176,15 @@ const currentTime = computed(() => {
   }
 });
 
+
+watch(() => currentTime.value, () => {
+  if (state.now) {
+    useTitle(`Zen.  ${currentTime.value}`)
+  } else {
+    useTitle('Zen.')
+  }
+});
+
 watch(() => state.now, (now) => {
   if (targetTime.value && now && targetTime.value.diffNow() < 0) {
     track.completed = true;
@@ -164,9 +192,37 @@ watch(() => state.now, (now) => {
   }
 });
 
-// controls
-const { playSound, stopSound } = usePromodoro()
+// Settings
+const { playSound, stopSound, promodoroState, setSettings } = usePromodoro()
+const isModalOpen = ref(false)
+setSettings(firebaseState.settings);
+watch(() => promodoroState, (localState) => {
+  state.template = localState.template;
+  state.modes = localState.modes;
+  setDurationTarget()
+}, { immediate: true })
 
+const onSettingsSaved = (settings) => {  
+  isModalOpen.value = false;
+  
+  if (state.now) {
+    ElNotification({
+      title: "Stop the timer",
+      message: "You must stop the timer before update configuration",
+      type: "info"
+    })
+    return
+  } 
+  
+  setSettings(settings)
+  ElNotification({
+    title: "Updated",
+    message: "Configuration Updated"
+  })
+  setDurationTarget()
+}
+
+// Controls
 const toggleTracker = () => {
   track.started_at ? stop(null, true) : play();
 };
@@ -261,8 +317,28 @@ const clearTrack = () => {
   track.completed = false
 };
 
+const handleCommand = (command) => {
+  switch (command) {
+    case 'configuration':
+      isModalOpen.value = true;
+      break;
+    case 'nextmode':
+      nextMode()
+      break;
+    default:
+      break;
+  }
+} 
+
+// checks to stop
 onBeforeUnmount(() => {
     stop(false, true)    
+})
+
+watch(() => props.task.title, (newValue, oldValue) => {
+  if (oldValue && state.now) {
+    stop(false, true)
+  }
 })
 
 // Persistence

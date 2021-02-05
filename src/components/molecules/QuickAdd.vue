@@ -158,6 +158,7 @@ const save = () => {
   const formData = { ...task }
   formData.due_date = formData.due_date ? formatDate(formData.due_date, "yyyy-MM-dd") : ""
   emit('saved', formData)
+  state.isExpanded = false;
   clearForm()
 }
 
