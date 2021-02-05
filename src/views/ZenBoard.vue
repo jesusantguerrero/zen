@@ -7,10 +7,6 @@
         <header class="flex justify-between"> 
           <h1 class="md:block text-2xl font-bold text-gray-400"> 
             {{ 'Main task' || 'No task selected'}}
-            <!-- <span 
-              class="text-sm ml-4 select-none cursor-pointer text-gray-600 hover:text-blue-400 transition-colors"
-               @click="toggleReminder"> Add Reminder <i class="fa fa-bell"></i>
-            </span> -->
           </h1>
 
           <time-tracker 
@@ -53,7 +49,7 @@
         :class="[state.mobileMode == 'lineup' ? 'block' : 'hidden']"
       >
         <header class="mb-2 flex justify-between text-gray-400 font-bold items-center">
-            <h1 class="text-2xl"> Line Up</h1>
+            <h1 class="text-2xl"> Lineup</h1>
 
             <div class="flex itemx-center">
                 <input type="search" 
@@ -121,7 +117,7 @@
       :class="{'bg-gray-900': state.mobileMode == 'zen'}" 
       @click="state.mobileMode='zen'">Zen</div>
       <div class="text-xl font-bold text-center h-full w-full my-auto flex items-center justify-center" :class="{'bg-gray-900': state.mobileMode == 'lineup'}" 
-        @click="state.mobileMode='lineup'">Line Up</div>
+        @click="state.mobileMode='lineup'">Lineup</div>
     </div>
   </div>
 </template>

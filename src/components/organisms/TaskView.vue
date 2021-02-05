@@ -6,7 +6,22 @@
       {{ task.title }}
 
       <div class="task-item__controls flex text-lg" v-if="task.title">  
-          <el-tooltip class="item" effect="dark" content="Save changes" placement="top">
+          <el-tooltip class="item" effect="dark" content="Mark as done" placement="top">
+              <div 
+                class="mx-2 text-gray-400 hover:text-gray-600 cursor-pointer"
+                @click="markAsDone()"
+                :class="{'text-green-400 font-extrabold': task.commit_date}"
+              >
+              <i class="fas fa-check-circle"></i>
+              </div>
+          </el-tooltip>
+          
+          <div class="mx-2" v-if="task.due_date">
+              <i class="fa fa-calendar mr-2 text-gray-400 hover:text-gray-600"></i>
+              <span> {{ task.due_date}}</span>
+          </div>
+
+            <el-tooltip class="item" effect="dark" content="Save changes" placement="top">
               <div 
                 class="mx-2 text-gray-400 hover:text-gray-600 cursor-pointer"
                 @click="saveChanges()"
@@ -14,24 +29,6 @@
               <i class="fa fa-save"> </i>
               </div>
           </el-tooltip>
-          <el-tooltip class="item" effect="dark" content="Mark as done" placement="top">
-              <div 
-                class="mx-2 text-gray-400 hover:text-gray-600 cursor-pointer"
-                @click="markAsDone()"
-                :class="{'text-green-400 font-extrabold': task.commit_date}"
-              >
-              <i class="fa fa-check"></i>
-              </div>
-          </el-tooltip>
-          
-          <div class="mx-2">
-              <i class="fa fa-calendar mr-2 text-gray-400 hover:text-gray-600"></i>
-              <span> {{ task.due_date}}</span>
-          </div>
-
-          <div class="mx-2 text-gray-400 hover:text-red-400" @click="emitClosed">
-              <i class="fa fa-times"></i>
-          </div>
       </div>
     </h1>
 

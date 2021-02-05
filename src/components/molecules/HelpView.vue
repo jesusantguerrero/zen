@@ -4,9 +4,9 @@
     
     <div class="image mx-2">
         <img  v-if="isSelected('planahead')" src="../../assets/undraw_following.svg" alt="" class="w-full mx-auto">
-        <img  v-if="isSelected('zenboard')" src="../../assets/zenboard.png" alt="" class="w-full mx-auto">
-        <img  v-if="isSelected('standup')" src="../../assets/undraw_following.svg" alt="" class="w-full mx-auto">
-        <img  v-if="isSelected('matrix')" src="../../assets/undraw_following.svg" alt="" class="w-full mx-auto">
+        <img  v-if="isSelected('zenboard')" src="../../assets/undraw_time_management_30iu.svg" alt="" class="w-full mx-auto">
+        <img  v-if="isSelected('standup')" src="../../assets/undraw_project_completed_w0oq.svg" alt="" class="w-full mx-auto">
+        <img  v-if="isSelected('matrix')" src="../../assets/undraw_prioritise_tgdh.svg" alt="" class="w-full mx-auto">
     </div>
     
     <div
@@ -16,9 +16,9 @@
         <div v-html="item.content"> </div>
     </div>
     
-    <div class="mb-5 text-left flex mx-2 mt-5">
+    <div class="mb-5 text-left grid grid-cols-2 md:flex mx-2 mt-5">
         <div v-for="(item, itemName) in state.items" :key="itemName"
-            class="list-item bg-gray-50 hover:bg-gray-200 w-full text-center" 
+            class="list-item bg-gray-50 hover:bg-gray-200 w-full text-center text-xs" 
             :class="{'bg-gray-300': isSelected(itemName)}" 
             @click="setSelected(itemName)" 
         >
@@ -52,22 +52,22 @@ const state = reactive({
         planahead: {
             image: '../assets/undraw_following.svg',
             title: "Plan Ahead",
-            content: `Add your pending tasks, prioritaze them following <a href="https://luxafor.com/the-eisenhower-matrix/" target="__blank">Eisenhower Matrix</a> principle and set the line up for today`
+            content: `Add your pending tasks, prioritize them following <a href="https://luxafor.com/the-eisenhower-matrix/" target="__blank">Eisenhower Matrix</a> principle, and set the <b class="font-bold">lineup</b> for today`
         },
         zenboard: {
             image: '../assets/undraw_following.svg',
             title: "Zen",
-            content: "Focus in your main task and activate promodoros sessions, complete and follow your line up"
+            content: "Focus on your main task and activate promodoros sessions, complete and follow your lineup"
         },
         standup: {
             image: '../assets/undraw_following.svg',
             title: "Standup",
-            content: "Get your commited task of the previous day (Nice to help with those scrumm daily meetings)"
+            content: "Get your committed task of the previous day (Nice to help with those scrum's daily meetings)."
         },
         matrix: {
             image: '../assets/undraw_following.svg',
             title: "Matrix",
-            content: "You can rearange your matrix if necesary (To add something in backlog)."
+            content: "You can rearrange your matrix if necessary (To add something in the backlog)."
         }
     }
 })

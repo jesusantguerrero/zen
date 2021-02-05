@@ -16,7 +16,7 @@
         </div>
         
         <div v-else class="text-lg">
-          No track data to show
+          No data to show
         </div>
       </div>
   </div>
