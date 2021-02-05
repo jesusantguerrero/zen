@@ -20,9 +20,9 @@
               input-class="ml-0"
             >
             </el-date-picker>
-          <button title="help" class="bg-gray-700 text-white px-5 py-1 rounded-md ml-2">
+          <!-- <button title="help" class="bg-gray-700 text-white px-5 py-1 rounded-md ml-2">
               <i class="fa fa-question"></i>
-          </button>
+          </button> -->
           </div>
       </div>
   </div> 
