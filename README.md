@@ -13,36 +13,52 @@
 
 
 <!-- ABOUT THE PROJECT -->
-## About The Project
+## About Zen.
+__Zen.__ is a productivity app that integrates Eisenhower Matrix, Promodoros, and part of the Get Things Done (GTD) principles in a unique way, to improve your developer routine. The purpose of Zen is to help you staying in the zone.
 
-![Zen. Screen Shot](./src/assets/login2.PNG)
+![Zen. Screen Shot](./src/assets/login2.png)
 ![Zen. Screen Shot](./src/assets/zenboard.png)
 
-__Zen.__ is a productivity app that aim to keep the users with foucus in the most important things/tasks for the day, plan your day routine and provide a standup summary to tell in those agile meetings in a granular way.
+## Demo
 
-Sections:
-* Zen Board
-* Standup
-* Matrix Board
-* Plan Ahead
+[Zen. App](https://zen.vercel.app/)
+## Sections
+#### Zenboard:
 
-Features:
-* Promodoro
-* Eisenhower Matrix
-* Standup
+Section when I can see my main task at the time detailed, a promodoro timer to track the sessions of work, and a line up of task titles to know what is coming next.
 
+#### Plan Ahead:
+
+Section that will allow users to add, prioritize them according to the Eisenhower Matrix principle their tasks and build the line up of the day.
+
+#### Stand Up:
+
+Section will contain the committed task of previous days and help developers to have this info in hand for daily scrum meetings.
+
+#### Matrix:
+
+Will be the standalone screen of Eisenhower Matrix plus the backlog of unprioritized tasks.
+
+## Features
+
+1. Tasks with checklists.
+
+2. Promodoro + TimeTracker in One.
+
+3. Mobile friendly
+
+4. Eisenhower Matrix
 .
 
 ### Built With
 
 I used the following.
 
-* [Vue 3]()
-* [Vite]()
-* [Tailwindcss]()
-* [firebase auth]()
-* [firebase firestore]()
-* [vercel]()
+* [Vue 3](https://v3.vuejs.org/)
+* [Vite](https://vitejs.dev/)
+* [Tailwindcss](https://tailwindcss.com/)
+* [firebase (auth & firestore)](https://firebase.google.com/)
+* [vercel](https://vercel.com/docs)
 
 
 
@@ -51,22 +67,33 @@ I used the following.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
+| Prerequisite                                          | Version |
+| ------------------------------------------------------| ------- |
+| [Node.js](http://nodejs.org)                          | `~ ^12.0.0`  |
+| [Firebase project (firestore and auth)](https://console.firebase.google.com/u/0/)                                |    --   |
 
+```shell
+node -v
+```
 ### Installation
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/your_username_/Project-Name.git
+   git clone https://github.com/jesusantguerrero/zen.git
    ```
 2. Install NPM packages
    ```sh
    npm install
    ```
+
+copy .env.example to .env:
+
+```bash
+# Remember place your firebase info there:
+cp .env .env.local
+
+```
+
 3. Run in development mode
    ```sh
    npm run dev
@@ -80,25 +107,12 @@ This is an example of how to list things you need to use the software and how to
 <!-- USAGE EXAMPLES -->
 
 
-<!-- ROADMAP -->
-## Roadmap
-
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a list of proposed features (and known issues).
-
 
 <!-- LICENSE -->
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
-
-
-<!-- CONTACT -->
-<!-- ## Contact -->
-
-<!-- Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
-
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name) -->
 
 
 
