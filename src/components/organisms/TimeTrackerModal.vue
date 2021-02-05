@@ -173,7 +173,11 @@ const removeItem = (index) => {
 
 <style lang="scss">
     .form-control {
-        @apply w-full bg-gray-100 border-gray-400 border-2 px-4;
+        @apply bg-gray-100;
+        @apply border-gray-400; 
+        @apply px-4;
+        width: 100%;
+        border-width: 2;
         height: 37px;
         border-radius: 4px;
     }
@@ -183,11 +187,13 @@ const removeItem = (index) => {
     }
 
     .form-group {
-        @apply mx-2 mb-4;
+        @apply mx-2;
+        @apply mb-4;
     }
 
     .workflow-item {
-        @apply border-2 border-gray-300;
+        @apply border-2;
+        @apply border-gray-300;
         display: inline-block;
         margin: 2px;
         padding: 2px 5px;
