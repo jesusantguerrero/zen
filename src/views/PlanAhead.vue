@@ -25,9 +25,9 @@
         </div>
       </div>
 
-      <button class="ml-5 bg-gray-700 px-5 py-1 text-white rounded-full">
+      <!-- <button class="ml-5 bg-gray-700 px-5 py-1 text-white rounded-full">
         <i class="fa fa-question text-sm float-right"></i>
-      </button>
+      </button> -->
     </div>
 
     <div class="flex justify-end mt-5 space-x-2 md:mt-0">

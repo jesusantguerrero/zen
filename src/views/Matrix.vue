@@ -11,9 +11,9 @@
             class="px-2 text-md h-10 rounded-md focus:outline-none border-2 border-gray-200 w-full"
             placeholder="Search task"  
          >
-         <button title="help" class="bg-gray-700 text-white px-5 py-1 rounded-md ml-2">
+         <!-- <button title="help" class="bg-gray-700 text-white px-5 py-1 rounded-md ml-2">
             <i class="fa fa-question"></i>
-         </button>
+         </button> -->
       </div>
    </div>
 
