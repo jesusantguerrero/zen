@@ -28,7 +28,7 @@ Sections:
 
 Features:
 * Promodoro
-* Heisenhower Matrix
+* Eisenhower Matrix
 * Standup
 
 .

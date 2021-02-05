@@ -155,6 +155,7 @@ const state = reactive({
   showReminder: false,
   isWelcomeOpen: false,
   isTaskModalOpen: false,
+  isTimeTrackerModalOpen: true,
   track: null,
   search: "",
   mobileMode: 'zen'

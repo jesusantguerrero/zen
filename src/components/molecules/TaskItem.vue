@@ -8,11 +8,14 @@
         <input
             type="checkbox"
             class="checkbox-done"
+            :class="{'cursor-not-allowed': isDisabled}"
             name=""
             id=""
+            :title="isDisabled? 'Can change task when timer is running' : ''"
+            :disabled="isDisabled"
             :checked="isSelected"
             @click="emitSelected()"
-        />
+        >
       </div>
       <div class="mx-3 rounded-md px-2 py-1" :class="typeColor"> 
           <i class="fa fa-sticky-note"></i>
@@ -34,8 +37,8 @@
       <!-- <div class="mx-2 text-gray-400 hover:text-gray-600">
         <i class="fa fa-tags"></i>
       </div> -->
-      <el-dropdown trigger="click" @command="handleCommand" v-if="showControls">
-        <div class="mx-2 text-gray-400 hover:text-gray-600">
+      <el-dropdown trigger="click" @command="handleCommand" v-if="showControls" :disabled="isDisabled">
+        <div class="mx-2 text-gray-400 hover:text-gray-600" :title="isDisabled? 'Can updates tasks when timer is running' : ''">
           <i class="fa fa-ellipsis-v"></i>
         </div>
       <template #dropdown>
@@ -107,6 +110,10 @@ const typeColor = computed(() => {
 const emitSelected = (task) => {
   emit('selected', task)
 }
+
+const isDisabled = computed(() => {
+  return currentTimer.value && currentTimer.value.task_uid;
+})
 
 const isSelected = computed(( ) => {
   return currentTask.value && currentTask.value.uid == task.value.uid

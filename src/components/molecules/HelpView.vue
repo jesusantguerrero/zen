@@ -52,7 +52,7 @@ const state = reactive({
         planahead: {
             image: '../assets/undraw_following.svg',
             title: "Plan Ahead",
-            content: `Add your pending tasks, prioritaze them following <a href="https://luxafor.com/the-eisenhower-matrix/" target="__blank">Heisenhower Matrix</a> principle and set the line up for today`
+            content: `Add your pending tasks, prioritaze them following <a href="https://luxafor.com/the-eisenhower-matrix/" target="__blank">Eisenhower Matrix</a> principle and set the line up for today`
         },
         zenboard: {
             image: '../assets/undraw_following.svg',
@@ -89,7 +89,10 @@ const item = computed(() => {
 <style lang="scss" scoped>
 
 .list-item {
-    @apply cursor-pointer px-5 py-3 text-base;
+    @apply cursor-pointer; 
+    @apply px-5; 
+    @apply py-3 ;
+    @apply text-base;
 }
 
 .image {
