@@ -34,9 +34,7 @@
         <i class="fa fa-calendar mr-1 text-gray-400 hover:text-gray-600"></i>
         <span> {{ task.due_date }}</span>
       </div>
-      <!-- <div class="mx-2 text-gray-400 hover:text-gray-600">
-        <i class="fa fa-tags"></i>
-      </div> -->
+
       <el-dropdown trigger="click" @command="handleCommand" v-if="showControls" :disabled="isDisabled">
         <div class="mx-2 text-gray-400 hover:text-gray-600" :title="isDisabled? 'Can updates tasks when timer is running' : ''">
           <i class="fa fa-ellipsis-v"></i>
@@ -58,6 +56,7 @@
 import { defineProps, toRefs, ref, computed, defineEmit, watch } from "vue"
 import { useTracker } from "../../utils/useTracker";
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
+
 const { updateTask } = useTaskFirestore()
 const props = defineProps({
   task: Object,
@@ -67,6 +66,13 @@ const props = defineProps({
   showSelect: Boolean,
   showControls: Boolean,
   currentTimer: Object
+})
+const emit = defineEmit({
+  deleted: Object,
+  selected: Object,
+  edited: Object,
+  up: Object,
+  down: Object,
 })
 
 const { task, currentTask, currentTimer} = toRefs(props)
@@ -87,13 +93,6 @@ const timeTrackedLabel = computed(() => {
   return task.value.tracks && !task.value.tracks.length && task.value.duration_ms ?  task.value.duration_ms : timeTracked.value
 })
 
-const emit = defineEmit({
-  deleted: Object,
-  selected: Object,
-  edited: Object,
-  up: Object,
-  down: Object,
-})
 
 const typeColor = computed(() => {
   const colors = {
@@ -107,9 +106,6 @@ const typeColor = computed(() => {
   return colors[props.type] || colors['todo']
 })
 
-const emitSelected = (task) => {
-  emit('selected', task)
-}
 
 const isDisabled = computed(() => {
   return currentTimer.value && currentTimer.value.task_uid;
@@ -119,6 +115,9 @@ const isSelected = computed(( ) => {
   return currentTask.value && currentTask.value.uid == task.value.uid
 })
 
+const emitSelected = (task) => {
+  emit('selected', task)
+}
 const handleCommand = (commandName) => {
   switch (commandName) {
     case 'delete':

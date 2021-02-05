@@ -15,7 +15,11 @@
             :show-controls="true"
             :allow-move="false"
             :handle-mode="true"
+            @deleted="destroyTask"
+            @edited="setTaskToEdit"
             @change="handleDragChanges"
+            @down="moveTo($event, 'schedule')"
+            @up="moveTo($event, 'todo')"
             @move="onMove"
             :is-quadrant="true"
           >
@@ -41,6 +45,8 @@
             :handle-mode="true"
             :is-quadrant="true"
             :max-height="isBacklog ? 0 : 350"
+            @deleted="destroyTask"
+            @edited="setTaskToEdit"
             @change="handleDragChanges"
             @move="onMove"
           >
@@ -54,16 +60,25 @@
             </template>
         </task-group>
     </div>
+
+    <task-modal 
+      v-model:is-open="state.isTaskModalOpen" 
+      :task-data="taskToEdit" 
+      @saved="onEdittedTask"
+      @closed="taskToEdit = null"
+    >
+    </task-modal>
   </div>
 </template>
 
 <script setup>
-import { computed, defineProps, reactive, watch } from 'vue'
-import { ElNotification } from 'element-plus'
+import { computed, defineProps, reactive, watch, ref } from 'vue'
+import { ElMessageBox, ElNotification } from 'element-plus'
 import { useTaskFirestore } from "../../utils/useTaskFirestore"
 import { useDateTime } from "../../utils/useDateTime"
 import TaskGroup from "../organisms/TaskGroup.vue"
 import QuickAdd from "../molecules/QuickAdd.vue"
+import TaskModal from "./TaskModal.vue"
 
 
 // state and ui
@@ -117,12 +132,12 @@ const state = reactive({
       tasks: []
     }
   },
-  showReminder: false
+  isTaskModalOpen: false
 })
 
 // Tasks manipulation
 const { toISO } = useDateTime() 
-const { getUncommitedTasks, saveTask, updateTask, updateTaskBatch } = useTaskFirestore()
+const { getUncommitedTasks, saveTask, updateTask, updateTaskBatch, deleteTask } = useTaskFirestore()
 
 getUncommitedTasks().then(tasks => {
     state.tasks = tasks
@@ -147,6 +162,37 @@ const addTask = (task) => {
   })
 }
 
+const destroyTask = async (task) => {
+  const canDelete = await ElMessageBox.confirm("Are you sure you want to delete this task?", "Delete Task")
+  if (canDelete) {
+    deleteTask(task).then(() => {
+      const quadrant = state.quadrants[task.matrix];
+      quadrant.tasks = quadrant.tasks.filter(localTask => task.uid != localTask.uid)
+      ElNotification({
+        type: "success",
+        message: "Task deleted",
+        title: "Task deleted"
+      })
+    })
+  }
+}
+
+const moveTo = async (task, matrix) => {
+    const oldMatrix = task.matrix
+    task.matrix = matrix
+    const quadrants = state.quadrants;
+    updateTask(task).then(() => {
+      quadrants[oldMatrix].tasks = quadrants[oldMatrix].tasks.filter(localTask => task.uid != localTask.uid)
+      quadrants[matrix].tasks.push(task)
+      ElNotification({
+        type: "success",
+        message: "Task moved",
+        title: "Task moved"
+      })
+
+    })
+}
+
 const handleDragChanges = (e, matrix) => {
   if (e.added) {
     e.added.element.matrix = matrix;
@@ -168,6 +214,19 @@ const handleDragChanges = (e, matrix) => {
     })
 
   }
+}
+
+// Edit task
+const taskToEdit = ref({});
+const setTaskToEdit = (task) => {
+  taskToEdit.value = task
+  state.isTaskModalOpen = false;
+  state.isTaskModalOpen = true;
+}
+const onEdittedTask = (task) => {
+  const index = state.quadrants[task.matrix].tasks.findIndex(localTask => localTask.uid == task.uid)
+  state.quadrants[task.matrix].tasks[index] = {...task};
+  taskToEdit.value = null
 }
 </script>
 

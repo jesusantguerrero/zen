@@ -132,7 +132,6 @@ const state = reactive({
 .about-screen .information-container {
     text-align: left;
     width: 100%;
-    padding: 20px 100px;
 }
 
 .about-screen .logos {

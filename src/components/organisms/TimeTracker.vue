@@ -336,7 +336,7 @@ onBeforeUnmount(() => {
 })
 
 watch(() => props.task.title, (newValue, oldValue) => {
-  if (oldValue && state.now) {
+  if (oldValue && state.now && state.mode == 'promodoro') {
     stop(false, true)
   }
 })

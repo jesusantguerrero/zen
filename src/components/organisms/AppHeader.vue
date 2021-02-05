@@ -25,11 +25,24 @@
        <menu-item class="mx-2 px-2" to="/about">
         <i class="fa fa-question"></i>
        </menu-item>
-      <div class="ml-2">{{ profileName }}</div>
 
-      <button class="ml-2" @click.prevent="logout">
-        <i class="fa fa-power-off cursor-pointer"></i>
-      </button>
+      <el-dropdown trigger="click" class="mt-3" placement="bottom-end" :show-arrow="false" :offset="-2" @command="logout()">
+       <el-avatar :src="profileImage">
+          {{ initials }}
+       </el-avatar>
+      <template #dropdown>
+        <el-dropdown-menu >
+          <el-dropdown-item icon="el-icon-person" disabled>
+            {{ profileName }}
+          </el-dropdown-item>
+
+          <el-dropdown-item class="p-0" command="logout">
+              <i class="fa fa-power-off cursor-pointer"></i>
+              Logout
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
     </div>
   </div>
 </template>
@@ -55,6 +68,17 @@ const profileName = computed(() => {
   const provider = user.value.providerData[0];
   return provider.displayName || provider.email;
 })
+
+const profileImage = computed(() => {
+  const provider = user.value.providerData[0];
+  return provider.photoURL;
+})
+
+const initials = computed(() => {
+  const provider = user.value.providerData[0];
+  return profileName.value.split(' ').map( name => name[0]).join('');
+})
+
 const logout = () => {
   emit("logout");
 };
