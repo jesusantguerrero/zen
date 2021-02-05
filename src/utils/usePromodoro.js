@@ -46,12 +46,15 @@ export function usePromodoro() {
     })
 
     const setSettings = (settings) => {
-        const localSettings = settings;
-        if (localSettings.promodoro_template) {
-            promodoroState.template = localSettings.promodoro_template
+        if (!settings) {
+            return
         }
 
-        const modes = localSettings.promodoro_modes;
+        if (settings.promodoro_template) {
+            promodoroState.template = settings.promodoro_template
+        }
+        
+        const modes = settings.promodoro_modes;
         const { promodoro, rest, long } = promodoroState.modes;
         
         if (modes) {

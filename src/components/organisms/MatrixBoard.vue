@@ -27,6 +27,7 @@
               <div class="quick__add mb-4">
                 <quick-add 
                   @saved="addTask"
+                  :allow-edit="true"
                   :type="matrix"
                 ></quick-add>
               </div>
@@ -54,6 +55,7 @@
               <div class="quick__add mb-4">
                 <quick-add 
                   @saved="addTask"
+                  :allow-edit="true"
                   type="backlog"
                 ></quick-add>
               </div>

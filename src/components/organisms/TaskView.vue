@@ -6,10 +6,11 @@
       {{ task.title }}
 
       <div class="task-item__controls flex text-lg" v-if="task.title">  
-          <el-tooltip class="item" effect="dark" content="Mark as done" placement="top">
+          <el-tooltip class="item" effect="dark" :content="markAsDoneLabel" placement="top">
               <div 
                 class="mx-2 text-gray-400 hover:text-gray-600 cursor-pointer"
                 @click="markAsDone()"
+                :disabled="isDisabled"
                 :class="{'text-green-400 font-extrabold': task.commit_date}"
               >
               <i class="fas fa-check-circle"></i>
@@ -46,7 +47,7 @@
 </template>
 
 <script setup>
-import { defineProps, toRefs, defineEmit, ref } from "vue";
+import { defineProps, toRefs, defineEmit, computed } from "vue";
 import { useDateTime } from "../../utils/useDateTime";
 import ChecklistContainer from "./ListContainer.vue";
 
@@ -61,12 +62,26 @@ const props = defineProps({
     default() {
       return {}
     }
+  },
+  currentTimer: {
+    type: Object,
+    default() {
+      return {}
+    }
   }
 });
 
-const { task } = toRefs(props)
+const { task, currentTimer } = toRefs(props)
 
 const { formatDate } = useDateTime();
+
+const isDisabled = computed(() => {
+  return currentTimer.value && currentTimer.value.task_uid;
+})
+
+const markAsDoneLabel = computed(() => {
+  return isDisabled ? 'Stop timer first to mark as done' : 'Mark as done'
+})
 
 const markAsDone = () => {
   task.value.commit_date = formatDate();

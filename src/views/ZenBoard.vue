@@ -27,7 +27,7 @@
           >
           </quick-add>
 
-          <task-view :task="currentTask" @done="onDone" @updated="onTaskUpdated">
+          <task-view :task="currentTask" :current-timer="currentTimer" @done="onDone" @updated="onTaskUpdated">
             <template #empty v-if="!currentTask.title">
               <div class="w-8/12 md:w-6/12 mx-auto mt-10 text-center">
                 <img src="../assets/undraw_following.svg" class="w-12/12 md:w-7/12 mx-auto"> 
