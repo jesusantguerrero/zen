@@ -332,7 +332,8 @@ const handleCommand = (command) => {
 
 // checks to stop
 onBeforeUnmount(() => {
-    stop(false, true)    
+    useTitle('Zen.')
+    stop(false, true) 
 })
 
 watch(() => props.task.title, (newValue, oldValue) => {

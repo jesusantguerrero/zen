@@ -1,61 +1,81 @@
 <template>
-  <div class="task-item flex justify-between mb-2 shadow-md bg-white border-gray-200 border-2 px-4 py-3 rounded-md items-center cursor-default"
+  <div class="task-item mb-2 shadow-md bg-white border-gray-200 border-2 px-4 py-3 rounded-md items-center cursor-default"
   :class="{'border-green-400': isSelected }"
   >
-    <div class="flex items-center">
-      <div v-if="handleMode" class="handle text-gray-300 cursor-move"><i class="fa fa-arrows-alt"></i></div>
-      <div v-else-if="showSelect" class="flex items-center">
-        <input
-            type="checkbox"
-            class="checkbox-done"
-            :class="{'cursor-not-allowed': isDisabled}"
-            name=""
-            id=""
-            :title="isDisabled? 'Can change task when timer is running' : ''"
-            :disabled="isDisabled"
-            :checked="isSelected"
-            @click="emitSelected()"
-        >
-      </div>
-      <div class="mx-3 rounded-md px-2 py-1" :class="typeColor"> 
-          <i class="fa fa-sticky-note"></i>
-      </div>
-      <h4> {{ task.title }}</h4>
-    </div>
-
-    <div class="task-item__controls flex items-center">  
-      <div class="mx-2 text-gray-400 hover:text-gray-600 cursor-pointer"
-        title="Time tracked"
-        >
-        <i class="fa fa-clock mr-1"></i>
-        <span> {{ timeTrackedLabel }}</span>
-      </div>
-      <div class="mx-2">
-        <i class="fa fa-calendar mr-1 text-gray-400 hover:text-gray-600"></i>
-        <span> {{ task.due_date }}</span>
-      </div>
-
-      <el-dropdown trigger="click" @command="handleCommand" v-if="showControls" :disabled="isDisabled">
-        <div class="mx-2 text-gray-400 hover:text-gray-600" :title="isDisabled? 'Can updates tasks when timer is running' : ''">
-          <i class="fa fa-ellipsis-v"></i>
+    <div class="flex justify-between">
+      <div class="flex items-center">
+        <div v-if="handleMode" class="handle text-gray-300 cursor-move"><i class="fa fa-arrows-alt"></i></div>
+        <div v-else-if="showSelect" class="flex items-center">
+          <input
+              type="checkbox"
+              class="checkbox-done"
+              :class="{'cursor-not-allowed': isDisabled}"
+              name=""
+              id=""
+              :title="isDisabled? 'Can change task when timer is running' : ''"
+              :disabled="isDisabled"
+              :checked="isSelected"
+              @click="emitSelected()"
+          >
         </div>
-      <template #dropdown>
-        <el-dropdown-menu>
-          <el-dropdown-item command="edit" icon="el-icon-edit">Edit</el-dropdown-item>
-          <el-dropdown-item command="delete" icon="el-icon-delete">Delete </el-dropdown-item>
-          <el-dropdown-item command="up" icon="el-icon-arrow-up" v-if="task.matrix=='schedule'">Move Up</el-dropdown-item>
-          <el-dropdown-item command="down" icon="el-icon-arrow-down" v-if="task.matrix=='todo'">Move down</el-dropdown-item>
-        </el-dropdown-menu>
-      </template>
-    </el-dropdown>
+        <div class="mx-3 rounded-md px-2 py-1" :class="typeColor"> 
+            <i class="fa fa-sticky-note"></i>
+        </div>
+        <h4 @click="toggleExpand" class="cursor-pointer m-0"> {{ task.title }}</h4>
+      </div>
+
+      <div class="task-item__controls flex items-center">  
+        <div class="task-item__tracked mx-2 text-gray-400 hover:text-gray-600 cursor-pointer"
+          title="Time tracked"
+          >
+          <i class="fa fa-clock mr-1"></i>
+          <span> {{ timeTrackedLabel }}</span>
+        </div>
+        <div class="mx-2">
+          <i class="fa fa-calendar mr-1 text-gray-400 hover:text-gray-600"></i>
+          <span> {{ task.due_date }}</span>
+        </div>
+
+        <el-dropdown trigger="click" @command="handleCommand" v-if="showControls" :disabled="isDisabled">
+          <div class="mx-2 text-gray-400 hover:text-gray-600" :title="isDisabled? 'Can updates tasks when timer is running' : ''">
+            <i class="fa fa-ellipsis-v"></i>
+          </div>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item command="edit" icon="el-icon-edit">Edit</el-dropdown-item>
+            <el-dropdown-item command="delete" icon="el-icon-delete">Delete </el-dropdown-item>
+            <el-dropdown-item command="up" icon="el-icon-arrow-up" v-if="task.matrix=='schedule'">Move Up</el-dropdown-item>
+            <el-dropdown-item command="down" icon="el-icon-arrow-down" v-if="task.matrix=='todo'">Move down</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+      </div>
     </div>
+
+    <el-collapse-transition>
+        <div class="task-item__body w-full p-3" v-if="isExpanded">
+          <div
+            class="task-item__description w-full pt-2 focus:outline-none" 
+            placeholder="Add a short description"
+            :class="{'text-gray-400 text-sm': !task.description }">
+              {{ task.description || 'No description provided'}}
+        </div>
+          <div class="task-item__checklist">
+            <checklist-container :items="task.checklist" @updated="updateItems"></checklist-container>
+          </div>
+        </div>
+    </el-collapse-transition>
+
   </div>
+
 </template>
 
 <script setup>
 import { defineProps, toRefs, ref, computed, defineEmit, watch } from "vue"
 import { useTracker } from "../../utils/useTracker";
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
+import ChecklistContainer from "../organisms/ListContainer.vue"
+import { ElNotification } from "element-plus";
 
 const { updateTask } = useTaskFirestore()
 const props = defineProps({
@@ -118,6 +138,7 @@ const isSelected = computed(( ) => {
 const emitSelected = (task) => {
   emit('selected', task)
 }
+
 const handleCommand = (commandName) => {
   switch (commandName) {
     case 'delete':
@@ -136,4 +157,24 @@ const handleCommand = (commandName) => {
       break;
   }
 }
+
+const isExpanded = ref(false);
+const toggleExpand = () => {
+isExpanded.value = !isExpanded.value
+}
+
+
+const updateItems = () => {
+  ElNotification({
+    title: 'changed'
+  })
+}
+
 </script>
+
+
+<style lang="scss" scoped>
+.task-item__tracked {
+  width: 90px;
+}
+</style>
