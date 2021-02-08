@@ -4,7 +4,7 @@
         class="grid md:grid-cols-2 md:gap-10" 
         :class="{'w-full':isLineUp, 'sm:w-full lg:w-8/12': isMatrix}"
         v-if="isMatrix || isLineUp">
-      <div class="zen__comming-up w-full mb-10 md:mb-0" v-for="matrix in state.matrix" :key="matrix">
+      <div class="zen__comming-up w-full mb-10 md:mb-0 ic-scroller" v-for="matrix in state.matrix" :key="matrix">
           <task-group
             v-if="!isLineUp || isLineUpMatrix(matrix)"
             :title="matrix"
@@ -214,7 +214,6 @@ const handleDragChanges = (e, matrix) => {
         message: `Moved to ${matrix}`
       })
     })
-
   }
 }
 

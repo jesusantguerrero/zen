@@ -7,7 +7,7 @@
     >
     <div class="flex justify-between">
       <div class="flex items-center w-full">
-        <button class="mx-3 rounded-md px-2 py-1 " :class="typeColor"> 
+        <button class="mx-3 rounded-md px-2 py-1 focus:outline-none transition-colors hover:text-white" :class="typeColor" @click="save()"> 
             <i :class="icon"> </i>
         </button>
 
@@ -50,7 +50,10 @@
         </div>
 
         <div class="mt-2 text-right">
-          <span class="text-sm mr-2 font-bold text-green-400">Shortcut: ctrl + enter to save</span>
+          <span class="text-sm mr-2 font-bold text-green-400">
+            <i class="fa fa-lightbulb"></i>
+            ProTip! save with ctrl + enter
+          </span>
           <button class="px-5 py-2 rounded-md focus:outline-none transition-colors bg-green-400 hover:bg-green-500 text-white " type="submit" @click.prevent="save()"> Save</button>
         </div>
       </div>
@@ -122,12 +125,12 @@ const icon = computed(() => {
 
 const typeColor = computed(() => {
   const colors = {
-    todo: 'bg-green-100 text-green-500',
-    schedule: 'bg-blue-100 text-blue-500',
-    reminder: 'bg-blue-100 text-blue-500',
-    delegate: 'bg-yellow-100 text-yellow-500',
-    delete: 'bg-red-100 text-red-500',
-    backlog: 'bg-gray-100 text-gray-500'
+    todo: 'bg-green-100 hover:bg-green-400 text-green-500',
+    schedule: 'bg-blue-100 hover:bg-blue-400 text-blue-500',
+    reminder: 'bg-blue-100 hover:bg-blue-400 text-blue-500',
+    delegate: 'bg-yellow-100 hover:bg-yellow-400 text-yellow-500',
+    delete: 'bg-red-100 hover:bg-red-400 text-red-500',
+    backlog: 'bg-gray-100 hover:bg-gray-400 text-gray-500'
   }
 
   return colors[props.type] || colors['todo']

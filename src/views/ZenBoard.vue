@@ -75,6 +75,8 @@
             :show-controls="true"
             :current-task="currentTask"
             :current-timer="currentTimer"
+            :is-item-as-handler="true"
+            @change="handleDragChanges"
             @deleted="destroyTask"
             @edited="setTaskToEdit"
             @selected="setCurrentTask"
@@ -90,10 +92,12 @@
             :show-controls="true"
             :search="state.search"
             type="schedule"
-            class="opacity-60 hover:opacity-100  mt-6 py-3"
+            class="opacity-60 hover:opacity-100  mt-6 py-3 cursor-move"
+            :is-item-as-handler="true"
             @deleted="destroyTask"
             @edited="setTaskToEdit"
             @up="moveTo($event, 'todo')"
+            @change="handleDragChanges"
           >
           </task-group>
         </div>
@@ -139,7 +143,7 @@ import TaskTrackView from "../components/organisms/TaskTrackView.vue"
 import WelcomeModal from "../components/organisms/WelcomeModal.vue"
 import TaskModal from "../components/organisms/TaskModal.vue"
 
-const { saveTask, deleteTask, updateTask, getTaskByMatrix} = useTaskFirestore()
+const { saveTask, deleteTask, updateTask, getTaskByMatrix, updateTaskBatch } = useTaskFirestore()
 const { getAllTracksOfTask } = useTrackFirestore()
 
 nextTick(() => {
@@ -294,6 +298,25 @@ const closeWelcomeModal = () => {
   })
 }
 
+
+// Drags
+const handleDragChanges = (e, matrix) => { 
+    if (e.added) {
+      e.added.element.matrix = matrix;
+      updateTask(e.added.element).then(() => {
+        ElNotification({
+          message: `Moved to ${matrix}`
+        })
+      })
+    }
+
+    if (e.moved) {
+      updateTaskBatch(state[e.moved.element.matrix].map((task, index) => {
+        task.order = index
+        return task
+      }))
+    }
+}
 </script>
 
 <style scoped>

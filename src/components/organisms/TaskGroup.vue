@@ -19,7 +19,7 @@
             class="dragArea"
             :class="{empty: !tasks.length,  [type]: true }" 
             :list="tasks" 
-            handle=".handle"
+            :handle="handleClass"
             :group="{name: type, pull: true, put: true }"
             @move="emitMove"
             @change="emitChange($event, type)"
@@ -35,11 +35,11 @@
               :show-controls="showControls"
               :current-task="currentTask"
               :current-timer="currentTimer"
-              @selected="emitSelected(task)"
-              @deleted="emitDeleted(task)"
-              @edited="emitEdited(task)"
-              @up="emitUp(task)"
-              @down="emitDown(task)"
+              @selected="emit('selected', task)"
+              @deleted="emit('deleted', task)"
+              @edited="emit('edited', task)"
+              @up="emit('up', task)"
+              @down="emit('down', task)"
             />
           </draggable>
           <slot name="empty" v-if="!tasks.length"></slot>
@@ -49,7 +49,7 @@
 </template>
 
 <script setup>
-import { defineProps, onMounted, ref, toRefs } from "vue"
+import { computed, defineProps, onMounted, ref, toRefs } from "vue"
 import { VueDraggableNext as Draggable } from "vue-draggable-next"
 import TaskItem from "../molecules/TaskItem.vue"
 import IconExpand from "../atoms/IconExpand.vue"
@@ -82,9 +82,9 @@ const props = defineProps({
     maxHeight: {
       default: 340,
       type: Number
-    }
+    },
+    isItemAsHandler: Boolean
 })
-
 const listGroup = ref(null);
 
 onMounted(() => {
@@ -103,48 +103,35 @@ const emit = defineEmit({
   change: Object
 })
 
-const { tasks, search, showSelect, currentTask, currentTimer } = toRefs(props)
+const { tasks, search, showSelect, currentTask, currentTimer, isItemAsHandler } = toRefs(props)
 
 const { filteredList } = useFuseSearch(search, tasks);
+const handleClass = computed(() => {
+  return isItemAsHandler.value ? null : '.handle'
+})
 
-const emitDeleted = (task) => {
-  emit('deleted', task)
-}
 
-const emitSelected = (task) => {
-  emit('selected', task)
-}
-
-const emitEdited = (task) => {
-  emit('edited', task)
-}
-const emitUp = (task) => {
-  emit('up', task)
-}
-const emitDown = (task) => {
-  emit('down', task)
-}
-
+// expand
 const isExpanded = ref(true);
+const toggleExpanded = () => {
+  isExpanded.value = !isExpanded.value;
+}
 
+// Events
 const onChange = ({ added, removed }, matrix) => {
     if (added) {
       added.element.matrix = matrix;
       this.$emit("changed", added.element);
     }
 }
-
 const emitMove = (evt, originalEvent) => {
   emit('move', evt, originalEvent)
 }
-
 const emitChange = ( evt, matrix ) => {
   emit('change', evt, matrix)
 }
 
-const toggleExpanded = () => {
-  isExpanded.value = !isExpanded.value;
-}
+
 </script>
 
 <style lang="scss">
@@ -161,7 +148,7 @@ const toggleExpanded = () => {
   .dragArea {
     // min-height: 200px;
   
-    &.empty {
+    // &.empty {
       &::after {
         width: 100%;
         height: 100%;
@@ -183,7 +170,7 @@ const toggleExpanded = () => {
         @apply text-gray-400 font-bold;
         content: "not Important & not urgent"
       }
-    }
+    // }
   }
 }
 </style>
