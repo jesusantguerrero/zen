@@ -13,7 +13,7 @@
                     type="checkbox"
                     class="form-control-check mx-2"
                     v-model="check.done"
-                    @change="updateItems"
+                    @change.stop="trackChanges"
                 />
                 <input
                     type="text"
@@ -55,11 +55,13 @@
 <script setup>
 import { onClickOutside } from "@vueuse/core";
 import { ElNotification } from "element-plus";
+import { useTaskFirestore } from "../../utils/useTaskFirestore"
 import { defineProps, ref, defineEmit, onMounted, onUnmounted } from "vue";
 import { VueDraggableNext as Draggable } from "vue-draggable-next"
 
 const props = defineProps({
     items: Array,
+    task: Object,
     allowEdit: Boolean
 })
 
@@ -99,14 +101,33 @@ const saveItem = () => {
 const checklistContainer = ref(null)
 const hasChanges = ref(false)
 
-const updateItems = () => {
+const trackChanges = () => {
     hasChanges.value = true;
 }
 
-onUnmounted(() => {
-    if (hasChanges.value) {
-        emit('updated', props.items)
+
+const { updateTask } = useTaskFirestore()
+
+const updateItems = () => {
+    if (hasChanges.value && props.task.uid) {
+        updateTask({
+            uid: props.task.uid,
+            checklist: [...props.items]
+        })
+        hasChanges.value = false
+        console.log("hola")
     }
+}
+
+
+onMounted(() => {
+    onClickOutside(checklistContainer, () => {
+        updateItems()
+    })
+})
+
+onUnmounted(() => {
+    updateItems()
 })
 
 </script>

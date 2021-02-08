@@ -21,15 +21,6 @@
               <i class="fa fa-calendar mr-2 text-gray-400 hover:text-gray-600"></i>
               <span> {{ task.due_date}}</span>
           </div>
-
-            <el-tooltip class="item" effect="dark" content="Save changes" placement="top">
-              <div 
-                class="mx-2 text-gray-400 hover:text-gray-600 cursor-pointer"
-                @click="saveChanges()"
-              >
-              <i class="fa fa-save"> </i>
-              </div>
-          </el-tooltip>
       </div>
     </h1>
 
@@ -41,7 +32,7 @@
     </div>
 
     <div class="task__checlikst mb-6" v-if="task.checklist">
-      <checklist-container :items="task.checklist"></checklist-container>
+      <checklist-container :items="task.checklist" :task="task"></checklist-container>
     </div>
   </div>
 </template>

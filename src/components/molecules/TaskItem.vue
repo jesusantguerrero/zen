@@ -61,7 +61,7 @@
               {{ task.description || 'No description provided'}}
         </div>
           <div class="task-item__checklist">
-            <checklist-container :items="task.checklist" @updated="updateItems"></checklist-container>
+            <checklist-container :items="task.checklist" :task="task"  @updated="updateItems"></checklist-container>
           </div>
         </div>
     </el-collapse-transition>

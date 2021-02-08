@@ -69,6 +69,7 @@
 <script setup>
 import { defineProps, ref, watch, computed, reactive, defineEmit, toRefs } from "vue"
 import { useTaskFirestore } from "./../../utils/useTaskFirestore"
+import { useDateTime } from "./../../utils/useDateTime"
 import DateSelect from "../atoms/DateSelect.vue"
 import TagsSelect from "../atoms/TagsSelect.vue"
 import ModalBase from "../molecules/ModalBase.vue";
@@ -123,8 +124,8 @@ const { taskData } = toRefs(props);
 const setTaskData = (taskData) => {
   if (taskData && task) {
     const data = {...taskData};
-    Object.keys(taskData).forEach((key) => {
-      task[key] = taskData[key]
+    Object.keys(data).forEach((key) => {
+      task[key] = data[key]
     });
   }
 }
@@ -167,12 +168,13 @@ const clearForm = () => {
 }
 
 const { updateTask } = useTaskFirestore()
+const { formatDate } = useDateTime()
 const save = () => {
   const formData =  {...task}
   formData.tracks = [];
-  formData.due_date = formData.due_date && typeof formData.due_date != 'string' ? formatDate(formData.due_date, "yyyy-MM-dd") : formData.due_date
-  updateTask(task).then(() => {
-    emit('saved', task)
+  formData.due_date = formData.due_date && typeof formData.due_date == 'object' ? formatDate(formData.due_date , "yyyy-MM-dd") : formData.due_date
+  updateTask(formData).then(() => {
+    emit('saved', formData)
     clearForm()
     isOpenLocal.value = false
   })

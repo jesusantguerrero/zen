@@ -13,7 +13,7 @@
 
               >
           </div>
-          <div class="flex mt-2 md:mt-0">
+          <div class="flex mt-2 md:mt-0 el-date-full">
             <el-date-picker
               v-model.lazy="state.date"
               type="date"
@@ -110,7 +110,7 @@ watch(currentTask, () => {
 </script>
 
 <style lang="scss">
-.el-date-editor.el-input {
+.el-date-full .el-date-editor.el-input {
   width: 100% !important;
 }
 </style>
