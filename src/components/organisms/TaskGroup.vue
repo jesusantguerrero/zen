@@ -13,39 +13,41 @@
     </div>
 
       <slot name="addForm"></slot>
-      <el-collapse-transition>
-        <div class="list-group w-full ic-scroller" ref="listGroup"  v-show="isExpanded">
-          <draggable
-            class="dragArea"
-            :class="{empty: !tasks.length,  [type]: true }" 
-            :list="tasks" 
-            :handle="handleClass"
-            :group="{name: type, pull: true, put: true }"
-            @move="emitMove"
-            @change="emitChange($event, type)"
-          >
-            <task-item 
-              v-for="task in filteredList" 
-              :key="task" 
-              :task="task" 
-              :type="type"
-              :handle-mode="handleMode"
-              :icons="icons"
-              :show-select="showSelect"
-              :show-controls="showControls"
-              :current-task="currentTask"
-              :current-timer="currentTimer"
-              @toggle-key="onToggleKey(task)"
-              @selected="emit('selected', task)"
-              @deleted="emit('deleted', task)"
-              @edited="emit('edited', task)"
-              @up="emit('up', task)"
-              @down="emit('down', task)"
-            />
-          </draggable>
-          <slot name="empty" v-if="!tasks.length"></slot>
-        </div>
-      </el-collapse-transition>
+      <slot name="content">
+        <el-collapse-transition>
+          <div class="list-group w-full ic-scroller" ref="listGroup"  v-show="isExpanded">
+            <draggable
+              class="dragArea"
+              :class="{empty: !tasks.length,  [type]: true }" 
+              :list="tasks" 
+              :handle="handleClass"
+              :group="{name: type, pull: true, put: true }"
+              @move="emitMove"
+              @change="emitChange($event, type)"
+            >
+              <task-item 
+                v-for="task in filteredList" 
+                :key="task" 
+                :task="task" 
+                :type="type"
+                :handle-mode="handleMode"
+                :icons="icons"
+                :show-select="showSelect"
+                :show-controls="showControls"
+                :current-task="currentTask"
+                :current-timer="currentTimer"
+                @toggle-key="onToggleKey(task)"
+                @selected="emit('selected', task)"
+                @deleted="emit('deleted', task)"
+                @edited="emit('edited', task)"
+                @up="emit('up', task)"
+                @down="emit('down', task)"
+              />
+            </draggable>
+            <slot name="empty" v-if="!tasks.length"></slot>
+          </div>
+        </el-collapse-transition>
+      </slot>
   </div>
 </template>
 
