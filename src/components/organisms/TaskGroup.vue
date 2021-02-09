@@ -36,6 +36,7 @@
                 :show-controls="showControls"
                 :current-task="currentTask"
                 :current-timer="currentTimer"
+                :is-item-as-handler="isItemAsHandler"
                 @toggle-key="onToggleKey(task)"
                 @selected="emit('selected', task)"
                 @deleted="emit('deleted', task)"
@@ -108,11 +109,11 @@ const emit = defineEmit({
   change: Object
 })
 
-const { tasks, search, showSelect, currentTask, currentTimer, isItemAsHandler } = toRefs(props)
+const { tasks, search, showSelect, currentTask, currentTimer, isItemAsHandler, handleMode } = toRefs(props)
 
 const { filteredList } = useFuseSearch(search, tasks);
 const handleClass = computed(() => {
-  return isItemAsHandler.value ? null : '.handle'
+  return handleMode.value || isItemAsHandler.value ? null : '.handle'
 })
 
 

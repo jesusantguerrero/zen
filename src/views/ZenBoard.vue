@@ -76,6 +76,7 @@
             :current-task="currentTask"
             :current-timer="currentTimer"
             :is-item-as-handler="true"
+            type="todo"
             @change="handleDragChanges"
             @deleted="destroyTask"
             @edited="setTaskToEdit"

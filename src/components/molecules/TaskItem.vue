@@ -1,6 +1,6 @@
 <template>
-  <div class="task-item mb-2 shadow-md bg-white border-gray-200 border-2 px-4 py-3 rounded-md items-center cursor-default"
-  :class="{'border-green-400': isSelected}"
+  <div class="task-item mb-2 shadow-md bg-white border-gray-200 border-2 px-4 py-3 rounded-md items-centerr"
+  :class="{'border-green-400': isSelected, 'cursor-pointer': handleMode || isItemAsHandler }"
   >
     <div class="flex justify-between">
       <div class="flex items-center">
@@ -19,20 +19,20 @@
           >
         </div>
         <div class="mx-3 rounded-md px-2 py-1 border-2 border-transparent" :class="[typeColor, keyStyles]"> 
-            <i :class="[!task.is_key ? 'fa fa-sticky-note' : 'fa fa-key']"></i>
+            <i :class="[!task.is_key ? 'fa fa-sticky-note' : 'fa fa-fire']"></i>
         </div>
         <h4 @click="toggleExpand" class="cursor-pointer m-0"> {{ task.title }}</h4>
       </div>
 
       <div class="task-item__controls flex items-center">  
-        <div class="task-item__tracked mx-2 text-gray-400 hover:text-gray-600 cursor-pointer"
+        <div class="task-item__tracked mx-2 text-gray-400 hover:text-gray-600 cursor-default"
           title="Time tracked"
           >
           <i class="fa fa-clock mr-1"></i>
           <span> {{ timeTrackedLabel }}</span>
         </div>
-        <div class="mx-2">
-          <i class="fa fa-calendar mr-1 text-gray-400 hover:text-gray-600"></i>
+        <div class="mx-2 text-gray-400 hover:text-gray-600 cursor-default">
+          <i class="fa fa-calendar mr-1"></i>
           <span> {{ task.due_date }}</span>
         </div>
 
@@ -86,7 +86,8 @@ const props = defineProps({
   handleMode: Boolean,
   showSelect: Boolean,
   showControls: Boolean,
-  currentTimer: Object
+  currentTimer: Object,
+  isItemAsHandler: Boolean
 })
 const emit = defineEmit({
   deleted: Object,
@@ -117,7 +118,7 @@ const timeTrackedLabel = computed(() => {
 
 const typeColor = computed(() => {
   const colors = {
-    todo: 'bg-green-100 text-green-500',
+    todo: `bg-green-100 ${task.value.is_key ? 'text-gray-100' : 'text-green-500'}`,
     schedule: 'bg-blue-100 text-blue-500',
     delegate: 'bg-yellow-100 text-yellow-500',
     delete: 'bg-red-100 text-red-500',
@@ -128,7 +129,7 @@ const typeColor = computed(() => {
 })
 
 const keyStyles = computed(() => {
-  return task.value.is_key && task.value.matrix == 'todo' ? 'border-green-300 border-2' : ''
+  return task.value.is_key && props.type == 'todo' ? 'border-green-300 border-2 bg-green-500 text-white' : ''
 })
 
 
