@@ -1,6 +1,6 @@
 <template>
   <div class="task-item mb-2 shadow-md bg-white border-gray-200 border-2 px-4 py-3 rounded-md items-center cursor-default"
-  :class="{'border-green-400': isSelected }"
+  :class="{'border-green-400': isSelected}"
   >
     <div class="flex justify-between">
       <div class="flex items-center">
@@ -15,11 +15,11 @@
               :title="isDisabled? 'Can change task when timer is running' : ''"
               :disabled="isDisabled"
               :checked="isSelected"
-              @click="emitSelected()"
+              @click="emit('selected', task)"
           >
         </div>
-        <div class="mx-3 rounded-md px-2 py-1" :class="typeColor"> 
-            <i class="fa fa-sticky-note"></i>
+        <div class="mx-3 rounded-md px-2 py-1 border-2 border-transparent" :class="[typeColor, keyStyles]"> 
+            <i :class="[!task.is_key ? 'fa fa-sticky-note' : 'fa fa-key']"></i>
         </div>
         <h4 @click="toggleExpand" class="cursor-pointer m-0"> {{ task.title }}</h4>
       </div>
@@ -44,6 +44,7 @@
           <el-dropdown-menu>
             <el-dropdown-item command="edit" icon="el-icon-edit">Edit</el-dropdown-item>
             <el-dropdown-item command="delete" icon="el-icon-delete">Delete </el-dropdown-item>
+            <el-dropdown-item command="toggle-key" icon="el-icon-key" v-if="task.matrix=='todo'"> Key task </el-dropdown-item>
             <el-dropdown-item command="up" icon="el-icon-arrow-up" v-if="task.matrix=='schedule'">Move Up</el-dropdown-item>
             <el-dropdown-item command="down" icon="el-icon-arrow-down" v-if="task.matrix=='todo'">Move down</el-dropdown-item>
           </el-dropdown-menu>
@@ -55,7 +56,7 @@
     <el-collapse-transition>
         <div class="task-item__body w-full p-3" v-if="isExpanded">
           <div
-            class="task-item__description w-full pt-2 focus:outline-none" 
+            class="task-item__description w-full pt-2 text-left" 
             placeholder="Add a short description"
             :class="{'text-gray-400 text-sm': !task.description }">
               {{ task.description || 'No description provided'}}
@@ -126,6 +127,10 @@ const typeColor = computed(() => {
   return colors[props.type] || colors['todo']
 })
 
+const keyStyles = computed(() => {
+  return task.value.is_key && task.value.matrix == 'todo' ? 'border-green-300 border-2' : ''
+})
+
 
 const isDisabled = computed(() => {
   return currentTimer.value && currentTimer.value.task_uid;
@@ -134,10 +139,6 @@ const isDisabled = computed(() => {
 const isSelected = computed(( ) => {
   return currentTask.value && currentTask.value.uid == task.value.uid
 })
-
-const emitSelected = (task) => {
-  emit('selected', task)
-}
 
 const handleCommand = (commandName) => {
   switch (commandName) {
@@ -153,6 +154,8 @@ const handleCommand = (commandName) => {
     case 'down':
       emit('down', task)
       break
+    case 'toggle-key':
+      emit('toggle-key', task)
     default:
       break;
   }

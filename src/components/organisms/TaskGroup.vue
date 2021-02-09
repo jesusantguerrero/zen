@@ -35,6 +35,7 @@
               :show-controls="showControls"
               :current-task="currentTask"
               :current-timer="currentTimer"
+              @toggle-key="onToggleKey(task)"
               @selected="emit('selected', task)"
               @deleted="emit('deleted', task)"
               @edited="emit('edited', task)"
@@ -55,6 +56,8 @@ import TaskItem from "../molecules/TaskItem.vue"
 import IconExpand from "../atoms/IconExpand.vue"
 import IconCollapse from "../atoms/IconCollapse.vue"
 import { useFuseSearch } from "../../utils/useFuseSearch"
+import { useTaskFirestore } from "../../utils/useTaskFirestore"
+import { ElNotification } from "element-plus"
 
 const props = defineProps({
     tasks: {
@@ -131,7 +134,29 @@ const emitChange = ( evt, matrix ) => {
   emit('change', evt, matrix)
 }
 
+const { updateTask } = useTaskFirestore();
+const keyTasks = computed(() => {
+  return tasks.value.filter(item => item.is_key).length;
+});
 
+const onToggleKey = (task) => {
+  if (!task.is_key && keyTasks.value < 3) {
+      task.is_key = true
+      updateTask({
+        uid: task.uid,
+        is_key: task.is_key
+      })
+      ElNotification({
+        message: "Marked as key"
+      })
+  } else if (task.is_key) {
+    task.is_key = false;
+    updateTask({
+      uid: task.uid,
+      is_key: task.is_key
+    })
+  }
+}
 </script>
 
 <style lang="scss">
