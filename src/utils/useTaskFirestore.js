@@ -93,20 +93,13 @@ export function useTaskFirestore() {
     }
 
     const getTaskByMatrix = async (matrix) => {
-        const tasks = [];
-        await db.collection(collectionName)
+        const matrixRef = db.collection(collectionName)
             .where("user_uid", "==", firebaseState.user.uid)
             .where("done", "==", false)
             .where("matrix", "==", matrix)
             .orderBy("order")
-            .get()
-            .then(querySnapshot => {
-                querySnapshot.forEach((doc) => {
-                tasks.push({...doc.data(), uid: doc.id });
-            });
-        })
-
-        return tasks;
+            
+        return matrixRef
     }
 
     return {

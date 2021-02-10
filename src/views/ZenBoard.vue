@@ -128,7 +128,7 @@
 </template>
 
 <script setup>
-import { nextTick, reactive, ref, watch} from 'vue'
+import { nextTick, onUnmounted, reactive, ref, watch} from 'vue'
 import { useRouter } from "vue-router"
 import { ElMessageBox, ElNotification } from "element-plus"
 import { useTaskFirestore } from "../utils/useTaskFirestore"
@@ -236,15 +236,33 @@ const onTaskUpdated = (task) => {
 
 // Timer
 const currentTimer = ref({});
+
 // Tasks manipulation 
+const getMatrix = (matrix) => {
+  getTaskByMatrix(matrix).then((collectionRef) => {
+    const unsubscribe = collectionRef.onSnapshot((snap) => {
+      state[matrix] = [];
+      snap.forEach((doc) => {
+          state[matrix].push({...doc.data(), uid: doc.id });
+      })
+    })
 
-getTaskByMatrix('todo').then(tasks => {
-  state.todo = tasks
-});
+    return unsubscribe;
+  });
+}
 
-getTaskByMatrix('schedule').then(tasks => {
-  state.schedule = tasks
-});
+const scheduleRef = ref(null);
+const todoRef = ref(null);
+
+todoRef.value = getMatrix('todo')
+scheduleRef.value = getMatrix('schedule')
+
+onUnmounted(() => {
+  if (scheduleRef.value && todoRef.value) {
+    scheduleRef.value()
+    todoRef.value()
+  }
+})
 
 const getNextIndex = (list) => {
   return Math.max(...list.map(item => Number(item.order || 0))) + 1;
@@ -273,11 +291,10 @@ const destroyTask = async (task) => {
 }
 
 const moveTo = async (task, matrix) => {
-    const oldMatrix = task.matrix
-    task.matrix = matrix
+    const oldMatrix = task.matrix;
+    task.matrix = matrix;
+    task.order = getNextIndex(state[oldMatrix]);
     updateTask(task).then(() => {
-      state[oldMatrix] = state[oldMatrix].filter(localTask => task.uid != localTask.uid)
-      state[matrix].push(task)
       ElNotification({
         type: "success",
         message: "Task moved",
