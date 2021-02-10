@@ -37,6 +37,7 @@ export function useTracker(taskRef, currentTimerRef) {
     })
 
     return {
-        timeTracked
+        timeTracked,
+        savedTime
     }
 }

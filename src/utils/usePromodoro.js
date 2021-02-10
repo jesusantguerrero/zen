@@ -66,10 +66,11 @@ export function usePromodoro() {
             long.sec = modes.long.sec
         }
     }
+    
+    const audio = new Audio(`./audio/${promodoroState.alarmSound}.mp3`)
 
     const playSound = async (volume = 1) => {
         stopSound()
-        const audio = new Audio(`./audio/${promodoroState.alarmSound}.mp3`)
         audio.id = "audio"
         document.body.appendChild(audio);
         audio.currentTime = 0
@@ -82,7 +83,7 @@ export function usePromodoro() {
     const stopSound = () => {
         if (promodoroState.audio && promodoroState.audio.pause) {
             promodoroState.audio.pause()
-            promodoroState.audio.remove()
+            promodoroState.audio.stop()
             window.navigator.vibrate(0);
         }
     }

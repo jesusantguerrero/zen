@@ -73,12 +73,9 @@
 
 <script setup>
 import { defineProps, toRefs, ref, computed, defineEmit, watch } from "vue"
-import { useTracker } from "../../utils/useTracker";
-import { useTaskFirestore } from "../../utils/useTaskFirestore";
 import ChecklistContainer from "../organisms/ListContainer.vue"
 import { ElNotification } from "element-plus";
 
-const { updateTask } = useTaskFirestore()
 const props = defineProps({
   task: Object,
   type: String,
@@ -99,20 +96,8 @@ const emit = defineEmit({
 
 const { task, currentTask, currentTimer} = toRefs(props)
 
-const { timeTracked } = useTracker(task)
-
-watch(() => task.value.tracks.length, () => {
-  if (task.value.uid && task.value.tracks.length && task.value.duration_ms != timeTracked.value) {
-    updateTask({
-      uid: task.value.uid,
-      duration_ms: timeTracked.value
-    })
-  }
-})
-
-
 const timeTrackedLabel = computed(() => {
-  return task.value.tracks && !task.value.tracks.length && task.value.duration_ms ?  task.value.duration_ms : timeTracked.value
+  return task.value.duration_ms ||  "00:00:00"
 })
 
 
