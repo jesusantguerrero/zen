@@ -37,7 +37,10 @@ const props = defineProps({
     type: Object,
   },
   currentTimer: {
-    type: Object
+    type: Object,
+    default() {
+      return {}
+    }
   },
   hideSessions: {
     type: Boolean
@@ -53,18 +56,16 @@ const { timeTracked, savedTime } = useTracker(task, currentTimer)
 const { formatDurationFromMs } = useDateTime()
 
 watch(() => currentTimer.value, () => {
-  const timeFormatted = formatDurationFromMs(savedTime.value);
-  
-  if (task.value.uid && task.value.duration_ms != timeFormatted) {
-    updateTask({
-      uid: task.value.uid,
-      duration_ms: timeFormatted.toFormat("hh:mm:ss"),
-      duration: savedTime.value
-    }).then(() => {
-      ElNotification({
-        title: "Updated"
+  if (savedTime) {
+    const timeFormatted = formatDurationFromMs(savedTime.value);
+    
+    if (task.value.uid && task.value.duration_ms != timeFormatted) {
+      updateTask({
+        uid: task.value.uid,
+        duration_ms: timeFormatted.toFormat("hh:mm:ss"),
+        duration: savedTime.value
       })
-    })
+    }
   }
 })
 

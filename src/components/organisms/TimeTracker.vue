@@ -58,8 +58,8 @@ import { computed, onBeforeUnmount, reactive, watch, defineProps, defineEmit, re
 import { Duration, Interval, DateTime } from "luxon";
 import { useTrackFirestore } from "./../../utils/useTrackFirestore";
 import { usePromodoro } from "./../../utils/usePromodoro";
-import { firebaseState } from "./../../utils/useFirebase";
-import { ElNotification } from "element-plus";
+import { firebaseState, messaging } from "./../../utils/useFirebase";
+import { ElMessageBox, ElNotification } from "element-plus";
 import TimeTrackerModal from "./TimeTrackerModal.vue";
 import { useTitle } from "@vueuse/core";
 
@@ -127,6 +127,7 @@ const state = reactive({
   now: null,
   mode: "promodoro",
   timer: null,
+  pushSubscription: null,
   durationTarget: null,
 });
 
@@ -193,12 +194,15 @@ watch(() => state.now, (now) => {
 });
 
 // Settings
-const { playSound, stopSound, promodoroState, setSettings } = usePromodoro()
+const { playSound, stopSound, promodoroState, setSettings, showNotification } = usePromodoro()
 const isModalOpen = ref(false)
+
 setSettings(firebaseState.settings);
+
 watch(() => promodoroState, (localState) => {
   state.template = localState.template;
   state.modes = localState.modes;
+  state.pushSubscription = localState.pushSubscription;
   setDurationTarget()
 }, { immediate: true })
 
@@ -277,21 +281,21 @@ const stop = (shouldCallNextMode = true, silent) => {
     updateTrackFromLocal({...track});
   }
 
-  clearTrack()
-  clearInterval(state.timer);
   const wasRunning = Boolean(state.now);
   const previousMode = state.mode;
+  const message = track.completed ? "finished" : "stopped";
+  
+  clearTrack()
+  clearInterval(state.timer);
   state.now = null;
   
   nextMode();
   if (!silent) {
-    playSound().then(() => {
-      if (wasRunning && previousMode == "promodoro") {
-        confirm("Stopped");
-      }
-    
-    });
-
+    playSound()
+    if (wasRunning && previousMode == "promodoro") {
+      showNotification("Promodoro session finished")
+      ElMessageBox.confirm(`Promodoro session ${message}`)
+    }
   }
   
 };

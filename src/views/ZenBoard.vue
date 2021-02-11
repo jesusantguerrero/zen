@@ -270,10 +270,7 @@ const getNextIndex = (list) => {
 
 const addTask = (task) => {
   task.order = getNextIndex(state.todo);
-  saveTask(task).then((uid) => {
-    task.uid = uid
-    state.todo.push(task);
-  })
+  saveTask(task)
 }
 
 const destroyTask = async (task) => {

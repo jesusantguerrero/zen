@@ -16,6 +16,19 @@
                         Timer indication title
                     </label>
                 </div>
+                <div class="form-group">
+                    <label for="">
+                        <input type="checkbox" v-model="showNotification" @click="requestNotification">
+                        Show Notification
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label for="">
+                        <input type="checkbox" name="" id="" @click="subscribeUserToPush">
+                        Subscribe to push notifications
+                    </label>
+                </div>
 
                  <h4>  Workflow Template </h4>
                  <div class="form-group">
@@ -104,9 +117,11 @@ import { defineProps, reactive, ref, watch, defineEmit } from "vue";
 import { usePromodoro } from "./../../utils/usePromodoro";
 import ModalBase from "../molecules/ModalBase.vue";
 import { updateSettings } from "../../utils/useFirebase";
+import { usePush } from "../../utils/usePush"
+const { subscribeUserToPush } = usePush()
 
 // controls
-const { playSound, stopSound, promodoroState } = usePromodoro()
+const { playSound, stopSound, promodoroState, requestNotification, showNotification } = usePromodoro()
 
 const props = defineProps({
     isOpen: {
@@ -137,13 +152,15 @@ watch(()=> isOpenLocal.value, (isOpen) => {
 
 const formData = reactive({
     template: [],
-    modes: {}
+    modes: {},
+    pushSubscription: null
 })
 
 watch(()=> props.settings, (settings) => {
     if (settings) {
         formData.template = settings.template;
         formData.modes = settings.modes;
+        formData.pushSubscription = settings.pushSubscription;
     }
 }, { immediate: true })
 

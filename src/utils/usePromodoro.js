@@ -1,8 +1,7 @@
-import { computed, reactive, ref, watch} from "vue";
+import { reactive} from "vue";
 const SESSION_MINUTES = 25;
 const SHORT_BREAK_MINUTES= 5;
 const LONG_BREAK_MINUTES= 15;
-const TIME_SECONDS= 0;
 const PROMODORO_TEMPLATE = [
     "promodoro",
     "rest",
@@ -53,6 +52,8 @@ export function usePromodoro() {
         if (settings.promodoro_template) {
             promodoroState.template = settings.promodoro_template
         }
+
+        promodoroState.pushSubscription = typeof settings.pushSubscription == 'string' ? JSON.parse(settings.pushSubscription) : settings.pushSubscription;
         
         const modes = settings.promodoro_modes;
         const { promodoro, rest, long } = promodoroState.modes;
@@ -83,8 +84,19 @@ export function usePromodoro() {
     const stopSound = () => {
         if (promodoroState.audio && promodoroState.audio.pause) {
             promodoroState.audio.pause()
-            promodoroState.audio.stop()
             window.navigator.vibrate(0);
+        }
+    }
+    
+    const requestNotification = () => {
+        if (window.Notification && Notification.permission !== "denied") {
+            return Notification.requestPermission()
+        }
+    } 
+
+    const showNotification = (message) => {
+        if (window.Notification && Notification.permission === "granted") {
+            const notification = new Notification(message);    
         }
     }
 
@@ -92,6 +104,8 @@ export function usePromodoro() {
         playSound,
         stopSound,
         setSettings,
-        promodoroState
+        promodoroState,
+        showNotification,
+        requestNotification
     }
 }
