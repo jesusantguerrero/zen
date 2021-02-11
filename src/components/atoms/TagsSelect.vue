@@ -1,36 +1,40 @@
 <template>
-    <div>
+    <div class="tag-select">
         <el-popover
             placement="bottom-end"
             :width="240"
             :show-arrow="false"
+            popper-class='tag-select'
             @after-enter="focusInput()"
         >
 
             <div class="pt-2 pb-5 px-2 w-full">
                 <input
-                    class="w-full h-8 rounded-md px-2 border-2 border-gray-100" 
+                    class="w-full h-8 rounded-md px-2 border-2 border-gray-100 focus:outline-none focus:border-gray-200" 
                     type="text" 
                     placeholder="Add or create a tag"
-                    v-model.trim="state.searchText"
+                    v-model.trim="searchText"
                     ref="input"
+                    @click.stop
+                    @keydown.enter="selectTag()"
                     @keydown.up.prevent="moveCursorUp()"
                     @keydown.down.prevent="moveCursorDown()"
                 />
 
                 <div class="tags-container mt-2">
-                    <div v-for="tag in filteredTags" 
+                    <div v-for="tag in filteredList" 
                         :key="tag" 
                         class="px-2 py-2 border-2 border-white hover:bg-blue-100 cursor-pointer"
                         :class="{'border-blue-400': preSelectedValue == tag}"
+                        @click.stop="selectTag(tag)"
                     >
-                        {{ tag }}
+                        {{ tag.name }} Joder
                     </div>
                 </div>
 
-                <div v-if="state.searchText">
-                    <button class="px-2 h-8 w-full"> 
-                        Add tag:  "{{ state.searchText}}"</button>
+                <div v-if="searchText && filteredList.length == 0">
+                    <button class="px-2 h-8 w-full" @click="addTag"> 
+                        Add tag:  "{{ searchText}}"</button>
                 </div>
             </div>
 
@@ -40,7 +44,6 @@
                 ref="button"
                 :class="{'text-blue-400': formattedTags }" 
                 class="flex focus:outline-none"
-                @click.stop="addTag" 
                 @mousedown.prevent
                 @focus.prevent="focusButton"
             >
@@ -53,38 +56,33 @@
 </template>
 
 <script setup>
-import { computed, defineEmit, reactive, watch, ref } from "vue";
+import { computed, defineEmit, reactive, watch, ref, toRefs } from "vue";
+import { useFuseSearch } from "../../utils/useFuseSearch"
 
 const props = defineProps({
-    tags: Array,
-    default() {
-        return ["rojo", "blanco"]
-    }
+    tags: [],
+    selectedTags: []
 })
 const input = ref(null);
 const button = ref(null);
 
 const emit = defineEmit({
-    'tag-added': Date
+    'added': Object,
+    'selected': Object
 })
 
 const state = reactive({
-    searchText: "",
     cursor: 0,
     isOpen: false,
-    tags: []
 })
 
 // Tags
+const searchText = ref("")
+const { tags, selectedTags } = toRefs(props)
 const formattedTags = computed(() => {
-    return state.tags.join(" ")
+    return selectedTags && selectedTags.value.map(item => item.name).join(" ")
 });
-
-const filteredTags = computed(() => {
-    return state.tags.filter(tag => {
-        return tag.includes(state.searchText)
-    })
-});
+const { filteredList  } = useFuseSearch(searchText, tags)
 
 // Cursor
 const focusInput = () => {
@@ -95,14 +93,14 @@ const focusButton = (e) => {
     e.target.click()
 }
 
-watch(() => filteredTags.value, (tags) => {
-    if (state.cursor > filteredTags.value.length - 1) {
+watch(() => filteredList.value, (tags) => {
+    if (state.cursor > filteredList.value.length - 1) {
         state.cursor = 0;
     }
 })
 
 const preSelectedValue = computed(() => {
-    return state.cursor <= filteredTags.value.length ? filteredTags.value[state.cursor] : "";
+    return state.cursor <= filteredList.value.length ? filteredList.value[state.cursor] : "";
 });
 
 const moveCursorUp = () => {
@@ -112,21 +110,30 @@ const moveCursorUp = () => {
 }
 
 const moveCursorDown = () => {
-    if ((state.cursor + 1) < filteredTags.value.length  ) {
+    if ((state.cursor + 1) < filteredList.value.length  ) {
         state.cursor = state.cursor + 1
     }
 }
 
 // emits
-const selectTag = () => {
-    if (filteredTags.length) {
-        emit('tag-selected', filteredTags[0])
+const addTag = () => {
+    if (searchText.value) {
+        emit('added', {
+            name: searchText.value
+        });
+        emit('selected', {
+            name: searchText.value
+        });
+        searchText.value = "";
     }
 }
 
-const addTag = () => {
-    emit('tag-added', state.searchText);
-    state.tags.push(state.searchText)
-    state.searchText = "";
+const selectTag = (tag) => {
+    if (filteredList.value.length) {
+        emit('selected', tag || filteredList[0])
+    } else {
+        addTag()
+    }
 }
+
 </script>

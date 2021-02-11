@@ -11,7 +11,7 @@ import { nextTick, ref } from 'vue'
 import { useRouter } from "vue-router"
 import AppHeader from './components/organisms/AppHeader.vue'
 import AppFooter from './components/organisms/AppFooter.vue'
-import { logout, setLoaded } from "./utils/useFirebase"
+import { logout, setLoaded, firebaseState } from "./utils/useFirebase"
 
 const isLoaded = ref(false);
 const { push } = useRouter();

@@ -67,6 +67,12 @@
         </div>
     </el-collapse-transition>
 
+    <div>
+      <div class="text-xs text-right">
+        <span v-for="tag in task.tags" :key="tag.name" class="mr-1 bg-gray-200 px-2 py-1 rounded-md"> {{ tag.name}}</span>
+      </div>
+    </div>
+
   </div>
 
 </template>

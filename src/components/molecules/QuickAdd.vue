@@ -49,14 +49,25 @@
           <checklist-container :items="task.checklist" :allow-edit="allowEdit"></checklist-container>
         </div>
 
-        <div class="mt-2 text-right">
-          <span class="text-sm mr-2 font-bold text-green-400">
+        <div class="flex justify-between items-center mt-2">
+          <div class=" text-gray-400 hover:text-gray-600 w-6/12">
+            <tags-select
+              :tags="state.tags" 
+              :selected-tags="task.tags"
+              @selected="addTag"
+              @added="saveDoc('tags', $event)"
+            /> 
+          </div>
+
+          <div class="mt-2 text-right w-6/12">
+            <button class="px-5 py-2 rounded-md focus:outline-none transition-colors bg-green-400 hover:bg-green-500 text-white " type="submit" @click.prevent="save()"> Save</button>
+          </div>
+        </div>
+        <div class="text-xs mr-2 font-bold text-green-400 text-right pt-2">
             <i class="fa fa-lightbulb"></i>
             ProTip! save with ctrl + enter
-          </span>
-          <button class="px-5 py-2 rounded-md focus:outline-none transition-colors bg-green-400 hover:bg-green-500 text-white " type="submit" @click.prevent="save()"> Save</button>
+          </div>
         </div>
-      </div>
     </el-collapse-transition>
   </form>
 </template>
@@ -65,6 +76,7 @@
 import { computed, reactive, defineProps, defineEmit, onMounted, ref} from "vue"
 import { onClickOutside } from  "@vueuse/core"
 import { useDateTime } from "../../utils/useDateTime"
+import { useCollection } from "./../../utils/useCollection"
 import DateSelect from "../atoms/DateSelect.vue"
 import TagsSelect from "../atoms/TagsSelect.vue"
 import ChecklistContainer from "../organisms/ListContainer.vue";
@@ -102,14 +114,22 @@ const task = reactive({
 
 // UI
 const state = reactive({
-  isExpanded: false
+  isExpanded: false,
+  tags: []
 })
 
 const taskForm = ref(null)
 
 onMounted(() => {
   
-  onClickOutside(taskForm, () => {
+  onClickOutside(taskForm, (e) => {
+    const isTagSelect = e.path.filter(el => {
+      return el.classList && Array.from(el.classList).includes('tag-select')
+    })
+
+    if (isTagSelect.length) {
+      return
+    }
     state.isExpanded = false;
   })
 })
@@ -165,6 +185,18 @@ const save = () => {
   clearForm()
 }
 
+const { save: saveDoc, getAll } = useCollection()
+const tagsRef = ref(null)
+tagsRef.value = getAll('tags').onSnapshot(snap => {
+  state.tags = [];
+  snap.forEach((doc) => {
+      state.tags.push({...doc.data(), uid: doc.id });
+  })
+})
 
+const addTag = (tag) => {
+  task.tags.push(tag)
+  console.log(task.tags)
+}
 
 </script>

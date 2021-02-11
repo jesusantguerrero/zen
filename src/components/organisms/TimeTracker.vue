@@ -58,7 +58,7 @@ import { computed, onBeforeUnmount, reactive, watch, defineProps, defineEmit, re
 import { Duration, Interval, DateTime } from "luxon";
 import { useTrackFirestore } from "./../../utils/useTrackFirestore";
 import { usePromodoro } from "./../../utils/usePromodoro";
-import { firebaseState, messaging } from "./../../utils/useFirebase";
+import { firebaseState } from "./../../utils/useFirebase";
 import { ElMessageBox, ElNotification } from "element-plus";
 import TimeTrackerModal from "./TimeTrackerModal.vue";
 import { useTitle } from "@vueuse/core";

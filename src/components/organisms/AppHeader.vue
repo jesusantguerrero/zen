@@ -26,16 +26,24 @@
         <i class="fa fa-question"></i>
        </menu-item>
 
-      <el-dropdown trigger="click" class="mt-3" placement="bottom-end" :show-arrow="false" :offset="-2" @command="logout()">
+      <el-dropdown trigger="click" class="mt-3" placement="bottom-end" :show-arrow="false" :offset="-2" @command="handleCommand">
        <el-avatar :src="profileImage">
           {{ initials }}
        </el-avatar>
       <template #dropdown>
         <el-dropdown-menu >
-          <el-dropdown-item icon="el-icon-person" disabled>
+          <el-dropdown-item disabled>
+            <i class="fa fa-user"></i>
             {{ profileName }}
           </el-dropdown-item>
-
+          <el-dropdown-item class="p-0" command="releases">
+              <i class="fa fa- cursor-pointer"></i>
+              Release Notes
+          </el-dropdown-item>
+          <el-dropdown-item class="p-0" command="settings">
+              <i class="fa fa-cog cursor-pointer"></i>
+              Settings
+          </el-dropdown-item>
           <el-dropdown-item class="p-0" command="logout">
               <i class="fa fa-power-off cursor-pointer"></i>
               Logout
@@ -51,7 +59,7 @@
 import { computed, defineEmit, toRefs } from "vue";
 import MenuItem from "../molecules/MenuItem.vue";
 import MobileMenu from "./MobileMenu.vue";
-
+import { useRouter } from "vue-router";
 const props = defineProps({
   user: {
     type: Object,
@@ -78,6 +86,17 @@ const initials = computed(() => {
   const provider = user.value.providerData[0];
   return profileName.value.split(' ').map( name => name[0]).join('');
 })
+
+const { push } = useRouter()
+const handleCommand = (commandName) => {
+  const commands = {
+    logout: logout,
+    settings: push.bind(null, {name: 'settings'})
+  }
+
+  const command = commands[commandName]
+  command && command()
+}
 
 const logout = () => {
   emit("logout");
