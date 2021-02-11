@@ -25,13 +25,14 @@
       </div>
 
       <div class="task-item__controls flex items-center">  
-        <div class="task-item__tracked mx-2 text-gray-400 hover:text-gray-600 cursor-default"
+        <div class="task-item__tracked mx-2 text-gray-400 hover:text-gray-600 md:text-md cursor-default"
           title="Time tracked"
           >
           <i class="fa fa-clock mr-1"></i>
           <span> {{ timeTrackedLabel }}</span>
         </div>
-        <div class="mx-2 text-gray-400 hover:text-gray-600 cursor-default">
+
+         <div class="cursor-default md:text-xs w-20" :class="dateStates.color" :title="dateStates.title" v-if="task.due_date">
           <i class="fa fa-calendar mr-1"></i>
           <span> {{ task.due_date }}</span>
         </div>
@@ -54,7 +55,7 @@
     </div>
 
     <el-collapse-transition>
-        <div class="task-item__body w-full p-3" v-if="isExpanded">
+        <div class="task-item__body w-full p-3 ml-6" v-if="isExpanded">
           <div
             class="task-item__description w-full pt-2 text-left" 
             placeholder="Add a short description"
@@ -67,8 +68,8 @@
         </div>
     </el-collapse-transition>
 
-    <div>
-      <div class="text-xs text-right">
+    <div class="flex items-center mt-1" :class="{'justify-between': task.due_date }">
+      <div class="text-xs text-right w-full">
         <span v-for="tag in task.tags" :key="tag.name" class="mr-1 bg-gray-200 px-2 py-1 rounded-md"> {{ tag.name}}</span>
       </div>
     </div>
@@ -81,6 +82,7 @@
 import { defineProps, toRefs, ref, computed, defineEmit, watch } from "vue"
 import ChecklistContainer from "../organisms/ListContainer.vue"
 import { ElNotification } from "element-plus";
+import { useDateTime } from "../../utils/useDateTime";
 
 const props = defineProps({
   task: Object,
@@ -132,6 +134,33 @@ const isSelected = computed(( ) => {
   return currentTask.value && currentTask.value.uid == task.value.uid
 })
 
+const { formatDate } = useDateTime()
+const dateStates = computed(() => {
+  const stateStyles = {
+    normal: {
+      color: 'text-gray-400',
+      title: 'due date'
+    },
+    due: {
+      color: 'text-blue-400',
+      title: 'due to today'
+    },
+    overdue: {
+      color: 'text-red-400',
+      title: 'Overdue'
+    }
+  }
+
+  let dateState = 'normal';
+  if (task.value.due_date == formatDate()) {
+    dateState = 'due' 
+  } else if (task.value.due_date && task.value.due_date < formatDate()) {
+    dateState = 'overdue'
+  }
+
+  return  stateStyles[dateState]
+});
+
 const handleCommand = (commandName) => {
   switch (commandName) {
     case 'delete':
@@ -157,7 +186,6 @@ const isExpanded = ref(false);
 const toggleExpand = () => {
 isExpanded.value = !isExpanded.value
 }
-
 
 const updateItems = () => {
   ElNotification({
