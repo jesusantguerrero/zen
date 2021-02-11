@@ -11,7 +11,7 @@ import { nextTick, ref } from 'vue'
 import { useRouter } from "vue-router"
 import AppHeader from './components/organisms/AppHeader.vue'
 import AppFooter from './components/organisms/AppFooter.vue'
-import { logout, setLoaded, firebaseState } from "./utils/useFirebase"
+import { logout, setLoaded, firebaseState, firebaseInstance } from "./utils/useFirebase"
 
 const isLoaded = ref(false);
 const { push } = useRouter();
@@ -25,6 +25,10 @@ const logoutUser = () => {
 
 setLoaded(() => {
   isLoaded.value = true;
+  const messaging = firebaseInstance.messaging();
+  messaging.onMessage((payload) => {
+      console.log(payload)
+  })
 })
 </script>
 

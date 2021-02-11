@@ -1,0 +1,28 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+  		match /users/{userId} {
+    		allow read, write, update: if request.auth != null && resource.data.user_uid == request.auth.uid; 
+    	}
+      match /settings/{id} {
+        allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
+        allow delete, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
+    		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid; 
+    	}
+      match /standups/{standupId} {
+    		allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
+        allow delete, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
+    		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid;  
+    	}
+    	match /tasks/{taskId} {
+        allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
+        allow delete, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
+    		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid; 
+      }
+      match /tracks/{trackId} {
+    		allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
+        allow delete, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
+    		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid;  
+    	}
+  }
+}

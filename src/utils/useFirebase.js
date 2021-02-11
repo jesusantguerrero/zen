@@ -2,6 +2,8 @@ import { ref, reactive } from "vue";
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
+import "firebase/analytics";
+import "firebase/messaging";
 import CONFIG from "../config/";
 import { useSettingsFirestore } from "./useSettingsFirestore"
 
@@ -18,6 +20,7 @@ const firebaseConfig = {
 }
 
 firebase.initializeApp(firebaseConfig)
+firebase.analytics()
 
 const onLoaded = ref(null)
 
@@ -88,7 +91,7 @@ export const updateSettings = (settings) => {
 
 }
 
-const initFirebase =  new Promise(resolve => {
+const initFirebase = new Promise(resolve => {
     firebase.auth().onAuthStateChanged(async (user) => {
         if (user) {
             const settings = await getUserSettings(user.uid)
