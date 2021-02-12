@@ -10,8 +10,6 @@
               type="checkbox"
               class="checkbox-done"
               :class="{'cursor-not-allowed': isDisabled}"
-              name=""
-              id=""
               :title="isDisabled? 'Can change task when timer is running' : ''"
               :disabled="isDisabled"
               :checked="isSelected"

@@ -12,7 +12,7 @@
                 <h4>  User preferences </h4>
                 <div class="form-group">
                     <label for="">
-                        <input type="checkbox" name="" id="">
+                        <input type="checkbox" name="">
                         Timer indication title
                     </label>
                 </div>
@@ -25,7 +25,7 @@
                 
                 <div class="form-group">
                     <label for="">
-                        <input type="checkbox" name="" id="" @click="subscribeUserToPush">
+                        <input type="checkbox" @click="subscribeUserToPush">
                         Subscribe to push notifications
                     </label>
                 </div>
@@ -54,7 +54,7 @@
 
                  <h4>  Select sound </h4>
                  <div class="form-group">
-                    <select name="" id="" class="form-control">
+                    <select name="" class="form-control">
                         <option value="">Alarm Clock</option>
                     </select>
                  </div>

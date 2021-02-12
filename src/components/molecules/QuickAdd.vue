@@ -196,7 +196,6 @@ tagsRef.value = getAll('tags').onSnapshot(snap => {
 
 const addTag = (tag) => {
   task.tags.push(tag)
-  console.log(task.tags)
 }
 
 </script>

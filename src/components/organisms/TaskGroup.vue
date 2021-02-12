@@ -84,6 +84,7 @@ const props = defineProps({
         return {}
       }
     },
+    tags: Array,
     currentTimer: Object,
     maxHeight: {
       default: 340,
@@ -109,9 +110,9 @@ const emit = defineEmit({
   change: Object
 })
 
-const { tasks, search, showSelect, currentTask, currentTimer, isItemAsHandler, handleMode } = toRefs(props)
+const { tasks, search,tags, showSelect, currentTask, currentTimer, isItemAsHandler, handleMode } = toRefs(props)
 
-const { filteredList } = useFuseSearch(search, tasks);
+const { filteredList } = useFuseSearch(search, tasks, tags);
 const handleClass = computed(() => {
   return handleMode.value || isItemAsHandler.value ? null : '.handle'
 })

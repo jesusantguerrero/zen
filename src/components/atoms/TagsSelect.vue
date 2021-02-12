@@ -21,20 +21,26 @@
                     @keydown.down.prevent="moveCursorDown()"
                 />
 
-                <div class="tags-container mt-2">
+                <div class="tags-container mt-2 space-y-1">
                     <div v-for="tag in filteredList" 
                         :key="tag" 
-                        class="px-2 py-2 border-2 border-white hover:bg-blue-100 cursor-pointer"
-                        :class="{'border-blue-400': preSelectedValue == tag}"
+                        class="px-2 py-2 cursor-pointer rounded-sm transition-colors"
+                        :class="[
+                            preSelectedValue == tag && 'bg-gray-500 text-white', 
+                            isSelected(tag.uid) ? 'bg-gray-200 hover:bg-gray-500 hover:text-white' : 'hover:bg-gray-500 hover:text-white'
+                        ]"
                         @click.stop="selectTag(tag)"
                     >
-                        {{ tag.name }} Joder
+                        {{ tag.name }}
                     </div>
                 </div>
 
-                <div v-if="searchText && filteredList.length == 0">
+                <div v-if="searchText && filteredList.length == 0 && allowAdd">
                     <button class="px-2 h-8 w-full" @click="addTag"> 
                         Add tag:  "{{ searchText}}"</button>
+                </div>
+                <div v-else-if="filteredList.length == 0" class="text-center">
+                    <span> This tag doesn't exists</span>
                 </div>
             </div>
 
@@ -42,13 +48,26 @@
             <template #reference>
             <button 
                 ref="button"
-                :class="{'text-blue-400': formattedTags }" 
-                class="flex focus:outline-none"
+                :class="{'text-gray-500': formattedTags }" 
+                class="flex focus:outline-none space-x-1 items-center text-xs"
                 @mousedown.prevent
                 @focus.prevent="focusButton"
             >
                 <i class="fa fa-tags cursor-pointer"></i>
-                <span class="text-xs" > {{ formattedTags }}</span>
+                    <span 
+                        v-for="tag in selectedTags.slice(0, limit)" 
+                        :key="tag.name" 
+                        class="mr-1 text-white bg-gray-500 px-2 py-1 rounded-md"
+                    > 
+                        {{ tag.name}}
+                    </span>
+                    <span 
+                        v-if="moreTags"
+                        :title="moreTags"
+                        class="mr-1 text-white bg-gray-500 px-2 py-1 rounded-md"> 
+                        + {{ selectedTags.slice(limit).length }}
+                    </span>
+
             </button>
             </template>
         </el-popover>
@@ -61,12 +80,31 @@ import { useFuseSearch } from "../../utils/useFuseSearch"
 
 const props = defineProps({
     tags: [],
-    selectedTags: []
+    modelValue: {
+        type: Array,
+        default() {
+            return
+        }
+    },
+    limit: {
+        type: Number,
+        default: 2
+    },
+    multiple: Boolean,
+    allowAdd: {
+        type: Boolean,
+        default: true
+    }
+})
+const selectedTags = ref([])
+watch(() => props.modelValue, (value) => {
+    selectedTags.value = value
 })
 const input = ref(null);
 const button = ref(null);
 
 const emit = defineEmit({
+    'update:modelValue': Array,
     'added': Object,
     'selected': Object
 })
@@ -78,12 +116,21 @@ const state = reactive({
 
 // Tags
 const searchText = ref("")
-const { tags, selectedTags } = toRefs(props)
+const { tags, allowAdd } = toRefs(props)
+
 const formattedTags = computed(() => {
     return selectedTags && selectedTags.value.map(item => item.name).join(" ")
 });
+
+const moreTags = computed(() => {
+    return selectedTags && selectedTags.value.slice(props.limit).map(item => item.name).join(" ")
+});
+
 const { filteredList  } = useFuseSearch(searchText, tags)
 
+const isSelected = (uid) => {
+    return selectedTags.value.find( tag => tag.uid == uid)
+}
 // Cursor
 const focusInput = () => {
     input.value && input.value.focus()
@@ -130,10 +177,24 @@ const addTag = () => {
 
 const selectTag = (tag) => {
     if (filteredList.value.length) {
-        emit('selected', tag || filteredList[0])
+        const selected = tag || filteredList.value[state.cursor]
+        select(selected)
     } else {
         addTag()
     }
+}
+
+const select = (tag) => {
+  const index = selectedTags.value.findIndex(item => tag.uid == item.uid)
+  if (index < 0 && props.multiple) {
+    selectedTags.value.push(tag)
+  } else if (index < 0 && !props.multiple) {
+    selectedTags.value = [tag]
+  } else {
+    selectedTags.value.splice(index, 1);
+  }
+
+  emit('update:modelValue', selectedTags.value)
 }
 
 </script>
