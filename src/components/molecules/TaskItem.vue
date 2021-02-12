@@ -19,7 +19,7 @@
         <div class="mx-3 rounded-md px-2 py-1 border-2 border-transparent" :class="[typeColor, keyStyles]"> 
             <i :class="[!task.is_key ? 'fa fa-sticky-note' : 'fa fa-fire']"></i>
         </div>
-        <h4 @click="toggleExpand" class="cursor-pointer m-0"> {{ task.title }}</h4>
+        <h4 @click="toggleExpand" class="cursor-pointer m-0 text-left"> {{ task.title }}</h4>
       </div>
 
       <div class="task-item__controls flex items-center">  

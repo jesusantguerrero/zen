@@ -10,6 +10,7 @@
     "@vueuse/core": "^4.0.12",
     "axios": "^0.21.1",
     "canvas-confetti": "^1.3.3",
+    "chart.js": "^2.9.4",
     "element-plus": "^1.0.2-beta.30",
     "firebase": "^8.2.4",
     "fuse.js": "^6.4.6",

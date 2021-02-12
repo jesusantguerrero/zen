@@ -1,6 +1,7 @@
 <template>
     <div class="tag-select">
         <el-popover
+            v-model="state.isOpen"
             placement="bottom-end"
             :width="240"
             :show-arrow="false"
@@ -192,6 +193,12 @@ const select = (tag) => {
     selectedTags.value = [tag]
   } else {
     selectedTags.value.splice(index, 1);
+  }
+
+  if (props.multiple) {
+      input.value.focus()
+  } else {
+      state.isOpen = false;
   }
 
   emit('update:modelValue', selectedTags.value)

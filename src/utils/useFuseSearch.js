@@ -28,7 +28,8 @@ export function useFuseSearch(searchRef, listRef, tagsRef, keys = []) {
         return list1.filter(value => list2.includes(value)).length
       }  
       
-      const filteredList = computed(() =>{
+      const filteredList = computed(() => {
+        if (!list.value) return [];
         const fuse = new Fuse([...list.value], options);
         const result = search.value && list.value.length ? fuse.search(search.value).map(item => item.item) : list.value;
         const searchResult = result.sort((fist, second) => {

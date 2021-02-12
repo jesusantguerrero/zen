@@ -55,19 +55,29 @@
       </template>
 
       <template #footer>
+        <div>
+          <tags-select
+              v-model="task.tags"
+              :tags="tags"
+              :multiple="true" 
+              @selected="addTag"
+              @added="saveDoc('tags', $event)"
+          /> 
+
           <div class="text-right">
               <button class="bg-green-400 text-white focus:outline-none px-5 py-2 rounded-md" 
               @click.prevent="save()"> 
                 Save 
               </button>
           </div>
+        </div>
       </template>
   </modal-base>
 </div>
 </template>
 
 <script setup>
-import { defineProps, ref, watch, computed, reactive, defineEmit, toRefs } from "vue"
+import { defineProps, ref, watch, computed, reactive, defineEmit, toRefs, inject } from "vue"
 import { useTaskFirestore } from "./../../utils/useTaskFirestore"
 import { useDateTime } from "./../../utils/useDateTime"
 import DateSelect from "../atoms/DateSelect.vue"
@@ -122,9 +132,11 @@ const task = reactive({
 const { taskData } = toRefs(props);
 const setTaskData = (taskData) => {
   if (taskData && task) {
-    const data = {...taskData};
+    const data = Object.assign(taskData, {});
+    
     Object.keys(data).forEach((key) => {
-      task[key] = data[key]
+      const objectData = data[key]
+      task[key] = Array.isArray(objectData) ? [...objectData] : objectData
     });
   }
 }
@@ -132,7 +144,7 @@ const setTaskData = (taskData) => {
 watch(() => taskData.value, (taskData) => {
   setTaskData(taskData)
 }, { immediate: true, deep: true })
-
+const tags = inject("tags", []);
 
 const isReminder = computed(() => {
   return props.mode == 'reminder'

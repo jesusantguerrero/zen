@@ -52,8 +52,9 @@
         <div class="flex justify-between items-center mt-2">
           <div class=" text-gray-400 hover:text-gray-600 w-6/12">
             <tags-select
-              :tags="state.tags" 
-              :selected-tags="task.tags"
+              v-model="task.tags"
+              :tags="state.tags"
+              :multiple="true" 
               @selected="addTag"
               @added="saveDoc('tags', $event)"
             /> 
@@ -73,7 +74,7 @@
 </template>
 
 <script setup>
-import { computed, reactive, defineProps, defineEmit, onMounted, ref} from "vue"
+import { computed, reactive, defineProps, defineEmit, onMounted, ref, inject} from "vue"
 import { onClickOutside } from  "@vueuse/core"
 import { useDateTime } from "../../utils/useDateTime"
 import { useCollection } from "./../../utils/useCollection"
@@ -185,15 +186,8 @@ const save = () => {
   clearForm()
 }
 
-const { save: saveDoc, getAll } = useCollection()
-const tagsRef = ref(null)
-tagsRef.value = getAll('tags').onSnapshot(snap => {
-  state.tags = [];
-  snap.forEach((doc) => {
-      state.tags.push({...doc.data(), uid: doc.id });
-  })
-})
-
+const { save: saveDoc } = useCollection()
+state.tags = inject('tags', [])
 const addTag = (tag) => {
   task.tags.push(tag)
 }

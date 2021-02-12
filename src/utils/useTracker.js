@@ -2,20 +2,19 @@ import { computed, ref, watch} from "vue";
 import { useDateTime } from "./useDateTime"
 
 const { formatDurationFromMs } = useDateTime()
+const timeReducer = (tracks) => {
+    if (!tracks) return 0
+    return tracks.reduce((milliseconds, task)=> {
+        return milliseconds + Number(task.duration_ms || 0);
+    }, 0)
+}
 
 export function useTracker(taskRef, currentTimerRef) {
     const task = taskRef || ref(null)
     const currentTimer = currentTimerRef || ref({})
     
     const savedTime = computed(() => {
-        if (task.value.tracks) {
-          const time = task.value.tracks.reduce((milliseconds, task)=> {
-            return milliseconds + Number(task.duration_ms || 0);
-          }, 0)
-          
-          return time;
-        } 
-        return 0 
+        return timeReducer(task.value.tracks)
     })
       
     const activeTimer = ref(0);
@@ -41,3 +40,5 @@ export function useTracker(taskRef, currentTimerRef) {
         savedTime
     }
 }
+
+export const getMilliseconds = timeReducer

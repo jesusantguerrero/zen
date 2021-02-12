@@ -65,6 +65,7 @@
               class="px-2 text-md h-10 rounded-md focus:outline-none border-2 border-gray-200"
               placeholder="Search task"
             />
+
             <tags-select
               v-model="state.tags"
               :multiple="true"
@@ -106,6 +107,7 @@
           <task-group
             title="Schedule"
             :tasks="state.schedule"
+            :tags="selectedTags"
             :active="false"
             :show-controls="true"
             :search="state.search"

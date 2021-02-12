@@ -40,7 +40,6 @@ const getInitialTags = () => {
     tags.value = [];
     snap.forEach((doc) => {
         tags.value.push({...doc.data(), uid: doc.id });
-        console.log(doc)
     })
   })
 }
