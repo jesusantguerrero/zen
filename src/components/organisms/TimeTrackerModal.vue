@@ -1,14 +1,13 @@
 <template>
     <modal-base v-model:is-open="isOpenLocal">
         <template #title>
-            <h1 class="pt-5 text-xl font-bold">
+            <h1 class="py-2 px-5 text-xl font-bold text-left">
                 Promodoro Configuration
-
             </h1>
         </template>
 
         <template #body>
-            <form action="" @submit.prevent="save" class="pt-5  px-5 text-left prose mx-auto">
+            <form action="" @submit.prevent="save" class="pt-5  px-5 text-left mx-auto">
                 <!-- <h4>  User preferences </h4> -->
                 <!-- <div class="form-group">
                     <label for="">
@@ -30,7 +29,7 @@
                     </label>
                 </div> -->
 
-                 <h4>  Workflow Template </h4>
+                 <h4 class="font-bold">  Workflow Template </h4>
                  <div class="form-group">
                     <div class="workflow-item capitalize text-sm mb-10 inline-block"
                         v-for="(item, index) in formData.template"
@@ -41,7 +40,7 @@
                     </div>
                  </div>
 
-                 <h4>  Workflow Items </h4>
+                 <h4 class="font-bold">  Workflow Items </h4>
                  <div class="form-group">
                     <div class="workflow-item capitalize text-sm mb-10"
                         v-for="(item, key) in formData.modes"
@@ -52,14 +51,17 @@
                     </div>
                  </div>
 
-                 <h4>  Select sound </h4>
-                 <div class="form-group">
-                    <select name="" class="form-control">
+                 <h4 class="font-bold">  Select sound </h4>
+                 <div class="form-group flex space-x-2">
+                    <select name="" class="form-control w-full">
                         <option value="">Alarm Clock</option>
                     </select>
+                    <button class="bg-gray-700 text-white px-5 py-1 focus:outline-none rounded-md w-40" @click.prevent="playSound()">
+                        Test Audio
+                    </button>
                  </div>
 
-                 <h4>  Set Times </h4>
+                 <h4 class="font-bold">  Set Times </h4>
                  <div class="flex">
                     <div class="form-group">
                         <label for="">
@@ -94,10 +96,6 @@
                         >
                     </div>
                  </div>
-
-                <button class="bg-gray-700 text-white px-5 py-1 focus:outline-none rounded-md" @click.prevent="playSound()">
-                    Test Audio
-                </button>
             </form>
         </template>
 

@@ -23,7 +23,6 @@
             :tags="state.selectedTags"
             :tasks="state.committed"
             :show-controls="false"
-            :show-select="true"
             :current-task="currentTask"
             @selected="setCurrentTask"
             color="text-gray-400"
