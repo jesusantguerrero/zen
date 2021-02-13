@@ -30,7 +30,7 @@
                 :key="task" 
                 :task="task" 
                 :type="type"
-                :handle-mode="handleMode"
+                :handle-mode="displayHandle"
                 :icons="icons"
                 :show-select="showSelect"
                 :show-controls="showControls"
@@ -61,6 +61,7 @@ import IconCollapse from "../atoms/IconCollapse.vue"
 import { useFuseSearch } from "../../utils/useFuseSearch"
 import { useTaskFirestore } from "../../utils/useTaskFirestore"
 import { ElNotification } from "element-plus"
+import { useMediaQuery, useWindowSize } from "@vueuse/core"
 
 const props = defineProps({
     tasks: {
@@ -113,8 +114,23 @@ const emit = defineEmit({
 const { tasks, search,tags, showSelect, currentTask, currentTimer, isItemAsHandler, handleMode } = toRefs(props)
 
 const { filteredList } = useFuseSearch(search, tasks, tags);
+
+const { width, height } = useWindowSize()
+
 const handleClass = computed(() => {
-  return handleMode.value || isItemAsHandler.value ? null : '.handle'
+  if (width.value > 758 && (handleMode.value || isItemAsHandler.value)) {
+    return null;
+  } else {
+    return '.handle'
+  }
+})
+
+const displayHandle = computed(() => {
+  if (width.value < 758) {
+    return isItemAsHandler.value || handleMode.value;
+  } else {
+    return handleMode.value
+  }
 })
 
 
