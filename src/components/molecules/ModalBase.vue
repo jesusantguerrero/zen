@@ -15,10 +15,10 @@
                     </button>
                 </div>
             </slot>
-            <div class="modal__body ic-scroller">
+            <div class="modal__body ic-scroller pb-10">
                 <slot name="body"></slot>
             </div>
-            <div class="modal__footer px-5 py-2 text-right absolute bottom-0 w-full">
+            <div class="modal__footer px-5 py-2 text-right absolute bottom-0 w-full bg-white">
                 <slot name="footer"></slot>
             </div>
         </div>
