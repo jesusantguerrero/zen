@@ -9,8 +9,8 @@
 
         <template #body>
             <form action="" @submit.prevent="save" class="pt-5  px-5 text-left prose mx-auto">
-                <h4>  User preferences </h4>
-                <div class="form-group">
+                <!-- <h4>  User preferences </h4> -->
+                <!-- <div class="form-group">
                     <label for="">
                         <input type="checkbox" name="">
                         Timer indication title
@@ -28,7 +28,7 @@
                         <input type="checkbox" @click="subscribeUserToPush">
                         Subscribe to push notifications
                     </label>
-                </div>
+                </div> -->
 
                  <h4>  Workflow Template </h4>
                  <div class="form-group">
