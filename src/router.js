@@ -4,6 +4,7 @@ import Matrix from "./views/Matrix.vue";
 import Standup from "./views/Standup.vue";
 import About from "./views/About.vue";
 import PlanAhead from "./views/PlanAhead.vue";
+import Metrics from "./views/Metrics.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import { isAuthenticated } from "./utils/useFirebase";
 
@@ -24,7 +25,15 @@ const routes = [
     path: "/standup", 
     component: Standup 
   },
+  { 
+    path: "/metrics", 
+    component: Metrics 
+  },
   { path: "/about", 
+    component: About 
+  },
+  { path: "/settings", 
+    name: 'settings',
     component: About 
   },
   { 

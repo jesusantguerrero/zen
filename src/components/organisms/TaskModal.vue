@@ -8,7 +8,7 @@
       </template>
       <template #body>
           <form 
-              class="task-form mb-2 bg-white border-transparent border-2 px-4 py-3 rounded-md items-center cursor-default"
+              class="task-form mb-2 bg-white border-transparent border-2 px-4 py-3 md:rounded-md items-center cursor-default"
               @submit.prevent
           >
               <div class="flex justify-between">
@@ -42,33 +42,46 @@
               
               <div class="task-item__body w-full p-3">
                   <textarea 
+                  ref="descriptionInput"
                   v-model="task.description"
                   class="task-item__description w-full pt-2 focus:outline-none h-20" 
-                  placeholder="Add a short description">
+                  placeholder="Add a short description"
+                  @input="setHeight">
                   </textarea>
                   
-                  <div class="task-item__checklist">
-                  <checklist-container :items="task.checklist" :allow-edit="true"></checklist-container>
+                  <div class="task-item__checklist pt-5">
+                    <checklist-container :items="task.checklist" :allow-edit="true"></checklist-container>
                   </div>
               </div>
           </form>
       </template>
 
       <template #footer>
+        <div class="flex justify-between items-center">
+          <tags-select
+              v-model="task.tags"
+              :tags="tags"
+              :multiple="true" 
+              @selected="addTag"
+              @added="saveDoc('tags', $event)"
+          /> 
+
           <div class="text-right">
               <button class="bg-green-400 text-white focus:outline-none px-5 py-2 rounded-md" 
               @click.prevent="save()"> 
                 Save 
               </button>
           </div>
+        </div>
       </template>
   </modal-base>
 </div>
 </template>
 
 <script setup>
-import { defineProps, ref, watch, computed, reactive, defineEmit, toRefs } from "vue"
+import { defineProps, ref, watch, computed, reactive, defineEmit, toRefs, inject, onMounted, nextTick } from "vue"
 import { useTaskFirestore } from "./../../utils/useTaskFirestore"
+import { useDateTime } from "./../../utils/useDateTime"
 import DateSelect from "../atoms/DateSelect.vue"
 import TagsSelect from "../atoms/TagsSelect.vue"
 import ModalBase from "../molecules/ModalBase.vue";
@@ -102,9 +115,23 @@ watch(()=> props.isOpen, (isOpen) => {
 
 watch(()=> isOpenLocal.value, (isOpen) => {
     emit("update:isOpen", isOpen)
+    if (isOpen) {
+      setHeight()
+    }
 })
 
 // FormData
+const descriptionInput = ref(null);
+const setHeight = () => {
+  setTimeout(() => {
+    const description = descriptionInput.value;
+    if (!description) {
+      return
+    }
+    description.style.height = "";
+    description.style.height = description.scrollHeight + "px"
+  }, 10)
+}
 
 const task = reactive({
   title: "",
@@ -122,9 +149,11 @@ const task = reactive({
 const { taskData } = toRefs(props);
 const setTaskData = (taskData) => {
   if (taskData && task) {
-    const data = {...taskData};
-    Object.keys(taskData).forEach((key) => {
-      task[key] = taskData[key]
+    const data = Object.assign(taskData, {});
+    
+    Object.keys(data).forEach((key) => {
+      const objectData = data[key]
+      task[key] = Array.isArray(objectData) ? [...objectData] : objectData
     });
   }
 }
@@ -132,7 +161,7 @@ const setTaskData = (taskData) => {
 watch(() => taskData.value, (taskData) => {
   setTaskData(taskData)
 }, { immediate: true, deep: true })
-
+const tags = inject("tags", []);
 
 const isReminder = computed(() => {
   return props.mode == 'reminder'
@@ -167,12 +196,13 @@ const clearForm = () => {
 }
 
 const { updateTask } = useTaskFirestore()
+const { formatDate } = useDateTime()
 const save = () => {
   const formData =  {...task}
   formData.tracks = [];
-  formData.due_date = formData.due_date && typeof formData.due_date != 'string' ? formatDate(formData.due_date, "yyyy-MM-dd") : formData.due_date
-  updateTask(task).then(() => {
-    emit('saved', task)
+  formData.due_date = formData.due_date && typeof formData.due_date == 'object' ? formatDate(formData.due_date , "yyyy-MM-dd") : formData.due_date
+  updateTask(formData).then(() => {
+    emit('saved', formData)
     clearForm()
     isOpenLocal.value = false
   })
@@ -180,9 +210,11 @@ const save = () => {
 
 const close = () => {
     emit('closed')
-    clearForm()
     isOpenLocal.value = false
+    clearForm()
 }
+
+
 </script>
 
 <style lang="scss" scoped>

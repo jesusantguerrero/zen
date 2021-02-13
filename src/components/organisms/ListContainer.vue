@@ -1,5 +1,5 @@
 <template>
-<div class="checklist-container">
+<div class="checklist-container" ref="checklistContainer">
    <draggable v-model="items" handle=".handle">
         <div
             v-for="(check, index) in items"
@@ -8,15 +8,17 @@
             :class="[!allowEdit ? 'bg-white' : 'bg-gray-50']"
         >   
             <div class="w-full flex items-center">
-                <i class="fa fa-arrows-alt checklist-item__move handle mr-2"></i>
+                <i class="fa fa-arrows-alt checklist-item__move handle mr-2"  v-if="allowEdit"></i>
                 <input
                     type="checkbox"
                     class="form-control-check mx-2"
                     v-model="check.done"
+                    @change.stop="trackChanges"
                 />
                 <input
                     type="text"
                     class="bg-transparent focus:outline-none w-full"
+                    :disabled="!allowEdit"
                     v-model="check.title"
                 />
             </div>
@@ -51,14 +53,22 @@
 </template>
 
 <script setup>
+import { onClickOutside } from "@vueuse/core";
 import { ElNotification } from "element-plus";
-import { defineProps, ref } from "vue";
+import { useTaskFirestore } from "../../utils/useTaskFirestore"
+import { defineProps, ref, defineEmit, onMounted, onUnmounted } from "vue";
 import { VueDraggableNext as Draggable } from "vue-draggable-next"
 
 const props = defineProps({
     items: Array,
+    task: Object,
     allowEdit: Boolean
 })
+
+const emit = defineEmit({
+    'updated': Array
+})
+
 const isFocused = ref(false)
 const input = ref(null)
 
@@ -70,6 +80,7 @@ const checkItem = ref({
 const deleteItem = (index) => {
     props.items.splice(index, 1);
 }
+
 const saveItem = () => {
     if (!checkItem.value.title) {
         ElNotification({
@@ -86,5 +97,36 @@ const saveItem = () => {
     input.value && input.value.focus();
 }
 
+
+const checklistContainer = ref(null)
+const hasChanges = ref(false)
+
+const trackChanges = () => {
+    hasChanges.value = true;
+}
+
+
+const { updateTask } = useTaskFirestore()
+
+const updateItems = () => {
+    if (hasChanges.value && props.task.uid) {
+        updateTask({
+            uid: props.task.uid,
+            checklist: [...props.items]
+        })
+        hasChanges.value = false
+    }
+}
+
+
+onMounted(() => {
+    onClickOutside(checklistContainer, () => {
+        updateItems()
+    })
+})
+
+onUnmounted(() => {
+    updateItems()
+})
 
 </script>

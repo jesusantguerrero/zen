@@ -2,21 +2,25 @@ import { ref, reactive } from "vue";
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
+import "firebase/analytics";
+import "firebase/messaging";
 import CONFIG from "../config/";
 import { useSettingsFirestore } from "./useSettingsFirestore"
 
 const { getUserSettings, updateUserSettings } = useSettingsFirestore()
 const firebaseConfig = {
-  apiKey: CONFIG.FIREBASE_API_KEY,
-  authDomain: `${CONFIG.FIREBASE_PROJECT_ID}.firebaseapp.com`,
-  databaseURL: `https://${CONFIG.FIREBASE_PROJECT_ID}.firebaseio.com`,
-  projectId: CONFIG.FIREBASE_PROJECT_ID,
-  storageBucket: `${CONFIG.FIREBASE_PROJECT_ID}.appspot.com`,
-  messagingSenderId: CONFIG.FIREBASE_SENDER_ID,
-  appId: CONFIG.FIREBASE_APP_ID,
+    apiKey: CONFIG.FIREBASE_API_KEY,
+    authDomain: `${CONFIG.FIREBASE_PROJECT_ID}.firebaseapp.com`,
+    databaseURL: `https://${CONFIG.FIREBASE_PROJECT_ID}.firebaseio.com`,
+    projectId: CONFIG.FIREBASE_PROJECT_ID,
+    storageBucket: `${CONFIG.FIREBASE_PROJECT_ID}.appspot.com`,
+    messagingSenderId: CONFIG.FIREBASE_SENDER_ID,
+    measurementId: CONFIG.MEASUREMENT_ID,
+    appId: CONFIG.FIREBASE_APP_ID,
 }
 
 firebase.initializeApp(firebaseConfig)
+firebase.analytics()
 
 const onLoaded = ref(null)
 
@@ -74,8 +78,8 @@ export const logout = () => {
     return firebase.auth().signOut()
 }
 
+// Database
 export const db = firebase.firestore();
-
 export const updateSettings = (settings) => {
     return updateUserSettings({
         user_uid: firebaseState.user.uid,
@@ -87,8 +91,7 @@ export const updateSettings = (settings) => {
 
 }
 
-
-const initFirebase =  new Promise(resolve => {
+const initFirebase = new Promise(resolve => {
     firebase.auth().onAuthStateChanged(async (user) => {
         if (user) {
             const settings = await getUserSettings(user.uid)
@@ -99,6 +102,8 @@ const initFirebase =  new Promise(resolve => {
         resolve(user);
     })
 })
+
+export const firebaseInstance = firebase;
 
 export const isAuthenticated = () => {
     return initFirebase;

@@ -13,48 +13,55 @@
     </div>
 
       <slot name="addForm"></slot>
-      <el-collapse-transition>
-        <div class="list-group w-full ic-scroller" ref="listGroup"  v-show="isExpanded">
-          <draggable
-            class="dragArea"
-            :class="{empty: !tasks.length,  [type]: true }" 
-            :list="tasks" 
-            handle=".handle"
-            :group="{name: type, pull: true, put: true }"
-            @move="emitMove"
-            @change="emitChange($event, type)"
-          >
-            <task-item 
-              v-for="task in filteredList" 
-              :key="task" 
-              :task="task" 
-              :type="type"
-              :handle-mode="handleMode"
-              :icons="icons"
-              :show-select="showSelect"
-              :show-controls="showControls"
-              :current-task="currentTask"
-              :current-timer="currentTimer"
-              @selected="emitSelected(task)"
-              @deleted="emitDeleted(task)"
-              @edited="emitEdited(task)"
-              @up="emitUp(task)"
-              @down="emitDown(task)"
-            />
-          </draggable>
-          <slot name="empty" v-if="!tasks.length"></slot>
-        </div>
-      </el-collapse-transition>
+      <slot name="content">
+        <el-collapse-transition>
+          <div class="list-group w-full ic-scroller" ref="listGroup"  v-show="isExpanded">
+            <draggable
+              class="dragArea"
+              :class="{empty: !tasks.length,  [type]: true }" 
+              :list="tasks" 
+              :handle="handleClass"
+              :group="{name: type, pull: true, put: true }"
+              @move="emitMove"
+              @change="emitChange($event, type)"
+            >
+              <task-item 
+                v-for="task in filteredList" 
+                :key="task" 
+                :task="task" 
+                :type="type"
+                :handle-mode="displayHandle"
+                :icons="icons"
+                :show-select="showSelect"
+                :show-controls="showControls"
+                :current-task="currentTask"
+                :current-timer="currentTimer"
+                :is-item-as-handler="isItemAsHandler"
+                @toggle-key="onToggleKey(task)"
+                @selected="emit('selected', task)"
+                @deleted="emit('deleted', task)"
+                @edited="emit('edited', task)"
+                @up="emit('up', task)"
+                @down="emit('down', task)"
+              />
+            </draggable>
+            <slot name="empty" v-if="!tasks.length"></slot>
+          </div>
+        </el-collapse-transition>
+      </slot>
   </div>
 </template>
 
 <script setup>
-import { defineProps, onMounted, ref, toRefs } from "vue"
+import { computed, defineProps, onMounted, ref, toRefs } from "vue"
 import { VueDraggableNext as Draggable } from "vue-draggable-next"
 import TaskItem from "../molecules/TaskItem.vue"
 import IconExpand from "../atoms/IconExpand.vue"
 import IconCollapse from "../atoms/IconCollapse.vue"
 import { useFuseSearch } from "../../utils/useFuseSearch"
+import { useTaskFirestore } from "../../utils/useTaskFirestore"
+import { ElNotification } from "element-plus"
+import { useMediaQuery, useWindowSize } from "@vueuse/core"
 
 const props = defineProps({
     tasks: {
@@ -78,13 +85,14 @@ const props = defineProps({
         return {}
       }
     },
+    tags: Array,
     currentTimer: Object,
     maxHeight: {
       default: 340,
       type: Number
-    }
+    },
+    isItemAsHandler: Boolean
 })
-
 const listGroup = ref(null);
 
 onMounted(() => {
@@ -103,47 +111,71 @@ const emit = defineEmit({
   change: Object
 })
 
-const { tasks, search, showSelect, currentTask, currentTimer } = toRefs(props)
+const { tasks, search,tags, showSelect, currentTask, currentTimer, isItemAsHandler, handleMode } = toRefs(props)
 
-const { filteredList } = useFuseSearch(search, tasks);
+const { filteredList } = useFuseSearch(search, tasks, tags);
 
-const emitDeleted = (task) => {
-  emit('deleted', task)
-}
+const { width, height } = useWindowSize()
 
-const emitSelected = (task) => {
-  emit('selected', task)
-}
+const handleClass = computed(() => {
+  if (width.value > 758 && (handleMode.value || isItemAsHandler.value)) {
+    return null;
+  } else {
+    return '.handle'
+  }
+})
 
-const emitEdited = (task) => {
-  emit('edited', task)
-}
-const emitUp = (task) => {
-  emit('up', task)
-}
-const emitDown = (task) => {
-  emit('down', task)
-}
+const displayHandle = computed(() => {
+  if (width.value < 758) {
+    return isItemAsHandler.value || handleMode.value;
+  } else {
+    return handleMode.value
+  }
+})
 
+
+// expand
 const isExpanded = ref(true);
+const toggleExpanded = () => {
+  isExpanded.value = !isExpanded.value;
+}
 
+// Events
 const onChange = ({ added, removed }, matrix) => {
     if (added) {
       added.element.matrix = matrix;
       this.$emit("changed", added.element);
     }
 }
-
 const emitMove = (evt, originalEvent) => {
   emit('move', evt, originalEvent)
 }
-
 const emitChange = ( evt, matrix ) => {
   emit('change', evt, matrix)
 }
 
-const toggleExpanded = () => {
-  isExpanded.value = !isExpanded.value;
+const { updateTask } = useTaskFirestore();
+const keyTasks = computed(() => {
+  return tasks.value.filter(item => item.is_key).length;
+});
+
+const onToggleKey = (task) => {
+  if (!task.is_key && keyTasks.value < 3) {
+      task.is_key = true
+      updateTask({
+        uid: task.uid,
+        is_key: task.is_key
+      })
+      ElNotification({
+        message: "Marked as key"
+      })
+  } else if (task.is_key) {
+    task.is_key = false;
+    updateTask({
+      uid: task.uid,
+      is_key: task.is_key
+    })
+  }
 }
 </script>
 
@@ -161,7 +193,7 @@ const toggleExpanded = () => {
   .dragArea {
     // min-height: 200px;
   
-    &.empty {
+    // &.empty {
       &::after {
         width: 100%;
         height: 100%;
@@ -183,7 +215,7 @@ const toggleExpanded = () => {
         @apply text-gray-400 font-bold;
         content: "not Important & not urgent"
       }
-    }
+    // }
   }
 }
 </style>

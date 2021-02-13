@@ -5,7 +5,7 @@ export function useDateTime(dateRef) {
     const date = dateRef || ref(null)
     
     const formattedDate = computed(() => {
-        return date.value ? toISO(date.value) : "" 
+        return date.value && typeof date.value == 'object' ? toISO(date.value) : date.value;
     })
 
     const formatDate = (date, format) => {
@@ -13,7 +13,7 @@ export function useDateTime(dateRef) {
     }
 
     const toISO = (date) => {
-       return date ? DateTime.fromJSDate(date).toISODate() : "" 
+       return date ? DateTime.fromJSDate(date).toISODate() :  ""
     }
 
     const formatDurationFromMs = (ms) => {

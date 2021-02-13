@@ -18,6 +18,7 @@
                   <button
                       v-for="(section, sectionName) in state.sections"
                       :key="sectionName"
+                      class="focus:outline-none"
                       :class="{selected: sectionName == state.selectedSection}"
                       @click="state.selectedSection=sectionName"
                   >

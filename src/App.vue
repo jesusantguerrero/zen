@@ -7,12 +7,12 @@
 </template>
 
 <script setup>
-import { nextTick, ref } from 'vue'
+import { nextTick, ref, provide, onUnmounted, watch } from 'vue'
 import { useRouter } from "vue-router"
 import AppHeader from './components/organisms/AppHeader.vue'
 import AppFooter from './components/organisms/AppFooter.vue'
-import { firebaseState, logout, setLoaded } from "./utils/useFirebase"
-
+import { logout, setLoaded, firebaseState, firebaseInstance } from "./utils/useFirebase"
+import { useCollection} from "./utils/useCollection"
 
 const isLoaded = ref(false);
 const { push } = useRouter();
@@ -26,6 +26,31 @@ const logoutUser = () => {
 
 setLoaded(() => {
   isLoaded.value = true;
+  const messaging = firebaseInstance.messaging();
+  messaging.onMessage((payload) => {
+      console.log(payload)
+  })
+})
+
+const { getAll } = useCollection()
+const tagsRef = ref(null)
+const tags = ref(null)
+const getInitialTags = () => {
+  tagsRef.value = getAll('tags').onSnapshot(snap => {
+    tags.value = [];
+    snap.forEach((doc) => {
+        tags.value.push({...doc.data(), uid: doc.id });
+    })
+  })
+}
+provide('tags', tags);
+
+watch(() => isLoaded.value, () => {
+  getInitialTags()
+})
+
+onUnmounted(() => {
+  tagsRef.value && tagsRef.value()
 })
 
 

@@ -11,13 +11,13 @@
             class="px-2 text-md h-10 rounded-md focus:outline-none border-2 border-gray-200 w-full"
             placeholder="Search task"  
          >
-         <!-- <button title="help" class="bg-gray-700 text-white px-5 py-1 rounded-md ml-2">
+         <button title="help" class="bg-gray-600 hover:bg-gray-700 transition-all text-white px-5 py-1 rounded-md ml-2 focus:outline-none" @click="showHelp = !showHelp">
             <i class="fa fa-question"></i>
-         </button> -->
+         </button>
       </div>
    </div>
 
-   <matrix-board :search="search">
+   <matrix-board :search="search" :show-help="showHelp">
 
    </matrix-board>
 </div>
@@ -28,4 +28,5 @@ import { ref } from "vue"
 import MatrixBoard from "../components/organisms/MatrixBoard.vue"
 
 const search = ref("")
+const showHelp = ref(false)
 </script>

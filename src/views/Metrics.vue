@@ -1,0 +1,158 @@
+<template>
+<div class="pt-24 mx-5 md:pt-28 md:mx-28">
+  <div class="section-header md:flex justify-between items-center mb-10">
+      <h2 class="text-2xl font-bold text-gray-400 text-left">
+         Metrics
+      </h2>
+      <div class="md:space-x-2 text-left md:flex">
+          <div class="md:flex items-center">
+              <input type="search" 
+                v-model.trim="state.search" 
+                class="px-2 text-md h-10 rounded-md focus:outline-none border-2 border-gray-200 w-full"
+                placeholder="Search task"
+
+              >
+          </div>
+          <div class="flex mt-2 md:mt-0 el-date-full">
+            <el-date-picker
+              v-model.lazy="state.date"
+              type="date"
+              input-class="ml-0"
+            >
+            </el-date-picker>
+          <!-- <button title="help" class="bg-gray-700 text-white px-5 py-1 rounded-md ml-2">
+              <i class="fa fa-question"></i>
+          </button> -->
+          </div>
+      </div>
+  </div> 
+
+  <div class="flex space-x-4">
+    <div class="bg-white h-32 w-full flex items-center justify-center rounded-md">
+      <i class="fa fa-clock mr-2"></i>
+      {{ formattedTime }} Focused
+    </div>
+    <div class="bg-white h-32 w-full flex items-center justify-center rounded-md">
+      <i class="fa fa-stopwatch"></i>
+      {{ tracksData.started }} started/ {{ tracksData.finished }} finished
+    </div>
+    <div class="bg-white h-32 w-full flex items-center justify-center rounded-md">
+      <i class="fa fa-fire"></i>
+      0 Day Streak
+    </div>
+  </div>
+
+  <div class="md:flex mt-5">
+    <div class="w-full md:w-9/12 mr-5">
+        {{ state.tracks }}
+    </div>
+
+    <div class="w-full md:w-3/12">
+        <task-group
+            title="Committed tasks"
+            type="backlog"
+            :search="state.search"
+            :tasks="state.committed"
+            :show-controls="false"
+            :show-select="true"
+            :current-task="currentTask"
+            @selected="setCurrentTask"
+            color="text-gray-400"
+            :is-quadrant="true"
+          >
+            <template #empty v-if="!state.committed.length">
+            <div class="w-8/12 md:w-6/12 mx-auto mt-10 text-center">
+              <img src="../assets/undraw_following.svg" class="w-12/12 md:w-5/12 mx-auto"> 
+              <div class="mt-10 md:mt-5 text-gray-500 font-bold"> There's no tasks</div>
+            </div>
+          </template>
+        </task-group>
+    </div>
+  </div>
+
+</div>
+</template>
+
+<script setup>
+import { reactive, watch, ref, onUnmounted, computed } from 'vue'
+import { useTaskFirestore } from '../utils/useTaskFirestore'
+import { useTrackFirestore } from '../utils/useTrackFirestore'
+import { useDateTime } from '../utils/useDateTime'
+import { getMilliseconds } from '../utils/useTracker'
+import TaskGroup from "../components/organisms/TaskGroup.vue"
+import QuickAdd from "../components/molecules/QuickAdd.vue"
+import TimeTracker from "../components/organisms/TimeTracker.vue"
+import ChartView from "../components/organisms/ChartView.vue"
+// state and ui
+const state = reactive({
+  committed: [],
+  tracks: [],
+  date: new Date(),
+  search: ""
+})
+
+// tasks manipulation
+const  { getCommitedTasks } = useTaskFirestore()
+watch(() => state.date , () => {
+  getCommitedTasks(state.date).then(tasks => {
+    state.committed = tasks;
+  })
+}, { immediate: true })
+
+// Current task
+const  { getAllTracksOfTask, getTracksByDates } = useTrackFirestore()
+const currentTask = ref({});
+const setCurrentTask = (task) => {
+  currentTask.value = task
+}
+
+watch(currentTask, () => {
+  if (currentTask.value.uid) {
+    getAllTracksOfTask(currentTask.value.uid).then((tracks) => {
+      currentTask.value.tracks = tracks || []
+
+      currentTask.value.data = [
+        tracks.length,
+        tracks.filter( track => track.completed).length
+      ]
+    })
+  }
+})
+
+const trackRef = ref(null);
+
+trackRef.value =  getTracksByDates(new Date()).then(collectionRef => {
+  collectionRef.get().then(querySnapshot => {
+      state.tracks = []
+      querySnapshot.forEach((doc) => {
+          state.tracks.push({...doc.data(), uid: doc.id });
+      });
+  })
+  return collectionRef;
+})
+
+const {  formatDurationFromMs, } = useDateTime()
+
+const formattedTime = computed(() => {
+  return formatDurationFromMs(getMilliseconds(state.tracks)).toFormat('hh:mm:ss')
+})
+
+const tracksData = computed(() => {
+  return {
+    started: state.tracks.length,
+    finished: state.tracks.filter(track => track.completed).length
+  }
+})
+
+
+onUnmounted(() => {
+  // trackRef.value && trackRef.value()
+});
+
+</script>
+
+<style lang="scss">
+.el-date-full .el-date-editor.el-input {
+  width: 100% !important;
+}
+</style>

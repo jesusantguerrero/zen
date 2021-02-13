@@ -3,8 +3,12 @@
     <div 
         class="grid md:grid-cols-2 md:gap-10" 
         :class="{'w-full':isLineUp, 'sm:w-full lg:w-8/12': isMatrix}"
-        v-if="isMatrix || isLineUp">
-      <div class="zen__comming-up w-full mb-10 md:mb-0" v-for="matrix in state.matrix" :key="matrix">
+        v-if="isMatrix || isLineUp"
+      >
+      <div 
+        class="zen__comming-up w-full mb-10 md:mb-0 ic-scroller pl-5 pt-3" 
+        :class="[showHelp && (!isLineUp || isLineUpMatrix(matrix))? `border-2 ${state.quadrants[matrix].border} border-dashed pr-5`: '']"
+        v-for="matrix in state.matrix" :key="matrix">
           <task-group
             v-if="!isLineUp || isLineUpMatrix(matrix)"
             :title="matrix"
@@ -23,7 +27,7 @@
             @move="onMove"
             :is-quadrant="true"
           >
-            <template #addForm>
+            <template #addForm v-if="!showHelp">
               <div class="quick__add mb-4">
                 <quick-add 
                   @saved="addTask"
@@ -32,11 +36,20 @@
                 ></quick-add>
               </div>
             </template>
+
+            <template #content v-if="showHelp">
+              <matrix-help-view :matrix="matrix"></matrix-help-view>
+            </template>
           </task-group>
       </div>
     </div>
 
-    <div :class="{'md:w-full': isBacklog, 'md:w-4/12 md:ml-20': isMatrix}" v-if="isBacklog || isMatrix">
+    <div 
+      :class="{
+        'md:w-full': isBacklog, 
+        'md:w-4/12 md:ml-20': isMatrix,
+        'border-2 border-gray-400 border-dashed pr-5 pl-5': showHelp}
+        " class="pt-3" v-if="isBacklog || isMatrix">
         <task-group
             title="backlog"
             type="backlog"
@@ -51,7 +64,7 @@
             @change="handleDragChanges"
             @move="onMove"
           >
-            <template #addForm>
+            <template #addForm v-if="!showHelp">
               <div class="quick__add mb-4">
                 <quick-add 
                   @saved="addTask"
@@ -59,6 +72,10 @@
                   type="backlog"
                 ></quick-add>
               </div>
+            </template>
+
+            <template #content v-if="showHelp">
+              <matrix-help-view matrix="backlog"></matrix-help-view>
             </template>
         </task-group>
     </div>
@@ -81,6 +98,7 @@ import { useDateTime } from "../../utils/useDateTime"
 import TaskGroup from "../organisms/TaskGroup.vue"
 import QuickAdd from "../molecules/QuickAdd.vue"
 import TaskModal from "./TaskModal.vue"
+import MatrixHelpView from "../molecules/MatrixHelpView.vue"
 
 
 // state and ui
@@ -89,6 +107,7 @@ const props = defineProps({
         type: String,
         default: 'matrix'
     },
+    showHelp: Boolean,
     search: String
 })
 
@@ -108,25 +127,28 @@ const isLineUpMatrix = (matrix) => {
     return isLineUp && ['todo','schedule'].includes(matrix)
 }
 
-
 const state = reactive({
   tasks: [],
   matrix: ['todo', 'schedule', 'delegate', 'delete'],
   quadrants: {
     todo: {
       color: 'text-green-400',
+      border: 'border-green-400',
       tasks: []
     },
     schedule: {
       color: 'text-blue-400',
+      border: 'border-blue-400',
        tasks: []
     },
     delegate: {
       color: 'text-yellow-400',
+      border: 'border-yellow-400',
        tasks: []
     },
     delete: {
       color: 'text-red-400',
+      border: 'border-red-400',
       tasks: []
     },
     backlog: {
@@ -214,7 +236,6 @@ const handleDragChanges = (e, matrix) => {
         message: `Moved to ${matrix}`
       })
     })
-
   }
 }
 

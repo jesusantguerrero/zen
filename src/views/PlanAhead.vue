@@ -25,9 +25,9 @@
         </div>
       </div>
 
-      <!-- <button class="ml-5 bg-gray-700 px-5 py-1 text-white rounded-full">
+      <button class="ml-5 bg-gray-700 px-5 py-1 text-white rounded-full" @click="showHelp = !showHelp">
         <i class="fa fa-question text-sm float-right"></i>
-      </button> -->
+      </button>
     </div>
 
     <div class="flex justify-end mt-5 space-x-2 md:mt-0">
@@ -44,12 +44,12 @@
     </div>
   </div>
   
-  <matrix-board :mode="currentMode"></matrix-board>
+  <matrix-board :mode="currentMode" :show-help="showHelp"></matrix-board>
 </div>
 </template>
 
 <script setup>
-import { reactive, computed } from "vue"
+import { reactive, computed, ref } from "vue"
 import { useRouter } from "vue-router";
 import MatrixBoard from "../components/organisms/MatrixBoard.vue"
 
@@ -57,6 +57,8 @@ const state = reactive({
   list: ['backlog', 'matrix', 'lineup'],
   position: 0
 })
+
+const showHelp = ref(false)
 
 const currentMode = computed(() => {
   return state.list[state.position];

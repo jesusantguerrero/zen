@@ -7,7 +7,7 @@
     >
     <div class="flex justify-between">
       <div class="flex items-center w-full">
-        <button class="mx-3 rounded-md px-2 py-1 " :class="typeColor"> 
+        <button class="mx-3 rounded-md px-2 py-1 focus:outline-none transition-colors hover:text-white" :class="typeColor" @click="save()"> 
             <i :class="icon"> </i>
         </button>
 
@@ -49,19 +49,35 @@
           <checklist-container :items="task.checklist" :allow-edit="allowEdit"></checklist-container>
         </div>
 
-        <div class="mt-2 text-right">
-          <span class="text-sm mr-2 font-bold text-green-400">Shortcut: ctrl + enter to save</span>
-          <button class="px-5 py-2 rounded-md focus:outline-none transition-colors bg-green-400 hover:bg-green-500 text-white " type="submit" @click.prevent="save()"> Save</button>
+        <div class="flex justify-between items-center mt-2">
+            <div class="text-gray-400 hover:text-gray-600 ">
+              <tags-select
+                v-model="task.tags"
+                :tags="state.tags"
+                :multiple="true" 
+                @selected="addTag"
+                @added="saveDoc('tags', $event)"
+              /> 
+            </div>
+
+          <div class="mt-2 text-right w-6/12">
+            <button class="px-5 py-2 rounded-md focus:outline-none transition-colors bg-green-400 hover:bg-green-500 text-white " type="submit" @click.prevent="save()"> Save</button>
+          </div>
         </div>
-      </div>
+        <div class="text-xs mr-2 font-bold text-green-400 text-right pt-2">
+            <i class="fa fa-lightbulb"></i>
+            ProTip! save with ctrl + enter
+          </div>
+        </div>
     </el-collapse-transition>
   </form>
 </template>
 
 <script setup>
-import { computed, reactive, defineProps, defineEmit, onMounted, ref} from "vue"
+import { computed, reactive, defineProps, defineEmit, onMounted, ref, inject} from "vue"
 import { onClickOutside } from  "@vueuse/core"
 import { useDateTime } from "../../utils/useDateTime"
+import { useCollection } from "./../../utils/useCollection"
 import DateSelect from "../atoms/DateSelect.vue"
 import TagsSelect from "../atoms/TagsSelect.vue"
 import ChecklistContainer from "../organisms/ListContainer.vue";
@@ -99,14 +115,22 @@ const task = reactive({
 
 // UI
 const state = reactive({
-  isExpanded: false
+  isExpanded: false,
+  tags: []
 })
 
 const taskForm = ref(null)
 
 onMounted(() => {
   
-  onClickOutside(taskForm, () => {
+  onClickOutside(taskForm, (e) => {
+    const isTagSelect = e.path.filter(el => {
+      return el.classList && Array.from(el.classList).includes('tag-select')
+    })
+
+    if (isTagSelect.length) {
+      return
+    }
     state.isExpanded = false;
   })
 })
@@ -122,12 +146,12 @@ const icon = computed(() => {
 
 const typeColor = computed(() => {
   const colors = {
-    todo: 'bg-green-100 text-green-500',
-    schedule: 'bg-blue-100 text-blue-500',
-    reminder: 'bg-blue-100 text-blue-500',
-    delegate: 'bg-yellow-100 text-yellow-500',
-    delete: 'bg-red-100 text-red-500',
-    backlog: 'bg-gray-100 text-gray-500'
+    todo: 'bg-green-100 hover:bg-green-400 text-green-500',
+    schedule: 'bg-blue-100 hover:bg-blue-400 text-blue-500',
+    reminder: 'bg-blue-100 hover:bg-blue-400 text-blue-500',
+    delegate: 'bg-yellow-100 hover:bg-yellow-400 text-yellow-500',
+    delete: 'bg-red-100 hover:bg-red-400 text-red-500',
+    backlog: 'bg-gray-100 hover:bg-gray-400 text-gray-500'
   }
 
   return colors[props.type] || colors['todo']
@@ -162,6 +186,10 @@ const save = () => {
   clearForm()
 }
 
-
+const { save: saveDoc } = useCollection()
+state.tags = inject('tags', [])
+const addTag = (tag) => {
+  task.tags.push(tag)
+}
 
 </script>

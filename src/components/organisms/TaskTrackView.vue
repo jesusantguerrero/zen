@@ -24,15 +24,23 @@
 </template>
 
 <script setup>
-import { computed, defineProps, toRefs } from "vue";
-import { useTracker } from "../../utils/useTracker"
+import { computed, defineProps, toRefs, watch } from "vue";
+import { useTracker } from "../../utils/useTracker";
+import { useDateTime } from "../../utils/useDateTime";
+import { useTaskFirestore } from "../../utils/useTaskFirestore";
+import { ElNotification } from "element-plus";
+
+const { updateTask } = useTaskFirestore()
 
 const props = defineProps({
   task: {
     type: Object,
   },
   currentTimer: {
-    type: Object
+    type: Object,
+    default() {
+      return {}
+    }
   },
   hideSessions: {
     type: Boolean
@@ -44,7 +52,21 @@ const { task, currentTimer } = toRefs(props)
 const completedPromodoros = computed(() => {
   return task.value.tracks ? task.value.tracks.filter(track => track.completed).length : 0
 })
-const { timeTracked } = useTracker(task, currentTimer)
-</script>
+const { timeTracked, savedTime } = useTracker(task, currentTimer)
+const { formatDurationFromMs } = useDateTime()
 
-<style></style>
+watch(() => currentTimer.value, () => {
+  if (savedTime) {
+    const timeFormatted = formatDurationFromMs(savedTime.value);
+    
+    if (task.value.uid && task.value.duration_ms != timeFormatted) {
+      updateTask({
+        uid: task.value.uid,
+        duration_ms: timeFormatted.toFormat("hh:mm:ss"),
+        duration: savedTime.value
+      })
+    }
+  }
+})
+
+</script>

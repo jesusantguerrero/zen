@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import { db, firebaseState } from "./useFirebase";
 
 export function useTrackFirestore() {
@@ -50,12 +51,24 @@ export function useTrackFirestore() {
         return tasks;
     }
 
+    const getTracksByDates = async (startDate = new Date(), endDate) => {
+        const start = new Date(DateTime.fromJSDate(startDate).toFormat('yyyy-MM-dd'))
+        const end = new Date(DateTime.fromJSDate(endDate || startDate).toFormat('yyyy-MM-dd'))
+        
+        console.log(start, startDate)
+        const trackRef = db.collection('tracks')
+        .where("user_uid", "==", firebaseState.user.uid)
+        .where('started_at', ">=", start)
+        return trackRef
+    }
+
     return {
         saveTrack,
         deleteTrack,
         updateTrack,
         getAllTracks,
-        getAllTracksOfTask
+        getAllTracksOfTask,
+        getTracksByDates
     }
 
 }

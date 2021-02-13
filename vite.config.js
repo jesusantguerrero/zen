@@ -6,6 +6,7 @@ import vue from '@vitejs/plugin-vue'
 export default {
   plugins: [vue()],
   optimizeDeps: {
-    exclude: ['firebase', "apexcharts"]
+    include:[ 'firebase/app', 'firebase/analytics', 'firebase/messaging', 'firebase/auth'],
+    exclude: ["apexcharts"]
   }
 }
