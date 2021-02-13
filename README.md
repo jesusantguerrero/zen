@@ -16,7 +16,7 @@
 ## About Zen.
 __Zen.__ is a productivity app that integrates Eisenhower Matrix, Promodoros, and part of the Get Things Done (GTD) principles in a unique way, to improve your developer routine. The purpose of Zen is to help you staying in the zone.
 
-![Zen. Screen Shot](./src/assets/login2.png)
+![Zen. Screen Shot](./src/assets/Login2.PNG)
 ![Zen. Screen Shot](./src/assets/zenboard.png)
 
 ## Demo

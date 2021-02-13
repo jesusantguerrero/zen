@@ -1,7 +1,7 @@
 <template>
   <div 
-    class="task-item mb-2 shadow-md bg-white border-gray-200 hover:border-green-200 border-2 px-4 py-3 rounded-md items-center transition-all"
-    :class="{'border-green-400': isSelected, 'cursor-pointer': handleMode || isItemAsHandler }"
+    class="task-item mb-2 shadow-md bg-white border-gray-200 hover:border-green-200 border-2 px-4 py-3 rounded-md items-center transition-all cursor-pointer"
+    :class="{'border-green-400': isSelected}"
     @click="emit('selected', task)"
     @dblclick="emit('edited', task)"
 
