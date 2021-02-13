@@ -61,13 +61,13 @@
           <div class="flex items-center">
             <input
               type="search"
-              v-model.trim="state.search"
+              v-model.trim="searchOptions.text"
               class="px-2 text-md h-10 rounded-md focus:outline-none border-2 border-gray-200"
               placeholder="Search task"
             />
 
             <tags-select
-              v-model="state.tags"
+              v-model="searchOptions.tags"
               :multiple="true"
               :tags="tags" 
               class="ml-2 bg-white px-2 py-2 rounded-md border-gray-200 border-2"
@@ -88,7 +88,7 @@
             title="Todo"
             class="mt-6 py-3"
             :tasks="state.todo"
-            :search="state.search"
+            :search="searchOptions.text"
             :show-select="true"
             :show-controls="true"
             :current-task="currentTask"
@@ -110,7 +110,7 @@
             :tags="selectedTags"
             :active="false"
             :show-controls="true"
-            :search="state.search"
+            :search="searchOptions.text"
             type="schedule"
             class="opacity-60 hover:opacity-100 mt-6 py-3 cursor-move"
             :is-item-as-handler="true"
@@ -188,13 +188,11 @@ nextTick(() => {});
 const state = reactive({
   todo: [],
   schedule: [],
-  tags: [],
   showReminder: false,
   isWelcomeOpen: false,
   isTaskModalOpen: false,
   isTimeTrackerModalOpen: true,
   track: null,
-  search: "",
   mobileMode: "zen",
 });
 
@@ -205,9 +203,15 @@ const toggleReminder = () => {
 };
 
 // search
-const selectedTags = computed(() => {
-  return state.tags.map(tag => tag.uid)
+const searchOptions = reactive({
+  text: "",
+  tags: []
 })
+const selectedTags = computed(() => {
+  return searchOptions.tags.map(tag => tag.uid)
+})
+
+const tags = inject("tags", []);
 
 // Current task
 const currentTask = ref({});
@@ -230,9 +234,7 @@ const onEdittedTask = (task) => {
 };
 
 if (firebaseState.settings && firebaseState.settings.last_task_uid) {
-  const lastTask = state.todo.find(
-    (task) => task.uid == firebaseState.settings.last_task_uid
-  );
+  const lastTask = state.todo.find((task) => task.uid == firebaseState.settings.last_task_uid);
   if (lastTask) {
     setCurrentTask(lastTask);
   }
@@ -293,7 +295,6 @@ const getMatrix = (matrix) => {
   });
 };
 
-const tags = inject("tags", []);
 const scheduleRef = ref(null);
 const todoRef = ref(null);
 

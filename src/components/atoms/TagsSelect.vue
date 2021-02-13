@@ -1,5 +1,5 @@
 <template>
-    <div class="tag-select">
+    <div class="tag-select flex justify-center items-center">
         <el-popover
             v-model="state.isOpen"
             placement="bottom-end"
@@ -40,7 +40,7 @@
                     <button class="px-2 h-8 w-full" @click="addTag"> 
                         Add tag:  "{{ searchText}}"</button>
                 </div>
-                <div v-else-if="filteredList.length == 0" class="text-center">
+                <div v-else-if="filteredList.length == 0 && searchText" class="text-center">
                     <span> This tag doesn't exists</span>
                 </div>
             </div>
@@ -80,7 +80,12 @@ import { computed, defineEmit, reactive, watch, ref, toRefs } from "vue";
 import { useFuseSearch } from "../../utils/useFuseSearch"
 
 const props = defineProps({
-    tags: [],
+    tags: {
+        type: Array,
+        default() {
+            return []
+        }
+    },
     modelValue: {
         type: Array,
         default() {

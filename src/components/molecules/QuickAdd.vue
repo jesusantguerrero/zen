@@ -50,15 +50,15 @@
         </div>
 
         <div class="flex justify-between items-center mt-2">
-          <div class=" text-gray-400 hover:text-gray-600 w-6/12">
-            <tags-select
-              v-model="task.tags"
-              :tags="state.tags"
-              :multiple="true" 
-              @selected="addTag"
-              @added="saveDoc('tags', $event)"
-            /> 
-          </div>
+            <div class="text-gray-400 hover:text-gray-600 ">
+              <tags-select
+                v-model="task.tags"
+                :tags="state.tags"
+                :multiple="true" 
+                @selected="addTag"
+                @added="saveDoc('tags', $event)"
+              /> 
+            </div>
 
           <div class="mt-2 text-right w-6/12">
             <button class="px-5 py-2 rounded-md focus:outline-none transition-colors bg-green-400 hover:bg-green-500 text-white " type="submit" @click.prevent="save()"> Save</button>

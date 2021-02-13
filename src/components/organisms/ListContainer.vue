@@ -115,7 +115,6 @@ const updateItems = () => {
             checklist: [...props.items]
         })
         hasChanges.value = false
-        console.log("hola")
     }
 }
 

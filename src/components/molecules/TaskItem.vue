@@ -53,7 +53,7 @@
     </div>
 
     <el-collapse-transition>
-        <div class="task-item__body w-full p-3 ml-6" v-if="isExpanded">
+        <div class="task-item__body w-full p-3 pl-6" v-if="isExpanded">
           <div
             class="task-item__description w-full pt-2 text-left" 
             placeholder="Add a short description"
@@ -71,7 +71,6 @@
         <span v-for="tag in task.tags" :key="tag.name" class="mr-1 bg-gray-200 px-2 py-1 rounded-md"> {{ tag.name}}</span>
       </div>
     </div>
-
   </div>
 
 </template>
