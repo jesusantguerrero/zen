@@ -55,7 +55,7 @@
                 @focus.prevent="focusButton"
             >
                 <i class="fa fa-tags cursor-pointer"></i>
-                    <span v-if="!selectedTags.length"> Filter by tags </span>
+                    <span v-if="!selectedTags.length"> {{ placeholder }} </span>
                     <span 
                         v-for="tag in selectedTags.slice(0, limit)" 
                         :key="tag.name" 
@@ -98,6 +98,10 @@ const props = defineProps({
         default: 2
     },
     multiple: Boolean,
+    placeholder:{
+        type: String,
+        default: 'Add tags'
+    },
     allowAdd: {
         type: Boolean,
         default: true

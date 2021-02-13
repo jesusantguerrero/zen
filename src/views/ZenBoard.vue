@@ -69,6 +69,7 @@
             <tags-select
               v-model="searchOptions.tags"
               :multiple="true"
+              placeholder="Filter by tag"
               :tags="tags" 
               class="w-full h-full md:ml-2 bg-white px-2 py-2 rounded-md border-gray-200 border-2"
               :allow-add="false"

@@ -29,13 +29,13 @@
 
        <el-dropdown trigger="click" @command="handleCommand">
         <button
-          class="text-sm ml-4 hover:text-md text-gray-400 cursor-pointer mt-2 focus:outline-none"
+          class="text-sm px-2 rounded-md ml-4 text-gray-400 border-transparent cursor-pointer border-2 hover:border-gray-200 transition-colors hover:text-md hover:bg-gray-200 py-2  focus:outline-none"
         >
           <i class="fa fa-ellipsis-v"></i>
         </button>
       <template #dropdown>
         <el-dropdown-menu>
-          <el-dropdown-item command="configuration" icon="el-icon-edit">Configuration</el-dropdown-item>
+          <el-dropdown-item command="configuration" icon="el-icon-s-tools">Configuration</el-dropdown-item>
           <el-dropdown-item command="nextmode" icon="el-icon-arrow-right">Next mode</el-dropdown-item>
         </el-dropdown-menu>
       </template>

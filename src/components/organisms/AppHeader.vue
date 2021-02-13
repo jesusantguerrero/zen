@@ -37,14 +37,14 @@
             <i class="fa fa-user"></i>
             {{ profileName }}
           </el-dropdown-item>
-          <el-dropdown-item class="p-0" command="releases">
+          <!-- <el-dropdown-item class="p-0" command="releases">
               <i class="fa fa- cursor-pointer"></i>
               Release Notes
           </el-dropdown-item>
           <el-dropdown-item class="p-0" command="settings">
               <i class="fa fa-cog cursor-pointer"></i>
               Settings
-          </el-dropdown-item>
+          </el-dropdown-item> -->
           <el-dropdown-item class="p-0" command="logout">
               <i class="fa fa-power-off cursor-pointer"></i>
               Logout

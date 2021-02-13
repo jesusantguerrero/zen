@@ -14,6 +14,7 @@
             v-model="searchOptions.tags"
             :multiple="true"
             :tags="tags"
+            placeholder="Filter by tag"
             class="ml-2 bg-white px-2 py-2 rounded-md border-gray-200 border-2"
             :allow-add="false"
         ></tags-select>
