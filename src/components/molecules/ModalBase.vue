@@ -15,7 +15,7 @@
                     </button>
                 </div>
             </slot>
-            <div class="modal__body ic-scroller pb-10">
+            <div class="modal__body ic-scroller pb-20">
                 <slot name="body"></slot>
             </div>
             <div class="modal__footer px-5 py-2 text-right absolute bottom-0 w-full bg-white">
