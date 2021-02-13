@@ -50,11 +50,12 @@
             <button 
                 ref="button"
                 :class="{'text-gray-500': formattedTags }" 
-                class="flex focus:outline-none space-x-1 items-center text-xs"
+                class="flex focus:outline-none space-x-1 items-center text-xs w-full h-full"
                 @mousedown.prevent
                 @focus.prevent="focusButton"
             >
                 <i class="fa fa-tags cursor-pointer"></i>
+                    <span v-if="!selectedTags.length"> Filter by tags </span>
                     <span 
                         v-for="tag in selectedTags.slice(0, limit)" 
                         :key="tag.name" 

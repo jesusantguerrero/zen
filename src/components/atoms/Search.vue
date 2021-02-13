@@ -1,5 +1,5 @@
 <template>
-   <div class="md:flex items-center border-2 border-gray-200 bg-white overflow-hidden rounded-md">
+   <div class="flex items-center border-2 border-gray-200 bg-white overflow-hidden rounded-md">
         <i class="fa fa-search ml-2 text-gray-300"></i>
         <input 
             ref="input"

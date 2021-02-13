@@ -94,4 +94,8 @@ const saveChanges = () => {
 }
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.task__description {
+  overflow-wrap: break-word;
+}
+</style>

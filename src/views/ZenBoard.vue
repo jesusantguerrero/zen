@@ -55,14 +55,14 @@
         class="zen__comming-up md:block md:mt-0 md:w-4/12 md:ml-5"
         :class="[state.mobileMode == 'lineup' ? 'block' : 'hidden']"
       >
-        <header class="mb-2 flex justify-between text-gray-400 font-bold items-center">
+        <header class="mb-2 md:flex justify-between text-gray-400 font-bold items-center overflow-hidden">
           <h1 class="text-2xl">Lineup</h1>
 
-          <div class="flex items-center">
+          <div class="md:flex items-center h-10">
             <input
               type="search"
               v-model.trim="searchOptions.text"
-              class="px-2 text-md h-10 rounded-md focus:outline-none border-2 border-gray-200"
+              class="w-full px-2 text-sm h-10 rounded-md focus:outline-none border-2 border-gray-200"
               placeholder="Search task"
             />
 
@@ -70,7 +70,7 @@
               v-model="searchOptions.tags"
               :multiple="true"
               :tags="tags" 
-              class="ml-2 bg-white px-2 py-2 rounded-md border-gray-200 border-2"
+              class="w-full h-full md:ml-2 bg-white px-2 py-2 rounded-md border-gray-200 border-2"
               :allow-add="false"
             /> 
           </div>

@@ -4,7 +4,7 @@
     <search-input v-model="searchOptions.text"> </search-input>
     <!-- /search -->
 
-    <div class="flex mt-2 md:mt-0">
+    <div class="flex justify-between mt-2 md:mt-0">
         <!-- date-pager -->
         <date-pager v-model="searchOptions.date"></date-pager>
         <!-- /date-pager -->

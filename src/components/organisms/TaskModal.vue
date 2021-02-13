@@ -8,7 +8,7 @@
       </template>
       <template #body>
           <form 
-              class="task-form mb-2 bg-white border-transparent border-2 px-4 py-3 rounded-md items-center cursor-default"
+              class="task-form mb-2 bg-white border-transparent border-2 px-4 py-3 md:rounded-md items-center cursor-default"
               @submit.prevent
           >
               <div class="flex justify-between">
@@ -42,20 +42,22 @@
               
               <div class="task-item__body w-full p-3">
                   <textarea 
+                  ref="descriptionInput"
                   v-model="task.description"
                   class="task-item__description w-full pt-2 focus:outline-none h-20" 
-                  placeholder="Add a short description">
+                  placeholder="Add a short description"
+                  @input="setHeight">
                   </textarea>
                   
-                  <div class="task-item__checklist">
-                  <checklist-container :items="task.checklist" :allow-edit="true"></checklist-container>
+                  <div class="task-item__checklist pt-5">
+                    <checklist-container :items="task.checklist" :allow-edit="true"></checklist-container>
                   </div>
               </div>
           </form>
       </template>
 
       <template #footer>
-        <div>
+        <div class="flex justify-between items-center">
           <tags-select
               v-model="task.tags"
               :tags="tags"
@@ -77,7 +79,7 @@
 </template>
 
 <script setup>
-import { defineProps, ref, watch, computed, reactive, defineEmit, toRefs, inject } from "vue"
+import { defineProps, ref, watch, computed, reactive, defineEmit, toRefs, inject, onMounted, nextTick } from "vue"
 import { useTaskFirestore } from "./../../utils/useTaskFirestore"
 import { useDateTime } from "./../../utils/useDateTime"
 import DateSelect from "../atoms/DateSelect.vue"
@@ -113,9 +115,24 @@ watch(()=> props.isOpen, (isOpen) => {
 
 watch(()=> isOpenLocal.value, (isOpen) => {
     emit("update:isOpen", isOpen)
+    if (isOpen) {
+      setHeight()
+    }
 })
 
 // FormData
+const descriptionInput = ref(null);
+const setHeight = () => {
+  setTimeout(() => {
+    const description = descriptionInput.value;
+    if (!description) {
+      return
+    }
+    description.style.height = "";
+    description.style.height = description.scrollHeight + "px"
+  }, 10)
+}
+
 const task = reactive({
   title: "",
   description: "",
@@ -193,9 +210,11 @@ const save = () => {
 
 const close = () => {
     emit('closed')
-    clearForm()
     isOpenLocal.value = false
+    clearForm()
 }
+
+
 </script>
 
 <style lang="scss" scoped>

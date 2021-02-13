@@ -3,10 +3,11 @@
     <div 
         class="grid md:grid-cols-2 md:gap-10" 
         :class="{'w-full':isLineUp, 'sm:w-full lg:w-8/12': isMatrix}"
-        v-if="isMatrix || isLineUp">
+        v-if="isMatrix || isLineUp"
+      >
       <div 
         class="zen__comming-up w-full mb-10 md:mb-0 ic-scroller pl-5 pt-3" 
-        :class="[showHelp ? `border-2 ${state.quadrants[matrix].border} border-dashed pr-5`: '']"
+        :class="[showHelp && (!isLineUp || isLineUpMatrix(matrix))? `border-2 ${state.quadrants[matrix].border} border-dashed pr-5`: '']"
         v-for="matrix in state.matrix" :key="matrix">
           <task-group
             v-if="!isLineUp || isLineUpMatrix(matrix)"

@@ -3,10 +3,10 @@
     <vue-final-modal 
         v-model="isOpenLocal" 
         name="welcome" 
-        classes="flex justify-center md:pt-20 w-full"
-        content-class="md:w-5/12"
+        classes="flex justify-center md:pt-20 w-full h-sceen"
+        content-class="md:w-5/12 "
     >
-        <div class="w-full bg-white rounded-md modal__content">
+        <div class="w-full bg-white md:rounded-md modal__content relative">
             <slot name="title">
                 <div class="modal__header flex justify-between px-5 py-4">
                     <h3> {{ title }} </h3>
@@ -18,7 +18,7 @@
             <div class="modal__body ic-scroller">
                 <slot name="body"></slot>
             </div>
-            <div class="modal__footer px-5 py-2 text-right">
+            <div class="modal__footer px-5 py-2 text-right absolute bottom-0 w-full">
                 <slot name="footer"></slot>
             </div>
         </div>
