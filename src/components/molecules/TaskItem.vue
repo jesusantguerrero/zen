@@ -49,8 +49,8 @@
               <el-dropdown-item command="edit" icon="el-icon-edit">Edit</el-dropdown-item>
               <el-dropdown-item command="delete" icon="el-icon-delete">Delete </el-dropdown-item>
               <el-dropdown-item command="toggle-key" icon="el-icon-key" v-if="task.matrix=='todo'"> Key task </el-dropdown-item>
-              <el-dropdown-item command="up" icon="el-icon-arrow-up" v-if="task.matrix=='schedule'">Move Up</el-dropdown-item>
-              <el-dropdown-item command="down" icon="el-icon-arrow-down" v-if="task.matrix=='todo'">Move down</el-dropdown-item>
+              <el-dropdown-item command="up" icon="el-icon-arrow-up" v-if="task.matrix=='schedule'">Move to todo</el-dropdown-item>
+              <el-dropdown-item command="down" icon="el-icon-arrow-down" v-if="task.matrix=='todo'">Move to schedule</el-dropdown-item>
             </el-dropdown-menu>
           </template>
       </el-dropdown>

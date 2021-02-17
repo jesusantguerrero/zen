@@ -87,7 +87,7 @@
           <div class="">
             <div class="tab-header flex"> 
               <button 
-                class="pr-2 py-1 hover:bg-gray-200 font-bold focus:outline-none text-gray-500" 
+                class="px-2 py-1 hover:bg-gray-200 font-bold focus:outline-none text-gray-500" 
                 :class="{'text-green-500 bg-gray-100': state.tabSelected=='todo'}"
                 @click="state.tabSelected='todo'"
                 > 

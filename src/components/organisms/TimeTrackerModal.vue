@@ -2,7 +2,7 @@
     <modal-base v-model:is-open="isOpenLocal">
         <template #title>
             <h1 class="py-2 px-5 text-xl font-bold text-left">
-                Promodoro Configuration
+                Pomodoro Configuration
             </h1>
         </template>
 
