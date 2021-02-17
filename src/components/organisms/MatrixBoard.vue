@@ -139,12 +139,12 @@ const state = reactive({
     schedule: {
       color: 'text-blue-400',
       border: 'border-blue-400',
-       tasks: []
+      tasks: []
     },
     delegate: {
       color: 'text-yellow-400',
       border: 'border-yellow-400',
-       tasks: []
+      tasks: []
     },
     delete: {
       color: 'text-red-400',
@@ -255,7 +255,7 @@ const onEdittedTask = (task) => {
 
 <style lang="scss" scoped>
 .zen__comming-up {
-  max-height: 500px;
+  min-height: 500px;
   overflow: auto;
 }
 </style>

@@ -23,7 +23,7 @@
         <div v-else class="mr-3 rounded-md px-2 py-1 border-2 border-transparent" :class="[typeColor, keyStyles]"> 
             <i :class="[!task.is_key ? 'fa fa-sticky-note' : 'fa fa-fire']"></i>
         </div>
-        <h4 class="cursor-pointer m-0 text-left"> {{ task.title }}</h4>
+        <h4 class="cursor-pointer m-0 text-left text-sm"> {{ task.title }}</h4>
       </div>
 
       <div class="task-item__controls flex items-center">  
@@ -41,7 +41,7 @@
         </div>
 
         <el-dropdown trigger="click" @command="handleCommand" v-if="showControls" :disabled="isDisabled" @click.stop="">
-          <div class="mx-2 text-gray-400 hover:text-gray-600" :title="isDisabled? 'Can updates tasks when timer is running' : ''">
+          <div class="px-2 py-1 hover:bg-gray-200 rounded-md text-sm focus:outline-none text-gray-400 hover:text-gray-600" :title="isDisabled? 'Can updates tasks when timer is running' : ''" @click.stop="">
             <i class="fa fa-ellipsis-v"></i>
           </div>
           <template #dropdown>

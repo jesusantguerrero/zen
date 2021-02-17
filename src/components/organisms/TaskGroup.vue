@@ -1,14 +1,16 @@
 <template>
   <div class="task-group">
-    <div class="flex justify-between cursor-pointer items-center">
-      <h4 class="mb-2 font-bold" :class="[isQuadrant ? `md:text-2xl font-bold ${color} capitalize`: '']">
-         {{ title }}
-          ( {{ tasks.length}} ) 
-        </h4>
+    <div class="flex justify-between cursor-pointer items-center" v-if="showTitle">
+      <h4 class="mb-2 font-bold block" :class="[isQuadrant ? `md:text-2xl font-bold ${color} capitalize`: '']">
+         {{ title }} ({{ tasks.length }}) 
+      </h4>
       
-      <div @click="toggleExpanded">
-         <icon-expand v-if="!isExpanded"/>
-         <icon-collapse v-else/>
+      <div class="flex">
+        <small class="text-sm  mr-2 text-gray-400 font-bold">{{ helpText }}</small>
+        <div @click="toggleExpanded">
+          <icon-expand v-if="!isExpanded"/>
+          <icon-collapse v-else/>
+        </div>
       </div>
     </div>
 
@@ -87,6 +89,10 @@ const props = defineProps({
     },
     tags: Array,
     currentTimer: Object,
+    showTitle: {
+      type: Boolean,
+      default: true,
+    },
     maxHeight: {
       default: 340,
       type: Number
@@ -133,6 +139,24 @@ const displayHandle = computed(() => {
   }
 })
 
+const helpText = computed(() => {
+const help = {
+    todo: {
+      content: "Important & Urgent Tasks"
+    },
+    schedule: {
+      content: "Important but not urgent"
+    },
+    delegate: {
+      content: "Urgent but not important"
+    },
+    delete:{
+      content: "not Important & not urgent"
+    } 
+};
+
+return help[props.type] ? help[props.type].content : '';
+})
 
 // expand
 const isExpanded = ref(true);
@@ -147,9 +171,11 @@ const onChange = ({ added, removed }, matrix) => {
       this.$emit("changed", added.element);
     }
 }
+
 const emitMove = (evt, originalEvent) => {
   emit('move', evt, originalEvent)
 }
+
 const emitChange = ( evt, matrix ) => {
   emit('change', evt, matrix)
 }
@@ -185,8 +211,15 @@ const onToggleKey = (task) => {
 }
 
 .list-group {
-  max-height: var(--max-height);
+  min-height: var(--max-height);
   overflow: auto;
+  
+}
+
+.dragArea {
+  @apply rounded-md;
+  background: rgba(229, 231, 235, .2);
+  padding-bottom: 40px;
 }
 
 .matrix {
@@ -195,25 +228,12 @@ const onToggleKey = (task) => {
   
     // &.empty {
       &::after {
+        @apply text-gray-400 font-bold;
         width: 100%;
         height: 100%;
         position: relative;
-      }
-      &.todo::after {
-        @apply text-gray-400 font-bold;
-        content: "Important & Urgent Tasks"
-      }
-      &.schedule::after {
-        @apply text-gray-400 font-bold;
-        content: "Important but not urgent"
-      }
-      &.delegate::after {
-        @apply text-gray-400 font-bold;
-        content: "Urgent but not important"
-      }
-      &.delete::after {
-        @apply text-gray-400 font-bold;
-        content: "not Important & not urgent"
+        bottom: -15px;
+        content: "Drop here"
       }
     // }
   }

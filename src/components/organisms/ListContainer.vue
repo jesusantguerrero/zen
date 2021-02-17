@@ -43,7 +43,7 @@
             type="text" 
             ref="input"
             v-model="checkItem.title" 
-            @keydown.enter.stop="saveItem()" 
+            @keydown.enter.exact.prevent="saveItem()" 
             @focus="isFocused=true"
             @blur="isFocused=false"
             placeholder="+ Add an item and press enter"
