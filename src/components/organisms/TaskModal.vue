@@ -2,17 +2,17 @@
 <div>
   <modal-base v-model:is-open="isOpenLocal" title="Edit task">
       <template #title>
-           <div class="flex justify-between">
-                  <div class="flex items-center w-full">
+           <div class="flex justify-between pr-5">
+                  <div class="flex items-center w-full text-left">
                       <button class="mx-3 rounded-md px-2 py-1 " :class="typeColor"> 
                           <i :class="icon"> </i>
                       </button>
 
-                      <div class="w-full">
+                      <div class="w-full text-left">
                       <h1
                           class="text-lg font-bold w-full px-2" 
                       >
-                        {{ task.title }}
+                        Edit task
                       </h1>
                       </div>
                   </div>
@@ -42,10 +42,12 @@
                       </div>
                   </div>
 
-                  <div class="task-item__controls flex items-center" v-if="!isReminder">
-                      <div class="mx-2 text-gray-400 hover:text-gray-600 border-b-2 border-gray-100">
+                  <div class="task-item__controls flex items-center text-sm" v-if="!isReminder">
+                      <div class="mx-2 text-gray-400 hover:text-gray-600 w-24">
                       <date-select 
-                          v-model="task.due_date" 
+                          v-model="task.due_date"
+                          placeholder="Due to"
+                          class="w-full"
                       />    
                       </div>
                   </div>
@@ -54,12 +56,12 @@
                   <textarea 
                     ref="descriptionInput"
                     v-model="task.description"
-                    class="task-item__description w-full pt-2 focus:outline-none h-20" 
+                    class="task-item__description w-full pt-2 focus:outline-none h-20 resize-none" 
                     placeholder="Add a short description"
                     @input="setHeight">
                   </textarea>
                   
-                  <div class="task-item__checklist pt-5">
+                  <div class="task-item__checklist pt-5 text-left">
                     <checklist-container :items="task.checklist" :allow-edit="true"></checklist-container>
                   </div>
               </div>

@@ -1,7 +1,7 @@
 <template>
 <div class="checklist-container text-sm" ref="checklistContainer">
     <h4 class="font-bold text-gray-500">
-        Checklist ({{ doneItems }} / {{ items.length }})
+        Checklist ({{ doneItems }} / {{ items ? items.length : 0 }})
     </h4>
    <draggable v-model="items" handle=".handle">
         <div
@@ -100,7 +100,7 @@ const saveItem = () => {
 }
 
 const doneItems = computed(() => {
-    return Number(props.items.filter(item => item.done).length || 0)
+    return Number(props.items && props.items.filter(item => item.done).length || 0)
 })
 
 const checklistContainer = ref(null)

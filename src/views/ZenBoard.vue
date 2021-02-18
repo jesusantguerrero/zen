@@ -26,7 +26,7 @@
           </quick-add>
 
           <task-view
-            :task="currentTask"
+            :task-data="currentTask"
             :current-timer="currentTimer"
             @done="onDone"
             @updated="onTaskUpdated"

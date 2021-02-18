@@ -47,12 +47,15 @@
         <slot name="empty"></slot>
     </div>
 
-    <div class="task__checlikst mb-6" v-if="task.checklist">
+    <div class="task__checlikst mb-6" v-if="showChecklist">
       <checklist-container :items="task.checklist" :task="task" :allow-edit="isEditMode"></checklist-container>
     </div>
 
     <div class="absolute bottom-2 text-right w-full left-5 pr-10">
-         <button class="mx-2 bg-green-400 text-white px-5 rounded-md text-md" @click="saveChanges()" v-if="isEditMode">
+         <button class="mx-2 py-1 bg-red-400 text-white px-5 rounded-md text-sm" @click="cancelChanges()" v-if="isEditMode">
+              <span> Cancel </span>
+          </button>
+         <button class="mx-2 py-1 bg-green-400 text-white px-5 rounded-md text-sm" @click="saveChanges()" v-if="isEditMode">
               <span> Save </span>
           </button>
     </div>
@@ -60,8 +63,8 @@
 </template>
 
 <script setup>
-import { ElNotification } from "element-plus";
-import { defineProps, toRefs, defineEmit, computed, ref, nextTick } from "vue";
+import { ElMessageBox, ElNotification } from "element-plus";
+import { defineProps, toRefs, defineEmit, computed, ref, nextTick, reactive, watch } from "vue";
 import { useDateTime } from "../../utils/useDateTime";
 import ChecklistContainer from "./ListContainer.vue";
 
@@ -71,7 +74,7 @@ const emit = defineEmit({
 })
 
 const props = defineProps({
-  task: {
+  taskData: {
     type: [Object, String],
     default() {
       return {}
@@ -85,19 +88,36 @@ const props = defineProps({
   }
 });
 
-const { task, currentTimer } = toRefs(props)
+const { taskData, currentTimer } = toRefs(props)
+const task = reactive({
+
+})
+const setTaskData = (taskData) => {
+  if (taskData && task) {
+    const data = Object.assign({...taskData}, {});
+    Object.keys(data).forEach((key) => {
+      const objectData = data[key]
+      task[key] = Array.isArray(objectData) ? [...objectData] : objectData
+    });
+  }
+}
+
+watch(() => taskData.value, (taskData) => {
+  setTaskData(taskData)
+}, { immediate: true, deep: true })
+
 
 const { formatDate } = useDateTime();
 
 const isDisabled = computed(() => {
-  return currentTimer.value && currentTimer.value.task_uid == task.value.uid;
+  return currentTimer.value && currentTimer.value.task_uid == task.uid;
 })
 
 const markAsDoneLabel = computed(() => {
   return isDisabled.value ? 'Stop timer first to mark as done' : 'Mark as done'
 })
 
-const markAsDone = () => {
+const markAsDone = async () => {
   if (isDisabled.value) {
     ElNotification({
       type: "info",
@@ -106,16 +126,37 @@ const markAsDone = () => {
     return 
   }
 
-  task.value.commit_date = formatDate();
-  task.value.done = true;
+  const unresolvedItems = task.checklist.filter(item => !item.done)
+  let canSave = true;
+  if (unresolvedItems.length) {
+    canSave = await ElMessageBox.confirm(`There are ${unresolvedItems.length} unresolved item(s)`, "Are you sure?", {
+      confirmButtonText: "Mark all as done",
+      cancelButtonText: "Cancel"
+    }).then(() => true)
+
+    canSave && unresolvedItems.forEach(item => item.done = true);
+  }
+  
+  if (!canSave) return
+
+  task.commit_date = formatDate();
+  task.done = true;
   isEditMode.value = false
-  emit('done', task.value)
+  emit('done', task)
 }
 
 const saveChanges = () => {
-  emit('updated', task.value)
+  emit('updated', task)
   isEditMode.value = false;
 }
+
+const cancelChanges = () => {
+  isEditMode.value = false;
+}
+
+const showChecklist = computed(() => {
+  return (task.checklist && task.checklist.length) || isEditMode.value
+})
 
 const titleInput = ref(null)
 const isEditMode = ref(false);
