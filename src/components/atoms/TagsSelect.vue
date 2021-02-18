@@ -108,7 +108,7 @@ const props = defineProps({
     }
 })
 const selectedTags = ref([])
-watch(() => props.modelValue, (value) => {
+watch(() => [...props.modelValue], (value) => {
     selectedTags.value = value
 })
 const input = ref(null);
@@ -137,7 +137,7 @@ const moreTags = computed(() => {
     return selectedTags && selectedTags.value.slice(props.limit).map(item => item.name).join(" ")
 });
 
-const { filteredList  } = useFuseSearch(searchText, tags)
+const { filteredList  } = useFuseSearch(searchText, tags,null,  ['name'])
 
 const isSelected = (uid) => {
     return selectedTags.value.find( tag => tag.uid == uid)
@@ -177,9 +177,6 @@ const moveCursorDown = () => {
 const addTag = () => {
     if (searchText.value) {
         emit('added', {
-            name: searchText.value
-        });
-        emit('selected', {
             name: searchText.value
         });
         searchText.value = "";

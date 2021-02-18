@@ -75,7 +75,7 @@
               :tags="tags"
               :multiple="true" 
               @selected="addTag"
-              @added="saveDoc('tags', $event)"
+              @added="createTag"
           /> 
 
           <div class="text-right">
@@ -94,6 +94,7 @@
 import { defineProps, ref, watch, computed, reactive, defineEmit, toRefs, inject, onMounted, nextTick } from "vue"
 import { useTaskFirestore } from "./../../utils/useTaskFirestore"
 import { useDateTime } from "./../../utils/useDateTime"
+import { useCollection } from "./../../utils/useCollection"
 import DateSelect from "../atoms/DateSelect.vue"
 import TagsSelect from "../atoms/TagsSelect.vue"
 import ModalBase from "../molecules/ModalBase.vue";
@@ -226,7 +227,18 @@ const close = () => {
     clearForm()
 }
 
+// tags
+const { save: saveDoc } = useCollection()
+const createTag = (tag) => {
+  saveDoc('tags', tag).then((tagUid) => {
+    const createdTag = tags.value.find(localTag => localTag.uid == tagUid)
+    addTag(createdTag)
+  })
+}
 
+const addTag = (tag) => {
+  task.tags.push(tag)
+}
 </script>
 
 <style lang="scss" scoped>
