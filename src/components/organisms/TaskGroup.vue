@@ -97,6 +97,7 @@ const props = defineProps({
       default: 340,
       type: Number
     },
+    placeholder: String,
     isItemAsHandler: Boolean
 })
 const listGroup = ref(null);
@@ -104,6 +105,7 @@ const listGroup = ref(null);
 onMounted(() => {
   if (props.maxHeight && listGroup.value) {
     listGroup.value.style.setProperty("--max-height", `${props.maxHeight}px`);
+    listGroup.value.style.setProperty("--placeholder", `"${props.placeholder}"`);
   }
 })
 
@@ -208,6 +210,7 @@ const onToggleKey = (task) => {
 <style lang="scss">
 :root {
 --max-height: 340px;
+--placeholder: "Drop Here"
 }
 
 .list-group {
@@ -222,20 +225,17 @@ const onToggleKey = (task) => {
   padding-bottom: 40px;
 }
 
-.matrix {
-  .dragArea {
-    // min-height: 200px;
-  
-    // &.empty {
-      &::after {
-        @apply text-gray-400 font-bold;
-        width: 100%;
-        height: 100%;
-        position: relative;
-        bottom: -15px;
-        content: "Drop here"
-      }
-    // }
-  }
+.dragArea {
+    &::after {
+      @apply text-gray-400 font-bold;
+      display: block;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      bottom: -15px;
+      content: var(--placeholder);
+      font-size: 14px;
+      text-align: center;
+    }
 }
 </style>

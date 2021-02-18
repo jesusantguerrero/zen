@@ -6,6 +6,8 @@ export function useCollection() {
             ...item,
             user_uid: firebaseState.user.uid,
             created_at: new Date()
+        }).then((docRef) => {
+            return docRef.id
         })
     }
 

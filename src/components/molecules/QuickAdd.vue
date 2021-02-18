@@ -56,7 +56,7 @@
                 :tags="state.tags"
                 :multiple="true" 
                 @selected="addTag"
-                @added="saveDoc('tags', $event)"
+                @added="createTag"
               /> 
             </div>
 
@@ -188,6 +188,13 @@ const save = () => {
 
 const { save: saveDoc } = useCollection()
 state.tags = inject('tags', [])
+const createTag = (tag) => {
+  saveDoc('tags', tag).then((tagUid) => {
+    const createdTag = state.tags.find(localTag => localTag.uid == tagUid)
+    addTag(createdTag)
+  })
+}
+
 const addTag = (tag) => {
   task.tags.push(tag)
 }

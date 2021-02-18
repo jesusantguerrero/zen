@@ -52,7 +52,7 @@
       </div>
 
       <div
-        class="zen__comming-up md:block md:mt-0 md:w-4/12"
+        class="zen__comming-up lineup md:block md:mt-0 md:w-4/12"
         :class="[state.mobileMode == 'lineup' ? 'block' : 'hidden']"
       >
         <header class="mb-2 md:flex justify-between text-gray-400 font-bold items-center overflow-hidden">
@@ -113,6 +113,7 @@
               :is-item-as-handler="true"
               type="todo"
               :tags="selectedTags"
+              placeholder="Click a task select"
               @change="handleDragChanges"
               @deleted="destroyTask"
               @edited="setTaskToEdit"
@@ -132,6 +133,7 @@
               :search="searchOptions.text"
               type="schedule"
               class="py-3"
+              placeholder="Move task to todo to select"
               :is-item-as-handler="true"
               @deleted="destroyTask"
               @edited="setTaskToEdit"
