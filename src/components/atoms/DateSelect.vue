@@ -8,7 +8,7 @@
             class="flex items-center focus:outline-none" 
         >
             <i class="fa fa-calendar mr-2 px-2" v-if="!formattedDate"></i>
-            <span class="text-sm font-bold inline-block w-full" > {{ formattedDate }} </span>
+            <span class="text-sm font-bold inline-block w-full" > {{ formattedDate || placeholder }} </span>
             <el-date-picker
                 v-model="date"
                 ref="input"
@@ -26,7 +26,8 @@ import { defineEmit, onMounted, ref, watch } from "vue";
 import { useDateTime } from "../../utils/useDateTime";
 
 const props = defineProps({
-    modelValue: Date
+    modelValue: Date,
+    placeholder: String
 })
 
 const emit = defineEmit({

@@ -1,5 +1,5 @@
 <template>
-  <form class="task-item  mb-2 shadow-md bg-white border-gray-200 border-2 px-4 py-3 rounded-md items-center cursor-default"
+  <form class="task-item text-sm mb-2 shadow-md bg-white border-gray-200 border-2 px-4 py-3 rounded-md items-center cursor-default"
      @submit.prevent
      @keydown.ctrl.enter="save()"
      @keydown.enter.prevent.exact

@@ -7,8 +7,10 @@ html {
 
 .checkbox-done {
     -webkit-appearance: none;
-    width: 1.2rem;
-    height: 1.2rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    min-width: 1.1rem;
+    max-height: 1.1rem;
     background: transparent;
     display: block;
     margin: 0 2px;
@@ -19,6 +21,7 @@ html {
     cursor: pointer;
     transition: all ease 0.3s;
     display: inline-block;
+    padding-bottom: 15px;
     &:focus {
       outline: 0;
     }
@@ -30,22 +33,25 @@ html {
         display: flex;
         justify-content: center;
         align-items: center;
-        font-size: 11px;
+        font-size: 12px;
     }
 
-    &:checked, &:hover {
+    &:hover {
         @apply bg-green-200;
+        @apply border-green-400;
+        @apply border-2;
+    }
+
+    &:checked {
+        @apply bg-green-500;
         @apply border-green-400;
         @apply border-2;
 
         &:before {
-            content: "";
-            color: #fff;
-            left: 5%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 11px;
+            color: white;
+            content: "\f00c";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
         }
 
         &+[for*=""] {

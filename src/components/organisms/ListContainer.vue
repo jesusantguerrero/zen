@@ -1,23 +1,25 @@
 <template>
-<div class="checklist-container" ref="checklistContainer">
+<div class="checklist-container text-sm" ref="checklistContainer">
+    <h4 class="font-bold text-gray-500">
+        Checklist ({{ doneItems }} / {{ items ? items.length : 0 }})
+    </h4>
    <draggable v-model="items" handle=".handle">
         <div
             v-for="(check, index) in items"
             :key="check.id"
-            class="h-8 justify-between cursor-default hover:bg-gray-100 flex items-center my-2 px-2"
-            :class="[!allowEdit ? 'bg-white' : 'bg-gray-50']"
+            class="checklist__item h-8 justify-between cursor-default hover:bg-gray-50 flex items-center my-2 px-2 rounded-sm bg-white"
         >   
             <div class="w-full flex items-center">
-                <i class="fa fa-arrows-alt checklist-item__move handle mr-2"  v-if="allowEdit"></i>
+                <i class="fa fa-arrows-alt checklist-item__move handle mr-2 opacity-0"  v-if="allowEdit"></i>
                 <input
                     type="checkbox"
-                    class="form-control-check mx-2"
+                    class="form-control-check mx-2 checkbox-done"
                     v-model="check.done"
                     @change.stop="trackChanges"
                 />
                 <input
                     type="text"
-                    class="bg-transparent focus:outline-none w-full"
+                    class="bg-transparent focus:outline-none w-full ml-2 cursor-default"
                     :disabled="!allowEdit"
                     v-model="check.title"
                 />
@@ -25,7 +27,7 @@
             
             <button class="w-5">
                 <i
-                    class="fa fa-trash checklist-item__delete cursor-pointer hover:text-red-300"
+                    class="fa fa-trash checklist-item__delete text-gray-400 cursor-pointer opacity-0 hover:text-red-300"
                     @click="deleteItem(index)"
                     v-if="allowEdit"
                 ></i>
@@ -43,7 +45,7 @@
             type="text" 
             ref="input"
             v-model="checkItem.title" 
-            @keydown.enter.stop="saveItem()" 
+            @keydown.enter.exact.prevent="saveItem()" 
             @focus="isFocused=true"
             @blur="isFocused=false"
             placeholder="+ Add an item and press enter"
@@ -56,7 +58,7 @@
 import { onClickOutside } from "@vueuse/core";
 import { ElNotification } from "element-plus";
 import { useTaskFirestore } from "../../utils/useTaskFirestore"
-import { defineProps, ref, defineEmit, onMounted, onUnmounted } from "vue";
+import { defineProps, ref, defineEmit, onMounted, onUnmounted, computed } from "vue";
 import { VueDraggableNext as Draggable } from "vue-draggable-next"
 
 const props = defineProps({
@@ -97,6 +99,9 @@ const saveItem = () => {
     input.value && input.value.focus();
 }
 
+const doneItems = computed(() => {
+    return Number(props.items && props.items.filter(item => item.done).length || 0)
+})
 
 const checklistContainer = ref(null)
 const hasChanges = ref(false)
@@ -109,7 +114,7 @@ const trackChanges = () => {
 const { updateTask } = useTaskFirestore()
 
 const updateItems = () => {
-    if (hasChanges.value && props.task.uid) {
+    if (hasChanges.value && props.task && props.task.uid) {
         updateTask({
             uid: props.task.uid,
             checklist: [...props.items]
@@ -130,3 +135,31 @@ onUnmounted(() => {
 })
 
 </script>
+
+<style lang="scss" scoped>
+.checklist-item__move {
+    @apply rounded-md;
+    cursor: grab;
+    
+}
+
+.ghost .checklist-item__move {
+    cursor: grabbing;
+
+}
+.sortable-chosen {
+    @apply border-green-400;
+    border-width: 1px;
+    cursor: grabbing !important;
+}
+
+.checklist__item {
+    &:hover {
+
+        .checklist-item__move,
+        .checklist-item__delete {
+            opacity: 1;
+        }
+    }
+}
+</style>

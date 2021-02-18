@@ -2,7 +2,7 @@
   <div class="pt-24 md:pt-28 pb-20 mx-5 md:mx-28">
     <div class="text-left md:flex">
       <div
-        class="zen__view md:block md:w-8/12 md:mr-28"
+        class="zen__view md:block md:w-8/12 md:mr-20"
         :class="[state.mobileMode == 'zen' ? 'block' : 'hidden']"
       >
         <header class="flex justify-between">
@@ -14,7 +14,7 @@
           </time-tracker>
         </header>
 
-        <div class="mt-8">
+        <div class="mt-5">
           <quick-add
             v-if="state.showReminder"
             mode="reminder"
@@ -26,7 +26,7 @@
           </quick-add>
 
           <task-view
-            :task="currentTask"
+            :task-data="currentTask"
             :current-timer="currentTimer"
             @done="onDone"
             @updated="onTaskUpdated"
@@ -52,7 +52,7 @@
       </div>
 
       <div
-        class="zen__comming-up md:block md:mt-0 md:w-4/12 md:ml-5"
+        class="zen__comming-up md:block md:mt-0 md:w-4/12"
         :class="[state.mobileMode == 'lineup' ? 'block' : 'hidden']"
       >
         <header class="mb-2 md:flex justify-between text-gray-400 font-bold items-center overflow-hidden">
@@ -75,52 +75,71 @@
               :allow-add="false"
             /> 
           </div>
-
-
         </header>
 
-        <div class="comming-up__list divide-y-2 divide-gray-200 divide-dashed">
+        <div class="comming-up__list divide-y-2 divide-gray-200 divide-solid">
           <div class="quick__add mb-4">
             <h4 class="font-bold mb-2">Quick Add</h4>
             <quick-add @saved="addTask" type="todo" :allow-edit="true"></quick-add>
           </div>
+          <div class="">
+            <div class="tab-header flex"> 
+              <button 
+                class="px-2 py-1 hover:bg-gray-200 font-bold focus:outline-none text-gray-500" 
+                :class="{'text-green-500 bg-gray-100': state.tabSelected=='todo'}"
+                @click="state.tabSelected='todo'"
+                > 
+                  Todo ({{ state.todo.length }})
+              </button>
+              <button 
+                class="px-2 py-1 hover:bg-gray-200 font-bold focus:outline-none text-gray-500"
+                :class="{'text-blue-500 bg-gray-100': state.tabSelected=='schedule'}"
+                @click="state.tabSelected='schedule'"
+                > 
+                Schedule ({{ state.schedule.length }})
+              </button>
+            </div>
+            <task-group
+              v-if="state.tabSelected=='todo'"
+              :show-title="false"
+              title="Todo"
+              class="py-3"
+              :tasks="state.todo"
+              :search="searchOptions.text"
+              :show-select="true"
+              :show-controls="true"
+              :current-task="currentTask"
+              :current-timer="currentTimer"
+              :is-item-as-handler="true"
+              type="todo"
+              :tags="selectedTags"
+              @change="handleDragChanges"
+              @deleted="destroyTask"
+              @edited="setTaskToEdit"
+              @selected="setCurrentTask"
+              @down="moveTo($event, 'schedule')"
+            >
+            </task-group>
 
-          <task-group
-            title="Todo"
-            class="mt-6 py-3"
-            :tasks="state.todo"
-            :search="searchOptions.text"
-            :show-select="true"
-            :show-controls="true"
-            :current-task="currentTask"
-            :current-timer="currentTimer"
-            :is-item-as-handler="true"
-            type="todo"
-            :tags="selectedTags"
-            @change="handleDragChanges"
-            @deleted="destroyTask"
-            @edited="setTaskToEdit"
-            @selected="setCurrentTask"
-            @down="moveTo($event, 'schedule')"
-          >
-          </task-group>
-
-          <task-group
-            title="Schedule"
-            :tasks="state.schedule"
-            :tags="selectedTags"
-            :active="false"
-            :show-controls="true"
-            :search="searchOptions.text"
-            type="schedule"
-            class="opacity-60 hover:opacity-100 mt-6 py-3 cursor-move"
-            :is-item-as-handler="true"
-            @deleted="destroyTask"
-            @edited="setTaskToEdit"
-            @up="moveTo($event, 'todo')"
-            @change="handleDragChanges"
-          >
-          </task-group>
+            <task-group
+              v-if="state.tabSelected=='schedule'"
+              :show-title="false"
+              title="Schedule"
+              :tasks="state.schedule"
+              :tags="selectedTags"
+              :active="false"
+              :show-controls="true"
+              :search="searchOptions.text"
+              type="schedule"
+              class="py-3"
+              :is-item-as-handler="true"
+              @deleted="destroyTask"
+              @edited="setTaskToEdit"
+              @up="moveTo($event, 'todo')"
+              @change="handleDragChanges"
+            >
+            </task-group>
+          </div>
         </div>
       </div>
     </div>
@@ -195,6 +214,7 @@ const state = reactive({
   isTimeTrackerModalOpen: true,
   track: null,
   mobileMode: "zen",
+  tabSelected: 'todo'
 });
 
 state.isWelcomeOpen = state.isWelcomeOpen || !firebaseState.settings || !firebaseState.settings.hide_welcome;
@@ -382,6 +402,9 @@ const handleDragChanges = (e, matrix) => {
     );
   }
 };
+
+// 
+
 </script>
 
 <style scoped>

@@ -7,17 +7,21 @@
         content-class="md:w-5/12 "
     >
         <div class="w-full bg-white md:rounded-md modal__content relative">
-            <slot name="title">
-                <div class="modal__header flex justify-between px-5 py-4">
-                    <h3> {{ title }} </h3>
-                    <button @click="isOpenLocal=false">
-                        <i class="fa fa-times"></i>
-                    </button>
-                </div>
-            </slot>
+            <div class="modal__header-container py-2 px-2">
+                <slot name="title">
+                    <div class="modal__header flex justify-between px-5 py-4">
+                        <h3> {{ title }} </h3>
+                        <button @click="isOpenLocal=false">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </slot>
+            </div>
+
             <div class="modal__body ic-scroller pb-20">
                 <slot name="body"></slot>
             </div>
+            
             <div class="modal__footer px-5 py-2 text-right absolute bottom-0 w-full bg-white">
                 <slot name="footer"></slot>
             </div>

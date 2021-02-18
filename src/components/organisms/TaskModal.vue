@@ -2,54 +2,66 @@
 <div>
   <modal-base v-model:is-open="isOpenLocal" title="Edit task">
       <template #title>
-        <div>
-          
-        </div>
-      </template>
-      <template #body>
-          <form 
-              class="task-form mb-2 bg-white border-transparent border-2 px-4 py-3 md:rounded-md items-center cursor-default"
-              @submit.prevent
-          >
-              <div class="flex justify-between">
-                  <div class="flex items-center w-full">
+           <div class="flex justify-between pr-5">
+                  <div class="flex items-center w-full text-left">
                       <button class="mx-3 rounded-md px-2 py-1 " :class="typeColor"> 
                           <i :class="icon"> </i>
                       </button>
 
+                      <div class="w-full text-left">
+                      <h1
+                          class="text-lg font-bold w-full px-2" 
+                      >
+                        Edit task
+                      </h1>
+                      </div>
+                  </div>
+
+                  <div class="task-item__controls flex items-center" v-if="!isReminder">
+                      <div class="text-xl cursor-pointer hover:text-red-400 transition-colors">
+                        <i class="fa fa-times my-auto" @click="close()"></i>
+                      </div>
+                  </div>
+              </div>
+      </template>
+
+      <template #body>
+          <form 
+              class="task-form bg-white border-transparent border-2 px-4 py-3 md:rounded-md items-center cursor-default"
+              @submit.prevent
+          >   
+              <div class="flex justify-between">
+                  <div class="flex items-center w-full">
                       <div class="w-full">
                       <input 
                           type="text" 
-                          class="focus:outline-none w-full px-2" 
+                          class="focus:outline-none w-full px-2 border-b-2 border-gray-100"  
                           :placeholder="placeholder" 
                           v-model="task.title"
                       >
                       </div>
                   </div>
 
-                  <div class="task-item__controls flex items-center" v-if="!isReminder">
-                      <div class="mx-2 text-gray-400 hover:text-gray-600">
+                  <div class="task-item__controls flex items-center text-sm" v-if="!isReminder">
+                      <div class="mx-2 text-gray-400 hover:text-gray-600 w-24">
                       <date-select 
-                          v-model="task.due_date" 
+                          v-model="task.due_date"
+                          placeholder="Due to"
+                          class="w-full"
                       />    
-                      </div>
-
-                      <div class="text-xl cursor-pointer hover:text-red-400 transition-colors">
-                        <i class="fa fa-times my-auto" @click="close()"></i>
                       </div>
                   </div>
               </div>
-              
-              <div class="task-item__body w-full p-3">
+              <div class="task-item__body w-full p-3 pb-20">
                   <textarea 
-                  ref="descriptionInput"
-                  v-model="task.description"
-                  class="task-item__description w-full pt-2 focus:outline-none h-20" 
-                  placeholder="Add a short description"
-                  @input="setHeight">
+                    ref="descriptionInput"
+                    v-model="task.description"
+                    class="task-item__description w-full pt-2 focus:outline-none h-20 resize-none" 
+                    placeholder="Add a short description"
+                    @input="setHeight">
                   </textarea>
                   
-                  <div class="task-item__checklist pt-5">
+                  <div class="task-item__checklist pt-5 text-left">
                     <checklist-container :items="task.checklist" :allow-edit="true"></checklist-container>
                   </div>
               </div>
