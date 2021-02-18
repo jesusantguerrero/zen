@@ -3,11 +3,11 @@
     class="task-item mb-2 shadow-md bg-white border-gray-200 hover:border-green-200 border-2 px-4 py-3 rounded-md items-center transition-all cursor-pointer"
     :class="{'border-green-400': isSelected}"
     @click="emit('selected', task)"
-    @dblclick="emit('edited', task)"
+    @dblclick.prevent="emit('edited', task)"
 
   >
     <div class="flex justify-between">
-      <div class="flex items-center">
+      <div class="flex items-center text-xs">
         <div v-if="handleMode" class="handle text-gray-300 cursor-move mr-2"><i class="fa fa-arrows-alt"></i></div>
         
         <div 
@@ -49,8 +49,8 @@
               <el-dropdown-item command="edit" icon="el-icon-edit">Edit</el-dropdown-item>
               <el-dropdown-item command="delete" icon="el-icon-delete">Delete </el-dropdown-item>
               <el-dropdown-item command="toggle-key" icon="el-icon-key" v-if="task.matrix=='todo'"> Key task </el-dropdown-item>
-              <el-dropdown-item command="up" icon="el-icon-arrow-up" v-if="task.matrix=='schedule'">Move to todo</el-dropdown-item>
-              <el-dropdown-item command="down" icon="el-icon-arrow-down" v-if="task.matrix=='todo'">Move to schedule</el-dropdown-item>
+              <el-dropdown-item command="up" icon="el-icon-arrow-left" v-if="task.matrix=='schedule'">Move to todo</el-dropdown-item>
+              <el-dropdown-item command="down" icon="el-icon-arrow-right" v-if="task.matrix=='todo'">Move to schedule</el-dropdown-item>
             </el-dropdown-menu>
           </template>
       </el-dropdown>
@@ -60,10 +60,20 @@
     <div class="flex items-center mt-1 text-xs" :class="{'justify-between': task.due_date }">
       <button 
         title="Description" 
-        class="px-2 py-1 rounded-md border-2 border-gray-200 hover:bg-gray-200 focus:outline-none" 
+        class="px-2 py-1 rounded-md hover:bg-gray-200 focus:outline-none" 
         @click.stop="toggleExpand" v-if="task.description || task.checklist.length">
         <i class="fa fa-align-left"></i>
       </button>
+      <button 
+        title="Checklist" 
+        class="px-2 py-1 rounded-md  hover:bg-gray-200 focus:outline-none w-20 flex items-center" 
+        @click.stop="toggleExpand" v-if="task.checklist.length">
+        <i class="fa fa-list-ul mr-2"></i>
+        <div> 
+          <span class="font-bold">{{ task.checklist.filter(item => item.done).length  }}</span> / {{ task.checklist.length  }} 
+        </div>
+      </button>
+
       <div class="text-right w-full">
         <span v-for="tag in task.tags" :key="tag.name" class="mr-1 bg-gray-200 px-2 py-1 rounded-md"> {{ tag.name}}</span>
       </div>
@@ -78,7 +88,7 @@
           :class="{'text-gray-400 text-sm': !task.description }">
             {{ task.description || 'No description provided'}}
       </div>
-        <div class="task-item__checklist">
+        <div class="task-item__checklist mt-5">
           <checklist-container :items="task.checklist" :task="task"  @updated="updateItems"></checklist-container>
         </div>
       </div>

@@ -2,7 +2,7 @@
   <div class="pt-24 md:pt-28 pb-20 mx-5 md:mx-28">
     <div class="text-left md:flex">
       <div
-        class="zen__view md:block md:w-8/12 md:mr-28"
+        class="zen__view md:block md:w-8/12 md:mr-20"
         :class="[state.mobileMode == 'zen' ? 'block' : 'hidden']"
       >
         <header class="flex justify-between">
@@ -52,7 +52,7 @@
       </div>
 
       <div
-        class="zen__comming-up md:block md:mt-0 md:w-4/12 md:ml-5"
+        class="zen__comming-up md:block md:mt-0 md:w-4/12"
         :class="[state.mobileMode == 'lineup' ? 'block' : 'hidden']"
       >
         <header class="mb-2 md:flex justify-between text-gray-400 font-bold items-center overflow-hidden">
@@ -75,8 +75,6 @@
               :allow-add="false"
             /> 
           </div>
-
-
         </header>
 
         <div class="comming-up__list divide-y-2 divide-gray-200 divide-solid">

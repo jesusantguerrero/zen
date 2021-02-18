@@ -7,21 +7,21 @@
         ref="titleInput" 
         v-model="task.title" 
         class="focus:outline-none bg-white w-full" 
-        :class="{'focus:border-2 focus:border-gray-100 focus:ring focus:ring-gray-100 focus:ring-offset-gray-50 px-2': isEditMode}"
+        :class="{'border-b-2 border-gray-100 focus:border-gray-200 px-2': isEditMode}"
         :disabled="!isEditMode"
       >
 
-      <div class="task-item__controls flex text-lg" v-if="task.uid"> 
+      <div class="task-item__controls flex text-sm" v-if="task.uid"> 
           <div class="mx-2 cursor-pointer" @click="allowEdit()" v-if="!isEditMode">
               <i class="fa fa-pencil-alt mr-2 text-gray-400 hover:text-gray-600"></i>
           </div>
 
-          <el-tooltip class="item" effect="dark" :content="markAsDoneLabel" placement="top">
+          <el-tooltip class="item" effect="dark" :content="markAsDoneLabel" placement="top" v-if="!isEditMode">
               <div 
                 class="mx-2 text-gray-400 hover:text-gray-600 cursor-pointer"
-                @click="markAsDone()"
-                :disabled="isDisabled"
                 :class="{'text-green-400 font-extrabold': task.commit_date}"
+                :disabled="isDisabled"
+                @click="markAsDone()"
               >
                 <i class="fas fa-check-circle"></i>
               </div>
@@ -36,13 +36,13 @@
 
     <div class="task__description mb-4 mt-5 text-gray-500 text-lg">
         <textarea 
-          v-if="task.uid" 
+          v-if="task.description || isEditMode" 
           v-model="task.description" 
           :placeholder="isEditMode ? 'Add a description' : ''"
           :disabled="!isEditMode"
+          :class="{'border-2 bg-gray-50 focus:border-gray-100 px-2': isEditMode}"
           class="w-full pt-2 focus:outline-none bg-white text-gray-500"
         >
-        
         </textarea>
         <slot name="empty"></slot>
     </div>
@@ -51,8 +51,8 @@
       <checklist-container :items="task.checklist" :task="task" :allow-edit="isEditMode"></checklist-container>
     </div>
 
-    <div class="absolute bottom-2 text-right w-full left-5 pr-10" v-if="isEditMode">
-         <button class="mx-2 bg-green-400 text-white px-5 rounded-md text-md" @click="saveChanges()">
+    <div class="absolute bottom-2 text-right w-full left-5 pr-10">
+         <button class="mx-2 bg-green-400 text-white px-5 rounded-md text-md" @click="saveChanges()" v-if="isEditMode">
               <span> Save </span>
           </button>
     </div>
