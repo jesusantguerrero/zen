@@ -61,7 +61,8 @@ exports.slack = functions.https.onRequest(async (request, response) => {
     response.json({
         data: {
             status: 201,
-            message: "Logged in"
+            message: "Logged in",
+            body: request.body
         }
     })
 })
