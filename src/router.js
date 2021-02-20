@@ -3,6 +3,7 @@ import Login from "./views/Login.vue";
 import Matrix from "./views/Matrix.vue";
 import Standup from "./views/Standup.vue";
 import About from "./views/About.vue";
+import Settings from "./views/Settings.vue";
 import PlanAhead from "./views/PlanAhead.vue";
 import Metrics from "./views/Metrics.vue";
 import { createRouter, createWebHistory } from "vue-router";
@@ -34,7 +35,7 @@ const routes = [
   },
   { path: "/settings", 
     name: 'settings',
-    component: About 
+    component: Settings
   },
   { 
     path: "/plan-ahead", 
