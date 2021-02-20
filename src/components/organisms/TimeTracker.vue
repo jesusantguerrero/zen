@@ -58,6 +58,7 @@ import { computed, onBeforeUnmount, reactive, watch, defineProps, defineEmit, re
 import { Duration, Interval, DateTime } from "luxon";
 import { useTrackFirestore } from "./../../utils/useTrackFirestore";
 import { usePromodoro } from "./../../utils/usePromodoro";
+import { useSlack } from "./../../utils/useSlack";
 import { firebaseState } from "./../../utils/useFirebase";
 import { ElMessageBox, ElNotification } from "element-plus";
 import TimeTrackerModal from "./TimeTrackerModal.vue";
@@ -252,6 +253,7 @@ const validatePlay = () => {
   return isPromodoro() && props.task.title;
 }
 
+const { setStatus } = useSlack();
 const play = () => {
   if (isPromodoro() && !validatePlay()) {
     ElNotification({
@@ -267,6 +269,7 @@ const play = () => {
   state.now = track.started_at;
   
   if (validatePlay()) {
+    setStatus('Zen mode.', ':slack:')
     createTrack(track)
   }
 
