@@ -17,7 +17,7 @@
                     v-model.trim="searchText"
                     ref="input"
                     @click.stop
-                    @input="$refs.container.scrollTop=0"
+                    @input="gotoTop"
                     @keydown.enter="selectTag()"
                     @keydown.up.prevent="moveCursorUp()"
                     @keydown.down.prevent="moveCursorDown()"
@@ -143,6 +143,7 @@ const { filteredList  } = useFuseSearch(searchText, tags,null,  ['name'])
 const isSelected = (uid) => {
     return selectedTags.value.find( tag => tag.uid == uid)
 }
+
 // Cursor
 const focusInput = () => {
     input.value && input.value.focus()
@@ -161,6 +162,11 @@ watch(() => filteredList.value, (tags) => {
 const preSelectedValue = computed(() => {
     return state.cursor <= filteredList.value.length ? filteredList.value[state.cursor] : "";
 });
+
+const container = ref(null);
+const gotoTop = () => {
+    container.value.scrollTop=0
+}
 
 const moveCursorUp = () => {
     if (state.cursor > 0 ) {
