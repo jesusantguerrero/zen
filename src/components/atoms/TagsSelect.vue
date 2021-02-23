@@ -9,7 +9,7 @@
             @after-enter="focusInput()"
         >
 
-            <div class="pt-2 pb-5 px-2 w-full">
+            <div class="pt-2 pb-5 px-1 w-full">
                 <input
                     class="w-full h-8 rounded-md px-2 border-2 border-gray-100 focus:outline-none focus:border-gray-200" 
                     type="text" 
@@ -17,12 +17,13 @@
                     v-model.trim="searchText"
                     ref="input"
                     @click.stop
+                    @input="$refs.container.scrollTop=0"
                     @keydown.enter="selectTag()"
                     @keydown.up.prevent="moveCursorUp()"
                     @keydown.down.prevent="moveCursorDown()"
                 />
 
-                <div class="tags-container mt-2 space-y-1">
+                <div class="tags-container mt-2 space-y-1 max-h-48 overflow-auto w-full ic-scroller" ref="container">
                     <div v-for="tag in filteredList" 
                         :key="tag" 
                         class="px-2 py-2 cursor-pointer rounded-sm transition-colors"

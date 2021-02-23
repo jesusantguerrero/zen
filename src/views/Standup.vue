@@ -73,10 +73,14 @@ const state = reactive({
 
 // tasks manipulation
 const  { getCommitedTasks, updateTask } = useTaskFirestore()
-watch(() => state.date , () => {
+const fetchCommitted = () => {
   getCommitedTasks(state.date).then(tasks => {
     state.committed = tasks;
   })
+}
+
+watch(() => state.date , () => {
+ fetchCommitted();
 }, { immediate: true })
 
 // Current task
@@ -92,7 +96,9 @@ const onUndo = (task) => {
   task.done = false;
   delete task.duration_ms;
 
-  updateTask(task)
+  updateTask(task).then(() => {
+    state.committed = state.committed.filter(localTask => task.uid != localTask.uid);
+  })
 };
 
 

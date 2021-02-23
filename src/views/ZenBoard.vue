@@ -39,8 +39,10 @@
                 />
                 <div class="mt-10 md:mt-5 text-gray-500 font-bold">
                   Select item from "todo" or go to
-                  <router-link to="/plan-ahead" class="font-bolder"
-                    >Planahead</router-link
+                  <router-link to="/plan-ahead" class="font-bolder text-green-400 border-dashed border-b-2 border-green-400 cursor-pointer"
+                    >Planahead
+                    <i class="fa fa-arrow-right"></i>
+                    </router-link
                   >
                 </div>
               </div>
@@ -320,9 +322,11 @@ const getMatrix = (matrix) => {
 
 const scheduleRef = ref(null);
 const todoRef = ref(null);
+const committed = ref(null);
 
 todoRef.value = getMatrix("todo");
 scheduleRef.value = getMatrix("schedule");
+
 
 onUnmounted(() => {
   if (scheduleRef.value && todoRef.value) {
