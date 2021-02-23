@@ -5,14 +5,6 @@
          Metrics
       </h2>
       <div class="md:space-x-2 text-left md:flex">
-          <div class="md:flex items-center">
-              <input type="search" 
-                v-model.trim="state.search" 
-                class="px-2 text-md h-10 rounded-md focus:outline-none border-2 border-gray-200 w-full"
-                placeholder="Search task"
-
-              >
-          </div>
           <div class="flex mt-2 md:mt-0 el-date-full">
             <el-date-picker
               v-model.lazy="state.date"
@@ -20,56 +12,71 @@
               input-class="ml-0"
             >
             </el-date-picker>
-          <!-- <button title="help" class="bg-gray-700 text-white px-5 py-1 rounded-md ml-2">
-              <i class="fa fa-question"></i>
-          </button> -->
           </div>
+
+          <DatePagerWeek next-mode="week" v-model="state.date" v-model:week="state.week"></DatePagerWeek>
       </div>
   </div> 
 
-  <div class="flex space-x-4">
-    <div class="bg-white h-32 w-full flex items-center justify-center rounded-md">
-      <i class="fa fa-clock mr-2"></i>
-      {{ formattedTime }} Focused
-    </div>
-    <div class="bg-white h-32 w-full flex items-center justify-center rounded-md">
-      <i class="fa fa-stopwatch"></i>
-      {{ tracksData.started }} started/ {{ tracksData.finished }} finished
-    </div>
-    <div class="bg-white h-32 w-full flex items-center justify-center rounded-md">
-      <i class="fa fa-fire"></i>
-      0 Day Streak
-    </div>
+  <div class="flex bg-white pt-5 rounded-md shadow-md">
+      <div class="space-y-4 bg-white w-3/12 px-5 pt-2 text-gray-400">
+        <div class="font-bold text-gray-500 text-left  mb-10">
+            General Stats
+          </div>
+        <div class="bg-white py-8 w-full flex items-center px-5 rounded-md border-2 border-gray-200 overflow-hidden">
+          <i class="fa fa-clock mr-2 text-blue-400"></i>
+          <span class="font-bold mr-2 text-blue-400">{{ formattedTime }}  </span>
+          Total focused time
+        </div>
+        <div class="bg-white py-8 w-full flex items-center px-5 rounded-md border-2 border-gray-200 overflow-hidden">
+          <i class="fa fa-stopwatch mr-2 text-blue-400"></i>
+           <span class="font-bold mr-2 text-blue-400">{{  tracksData.started}}  </span> Started
+           <span class="font-bold mx-2 text-green-500">{{  tracksData.finished }}  </span> Finished
+           <span class="font-bold mx-2 text-red-400">{{  tracksData.started - tracksData.finished }}  </span> Stopped
+        </div>
+
+        <div class="bg-white py-8 w-full flex items-center px-5 rounded-md border-2 border-gray-200 overflow-hidden">
+          <i class="fa fa-sticky-note mr-2 text-green-500"></i>
+          <span class="font-bold mr-2 text-green-500">
+            {{ tasksWorked.length }}
+          </span>
+          Tasks worked
+        </div>
+      </div>
+
+      <!-- pomodoro stats -->
+      <div class="w-9/12">
+          <report-pomodoros
+            :stats-by-day="statsByDay"
+            :time-data="formattedWeek"
+          />
+      </div>
+    <!-- pomodoro stats --> 
   </div>
 
-  <div class="md:flex mt-5">
-    <div class="w-full md:w-9/12 mr-5">
-        {{ state.tracks }}
-    </div>
+  <!-- <div class="flex mt-10 space-x-10">
+    
+  
+      <div class="w-9/12 bg-white pt-5 rounded-md shadow-md ">
+          <report-tasks
+            :stats-by-day="durationByTasks"
+            :time-data="durationByTasks.map(task => task.description)"
+          />
+      </div>
+  
+      <div class="space-y-4 bg-white pt-5 rounded-md shadow-md w-3/12 px-5 text-gray-400">
+        <div class="font-bold text-gray-500 text-left  mb-10">
+            Tasks Stats
+          </div>
 
-    <div class="w-full md:w-3/12">
-        <task-group
-            title="Committed tasks"
-            type="backlog"
-            :search="state.search"
-            :tasks="state.committed"
-            :show-controls="false"
-            :show-select="true"
-            :current-task="currentTask"
-            @selected="setCurrentTask"
-            color="text-gray-400"
-            :is-quadrant="true"
-          >
-            <template #empty v-if="!state.committed.length">
-            <div class="w-8/12 md:w-6/12 mx-auto mt-10 text-center">
-              <img src="../assets/undraw_following.svg" class="w-12/12 md:w-5/12 mx-auto"> 
-              <div class="mt-10 md:mt-5 text-gray-500 font-bold"> There's no tasks</div>
-            </div>
-          </template>
-        </task-group>
-    </div>
-  </div>
-
+        <div class="bg-white w-full flex items-start px-5 rounded-md text-left overflow-hidden" v-for="task in tasksWorked"  :key="task">
+          <i class="fa fa-sticky-note mr-2 text-green-500 mt-1"></i>
+          <span class="font-bold mr-2 text-green-500">
+             {{ task }}
+          </span>
+        </div>
+      </div>
+  </div> -->
 </div>
 </template>
 
@@ -80,15 +87,19 @@ import { useTrackFirestore } from '../utils/useTrackFirestore'
 import { useDateTime } from '../utils/useDateTime'
 import { getMilliseconds } from '../utils/useTracker'
 import TaskGroup from "../components/organisms/TaskGroup.vue"
-import QuickAdd from "../components/molecules/QuickAdd.vue"
-import TimeTracker from "../components/organisms/TimeTracker.vue"
-import ChartView from "../components/organisms/ChartView.vue"
+import DatePagerWeek from "../components/molecules/DatePagerWeek.vue"
+import ReportPomodoros from "../components/organisms/ReportPomodoros.vue"
+import ReportTasks from "../components/organisms/ReportTasks.vue"
+import { format } from 'date-fns'
 // state and ui
 const state = reactive({
   committed: [],
   tracks: [],
+  week: [],
   date: new Date(),
-  search: ""
+  search: "",
+  sections: ['Overview'], // 'Tasks', 'Time Traking'
+  selectedSection: 'Overview',
 })
 
 // tasks manipulation
@@ -121,7 +132,8 @@ watch(currentTask, () => {
 
 const trackRef = ref(null);
 
-trackRef.value =  getTracksByDates(new Date()).then(collectionRef => {
+watch(() => state.week, (week) => {
+  trackRef.value =  getTracksByDates(week[0], week[6]).then(collectionRef => {
   collectionRef.get().then(querySnapshot => {
       state.tracks = []
       querySnapshot.forEach((doc) => {
@@ -130,8 +142,10 @@ trackRef.value =  getTracksByDates(new Date()).then(collectionRef => {
   })
   return collectionRef;
 })
+})
 
-const {  formatDurationFromMs, } = useDateTime()
+
+const {  formatDurationFromMs, formatDate } = useDateTime()
 
 const formattedTime = computed(() => {
   return formatDurationFromMs(getMilliseconds(state.tracks)).toFormat('hh:mm:ss')
@@ -144,6 +158,102 @@ const tracksData = computed(() => {
   }
 })
 
+// Reports 
+const tracksGroup = computed(() => {
+    const trackGroup = {};
+
+    if (state.tracks) {
+    state.tracks.forEach(track => {
+        const date = formatDate(new Date(track.started_at.toDate()), "yyyy-MM-dd");
+
+        if (!trackGroup[date]) {
+            trackGroup[date] = {
+                tasks: {
+                  [track.description]: {
+                      id: `group-${track.uid}`,
+                      description: track.description,
+                      tracks: [track]
+                  }
+                },
+                pomodoro: {
+                  started: 1,
+                  finished: Number(track.completed || 0),
+                  duration_ms: Number(track.duration_ms || 0)
+                }
+            };
+        } else {
+            if (!trackGroup[date].tasks[track.description]) {
+                trackGroup[date].tasks[track.description] = {
+                        id: `group-${track.uid}`,
+                        description: track.description,                    
+                        tracks: [track]
+                };
+
+                trackGroup[date].pomodoro.started += 1
+                trackGroup[date].pomodoro.finished += Number(track.completed)
+                trackGroup[date].pomodoro.duration_ms += Number(track.duration_ms)
+            } else {
+                trackGroup[date].tasks[track.description].tracks.push(track);
+                trackGroup[date].pomodoro.started += 1
+                trackGroup[date].pomodoro.finished += Number(track.completed)
+                trackGroup[date].pomodoro.duration_ms += Number(track.duration_ms)
+            }
+        }
+    });
+    } 
+     return trackGroup;
+})
+
+// completed by date
+const statsByDay = computed(() => {
+  return state.week.map((date) => {
+    const stat = tracksGroup.value[format(date, 'yyyy-MM-dd')]
+    return stat || null
+  })
+})
+
+const tasksWorked = computed(() => {
+  const tasks = statsByDay.value.reduce((tasks, day) => {
+    if (day) {
+      return [...tasks, ...Object.keys(day.tasks)]
+    } else {
+      return tasks
+    }
+  }, [])
+
+  return Array.from(new Set(tasks));
+})
+
+const durationByTasks = computed(() => {
+  const tasks = {} 
+
+    state.tracks.forEach((track) => {
+       if(!tasks[track.task_uid]) {
+         tasks[track.task_uid] = {
+            id: `group-${track.uid}`,
+            description: track.description,
+            tracks: [track],
+            started: 1,
+            finished: Number(track.completed || 0),
+            duration_ms: Number(track.duration_ms || 0)
+        };
+      } else {
+        tasks[track.task_uid].tracks.push(track);
+        tasks[track.task_uid].description = track.description;
+        tasks[track.task_uid].started += 1
+        tasks[track.task_uid].finished += Number(track.completed)
+        tasks[track.task_uid].duration_ms += track.duration_ms
+      }
+  })
+
+  return Object.values(tasks)
+})
+
+const formattedWeek = computed(() => {
+  return state.week.map((date) => {
+    return format(date, "iii, MMM dd");
+  })
+})
 
 onUnmounted(() => {
   // trackRef.value && trackRef.value()

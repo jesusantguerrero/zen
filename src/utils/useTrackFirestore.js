@@ -59,6 +59,7 @@ export function useTrackFirestore() {
         const trackRef = db.collection('tracks')
         .where("user_uid", "==", firebaseState.user.uid)
         .where('started_at', ">=", start)
+        .where('started_at', "<=", end)
         return trackRef
     }
 

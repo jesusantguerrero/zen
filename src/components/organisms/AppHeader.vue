@@ -8,7 +8,7 @@
         <menu-item class="mx-2 pl-2" to="/">Zenboard </menu-item>
         <menu-item class="ml-2 px-2" to="/standup">Stand Up</menu-item>
         <menu-item class="mx-2 px-2" to="/matrix">Matrix</menu-item>
-        <!-- <menu-item class="mx-2 px-2" to="/metrics">Metrics</menu-item> -->
+        <menu-item class="mx-2 px-2" to="/metrics">Metrics</menu-item>
       </div>
     </div>
 
@@ -40,8 +40,8 @@
           <!-- <el-dropdown-item class="p-0" command="releases">
               <i class="fa fa- cursor-pointer"></i>
               Release Notes
-          </el-dropdown-item>
-          <el-dropdown-item class="p-0" command="settings">
+          </el-dropdown-item> -->
+          <!-- <el-dropdown-item class="p-0" command="settings">
               <i class="fa fa-cog cursor-pointer"></i>
               Settings
           </el-dropdown-item> -->

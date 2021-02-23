@@ -3,7 +3,10 @@
     class="text-center"
     title="click here to start"
   >
-    <div class="flex items-start justify-between font-bold text-2xl">
+    <div class="flex items-center justify-between font-bold text-2xl">
+      <div class="text-sm mr-2"   :class="`${trackerMode.color} ${trackerMode.colorBorder}`" >
+            {{ trackerMode.text }}
+      </div>
       <div 
         :class="`${trackerMode.color} ${trackerMode.colorBorder}`" 
         class="border-2 mr-2 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer"
@@ -58,6 +61,7 @@ import { computed, onBeforeUnmount, reactive, watch, defineProps, defineEmit, re
 import { Duration, Interval, DateTime } from "luxon";
 import { useTrackFirestore } from "./../../utils/useTrackFirestore";
 import { usePromodoro } from "./../../utils/usePromodoro";
+import { useSlack } from "./../../utils/useSlack";
 import { firebaseState } from "./../../utils/useFirebase";
 import { ElMessageBox, ElNotification } from "element-plus";
 import TimeTrackerModal from "./TimeTrackerModal.vue";
@@ -115,6 +119,7 @@ const state = reactive({
       color: "text-red-400",
       colorBg: "bg-red-400",
       colorBorder: "border-red-400",
+      text: "Pomodoro session",
     },
     rest: {
       min: 5,
@@ -122,6 +127,7 @@ const state = reactive({
       color: "text-blue-400",
       colorBg: "bg-blue-400",
       colorBorder: "border-blue-400",
+      text: "Take a short break",
     },
   },
   now: null,
@@ -252,6 +258,7 @@ const validatePlay = () => {
   return isPromodoro() && props.task.title;
 }
 
+const { setStatus } = useSlack();
 const play = () => {
   if (isPromodoro() && !validatePlay()) {
     ElNotification({
@@ -267,6 +274,7 @@ const play = () => {
   state.now = track.started_at;
   
   if (validatePlay()) {
+    setStatus('Zen mode.', ':slack:')
     createTrack(track)
   }
 
@@ -357,8 +365,8 @@ const updateTrackFromLocal = (track) => {
     emit("update:currentTimer", {})
     props.task.tracks.push(formData);
     ElNotification({
-      title: "Promodoro Saved",
-      message: "Promodoro saved",
+      title: "Pomodoro Saved",
+      message: "Pomodoro saved",
       type: "success"
     })
   })
