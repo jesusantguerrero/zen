@@ -360,8 +360,8 @@ const updateTrackFromLocal = (track) => {
     emit("update:currentTimer", {})
     props.task.tracks.push(formData);
     ElNotification({
-      title: "Promodoro Saved",
-      message: "Promodoro saved",
+      title: "Pomodoro Saved",
+      message: "Pomodoro saved",
       type: "success"
     })
   })

@@ -34,19 +34,19 @@
         <div class="font-bold text-gray-500 text-left  mb-10">
             General Stats
           </div>
-        <div class="bg-white py-8 w-full flex items-center px-5 rounded-md border-2 border-gray-400 overflow-hidden">
+        <div class="bg-white py-8 w-full flex items-center px-5 rounded-md border-2 border-gray-200 overflow-hidden">
           <i class="fa fa-clock mr-2 text-blue-400"></i>
           <span class="font-bold mr-2 text-blue-400">{{ formattedTime }}  </span>
           Total focused time
         </div>
-        <div class="bg-white py-8 w-full flex items-center px-5 rounded-md border-2 border-gray-400 overflow-hidden">
+        <div class="bg-white py-8 w-full flex items-center px-5 rounded-md border-2 border-gray-200 overflow-hidden">
           <i class="fa fa-stopwatch mr-2 text-blue-400"></i>
            <span class="font-bold mr-2 text-blue-400">{{  tracksData.started}}  </span> Started
            <span class="font-bold mx-2 text-green-500">{{  tracksData.finished }}  </span> Finished
            <span class="font-bold mx-2 text-red-400">{{  tracksData.started - tracksData.finished }}  </span> Stopped
         </div>
 
-        <div class="bg-white py-8 w-full flex items-center px-5 rounded-md border-2 border-gray-400 overflow-hidden">
+        <div class="bg-white py-8 w-full flex items-center px-5 rounded-md border-2 border-gray-200 overflow-hidden">
           <i class="fa fa-sticky-note mr-2 text-green-500"></i>
           <span class="font-bold mr-2 text-green-500">
             {{ tasksWorked }}
@@ -57,7 +57,7 @@
       <div class="w-9/12">
         <div class="bg-white mb-10 rounded-md px-5 py-3">
           <div class="font-bold text-gray-500 text-left">
-            Promodoro Stats
+            Pomodoro Stats
           </div>
           <div class="bg-white rounded-md py-3" style="height: 400px">
             <report-chart data-class="graphics chart" id="chart-installations" data-id="chart-installations" :data="completedPromodoros" :labels="formattedWeek" :config="state.chartConfig.pomodoros"></report-chart>
@@ -96,8 +96,8 @@ const state = reactive({
     pomodoros: {
       title: ['Started', 'Completed'],
       type: 'bar',
-      backgroundColor:['rgba(3,169,244 ,.4)', 'rgba(255, 99, 132, .4)'],
-      borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'],
+      backgroundColor:['rgba(3,169,244 ,.2)', 'rgba(255, 99, 132, .2)'],
+      borderColor: ['rgba(54, 162, 235, .6)', 'rgba(255, 99, 132, .6)'],
       borderWidth: 2
     }
   },
