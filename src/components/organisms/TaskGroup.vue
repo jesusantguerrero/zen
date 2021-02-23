@@ -43,6 +43,7 @@
                 @selected="emit('selected', task)"
                 @deleted="emit('deleted', task)"
                 @edited="emit('edited', task)"
+                @undo="emit('undo', task)"
                 @up="emit('up', task)"
                 @down="emit('down', task)"
               />
@@ -105,7 +106,9 @@ const listGroup = ref(null);
 onMounted(() => {
   if (props.maxHeight && listGroup.value) {
     listGroup.value.style.setProperty("--max-height", `${props.maxHeight}px`);
-    listGroup.value.style.setProperty("--placeholder", `"${props.placeholder}"`);
+    if (props.placeholder) {
+      listGroup.value.style.setProperty("--placeholder", `"${props.placeholder}"`);
+    }
   }
 })
 
@@ -116,7 +119,8 @@ const emit = defineEmit({
   up: Object,
   down: Object,
   move: Object,
-  change: Object
+  change: Object,
+  undo: Object
 })
 
 const { tasks, search,tags, showSelect, currentTask, currentTimer, isItemAsHandler, handleMode } = toRefs(props)

@@ -405,7 +405,6 @@ const handleDragChanges = (e, matrix) => {
   }
 };
 
-// 
 
 </script>
 

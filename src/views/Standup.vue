@@ -25,6 +25,7 @@
             :show-controls="false"
             :current-task="currentTask"
             @selected="setCurrentTask"
+            @undo="onUndo"
             color="text-gray-400"
             :max-height="0"
             :is-quadrant="true"
@@ -71,7 +72,7 @@ const state = reactive({
 })
 
 // tasks manipulation
-const  { getCommitedTasks } = useTaskFirestore()
+const  { getCommitedTasks, updateTask } = useTaskFirestore()
 watch(() => state.date , () => {
   getCommitedTasks(state.date).then(tasks => {
     state.committed = tasks;
@@ -84,6 +85,16 @@ const currentTask = ref({});
 const setCurrentTask = (task) => {
   currentTask.value = task
 }
+
+const onUndo = (task) => {
+  task.tracks = [];
+  task.commit_date = null;
+  task.done = false;
+  delete task.duration_ms;
+
+  updateTask(task)
+};
+
 
 watch(currentTask, () => {
   if (currentTask.value.uid) {

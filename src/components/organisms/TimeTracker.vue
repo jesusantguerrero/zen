@@ -3,7 +3,10 @@
     class="text-center"
     title="click here to start"
   >
-    <div class="flex items-start justify-between font-bold text-2xl">
+    <div class="flex items-center justify-between font-bold text-2xl">
+      <div class="text-sm mr-2"   :class="`${trackerMode.color} ${trackerMode.colorBorder}`" >
+            {{ trackerMode.text }}
+      </div>
       <div 
         :class="`${trackerMode.color} ${trackerMode.colorBorder}`" 
         class="border-2 mr-2 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer"
@@ -116,6 +119,7 @@ const state = reactive({
       color: "text-red-400",
       colorBg: "bg-red-400",
       colorBorder: "border-red-400",
+      text: "Pomodoro session",
     },
     rest: {
       min: 5,
@@ -123,6 +127,7 @@ const state = reactive({
       color: "text-blue-400",
       colorBg: "bg-blue-400",
       colorBorder: "border-blue-400",
+      text: "Take a short break",
     },
   },
   now: null,

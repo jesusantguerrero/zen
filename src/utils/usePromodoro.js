@@ -24,6 +24,7 @@ export function usePromodoro() {
               color: "text-green-400",
               colorBg: "bg-green-400",
               colorBorder: "border-green-400",
+              text: "Long break",
             },
             promodoro: {
               min: SESSION_MINUTES,
@@ -31,6 +32,7 @@ export function usePromodoro() {
               color: "text-red-400",
               colorBg: "bg-red-400",
               colorBorder: "border-red-400",
+              text: "Pomodoro session",
             },
             rest: {
               min: SHORT_BREAK_MINUTES,
@@ -38,6 +40,7 @@ export function usePromodoro() {
               color: "text-blue-400",
               colorBg: "bg-blue-400",
               colorBorder: "border-blue-400",
+              text: "Take a short break",
             },
         },
         audio: null,

@@ -6,8 +6,8 @@
     >
       <i class="fa fa-chevron-left"></i>
     </button>
-    <div v-if="selectedWeek" class="bg-white flex items-center">
-      {{ getISODate(selectedWeek[0]) }} - {{ getISODate(selectedWeek[6]) }}
+    <div v-if="selectedWeek" class="bg-white flex items-center font-bold text-sm text-gray-500">
+      {{ formatDate(selectedWeek[0]) }} - {{ formatDate(selectedWeek[6]) }}
     </div>
     <el-date-picker v-model="date" ref="input" type="date" @change="emitDate" v-if="false">
     </el-date-picker>
@@ -68,6 +68,10 @@ export default {
       return date.toISOString ? date.toISOString().slice(0, 10) : "";
     };
 
+    const formatDate = (date) => {
+      return format(date,  'MMM dd yyyy')
+    }
+
     return {
       selectedWeek,
       selectedDay,
@@ -75,7 +79,8 @@ export default {
       // methods
       controls,
       // ui helpers
-      getISODate
+      getISODate,
+      formatDate
     };
   }
 };

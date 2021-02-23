@@ -1,7 +1,9 @@
 import Chart from 'chart.js';
 import LineChartDataSet from './LineChartDataSet';
 import BarChartDataSet from './BarChartDataSet';
+import { useDateTime } from "../useDateTime";
 
+const {  formatDurationFromMs } = useDateTime()
 export default class SingleChart {
   constructor($canvas, labels, values, config, ownDatasets) {
     const datasets = ownDatasets || this.selectDataSet(config, values);
@@ -14,23 +16,37 @@ export default class SingleChart {
     const options = {
       responsive: true,
       maintainAspectRatio: false,
-      scales: (!config.money) ? null : {
+      scales: {
         yAxes: [{
           ticks: {
             callback(label) {
-              return `RD$ ${label}`;
+              if (!config.duration) {
+                return label
+              }
+              return formatDurationFromMs(label).toFormat('hh:mm:ss');
             },
             beginAtZero: true
-          }
+          },
+        }],
+        xAxes: [{
+          ticks: {
+            callback(label) {
+              if (!config.durationX) {
+                return label
+              }
+              return formatDurationFromMs(label).toFormat('hh:mm:ss');
+            },
+            beginAtZero: true
+          },
         }]
       },
       tooltips: {
         callbacks: {
           label(tooltipItem) {
-            if (!config.money) {
+            if (!config.duration) {
               return tooltipItem.yLabel;
             }
-            return `RD$  ${ooltipItem.yLabel}`;
+            return formatDurationFromMs(tooltipItem.yLabel).toFormat('hh:mm:ss');
           }
         }
       }
@@ -41,33 +57,34 @@ export default class SingleChart {
       data,
       options
     });
-
-    console.log(this.chart);
-
+    
     $canvas.height = 390;
+    this.$canvas = $canvas;
+    this.labels = labels;
+    this.config = config;
     this.multiple = (ownDatasets) || false;
   }
 
   update(values) {
-    if (Array.isArray(values[0])) {
+    if (Array.isArray(values[0]) && this.chart.data.datasets.length) {
         this.chart.data.datasets.forEach( (dataset, datasetIndex) => {
           dataset.data.forEach((data, index) => {
             dataset.data[index] = values[index][datasetIndex]
           })
         });
-    } else {
+    } else if (values.length && this.chart.config.data.datasets.length) {
       this.chart.config.data.datasets[0].data = values;
     }
     this.chart.update();
   }
 
-  selectDataSet(config, values) {
+  selectDataSet(config, dataValue) {
     const datasets = config.type === 'line' ? LineChartDataSet : BarChartDataSet;
     const data = [];
+    const values = Array.isArray(dataValue) ? dataValue : [dataValue]
     
     values.forEach(dataProp => {
       const valuesArr = Array.isArray(data) ? dataProp : [dataProp]
-
       valuesArr.forEach((value, index) => {
         if(!data[index]) {
          data.push({
@@ -82,7 +99,7 @@ export default class SingleChart {
         }
       })
     })
-    console.log(data)
+
     return data;
   }
 }

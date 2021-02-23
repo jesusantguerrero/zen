@@ -4,7 +4,7 @@
 
 <script setup>
 import SingleChart from "./../../utils/charts/SingleChart";
-import { defineProps, onMounted, ref, watch, watchEffect } from "vue";
+import { defineProps, onMounted, ref, watch, toRefs} from "vue";
 const props = defineProps({
   labels: {
     type: Array,
@@ -25,7 +25,7 @@ const props = defineProps({
     type: String,
   },
 
-  dataId: {
+  id: {
     type: String,
   },
 
@@ -37,25 +37,34 @@ const props = defineProps({
 
 let chart = null;
 const canvas = ref(null);
+const { data } = toRefs(props)
+
 const init = () => {
   chart = new SingleChart(canvas.value, props.labels, props.data, props.config, props.ownDataset);
 };
 
 const refresh = () => {
-  const data = props.ownDataset || props.data;
-  chart && chart.update(data);
+  const dataSets = props.ownDataset || data.value;
+  if (chart) {
+    chart.update(dataSets);
+  } else {
+    init()
+  }  
 };
 
 onMounted(() => {
-  init();
-  refresh();
+    data.value.length && init();
 });
 
-watch(() => [...props.data], () => {
-    refresh();
-})
+watch(() => canvas.value, (data) => {
+    canvas.value && data.length && init() ;
+}, {immediate: true })
+
+watch(() => [...data.value], (data) => {
+    canvas.value && data.length && refresh() ;
+}, {immediate: true })
 
 watch(() => props.ownDataset, () => {
-    refresh();
+   canvas && refresh();
 });
 </script>

@@ -38,6 +38,7 @@
             <i class="fa fa-calendar mr-1"></i>
             <span> {{ task.due_date }}</span>
           </div>
+          <button class="bg-gray-700 text-white text-xs px-2 rounded-sm hover:bg-gray-500 transition-colors" v-if="task.done" @click.stop="undo">Undo</button>
         </div>
 
         <el-dropdown trigger="click" @command="handleCommand" v-if="showControls" :disabled="isDisabled" @click.stop="">
@@ -61,7 +62,7 @@
       <button 
         title="Description" 
         class="px-2 py-1 rounded-md hover:bg-gray-200 focus:outline-none" 
-        @click.stop="toggleExpand" v-if="task.description || task.checklist.length">
+        @click.stop="toggleExpand" v-if="task.description">
         <i class="fa fa-align-left"></i>
       </button>
       <button 
@@ -120,6 +121,7 @@ const emit = defineEmit({
   edited: Object,
   up: Object,
   down: Object,
+  undo: Object
 })
 
 const { task, currentTask, currentTimer} = toRefs(props)
@@ -213,6 +215,9 @@ const updateItems = () => {
   })
 }
 
+const undo = () => {
+  emit('undo', task)
+}
 </script>
 
 

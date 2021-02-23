@@ -18,17 +18,6 @@
       </div>
   </div> 
 
-
-  <!-- <div class="card-pager__header flex bg-white rounded-md shadow-md">
-    <div 
-      v-for="section in state.sections" :key="section"
-      class="px-2 py-2 font-bold border-b-4 cursor-pointer border-white text-gray-400 transition-all"
-      :class="{'border-gray-700 text-gray-600 ': state.selectedSection == section}"
-      @click="state.selectedSection = section"
-      >
-       {{ section }}
-    </div>
-  </div> -->
   <div class="flex bg-white pt-5 rounded-md shadow-md">
       <div class="space-y-4 bg-white w-3/12 px-5 pt-2 text-gray-400">
         <div class="font-bold text-gray-500 text-left  mb-10">
@@ -49,22 +38,45 @@
         <div class="bg-white py-8 w-full flex items-center px-5 rounded-md border-2 border-gray-200 overflow-hidden">
           <i class="fa fa-sticky-note mr-2 text-green-500"></i>
           <span class="font-bold mr-2 text-green-500">
-            {{ tasksWorked }}
+            {{ tasksWorked.length }}
           </span>
-          Tasks worked on
+          Tasks worked
         </div>
       </div>
+
+      <!-- pomodoro stats -->
       <div class="w-9/12">
-        <div class="bg-white mb-10 rounded-md px-5 py-3">
-          <div class="font-bold text-gray-500 text-left">
-            Pomodoro Stats
-          </div>
-          <div class="bg-white rounded-md py-3" style="height: 400px">
-            <report-chart data-class="graphics chart" id="chart-installations" data-id="chart-installations" :data="completedPromodoros" :labels="formattedWeek" :config="state.chartConfig.pomodoros"></report-chart>
-          </div>
-        </div>
-    </div>
+          <report-pomodoros
+            :stats-by-day="statsByDay"
+            :time-data="formattedWeek"
+          />
+      </div>
+    <!-- pomodoro stats --> 
   </div>
+
+  <!-- <div class="flex mt-10 space-x-10">
+    
+  
+      <div class="w-9/12 bg-white pt-5 rounded-md shadow-md ">
+          <report-tasks
+            :stats-by-day="durationByTasks"
+            :time-data="durationByTasks.map(task => task.description)"
+          />
+      </div>
+  
+      <div class="space-y-4 bg-white pt-5 rounded-md shadow-md w-3/12 px-5 text-gray-400">
+        <div class="font-bold text-gray-500 text-left  mb-10">
+            Tasks Stats
+          </div>
+
+        <div class="bg-white w-full flex items-start px-5 rounded-md text-left overflow-hidden" v-for="task in tasksWorked"  :key="task">
+          <i class="fa fa-sticky-note mr-2 text-green-500 mt-1"></i>
+          <span class="font-bold mr-2 text-green-500">
+             {{ task }}
+          </span>
+        </div>
+      </div>
+  </div> -->
 </div>
 </template>
 
@@ -76,7 +88,8 @@ import { useDateTime } from '../utils/useDateTime'
 import { getMilliseconds } from '../utils/useTracker'
 import TaskGroup from "../components/organisms/TaskGroup.vue"
 import DatePagerWeek from "../components/molecules/DatePagerWeek.vue"
-import ReportChart from "../components/organisms/ReportChart.vue"
+import ReportPomodoros from "../components/organisms/ReportPomodoros.vue"
+import ReportTasks from "../components/organisms/ReportTasks.vue"
 import { format } from 'date-fns'
 // state and ui
 const state = reactive({
@@ -87,20 +100,6 @@ const state = reactive({
   search: "",
   sections: ['Overview'], // 'Tasks', 'Time Traking'
   selectedSection: 'Overview',
-  chartConfig: {
-    incomes: {
-      title: ['Ingresos'],
-      type: 'line',
-      money: true
-    },
-    pomodoros: {
-      title: ['Started', 'Completed'],
-      type: 'bar',
-      backgroundColor:['rgba(3,169,244 ,.2)', 'rgba(255, 99, 132, .2)'],
-      borderColor: ['rgba(54, 162, 235, .6)', 'rgba(255, 99, 132, .6)'],
-      borderWidth: 2
-    }
-  },
 })
 
 // tasks manipulation
@@ -178,7 +177,8 @@ const tracksGroup = computed(() => {
                 },
                 pomodoro: {
                   started: 1,
-                  finished: Number(track.completed || 0)
+                  finished: Number(track.completed || 0),
+                  duration_ms: Number(track.duration_ms || 0)
                 }
             };
         } else {
@@ -191,10 +191,12 @@ const tracksGroup = computed(() => {
 
                 trackGroup[date].pomodoro.started += 1
                 trackGroup[date].pomodoro.finished += Number(track.completed)
+                trackGroup[date].pomodoro.duration_ms += Number(track.duration_ms)
             } else {
                 trackGroup[date].tasks[track.description].tracks.push(track);
                 trackGroup[date].pomodoro.started += 1
                 trackGroup[date].pomodoro.finished += Number(track.completed)
+                trackGroup[date].pomodoro.duration_ms += Number(track.duration_ms)
             }
         }
     });
@@ -219,13 +221,32 @@ const tasksWorked = computed(() => {
     }
   }, [])
 
-  return new Set(tasks).size;
+  return Array.from(new Set(tasks));
 })
 
-const completedPromodoros = computed(() => {
-  return statsByDay.value.map((stat) => {
-    return stat ? [stat.pomodoro.started, stat.pomodoro.finished] : [0, 0]
+const durationByTasks = computed(() => {
+  const tasks = {} 
+
+    state.tracks.forEach((track) => {
+       if(!tasks[track.task_uid]) {
+         tasks[track.task_uid] = {
+            id: `group-${track.uid}`,
+            description: track.description,
+            tracks: [track],
+            started: 1,
+            finished: Number(track.completed || 0),
+            duration_ms: Number(track.duration_ms || 0)
+        };
+      } else {
+        tasks[track.task_uid].tracks.push(track);
+        tasks[track.task_uid].description = track.description;
+        tasks[track.task_uid].started += 1
+        tasks[track.task_uid].finished += Number(track.completed)
+        tasks[track.task_uid].duration_ms += track.duration_ms
+      }
   })
+
+  return Object.values(tasks)
 })
 
 const formattedWeek = computed(() => {
