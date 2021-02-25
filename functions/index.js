@@ -1,5 +1,6 @@
 const functions = require("firebase-functions");
 const admin = require('firebase-admin');
+const paypal - require('./paypal')
 admin.initializeApp();
 
 // exports.sendpush = functions.https.onRequest(async (req, res) => {
@@ -78,5 +79,53 @@ exports.slack = functions.https.onRequest(async (request, response) => {
             text: `This email it is not in our app`
         });
     }
+})
+
+
+const getUserSettings = async(uid) => {
+    return admin.firestore().collection('settings').doc(uid).get().then(ref => ref.data());
+}
+
+const getUser = async(uid) => {
+    return admin.auth().getUser(uid).then(record => record).catch(() => null)
+}
+
+exports.saveSubscription = functions.https.onRequest((req, res) => {
+    const user = await getUser(req.body.uid);
+    if (user) {
+        await admin.firestore().collection('settings').doc(user.uid).set({
+            susbcription: req.body
+        }, { merge: true});
+        return res.send('saved')
+    } else {
+        return response.json({
+            "response_type": "ephemeral",
+            text: `This email it is not in our app`
+        });
+    }
+})
+
+
+exports.paypalCancel = functions.https.onRequest((req, res) => {
+    const user = await getUserSettings(req.body.uid);
+    return paypal.cancelSubscription(user.agreementId, req.body);
+})
+
+exports.paypalReactivate = functions.https.onRequest((req, res) => {
+    const user = await getUserSettings(req.body.uid);
+    paypal.reactivateSubscription(user.agreementId, req.body);
+    return res.send('activated');
+})
+
+exports.paypalSuspend = functions.https.onRequest((req, res) => {
+    const user = await getUserSettings(req.body.uid);
+    paypal.suspendSubscription(user.agreementId, req.body);
+    return res.send('suspended')
+})
+
+exports.paypalUpgrade = functions.https.onRequest((req, res) => {
+    const user = await getUser(req.body.uid);
+    paypal.upgrateSubscription(agreementId, req.body);
+    res.send('upgraded')
 })
 
