@@ -41,10 +41,10 @@
     >
         <input type="checkbox" disabled class="mr-2">
         <input 
+            v-model="checkItemTitle"
             class="w-full h-8 bg-gray-100 focus:outline-none"
             type="text" 
             ref="input"
-            v-model="checkItem.title" 
             @keydown.enter.exact.prevent="saveItem()" 
             @focus="isFocused=true"
             @blur="isFocused=false"
@@ -58,7 +58,7 @@
 import { onClickOutside } from "@vueuse/core";
 import { ElNotification } from "element-plus";
 import { useTaskFirestore } from "../../utils/useTaskFirestore"
-import { defineProps, ref, defineEmit, onMounted, onUnmounted, computed } from "vue";
+import { defineProps, ref, defineEmit, onMounted, onUnmounted, computed, onBeforeUnmount, reactive, watch } from "vue";
 import { VueDraggableNext as Draggable } from "vue-draggable-next"
 
 const props = defineProps({
@@ -68,34 +68,33 @@ const props = defineProps({
 })
 
 const emit = defineEmit({
-    'updated': Array
+    'updated': Array,
+    'update:items': Array
 })
 
 const isFocused = ref(false)
 const input = ref(null)
 
-const checkItem = ref({
-    title: "",
-    done: false
-})
+const checkItemTitle = ref("")
 
 const deleteItem = (index) => {
     props.items.splice(index, 1);
 }
 
+const clearForm = () => {
+    checkItemTitle.value = ""
+}
+
 const saveItem = () => {
-    if (!checkItem.value.title) {
+    if (!checkItemTitle.value) {
         ElNotification({
             title: "Missing Title",
             message: "Title is required for a checklist item"
         })
         return
     }
-    props.items.push(checkItem.value);
-    checkItem.value = {
-        title: "",
-        done: false,
-    }
+    localItems.push({title: checkItemTitle.value, done: false });
+    emit('update:items')
     input.value && input.value.focus();
 }
 
@@ -110,7 +109,6 @@ const trackChanges = () => {
     hasChanges.value = true;
 }
 
-
 const { updateTask } = useTaskFirestore()
 
 const updateItems = () => {
@@ -123,7 +121,9 @@ const updateItems = () => {
     }
 }
 
-
+watch(() => props.task.uid, () => {
+    clearForm()
+})
 onMounted(() => {
     onClickOutside(checklistContainer, () => {
         updateItems()
@@ -133,7 +133,6 @@ onMounted(() => {
 onUnmounted(() => {
     updateItems()
 })
-
 </script>
 
 <style lang="scss" scoped>

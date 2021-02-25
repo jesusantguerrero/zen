@@ -1,6 +1,6 @@
 <template>
 <div>
-  <modal-base v-model:is-open="isOpenLocal" title="Edit task">
+  <modal-base v-model:is-open="isOpenLocal" title="Edit task" @closed="clearForm()" @click-outside="clearForm()">
       <template #title>
            <div class="flex justify-between pr-5">
                   <div class="flex items-center w-full text-left">
@@ -62,7 +62,7 @@
                   </textarea>
                   
                   <div class="task-item__checklist pt-5 text-left">
-                    <checklist-container :items="task.checklist" :allow-edit="true"></checklist-container>
+                    <checklist-container :items="task.checklist" :task="task" :allow-edit="true"></checklist-container>
                   </div>
               </div>
           </form>
@@ -91,7 +91,7 @@
 </template>
 
 <script setup>
-import { defineProps, ref, watch, computed, reactive, defineEmit, toRefs, inject, onMounted, nextTick } from "vue"
+import { defineProps, ref, watch, computed, reactive, defineEmit, toRefs, inject, onMounted, nextTick, watchEffect } from "vue"
 import { useTaskFirestore } from "./../../utils/useTaskFirestore"
 import { useDateTime } from "./../../utils/useDateTime"
 import { useCollection } from "./../../utils/useCollection"
@@ -147,6 +147,7 @@ const setHeight = () => {
 }
 
 const task = reactive({
+  uid: false,
   title: "",
   description: "",
   due_date: "",
@@ -160,6 +161,7 @@ const task = reactive({
 })
 
 const { taskData } = toRefs(props);
+
 const setTaskData = (taskData) => {
   if (taskData && task) {
     const data = Object.assign(taskData, {});
@@ -171,9 +173,13 @@ const setTaskData = (taskData) => {
   }
 }
 
-watch(() => taskData.value, (taskData) => {
-  setTaskData(taskData)
+watch(()=> props.isOpen, (isOpen) => {
+  if(taskData.value || isOpenLocal.value) {
+    setTaskData(taskData.value)
+  }
 }, { immediate: true, deep: true })
+
+
 const tags = inject("tags", []);
 
 const isReminder = computed(() => {
@@ -199,6 +205,7 @@ const typeColor = computed(() => {
 
 // functionnality flow
 const clearForm = () => {
+  task.uid = false;
   task.title = "";
   task.description = "";
   task.due_date = "";
