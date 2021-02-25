@@ -38,12 +38,17 @@
                   class="w-12/12 md:w-7/12 mx-auto"
                 />
                 <div class="mt-10 md:mt-5 text-gray-500 font-bold">
-                  Select item from "todo" or go to
-                  <router-link to="/plan-ahead" class="font-bolder text-green-400 border-dashed border-b-2 border-green-400 cursor-pointer"
-                    >Planahead
+                  Go to
+                  
+                  <router-link to="/plan-ahead" class="font-bolder text-green-400 hover:text-green-500 transition-colors border-dashed cursor-pointer mr-1"
+                    >
+                    <i class="fa fa-tasks"></i>
+                    Planahead
+                    </router-link> or Select item from 
+                    <span class="font-bolder text-gray-400 border-gray-400"
+                    >Todo
                     <i class="fa fa-arrow-right"></i>
-                    </router-link
-                  >
+                  </span>
                 </div>
               </div>
             </template>
@@ -258,10 +263,12 @@ const onEdittedTask = (task) => {
   taskToEdit.value = null;
 };
 
-if (firebaseState.settings && firebaseState.settings.last_task_uid) {
-  const lastTask = state.todo.find((task) => task.uid == firebaseState.settings.last_task_uid);
-  if (lastTask) {
-    setCurrentTask(lastTask);
+const setLastUsedTask = () => {
+  if (firebaseState.settings && firebaseState.settings.last_task_uid) {
+    const lastTask = state.todo.find((task) => task.uid == firebaseState.settings.last_task_uid);
+    if (lastTask) {
+      setCurrentTask(lastTask);
+    }
   }
 }
 

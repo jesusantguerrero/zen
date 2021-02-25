@@ -35,15 +35,15 @@
     </h1>
 
     <div class="task__description mb-4 mt-5 text-gray-500 text-lg">
-        <textarea 
-          v-if="task.description || isEditMode" 
-          v-model="task.description" 
-          :placeholder="isEditMode ? 'Add a description' : ''"
-          :disabled="!isEditMode"
-          :class="{'border-2 bg-gray-50 focus:border-gray-100 px-2': isEditMode}"
-          class="w-full pt-2 focus:outline-none bg-white text-gray-500"
+        <custom-text
+            v-if="task.description || isEditMode" 
+            v-model="task.description" 
+            :placeholder="isEditMode ? 'Add a description' : ''"
+            :disabled="!isEditMode"
+            :class="{'border-2 bg-gray-50 focus:border-gray-100 px-2': isEditMode}"
+            class="w-full py-2 focus:outline-none bg-white text-gray-500 text-sm"
         >
-        </textarea>
+        </custom-text>
         <slot name="empty"></slot>
     </div>
 
@@ -67,6 +67,7 @@ import { ElMessageBox, ElNotification } from "element-plus";
 import { defineProps, toRefs, defineEmit, computed, ref, nextTick, reactive, watch } from "vue";
 import { useDateTime } from "../../utils/useDateTime";
 import ChecklistContainer from "./ListContainer.vue";
+import CustomText from "../atoms/CustomText.vue"
 
 const emit = defineEmit({
   done: Object,

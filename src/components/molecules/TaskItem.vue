@@ -38,7 +38,7 @@
             <i class="fa fa-calendar mr-1"></i>
             <span> {{ task.due_date }}</span>
           </div>
-          <button class="bg-gray-700 text-white text-xs px-2 rounded-sm hover:bg-gray-500 transition-colors" v-if="task.done" @click.stop="undo">Undo</button>
+          <button class="bg-gray-600 text-white text-xs px-2 rounded-md hover:bg-gray-500 transition-colors" v-if="task.done" @click.stop="undo">Undo</button>
         </div>
 
         <el-dropdown trigger="click" @command="handleCommand" v-if="showControls" :disabled="isDisabled" @click.stop="">

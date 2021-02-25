@@ -9,10 +9,10 @@
       </div>
       <div 
         :class="`${trackerMode.color} ${trackerMode.colorBorder}`" 
-        class="border-2 mr-2 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer"
+        class="mr-2 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer"
         @click="toggleTracker"
         >
-        <i class="fa fa-play text-sm" :class="trackerIcon"></i>
+        <i class="far fa-play text-3xl" :class="trackerIcon"></i>
       </div>
       <div
         class="select-none cursor-pointer"
@@ -144,7 +144,7 @@ const setDurationTarget = () => {
 
 setDurationTarget();
 
-const trackerIcon = computed(() => state.now ? 'fa fa-stop': 'fa fa-play' );
+const trackerIcon = computed(() => state.now ? 'far fa-stop-circle': 'far fa-play-circle' );
 const trackerMode = computed(() => state.modes[state.mode]);
 const promodoroTotal = computed(() => {
   return state.template

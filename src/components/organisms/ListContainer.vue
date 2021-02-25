@@ -93,8 +93,8 @@ const saveItem = () => {
         })
         return
     }
-    localItems.push({title: checkItemTitle.value, done: false });
-    emit('update:items')
+    props.items.push({title: checkItemTitle.value, done: false });
+    clearForm()
     input.value && input.value.focus();
 }
 
@@ -124,6 +124,7 @@ const updateItems = () => {
 watch(() => props.task.uid, () => {
     clearForm()
 })
+
 onMounted(() => {
     onClickOutside(checklistContainer, () => {
         updateItems()
