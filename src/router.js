@@ -1,6 +1,7 @@
 import ZenBoard from "./views/ZenBoard.vue";
 import Login from "./views/Login.vue";
 import Matrix from "./views/Matrix.vue";
+import MatrixShared from "./views/MatrixShared.vue";
 import Standup from "./views/Standup.vue";
 import About from "./views/About.vue";
 import Settings from "./views/Settings.vue";
@@ -21,6 +22,9 @@ const routes = [
   },
   { path: "/matrix", 
     component: Matrix 
+  },
+  { path: "/shared", 
+    component: MatrixShared 
   },
   { 
     path: "/standup", 
