@@ -1,22 +1,26 @@
 <template>
     <header class="w-full antialiased bg-gray-900 select-none relative">
-        <div class="mx-auto max-w-7xl z-50">
+        <div class="mx-auto max-w-7xl z-50 relative">
             <nav class="flex items-center w-full h-24" x-data="{ showMenu: false }">
                 <div class="relative flex flex-wrap items-center justify-between w-full h-24 mx-auto font-medium md:justify-center">
-                    <a href="#_" class="w-1/4 py-4 pl-6 pr-4 md:pl-4 md:py-0 z-index">
-                        <span class="text-xl font-black leading-none text-white select-none logo">Zenboard<span class="text-green-500">.</span></span>
-                    </a>
+                    <router-link to="/landing" class="w-1/4 py-4 pl-6 pr-4 md:pl-4 md:py-0 z-index">
+                        <span class="text-xl font-black leading-none text-white select-none logo zen">Zenboard<span class="text-green-500">.</span></span>
+                    </router-link>
                     <div class="fixed top-0 left-0 z-40 items-center hidden w-full h-full p-3 text-xl bg-gray-900 bg-opacity-50 md:text-sm lg:text-base md:w-3/4 md:bg-transparent md:p-0 md:relative md:flex" :class="{'flex': showMenu, 'hidden': !showMenu }">
-                        <div class="flex-col w-full h-auto h-full overflow-hidden bg-white rounded-lg select-none md:bg-transparent md:rounded-none md:relative md:flex md:flex-row md:overflow-auto">
-                            <div class="flex flex-col items-center justify-center w-full h-full mt-12 text-center text-green-700 md:text-green-200 md:w-2/3 md:mt-0 md:flex-row md:items-center">
-                                <a href="#" class="inline-block px-4 py-2 mx-2 font-medium text-left text-green-700 md:text-white md:px-0 lg:mx-3 md:text-center">Home</a>
-                                <a href="#" class="inline-block px-0 px-4 py-2 mx-2 font-medium text-left md:px-0 hover:text-green-800 md:hover:text-white lg:mx-3 md:text-center">Features</a>
-                                <a href="#" class="inline-block px-0 px-4 py-2 mx-2 font-medium text-left md:px-0 hover:text-green-800 md:hover:text-white lg:mx-3 md:text-center">Blog</a>
-                                <a href="#" class="inline-block px-0 px-4 py-2 mx-2 font-medium text-left md:px-0 hover:text-green-800 md:hover:text-white lg:mx-3 md:text-center">Contact</a>
+                        <div class="flex-col w-full h-full overflow-hidden bg-white rounded-lg select-none md:bg-transparent md:rounded-none md:relative md:flex md:flex-row md:overflow-auto">
+                            <div class="flex flex-col items-center justify-center w-full h-full mt-12 text-center text-green-700 md:text-green-400 md:w-2/3 md:mt-0 md:flex-row md:items-cente font-bold">
+                                <a href="#" class="inline-block px-4 py-2 mx-2 text-left text-green-700 md:text-white md:px-0 lg:mx-3 md:text-center">Home</a>
+                                <a href="#" class="inline-block px-4 py-2 mx-2 text-left md:px-0 hover:text-green-800 md:hover:text-white lg:mx-3 md:text-center">Features</a>
+                                <a href="https://freesgen.hashnode.dev/" target="_blank" class="inline-block px-4 py-2 mx-2 text-left md:px-0 hover:text-green-800 md:hover:text-white lg:mx-3 md:text-center">Blog</a>
+                                <a href="#" class="inline-block px-4 py-2 mx-2 text-left md:px-0 hover:text-green-800 md:hover:text-white lg:mx-3 md:text-center">Contact</a>
                             </div>
                             <div class="flex flex-col items-center justify-end w-full h-full pt-4 md:w-1/3 md:flex-row md:py-0">
-                                <a href="/login" class="w-full pl-6 mr-0 text-green-200 hover:text-white md:pl-0 md:mr-3 lg:mr-5 md:w-auto">Sign In</a>
-                                <a href="/register" class="inline-flex items-center justify-center px-4 py-2 mr-1 text-base font-medium leading-6 text-green-600 whitespace-no-wrap transition duration-150 ease-in-out bg-green-100 border border-transparent rounded-full hover:bg-white focus:outline-none focus:border-green-700 focus:shadow-outline-green active:bg-green-700">Sign Up</a>
+                                <router-link to="/login" class="w-full pl-6 mr-0 font-bold text-green-400 hover:text-white md:pl-0 md:mr-3 lg:mr-5 md:w-auto">Sign In</router-link>
+                                <router-link 
+                                    to="/register" 
+                                    class="btn btn-action rounded-full w-40 border-0">
+                                    Sign Up
+                                </router-link>
                             </div>
                         </div>
                     </div>
@@ -42,17 +46,17 @@
                         </button>
                     </span>
                 </div>
-                <div class="mt-8 text-sm text-green-300">By signing up, you agree to our terms and services.</div>
+                <!-- <div class="mt-8 text-sm text-green-300">By signing up, you agree to our terms and services.</div> -->
             </div>
         </div>
     </header>
 </template>
 
 <style lang="scss" scoped>
-.background-header {
+header {
     background: url('../../assets/zen-photo.jpg');
     background-size: cover;
-    position: absolute;
+    position: relative;
     width: 100%;
     height: 100%;
 
@@ -66,6 +70,19 @@
         opacity: .85;
         left: 0;
         height: 100%;
+    }
+}
+
+.btn-action {
+    @apply bg-green-500 flex items-center justify-center;
+    color: white;
+    border: none;
+    margin: 10px 0;
+    transition: all ease 0.3s;
+    height: 40px;
+
+    &:hover {
+        @apply bg-green-700;
     }
 }
 </style>

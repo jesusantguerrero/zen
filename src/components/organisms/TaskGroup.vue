@@ -20,7 +20,7 @@
           <div class="list-group w-full ic-scroller" ref="listGroup"  v-show="isExpanded">
             <draggable
               class="dragArea"
-              :class="{empty: !tasks.length,  [type]: true }" 
+              :class="{empty: !tasks.length,  [type]: true , [dragClass]: true}" 
               :list="tasks" 
               :handle="handleClass"
               :group="{name: type, pull: true, put: true }"
@@ -39,6 +39,7 @@
                 :current-task="currentTask"
                 :current-timer="currentTimer"
                 :is-item-as-handler="isItemAsHandler"
+                :class="taskClass"
                 @toggle-key="onToggleKey(task)"
                 @selected="emit('selected', task)"
                 @deleted="emit('deleted', task)"
@@ -97,6 +98,12 @@ const props = defineProps({
     maxHeight: {
       default: 340,
       type: Number
+    },
+    taskClass: {
+      type: String
+    },
+    dragClass: {
+      type: String
     },
     placeholder: String,
     isItemAsHandler: Boolean
