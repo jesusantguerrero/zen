@@ -43,8 +43,8 @@
                   <router-link to="/plan-ahead" class="font-bolder text-green-400 hover:text-green-500 transition-colors border-dashed cursor-pointer mr-1"
                     >
                     <i class="fa fa-tasks"></i>
-                    Planahead
-                    </router-link> or Select item from 
+                    Plan Ahead
+                    </router-link> or select item from 
                     <span class="font-bolder text-gray-400 border-gray-400"
                     >Todo
                     <i class="fa fa-arrow-right"></i>
