@@ -58,6 +58,7 @@
             color="text-gray-400"
             :handle-mode="true"
             :is-quadrant="true"
+            :show-controls="true"
             :max-height="isBacklog ? 0 : 350"
             @deleted="destroyTask"
             @edited="setTaskToEdit"

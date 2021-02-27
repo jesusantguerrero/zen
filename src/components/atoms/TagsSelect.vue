@@ -3,9 +3,9 @@
         <el-popover
             v-model="state.isOpen"
             placement="bottom-end"
+            popper-class='tag-select'
             :width="240"
             :show-arrow="false"
-            popper-class='tag-select'
             @after-enter="focusInput()"
         >
 
@@ -60,9 +60,11 @@
                     <span 
                         v-for="tag in selectedTags.slice(0, limit)" 
                         :key="tag.name" 
+                        @click="select(tag)"
                         class="mr-1 text-white bg-gray-500 px-2 py-1 rounded-md"
                     > 
                         {{ tag.name}}
+                        <i class="fa fa-times"></i>
                     </span>
                     <span 
                         v-if="moreTags"
