@@ -7,7 +7,7 @@
 
   >
     <div class="flex justify-between">
-      <div class="flex items-center text-xs">
+      <div class="flex items-start md:items-center text-xs">
         <div v-if="handleMode" class="handle text-gray-300 cursor-move mr-2"><i class="fa fa-arrows-alt"></i></div>
         
         <div 
@@ -23,12 +23,12 @@
         <div v-else class="mr-3 rounded-md px-2 py-1 border-2 border-transparent" :class="[typeColor, keyStyles]"> 
             <i :class="[!task.is_key ? 'fa fa-sticky-note' : 'fa fa-fire']"></i>
         </div>
-        <h4 class="cursor-pointer m-0 text-left text-sm"> {{ task.title }}</h4>
+        <h4 class="task-item__title cursor-pointer m-0 text-left text-sm "> {{ task.title }}</h4>
       </div>
 
-      <div class="task-item__controls flex items-center">  
+      <div class="task-item__controls flex md:items-center items-start">  
         <div class="md:flex">
-          <div class="task-item__tracked mx-2 text-gray-400 hover:text-gray-600 md:text-md cursor-default"
+          <div class="task-item__tracked mx-2 text-gray-400 hover:text-gray-600 md:text-md cursor-default text-sm md:text-base"
             title="Time tracked">
             <i class="fa fa-clock mr-1"></i>
             <span> {{ timeTrackedLabel }}</span>
@@ -228,5 +228,9 @@ const undo = () => {
 
 .task-item__description {
   overflow-wrap: break-word;
+}
+
+.task-item__title {
+  overflow-wrap: anywhere;
 }
 </style>

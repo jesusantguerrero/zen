@@ -18,6 +18,7 @@
     "fuse.js": "^6.4.6",
     "luxon": "^1.25.0",
     "mongoose": "^5.11.14",
+    "randomcolor": "^0.6.2",
     "rrule": "^2.6.8",
     "vue": "^3.0.5",
     "vue-draggable-next": "^2.0.1",
