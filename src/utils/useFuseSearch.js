@@ -6,18 +6,7 @@ export function useFuseSearch(searchRef, listRef, tagsRef, keys = []) {
     const list = listRef || ref([])
     const tags = tagsRef || ref([])
     const options = {
-        // isCaseSensitive: false,
-        // includeScore: false,
-        // shouldSort: true,
-        // includeMatches: false,
-        // findAllMatches: false,
-        // minMatchCharLength: 1,
-        // location: 0,
         threshold: 0.2,
-        // distance: 100,
-        // useExtendedSearch: false,
-        // ignoreLocation: false,
-        // ignoreFieldNorm: false,
         keys: [
           "title",
           ...keys

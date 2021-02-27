@@ -132,6 +132,7 @@ const state = reactive({
   },
   now: null,
   mode: "promodoro",
+  volume: 100,
   timer: null,
   pushSubscription: null,
   durationTarget: null,
@@ -209,6 +210,7 @@ watch(() => promodoroState, (localState) => {
   state.template = localState.template;
   state.modes = localState.modes;
   state.pushSubscription = localState.pushSubscription;
+  state.volume = localState.volume
   setDurationTarget()
 }, { immediate: true })
 

@@ -121,7 +121,7 @@ const updateItems = () => {
     }
 }
 
-watch(() => props.task.uid, () => {
+watch(() => props.task && props.task.uid, () => {
     clearForm()
 })
 
