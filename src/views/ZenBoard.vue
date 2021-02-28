@@ -275,7 +275,10 @@ const setLastUsedTask = () => {
 watch(currentTask, () => {
   if (currentTask.value.uid) {
     getAllTracksOfTask(currentTask.value.uid).then((tracks) => {
-      currentTask.value.tracks = tracks || [];
+      currentTask.value.tracks = tracks.map(track => {
+        track.date_f = track.created_at.toDate()
+        return track;
+      }) || [];
     });
   }
 });

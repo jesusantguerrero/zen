@@ -52,10 +52,9 @@ export function useTrackFirestore() {
     }
 
     const getTracksByDates = async (startDate = new Date(), endDate) => {
-        const start = new Date(DateTime.fromJSDate(startDate).toFormat('yyyy-MM-dd'))
-        const end = new Date(DateTime.fromJSDate(endDate || startDate).toFormat('yyyy-MM-dd'))
+        const start = new Date(DateTime.fromJSDate(startDate).startOf('day'))
+        const end = new Date(DateTime.fromJSDate(endDate || startDate).endOf('day'))
         
-        console.log(start, startDate)
         const trackRef = db.collection('tracks')
         .where("user_uid", "==", firebaseState.user.uid)
         .where('started_at', ">=", start)
