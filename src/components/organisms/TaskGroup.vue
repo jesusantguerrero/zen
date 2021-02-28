@@ -43,6 +43,7 @@
                 @toggle-key="onToggleKey(task)"
                 @selected="emit('selected', task)"
                 @deleted="emit('deleted', task)"
+                @updated="updateFields"
                 @edited="emit('edited', task)"
                 @undo="emit('undo', task)"
                 @up="emit('up', task)"
@@ -197,6 +198,30 @@ const { updateTask } = useTaskFirestore();
 const keyTasks = computed(() => {
   return tasks.value.filter(item => item.is_key).length;
 });
+
+const onUndo = (task) => {
+  task.tracks = [];
+  task.commit_date = null;
+  task.done = false;
+  delete task.duration_ms;
+
+  updateTask(task)
+};
+
+const onDone = () => {
+  task.tracks = [];
+  task.commit_date = null;
+  task.done = false;
+  delete task.duration_ms;
+
+  updateTask(task)
+}
+
+const updateFields = (task) => {
+  const formData = {...task}
+  formData.track = [];
+  updateTask(formData);
+}
 
 const onToggleKey = (task) => {
   if (!task.is_key && keyTasks.value < 3) {

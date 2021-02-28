@@ -29,7 +29,7 @@
             v-if="type=='delegate'"
             v-model="task.contacts"
             :items="contacts"
-            :multiple="true" 
+            :multiple="true"
             @selected="addContact"
             @added="createContact"
           /> 

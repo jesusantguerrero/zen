@@ -58,14 +58,14 @@
                 @mousedown.prevent
                 @focus.prevent="focusButton"
             >
-                    <el-avatar v-if="!selectedItems.length" :size="30">     
-                        N/D
+                    <el-avatar v-if="!selectedItems.length" :size="24" class="text-xs hover:bg-gray-500 transition-colors">     
+                        <span class="text-xs"><i class="fa fa-user"></i></span>
                     </el-avatar>
                     <el-avatar
                         v-for="tag in selectedItems.slice(0, limit)" 
                         :key="tag.name" 
                         :style="{background: tag.color}"
-                        :size="30"
+                        :size="24"
                         :title="tag.name"
                         class="mr-1 text-white"
                     > 
