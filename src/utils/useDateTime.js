@@ -20,11 +20,17 @@ export function useDateTime(dateRef) {
         return Duration.fromMillis(ms)
     }
 
+    const getDateFromString = (dateValue) => {
+        const date = dateValue ? dateValue.split("-") : null;
+        return date ? new Date(date[0], date[1] - 1, date[2]) : null;
+    }
+
     return {
         formattedDate,
         toISO,
         formatDate,
         formatDurationFromMs,
+        getDateFromString,
         date: date.value
     }
 }

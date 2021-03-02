@@ -27,7 +27,7 @@
       </div>
 
       <div class="task-item__controls flex md:items-center items-start">  
-        <div class="md:flex">
+        <div class="md:flex flex-wrap justify-end">
           <person-select
             v-if="type=='delegate'"
             v-model="task.contacts"
@@ -46,16 +46,19 @@
           </div>
           <div
             v-else 
-            class="task-item__tracked mx-2 text-gray-400 hover:text-gray-600 md:text-md cursor-default text-sm md:text-base"
+            class="task-item__tracked ml-2 text-gray-400 hover:text-gray-600 md:text-md cursor-default text-sm md:text-base flex items-center"
             title="Time tracked">
             <i class="fa fa-clock mr-1"></i>
             <span> {{ timeTrackedLabel }}</span>
           </div>
 
-          <div class="cursor-default md:text-xs w-20" :class="dateStates.color" :title="dateStates.title" v-if="task.due_date">
-            <i class="fa fa-calendar mr-1"></i>
-            <span> {{ task.due_date }}</span>
-          </div>
+          <date-select 
+            :class="dateStates.color" 
+            :title="dateStates.title" 
+            @update:modelValue="emit('updated', {...task, due_date: $event })" 
+            v-if="task.due_date || type == 'schedule'"
+            v-model="task.due_date" 
+          />   
           <button class="bg-gray-600 text-white text-xs px-2 rounded-md hover:bg-gray-500 transition-colors" v-if="task.done" @click.stop="emit('undo', task)">Undo</button>
         </div>
 
@@ -123,6 +126,7 @@
 import { defineProps, toRefs, ref, computed, defineEmit, watch } from "vue"
 import ChecklistContainer from "../organisms/ListContainer.vue"
 import PersonSelect from "../atoms/PersonSelect.vue"
+import DateSelect from "../atoms/DateSelect.vue"
 import { ElNotification } from "element-plus";
 import { useDateTime } from "../../utils/useDateTime";
 import { useCustomSelect } from "../../utils/useCustomSelect";
@@ -263,5 +267,9 @@ const {list: contacts, addToList: createContact, selectItem: selectContact} = us
 
 .task-item__title {
   overflow-wrap: break-word;
+}
+
+.task-item {
+  min-width: 345px;
 }
 </style>
