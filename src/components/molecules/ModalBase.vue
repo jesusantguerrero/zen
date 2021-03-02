@@ -5,6 +5,7 @@
         name="welcome" 
         classes="flex justify-center md:pt-20 w-full"
         content-class="md:w-5/12 "
+        :click-to-close="clickToClose"
         @closed="$emit('closed')"
     >
         <div class="w-full bg-white md:rounded-md modal__content relative">
@@ -37,7 +38,8 @@ import { defineProps, ref, watch } from "vue"
 const props = defineProps({
     isOpen: Boolean,
     taskData: Object,
-    title: String
+    title: String,
+    clickToClose: Boolean
 })
 
 const emit = defineEmit({

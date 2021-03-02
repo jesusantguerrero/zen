@@ -1,6 +1,6 @@
 <template>
 <div>
-  <modal-base v-model:is-open="isOpenLocal" title="Edit task" @closed="clearForm()" @click-outside="clearForm()">
+  <modal-base v-model:is-open="isOpenLocal" title="Edit task" @closed="clearForm()" @click-outside="clearForm()" :click-to-close="false">
       <template #title>
            <div class="flex justify-between pr-5">
                   <div class="flex items-center w-full text-left">
@@ -63,7 +63,7 @@
                   
                   <div class="task-item__checklist pt-5 text-left flex">
                     <checklist-container :items="task.checklist" :task="task" :allow-edit="true" class="w-10/12"></checklist-container>
-                    <div class="w-2/12 text-sm px-2">
+                    <div class="w-2/12 text-sm px-2" v-if="task.matrix == 'delegate'">
                       <h4 class="font-bold text-gray-500 text-sm"> Delegated to: </h4>
                       <person-select
                         v-if="task.matrix=='delegate'"
@@ -90,7 +90,11 @@
           /> 
 
           <div class="text-right">
-              <button class="bg-green-400 text-white focus:outline-none px-5 py-2 rounded-md" 
+              <button class="bg-gray-400 hover:bg-gray-500 text-white focus:outline-none px-5 py-2 rounded-md mr-2" 
+              @click.prevent="close()"> 
+                Cancel
+              </button>
+              <button class="bg-green-400 hover:bg-green-500 text-white focus:outline-none px-5 py-2 rounded-md" 
               @click.prevent="save()"> 
                 Save 
               </button>

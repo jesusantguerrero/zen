@@ -45,7 +45,8 @@
                 @deleted="emit('deleted', task)"
                 @updated="updateFields"
                 @edited="emit('edited', task)"
-                @undo="emit('undo', task)"
+                @undo="onUndo(task)"
+                @done="onDone(task)"
                 @up="emit('up', task)"
                 @down="emit('down', task)"
               />
@@ -60,13 +61,14 @@
 <script setup>
 import { computed, defineProps, onMounted, ref, toRefs } from "vue"
 import { VueDraggableNext as Draggable } from "vue-draggable-next"
+import { useFuseSearch } from "../../utils/useFuseSearch"
+import { useTaskFirestore } from "../../utils/useTaskFirestore"
+import { useDateTime } from "../../utils/useDateTime"
+import { ElNotification, ElMessageBox } from "element-plus"
+import { useMediaQuery, useWindowSize } from "@vueuse/core"
 import TaskItem from "../molecules/TaskItem.vue"
 import IconExpand from "../atoms/IconExpand.vue"
 import IconCollapse from "../atoms/IconCollapse.vue"
-import { useFuseSearch } from "../../utils/useFuseSearch"
-import { useTaskFirestore } from "../../utils/useTaskFirestore"
-import { ElNotification } from "element-plus"
-import { useMediaQuery, useWindowSize } from "@vueuse/core"
 
 const props = defineProps({
     tasks: {
@@ -128,7 +130,8 @@ const emit = defineEmit({
   down: Object,
   move: Object,
   change: Object,
-  undo: Object
+  undo: Object,
+  done: Object
 })
 
 const { tasks, search,tags, showSelect, currentTask, currentTimer, isItemAsHandler, handleMode } = toRefs(props)
@@ -204,17 +207,34 @@ const onUndo = (task) => {
   task.commit_date = null;
   task.done = false;
   delete task.duration_ms;
-
   updateTask(task)
+  emit('undo', task)
 };
 
-const onDone = () => {
-  task.tracks = [];
-  task.commit_date = null;
-  task.done = false;
-  delete task.duration_ms;
+const { formatDate } = useDateTime()
+const onDone = async (task) => {
+  let canSave = true;
+  let unresolvedItems = [];
+  if (task.checklist) {
+     unresolvedItems = task.checklist.filter(item => !item.done)
+  }
+  
+  if (unresolvedItems.length) {
+    canSave = await ElMessageBox.confirm(`There are ${unresolvedItems.length} unresolved item(s)`, "Are you sure?", {
+      confirmButtonText: "Mark all as done",
+      cancelButtonText: "Cancel"
+    }).then(() => true)
 
-  updateTask(task)
+    canSave && unresolvedItems.forEach(item => item.done = true);
+  }
+  
+  if (!canSave) return
+
+  task.commit_date = formatDate();
+  task.done = true;
+  updateTask(task).then(() => {
+    emit('done', task)
+  })
 }
 
 const updateFields = (task) => {

@@ -27,7 +27,7 @@
       </div>
 
       <div class="task-item__controls flex md:items-center items-start">  
-        <div class="md:flex flex-wrap justify-end">
+        <div class="md:flex flex-wrap justify-end mr-1">
           <person-select
             v-if="type=='delegate'"
             v-model="task.contacts"
