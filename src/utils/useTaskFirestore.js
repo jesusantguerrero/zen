@@ -9,7 +9,9 @@ const getDate = (task) => {
 
 export function useTaskFirestore() {
     const saveTask = (task) => {
-        task.due_date = getDate(task)
+        if (task.due_date) {
+            task.due_date = getDate(task)
+        }
         return db.collection(collectionName).add({
             ...task,
             user_uid: firebaseState.user.uid,
@@ -25,7 +27,9 @@ export function useTaskFirestore() {
 
     const updateTask = (task) => {
         const trackRef = db.collection(collectionName).doc(task.uid)
-        task.due_date = getDate(task)
+        if (task.due_date) {
+            task.due_date = getDate(task)
+        }
         return trackRef.update(task, { merge: true })
         .then(() => {
             return task.uid;
