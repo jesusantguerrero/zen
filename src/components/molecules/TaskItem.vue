@@ -38,6 +38,13 @@
             @added="createContact"
           /> 
           <div
+            v-else-if="type=='delete'" 
+            class="mx-2 text-gray-400 hover:text-red-400 md:text-md cursor-pointer text-sm md:text-base"
+            @click="emit('deleted', task)"
+            title="Delete">
+            <i class="fa fa-trash mr-1"></i>
+          </div>
+          <div
             v-else 
             class="task-item__tracked mx-2 text-gray-400 hover:text-gray-600 md:text-md cursor-default text-sm md:text-base"
             title="Time tracked">
