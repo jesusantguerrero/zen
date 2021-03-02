@@ -18,7 +18,7 @@
               class="mx-auto text-base text-gray-500 sm:max-w-md lg:text-xl md:max-w-3xl"
             >
               Zenboard is a productivity app that integrates Eisenhower Matrix,
-              Promodoros, and part of the Get Things Done (GTD) principles in a
+              Pomodoros, and part of the Get Things Done (GTD) principles in a
               unique way, to improve your developer routine.
             </p>
             <div class="relative flex flex-col sm:flex-row sm:space-x-4">

@@ -7,7 +7,7 @@
     <h4 class="text-center"> About Zen.</h4>
     
     <div class="mb-5">
-        Zen. is a productivity app that integrates Eisenhower Matrix, GTD principle and Promodoros in a unique way in order to improve your dev routine.
+        Zen. is a productivity app that integrates Eisenhower Matrix, GTD principle and Pomodoros in a unique way in order to improve your dev routine.
     </div>
 
     <div class="text-center mb-10" v-if="!hideButton">
