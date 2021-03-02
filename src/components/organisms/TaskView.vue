@@ -35,15 +35,15 @@
     </h1>
 
     <div class="task__description mb-4 mt-5 text-gray-500 text-lg">
-        <textarea 
-          v-if="task.description || isEditMode" 
-          v-model="task.description" 
-          :placeholder="isEditMode ? 'Add a description' : ''"
-          :disabled="!isEditMode"
-          :class="{'border-2 bg-gray-50 focus:border-gray-100 px-2': isEditMode}"
-          class="w-full pt-2 focus:outline-none bg-white text-gray-500"
+        <custom-text
+            v-if="task.description || isEditMode" 
+            v-model="task.description" 
+            :placeholder="isEditMode ? 'Add a description' : ''"
+            :disabled="!isEditMode"
+            :class="{'border-2 bg-gray-50 focus:border-gray-100 px-2': isEditMode}"
+            class="w-full py-2 focus:outline-none bg-white text-gray-500 text-sm"
         >
-        </textarea>
+        </custom-text>
         <slot name="empty"></slot>
     </div>
 
@@ -67,12 +67,16 @@ import { ElMessageBox, ElNotification } from "element-plus";
 import { defineProps, toRefs, defineEmit, computed, ref, nextTick, reactive, watch } from "vue";
 import { useDateTime } from "../../utils/useDateTime";
 import ChecklistContainer from "./ListContainer.vue";
+import CustomText from "../atoms/CustomText.vue"
 
+// utils
+const { formatDate } = useDateTime();
+
+// Events and props
 const emit = defineEmit({
   done: Object,
   updated: Object 
 })
-
 const props = defineProps({
   taskData: {
     type: [Object, String],
@@ -87,17 +91,30 @@ const props = defineProps({
     }
   }
 });
-
 const { taskData, currentTimer } = toRefs(props)
-const task = reactive({
 
+// State
+const state = reactive({
+  task: {},
+  isEditMode: false,
+  isDisabled: computed(() => {
+    return currentTimer.value && currentTimer.value.task_uid == state.task.uid;
+  }),
+  markAsDoneLabel: computed(() => {
+    return state.isDisabled ? 'Stop timer first to mark as done' : 'Mark as done'
+  }),
+  showChecklist: computed(() => {
+    return (state.task.checklist && state.task.checklist.length) || state.isEditMode
+  })
 })
+
+// Tasks domain
 const setTaskData = (taskData) => {
-  if (taskData && task) {
+  if (taskData && state.task) {
     const data = Object.assign({...taskData}, {});
     Object.keys(data).forEach((key) => {
       const objectData = data[key]
-      task[key] = Array.isArray(objectData) ? [...objectData] : objectData
+      state.task[key] = Array.isArray(objectData) ? [...objectData] : objectData
     });
   }
 }
@@ -106,19 +123,13 @@ watch(() => taskData.value, (taskData) => {
   setTaskData(taskData)
 }, { immediate: true, deep: true })
 
+const clearTaskData = () => {
+  state.task = {}
+}
 
-const { formatDate } = useDateTime();
-
-const isDisabled = computed(() => {
-  return currentTimer.value && currentTimer.value.task_uid == task.uid;
-})
-
-const markAsDoneLabel = computed(() => {
-  return isDisabled.value ? 'Stop timer first to mark as done' : 'Mark as done'
-})
-
+// Controls Domain
 const markAsDone = async () => {
-  if (isDisabled.value) {
+  if (state.isDisabled) {
     ElNotification({
       type: "info",
       message: "Stop timer first to mark as done"
@@ -126,7 +137,7 @@ const markAsDone = async () => {
     return 
   }
 
-  const unresolvedItems = task.checklist.filter(item => !item.done)
+  const unresolvedItems = state.task.checklist.filter(item => !item.done)
   let canSave = true;
   if (unresolvedItems.length) {
     canSave = await ElMessageBox.confirm(`There are ${unresolvedItems.length} unresolved item(s)`, "Are you sure?", {
@@ -139,10 +150,11 @@ const markAsDone = async () => {
   
   if (!canSave) return
 
-  task.commit_date = formatDate();
-  task.done = true;
-  isEditMode.value = false
-  emit('done', task)
+  state.task.commit_date = formatDate();
+  state.task.done = true;
+  state.isEditMode = false
+  emit('done', state.task)
+  clearTaskData()
 }
 
 const saveChanges = () => {
@@ -154,18 +166,16 @@ const cancelChanges = () => {
   isEditMode.value = false;
 }
 
-const showChecklist = computed(() => {
-  return (task.checklist && task.checklist.length) || isEditMode.value
-})
-
+// Edit Domain
 const titleInput = ref(null)
-const isEditMode = ref(false);
 const allowEdit = () => {
-  isEditMode.value = true;
+  state.isEditMode = true;
   nextTick(() => {
     titleInput.value.focus();
   })
 }
+
+const { task, isDisabled, isEditMode, markAsDoneLabel, showChecklist } = toRefs(state);
 </script>
 
 <style lang="scss" scoped>

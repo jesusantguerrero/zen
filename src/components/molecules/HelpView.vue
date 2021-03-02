@@ -57,7 +57,7 @@ const state = reactive({
         zenboard: {
             image: '../assets/undraw_following.svg',
             title: "Zen",
-            content: "Focus on your main task and activate promodoros sessions, complete and follow your lineup"
+            content: "Focus on your main task and activate pomodoros sessions, complete and follow your lineup"
         },
         standup: {
             image: '../assets/undraw_following.svg',

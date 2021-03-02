@@ -1,48 +1,48 @@
 <template>
   <div
     class="text-center"
-    title="click here to start"
   >
     <div class="flex items-center justify-between font-bold text-2xl">
       <div class="text-sm mr-2"   :class="`${trackerMode.color} ${trackerMode.colorBorder}`" >
             {{ trackerMode.text }}
       </div>
       <div 
+        class="mr-2 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer"
+        title="click here to start"
         :class="`${trackerMode.color} ${trackerMode.colorBorder}`" 
-        class="border-2 mr-2 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer"
         @click="toggleTracker"
         >
-        <i class="fa fa-play text-sm" :class="trackerIcon"></i>
+        <i class="far fa-play text-3xl" :class="trackerIcon"></i>
       </div>
       <div
-        class="select-none cursor-pointer"
+        class="select-none"
         :class="trackerMode.color"
-        @click="toggleTracker"
       >
         {{ currentTime }}
         <div class="flex w-full h-1">
           <div
-            class="bg-red h-1 w-full mr-1"
-            v-for="stage in promodoroTotal"
+            v-for="(stage, index) in promodoroTotal"
+            :title="`Round ${index+1}: ${stage.name}`"
+            class="bg-red h-1 w-full mr-1 cursor-pointer hover:ring hover:ring-offset-1"
             :class="[state.currentStep >= stage.originalIndex ? currentStateColor : '']"
-            :key="stage"
+            :key="stage.name"
           ></div>
         </div>
       </div>
 
-       <el-dropdown trigger="click" @command="handleCommand">
-        <button
-          class="text-sm px-2 rounded-md ml-4 text-gray-400 border-transparent cursor-pointer border-2 hover:border-gray-200 transition-colors hover:text-md hover:bg-gray-200 py-2  focus:outline-none"
-        >
-          <i class="fa fa-ellipsis-v"></i>
-        </button>
-      <template #dropdown>
-        <el-dropdown-menu>
-          <el-dropdown-item command="configuration" icon="el-icon-s-tools">Configuration</el-dropdown-item>
-          <el-dropdown-item command="nextmode" icon="el-icon-arrow-right">Next mode</el-dropdown-item>
-        </el-dropdown-menu>
-      </template>
-    </el-dropdown>
+      <el-dropdown trigger="click" @command="handleCommand">
+          <button
+            class="text-sm px-2 rounded-md ml-4 text-gray-400 border-transparent cursor-pointer border-2 hover:border-gray-200 transition-colors hover:text-md hover:bg-gray-200 py-2  focus:outline-none"
+          >
+            <i class="fa fa-ellipsis-v"></i>
+          </button>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item command="configuration" icon="el-icon-s-tools">Configuration</el-dropdown-item>
+            <el-dropdown-item command="nextmode" icon="el-icon-arrow-right">Next mode</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
       
     </div>
 
@@ -132,19 +132,15 @@ const state = reactive({
   },
   now: null,
   mode: "promodoro",
+  volume: 100,
   timer: null,
   pushSubscription: null,
   durationTarget: null,
 });
 
-const setDurationTarget = () => {
-  const { min, sec } = state.modes[state.mode];
-  state.durationTarget = Duration.fromISO(`PT${min}M${sec}S`);
-};
 
-setDurationTarget();
-
-const trackerIcon = computed(() => state.now ? 'fa fa-stop': 'fa fa-play' );
+// UI
+const trackerIcon = computed(() => state.now ? 'far fa-stop-circle': 'far fa-play-circle' );
 const trackerMode = computed(() => state.modes[state.mode]);
 const promodoroTotal = computed(() => {
   return state.template
@@ -159,8 +155,18 @@ const promodoroTotal = computed(() => {
 const currentStateColor = computed(() => {
   return state.modes[state.template[state.currentStep]].colorBg;
 });
+const isPromodoro = () => {
+  return state.mode == 'promodoro';
+}
 
 // Time manipulation
+const setDurationTarget = () => {
+  const { min, sec } = state.modes[state.mode];
+  state.durationTarget = Duration.fromISO(`PT${min}M${sec}S`);
+};
+
+setDurationTarget();
+
 const targetTime = computed(() => {
   if (track.started_at && state.now) {
     const targetTime = DateTime.fromJSDate(track.started_at).plus(state.durationTarget);
@@ -182,7 +188,6 @@ const currentTime = computed(() => {
     return state.durationTarget.toFormat("mm:ss");
   }
 });
-
 
 watch(() => currentTime.value, () => {
   if (state.now) {
@@ -209,6 +214,7 @@ watch(() => promodoroState, (localState) => {
   state.template = localState.template;
   state.modes = localState.modes;
   state.pushSubscription = localState.pushSubscription;
+  state.volume = localState.volume
   setDurationTarget()
 }, { immediate: true })
 
@@ -231,12 +237,6 @@ const onSettingsSaved = (settings) => {
   })
   setDurationTarget()
 }
-
-// Controls
-const toggleTracker = () => {
-  track.started_at ? stop(null, true) : play();
-};
-
 const createTrack = () => {
   track.task_uid = props.task.uid;
   track.description = props.task.title;
@@ -250,15 +250,17 @@ const createTrack = () => {
     })
 }
 
-const isPromodoro = () => {
-  return state.mode == 'promodoro';
-}
-
 const validatePlay = () => {
   return isPromodoro() && props.task.title;
 }
 
 const { setStatus } = useSlack();
+
+// Controls
+const toggleTracker = () => {
+  track.started_at ? stop(null, true) : play();
+};
+
 const play = () => {
   if (isPromodoro() && !validatePlay()) {
     ElNotification({

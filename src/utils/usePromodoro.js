@@ -43,6 +43,7 @@ export function usePromodoro() {
               text: "Take a short break",
             },
         },
+        volume: 100,
         audio: null,
         alarmSound: 'alarmwatch'
     })
@@ -69,16 +70,18 @@ export function usePromodoro() {
             long.min = modes.long.min;
             long.sec = modes.long.sec
         }
+        promodoroState.volume = settings.promodoro_alert_volume || 100;
     }
     
     const audio = new Audio(`./audio/${promodoroState.alarmSound}.mp3`)
 
-    const playSound = async (volume = 1) => {
+    const playSound = async (volume) => {
         stopSound()
+        const localVolume = volume || promodoroState.volume / 100;
         audio.id = "audio"
         document.body.appendChild(audio);
         audio.currentTime = 0
-        audio.volume = volume
+        audio.volume = localVolume
         promodoroState.audio = audio
         window.navigator.vibrate([1000, 100, 1000, 100, 1000, 100, 1000]);
         return audio.play()

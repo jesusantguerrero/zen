@@ -12,7 +12,7 @@ import { useRouter } from "vue-router"
 import AppHeader from './components/organisms/AppHeader.vue'
 import AppFooter from './components/organisms/AppFooter.vue'
 import { logout, setLoaded, firebaseState, firebaseInstance } from "./utils/useFirebase"
-import { useCollection} from "./utils/useCollection"
+import { useCustomSelect } from "./utils/useCustomSelect"
 
 const isLoaded = ref(false);
 const { push } = useRouter();
@@ -32,25 +32,18 @@ setLoaded(() => {
   })
 })
 
-const { getAll } = useCollection()
-const tagsRef = ref(null)
-const tags = ref(null)
-const getInitialTags = () => {
-  tagsRef.value = getAll('tags').onSnapshot(snap => {
-    tags.value = [];
-    snap.forEach((doc) => {
-        tags.value.push({...doc.data(), uid: doc.id });
-    })
-  })
-}
-provide('tags', tags);
+
+const { itemsRef: contactsRef, getInitialItems: getInitialContacts} = useCustomSelect([], 'contacts')
+const { itemsRef: tagsRef, getInitialItems: getInitialTags} = useCustomSelect([], 'tags')
 
 watch(() => isLoaded.value, () => {
   getInitialTags()
+  getInitialContacts()
 })
 
 onUnmounted(() => {
   tagsRef.value && tagsRef.value()
+  contactsRef.value && contactsRef.value()
 })
 
 

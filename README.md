@@ -14,7 +14,7 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About Zen.
-__Zen.__ is a productivity app that integrates Eisenhower Matrix, Promodoros, and part of the Get Things Done (GTD) principles in a unique way, to improve your developer routine. The purpose of Zen is to help you staying in the zone.
+__Zen.__ is a productivity app that integrates Eisenhower Matrix, Pomodoros, and part of the Get Things Done (GTD) principles in a unique way, to improve your developer routine. The purpose of Zen is to help you staying in the zone.
 
 ![Zen. Screen Shot](./src/assets/Login2.PNG)
 ![Zen. Screen Shot](./src/assets/zenboard.png)
@@ -25,7 +25,7 @@ __Zen.__ is a productivity app that integrates Eisenhower Matrix, Promodoros, an
 ## Sections
 #### Zenboard:
 
-Section when I can see my main task at the time detailed, a promodoro timer to track the sessions of work, and a line up of task titles to know what is coming next.
+Section when I can see my main task at the time detailed, a pomodoro timer to track the sessions of work, and a line up of task titles to know what is coming next.
 
 #### Plan Ahead:
 
@@ -43,7 +43,7 @@ Will be the standalone screen of Eisenhower Matrix plus the backlog of unpriorit
 
 1. Tasks with checklists.
 
-2. Promodoro + TimeTracker in One.
+2. Pomodoro + TimeTracker in One.
 
 3. Mobile friendly
 

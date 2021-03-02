@@ -24,6 +24,8 @@
 <script setup>
 import { defineEmit, onMounted, ref, watch } from "vue";
 import { useDateTime } from "../../utils/useDateTime";
+const date = ref(null)
+const { formattedDate, getDateFromString } = useDateTime(date);
 
 const props = defineProps({
     modelValue: Date,
@@ -35,11 +37,10 @@ const emit = defineEmit({
 })
 
 watch(() => props.modelValue, (value) => {
-    date.value = value
-})
+    date.value = typeof value == 'string' ? getDateFromString(value) : value
+}, { immediate: true })
 
-const date = ref(null)
-const { formattedDate } = useDateTime(date);
+
 const emitDate = () => {
     emit('update:modelValue', date.value);
 }

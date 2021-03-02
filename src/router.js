@@ -6,6 +6,7 @@ import About from "./views/About.vue";
 import Settings from "./views/Settings.vue";
 import PlanAhead from "./views/PlanAhead.vue";
 import Metrics from "./views/Metrics.vue";
+import Landing from "./views/landing/index.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import { isAuthenticated } from "./utils/useFirebase";
 
@@ -60,6 +61,14 @@ const routes = [
     props: {
       mode: 'register'
     },
+    meta: {
+      requiresAuth: false,
+    },
+  },
+  {
+    path: "/landing",
+    component: Landing,
+    name: "landing",
     meta: {
       requiresAuth: false,
     },
