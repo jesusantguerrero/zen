@@ -167,6 +167,7 @@ const timeTrackedLabel = computed(() => {
   return task.value.duration_ms ||  "00:00:00"
 })
 
+task.value.contacts = task.value.contacts || [] 
 
 const typeColor = computed(() => {
   const colors = {
