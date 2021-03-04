@@ -11,7 +11,7 @@
             >
               Features
             </h2>
-            <p class="mb-4 font-medium tracking-tight text-gray-400 xl:mb-6">
+            <p class="mb-4 font-medium tracking-tight text-gray-500 xl:mb-6">
               It's never been easier to build a business of your own. Our tools
               will help you with the following:
             </p>
@@ -36,10 +36,10 @@
             >
               Eisenhower Matrix
             </h2>
-            <p class="mb-4 font-medium tracking-tight text-gray-400 xl:mb-6">
+            <p class="mb-4 font-medium tracking-tight text-gray-500  xl:mb-6">
               The app it built around this technique to help find the most important tasks to deliver daily:
             </p>
-          <div class="grid grid-cols-2 gap-2">
+          <div class="grid md:grid-cols-2 gap-2">
             <div
               v-for="(value, matrix) in matrixes"
               class="border-2 border-dashed pt-5"

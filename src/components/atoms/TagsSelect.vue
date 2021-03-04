@@ -50,8 +50,8 @@
             <template #reference>
             <button 
                 ref="button"
-                :class="{'text-gray-500': formattedTags }" 
-                class="flex focus:outline-none space-x-1 items-center text-xs w-full h-full"
+                :class="{'text-gray-500': true }" 
+                class="flex focus:outline-none space-x-1 items-center text-xs h-full"
                 @mousedown.prevent
                 @focus.prevent="focusButton"
             >
@@ -61,12 +61,12 @@
                         v-for="tag in selectedTags.slice(0, limit)" 
                         :key="tag.name" 
                         
-                        class="mr-1 text-white bg-gray-500 px-2 py-1 rounded-md"
+                        class="mr-1 text-white bg-gray-500 pl-2 rounded-md"
                     > 
                         {{ tag.name}}
 
-                        <button  @click="select(tag)" class="hover:bg-gray-700 transition-colors">
-                            <i class="fa fa-times "></i>
+                        <button  @click.prevent.stop="select(tag)" class="hover:bg-gray-700 transition-colors rounded-r-md py-1">
+                            <i class="fa fa-times px-2"></i>
                         </button>
                     </span>
                     <span 
@@ -116,7 +116,7 @@ const props = defineProps({
 const selectedTags = ref([])
 watch(() => [...props.modelValue], (value) => {
     selectedTags.value = value
-})
+}, { immediate: true })
 const input = ref(null);
 const button = ref(null);
 

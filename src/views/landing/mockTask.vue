@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="tab-header flex">
+    <div class="tab-header flex mock-group">
       <button
         class="px-2 py-1 hover:bg-gray-200 font-bold focus:outline-none text-gray-500 capitalize rounded-md ml-2"
         v-for="(color, tab) in state.tabs"
@@ -61,21 +61,30 @@ const state = reactive({
     tabSelected: 'todo',
     todo: [{
         title: 'Task 1',
-        checklist: [],
         key: true,
+        checklist: [],
+        tags: []
     }, {
         title: 'Task 2',
         checklist: [],
-         uid: 'task2'
+        uid: 'task2',
+        tags: []
     
     }],
     schedule: [
         {
             title: 'Task 3',
             checklist: [],
-            uid: 'task3'
+            uid: 'task3',
+            tags: []
         }
     ]
 })
 
 </script>
+
+<style lang="scss">
+  .task-item {
+    min-width: 0 !important;
+  }
+</style>

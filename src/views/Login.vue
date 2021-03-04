@@ -8,7 +8,7 @@
             </div>
 
             <div
-                class="form-group"
+                class="form-group text-left"
             >
                 <label for="email" class="inline-block mb-2">Email</label>
                 <p :class="{ control: true }">
@@ -81,15 +81,15 @@
                 {{ modeLabel }} With Google
             </button>
 
-            <p class="text-center">
-                <small v-if="mode=='register'"> Already have an account?
-                    <button  @click.prevent.stop="mode='login'"> Login </button>
-                </small>
+            <div class="">
+                <div v-if="mode=='register'"> Already have an account?
+                    <router-link class="text-green-400 font-bold"  to="/login"> Login </router-link>
+                </div>
 
-                 <small v-else> Dont have an account?
-                    <router-link  to="/register"> Create one </router-link>
-                </small>
-            </p>
+                 <div v-else> Dont have an account?
+                    <router-link  to="/register" class="text-green-400 font-bold"> Create one </router-link>
+                </div>
+            </div>
             <p class="copyrights pt-10">&copy; {{ currentYear }}</p>
         </form>
     </div>
@@ -216,10 +216,6 @@ const validateRegistration = () => {
         border-radius: 4px;
         // box-shadow: 0 0 10px 4px rgba($color: #000000, $alpha: 0.2);
         z-index: 2;
-    }
-
-    div {
-        text-align: left;
     }
 
     .btn-action {
