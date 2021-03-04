@@ -42,10 +42,14 @@
               <i class="fa fa- cursor-pointer"></i>
               Release Notes
           </el-dropdown-item> -->
-          <!-- <el-dropdown-item class="p-0" command="settings">
+          <el-dropdown-item class="p-0" command="settings">
               <i class="fa fa-cog cursor-pointer"></i>
               Settings
-          </el-dropdown-item> -->
+          </el-dropdown-item> 
+          <el-dropdown-item class="p-0" command="about">
+              <i class="fa fa-question cursor-pointer"></i>
+              About
+          </el-dropdown-item> 
           <el-dropdown-item class="p-0" command="logout">
               <i class="fa fa-power-off cursor-pointer"></i>
               Logout
@@ -93,7 +97,8 @@ const { push } = useRouter()
 const handleCommand = (commandName) => {
   const commands = {
     logout: logout,
-    settings: push.bind(null, {name: 'settings'})
+    about: push.bind(null, "/about"),
+    settings: push.bind(null, {name: 'settings'}),
   }
 
   const command = commands[commandName]

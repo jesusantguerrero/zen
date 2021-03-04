@@ -23,11 +23,14 @@
                     @keydown.down.prevent="moveCursorDown()"
                 />
 
-                <div class="tags-container mt-2 space-y-1 max-h-48 overflow-auto w-full ic-scroller" ref="container">
-                    <div v-for="tag in filteredList" 
+                <div 
+                    class="tags-container mt-2 space-y-1 max-h-48 overflow-auto w-full ic-scroller" 
+                    ref="container">
+                    <div v-for="(tag, index) in filteredList" 
                         :key="tag" 
                         class="px-2 py-2 cursor-pointer rounded-sm transition-colors"
                         :class="[
+                            `select-item-${index}`,
                             preSelectedValue == tag && 'bg-gray-500 text-white', 
                             isSelected(tag.uid) ? 'bg-gray-200 hover:bg-gray-500 hover:text-white' : 'hover:bg-gray-500 hover:text-white'
                         ]"
@@ -127,7 +130,7 @@ const emit = defineEmit({
 })
 
 const state = reactive({
-    cursor: 0,
+    cursor: -1,
     isOpen: false,
 })
 
@@ -172,16 +175,23 @@ const container = ref(null);
 const gotoTop = () => {
     container.value.scrollTop=0
 }
+const checkScroll = () => {
+    if (state.cursor > -1) {
+        container.value.querySelector(`.select-item-${state.cursor}`).scrollIntoView({ behavior: 'smooth' })
+    }
+}
 
 const moveCursorUp = () => {
-    if (state.cursor > 0 ) {
+    if (state.cursor > -1 ) {
         state.cursor = state.cursor - 1
+        checkScroll()
     }
 }
 
 const moveCursorDown = () => {
     if ((state.cursor + 1) < filteredList.value.length  ) {
         state.cursor = state.cursor + 1
+        checkScroll()
     }
 }
 

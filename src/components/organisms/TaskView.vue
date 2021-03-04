@@ -158,7 +158,7 @@ const markAsDone = async () => {
 }
 
 const saveChanges = () => {
-  emit('updated', task)
+  emit('updated', state.task)
   isEditMode.value = false;
 }
 
