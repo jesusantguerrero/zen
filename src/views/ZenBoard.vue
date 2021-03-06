@@ -304,7 +304,6 @@ const onTaskUpdated = (task) => {
   const formData = { ...task };
   formData.tracks = [];
   delete task.duration_ms;
-  console.log(formData)
 
   updateTask(formData).then(() => {
     ElNotification({
