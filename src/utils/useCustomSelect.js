@@ -1,31 +1,41 @@
-import { inject, provide, ref } from "vue";
+import { inject, nextTick, provide, ref, watch } from "vue";
 import { useCollection } from "./useCollection"
+
 const { save, getAll } = useCollection()
 
-export function useCustomSelect(selectedItems, resourceName) {
-    const list = inject(resourceName, [])
-    
-    const addToList = (item) => {
-      save(resourceName, item).then((itemUid) => {
-        const createdTag = selectedItems.find(localItem => localItem.uid == itemUid)
-        return selectItem(createdTag)
-      })
-    }
-
-    const selectItem = (item) => {
-      selectedItems.push(item)
-    }
-    
+export function useCustomSelect(entity, resourceName) {
+    const list = inject(resourceName, [])    
     const itemsRef = ref(null)
     const items = ref(null)
+
+    const selectItem = (item) => {
+      if (item) {
+        if (entity[resourceName]) {
+          entity[resourceName].push(item)
+
+        } else {
+          entity[resourceName] = [item]
+        }
+      }
+    }
+    
+    
     const getInitialItems = () => {
       itemsRef.value = getAll(resourceName).onSnapshot(snap => {
         items.value = [];
         snap.forEach((doc) => {
-            items.value.push({...doc.data(), uid: doc.id });
+            const tag = {...doc.data(), uid: doc.id } 
+            items.value.push(tag);
         })
       })
     }
+
+    const addToList = (item) => {
+      save(resourceName, item).then((itemUid) => {
+         return selectItem({ ...item, uid: itemUid })
+      })
+    }
+
     provide(resourceName, items);
   
     return {

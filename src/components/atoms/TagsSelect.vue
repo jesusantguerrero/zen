@@ -23,11 +23,14 @@
                     @keydown.down.prevent="moveCursorDown()"
                 />
 
-                <div class="tags-container mt-2 space-y-1 max-h-48 overflow-auto w-full ic-scroller" ref="container">
-                    <div v-for="tag in filteredList" 
+                <div 
+                    class="tags-container mt-2 space-y-1 max-h-48 overflow-auto w-full ic-scroller" 
+                    ref="container">
+                    <div v-for="(tag, index) in filteredList" 
                         :key="tag" 
                         class="px-2 py-2 cursor-pointer rounded-sm transition-colors"
                         :class="[
+                            `select-item-${index}`,
                             preSelectedValue == tag && 'bg-gray-500 text-white', 
                             isSelected(tag.uid) ? 'bg-gray-200 hover:bg-gray-500 hover:text-white' : 'hover:bg-gray-500 hover:text-white'
                         ]"
@@ -50,8 +53,8 @@
             <template #reference>
             <button 
                 ref="button"
-                :class="{'text-gray-500': formattedTags }" 
-                class="flex focus:outline-none space-x-1 items-center text-xs w-full h-full"
+                :class="{'text-gray-500': true }" 
+                class="flex focus:outline-none space-x-1 items-center text-xs h-full"
                 @mousedown.prevent
                 @focus.prevent="focusButton"
             >
@@ -61,12 +64,12 @@
                         v-for="tag in selectedTags.slice(0, limit)" 
                         :key="tag.name" 
                         
-                        class="mr-1 text-white bg-gray-500 px-2 py-1 rounded-md"
+                        class="mr-1 text-white bg-gray-500 pl-2 rounded-md"
                     > 
                         {{ tag.name}}
 
-                        <button  @click="select(tag)" class="hover:bg-gray-700 transition-colors">
-                            <i class="fa fa-times "></i>
+                        <button  @click.prevent.stop="select(tag)" class="hover:bg-gray-700 transition-colors rounded-r-md py-1">
+                            <i class="fa fa-times px-2"></i>
                         </button>
                     </span>
                     <span 
@@ -116,7 +119,7 @@ const props = defineProps({
 const selectedTags = ref([])
 watch(() => [...props.modelValue], (value) => {
     selectedTags.value = value
-})
+}, { immediate: true })
 const input = ref(null);
 const button = ref(null);
 
@@ -127,7 +130,7 @@ const emit = defineEmit({
 })
 
 const state = reactive({
-    cursor: 0,
+    cursor: -1,
     isOpen: false,
 })
 
@@ -172,16 +175,23 @@ const container = ref(null);
 const gotoTop = () => {
     container.value.scrollTop=0
 }
+const checkScroll = () => {
+    if (state.cursor > -1) {
+        container.value.querySelector(`.select-item-${state.cursor}`).scrollIntoView({ behavior: 'smooth' })
+    }
+}
 
 const moveCursorUp = () => {
-    if (state.cursor > 0 ) {
+    if (state.cursor > -1 ) {
         state.cursor = state.cursor - 1
+        checkScroll()
     }
 }
 
 const moveCursorDown = () => {
     if ((state.cursor + 1) < filteredList.value.length  ) {
         state.cursor = state.cursor + 1
+        checkScroll()
     }
 }
 

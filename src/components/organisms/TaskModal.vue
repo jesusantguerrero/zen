@@ -252,8 +252,8 @@ const close = () => {
 }
 
 // tags
-const {list: tags, addToList: createTag, selectItem: addTag} = useCustomSelect(task.tags, 'tags')
-const {list: contacts, addToList: createContact, selectItem: selectContact} = useCustomSelect(task.contacts, 'contacts')
+const {list: tags, addToList: createTag, selectItem: addTag} = useCustomSelect(task, 'tags')
+const {list: contacts, addToList: createContact, selectItem: selectContact} = useCustomSelect(task, 'contacts')
 </script>
 
 <style lang="scss" scoped>

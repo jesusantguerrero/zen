@@ -98,8 +98,15 @@
         </div>
       </button>
 
-      <div class="text-right w-full">
-        <span v-for="tag in task.tags" :key="tag.name" class="mr-1 bg-gray-200 px-2 py-1 rounded-md"> {{ tag.name}}</span>
+      <div class="w-full flex justify-end">
+          <tags-select
+            v-model="task.tags"
+            :tags="tags"
+            :multiple="true" 
+            @update:modelValue="emit('updated', {...task, tags: $event })" 
+            @selected="addTag"
+            @added="createTag"
+          /> 
       </div>
     </div>
 
@@ -126,6 +133,7 @@
 import { defineProps, toRefs, ref, computed, defineEmit, watch } from "vue"
 import ChecklistContainer from "../organisms/ListContainer.vue"
 import PersonSelect from "../atoms/PersonSelect.vue"
+import TagsSelect from "../atoms/TagsSelect.vue"
 import DateSelect from "../atoms/DateSelect.vue"
 import { ElNotification } from "element-plus";
 import { useDateTime } from "../../utils/useDateTime";
@@ -159,6 +167,7 @@ const timeTrackedLabel = computed(() => {
   return task.value.duration_ms ||  "00:00:00"
 })
 
+task.value.contacts = task.value.contacts || [] 
 
 const typeColor = computed(() => {
   const colors = {
@@ -251,8 +260,8 @@ const updateItems = () => {
 }
 
 // Selects
-const {list: tags, addToList: createTag, selectItem: addTag} = useCustomSelect(task.tags, 'tags')
-const {list: contacts, addToList: createContact, selectItem: selectContact} = useCustomSelect(task.contacts, 'contacts')
+const {list: tags, addToList: createTag, selectItem: addTag} = useCustomSelect(task, 'tags')
+const {list: contacts, addToList: createContact, selectItem: selectContact} = useCustomSelect(task, 'contacts')
 </script>
 
 
