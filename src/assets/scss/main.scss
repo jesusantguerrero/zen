@@ -61,6 +61,14 @@ html {
 
 }
 
+.el-slider__bar {
+    background-color: #374151 !important;
+}
+
+.el-slider__button {
+    border: 2px solid #374151 !important
+}
+
 
 [for^="check"] {
   display: inline-block;

@@ -10,7 +10,12 @@ export function useCustomSelect(entity, resourceName) {
 
     const selectItem = (item) => {
       if (item) {
-        entity[resourceName].push(item)
+        if (entity[resourceName]) {
+          entity[resourceName].push(item)
+
+        } else {
+          entity[resourceName] = [item]
+        }
       }
     }
     

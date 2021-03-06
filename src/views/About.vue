@@ -56,7 +56,7 @@ import HelpView from "../components/molecules/HelpView.vue"
 import { reactive } from "vue";
 
 const state = reactive({
-   appVersion: "1.8.1",
+   appVersion: "1.10.0-beta",
     selectedSection: 'info',
     sections: {
         info: "Information",
