@@ -24,9 +24,9 @@
         <i class="fa fa-tasks mr-2"></i>
          Plan Ahead
       </router-link>
-       <menu-item class="mx-2 px-2 changelog flex relative hover:bg-green-100 rounded-md" to="/about">
+       <div class="text-sm lg:text-lg font-bold cursor-pointer text-gray-400 mx-2 p-2 changelog flex relative hover:bg-green-100 rounded-md">
           <i class="fa fa-bullhorn"></i>
-       </menu-item>
+       </div>
 
       <el-dropdown trigger="click" class="mt-3" placement="bottom-end" :show-arrow="false" :offset="-2" @command="handleCommand">
        <el-avatar :src="profileImage">
