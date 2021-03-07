@@ -24,9 +24,9 @@
         <i class="fa fa-tasks mr-2"></i>
          Plan Ahead
       </router-link>
-       <menu-item class="mx-2 px-2" to="/about">
-        <i class="fa fa-question"></i>
-       </menu-item>
+       <div class="text-sm lg:text-lg font-bold cursor-pointer text-gray-400 mx-2 p-2 changelog flex relative hover:bg-green-100 rounded-md">
+          <i class="fa fa-bullhorn"></i>
+       </div>
 
       <el-dropdown trigger="click" class="mt-3" placement="bottom-end" :show-arrow="false" :offset="-2" @command="handleCommand">
        <el-avatar :src="profileImage">
@@ -42,10 +42,10 @@
               <i class="fa fa- cursor-pointer"></i>
               Release Notes
           </el-dropdown-item> -->
-          <el-dropdown-item class="p-0" command="settings">
+          <!-- <el-dropdown-item class="p-0" command="settings">
               <i class="fa fa-cog cursor-pointer"></i>
-              Settings
-          </el-dropdown-item> 
+              Settings 
+          </el-dropdown-item> -->
           <el-dropdown-item class="p-0" command="about">
               <i class="fa fa-question cursor-pointer"></i>
               About
@@ -62,7 +62,7 @@
 </template>
 
 <script setup>
-import { computed, defineEmit, toRefs } from "vue";
+import { computed, defineEmit, toRefs, onMounted, watch } from "vue";
 import MenuItem from "../molecules/MenuItem.vue";
 import MobileMenu from "./MobileMenu.vue";
 import { useRouter } from "vue-router";
@@ -78,6 +78,22 @@ const emit = defineEmit({
   logout: Function,
 });
 
+const initHeadway = () => {
+  Headway.init(HW_config)
+}
+
+watch(() => user.value, (userData) => {
+  if (userData) {
+    initHeadway()
+  }
+})
+
+// changelog
+onMounted(() => {
+  initHeadway()
+})
+
+// state
 const profileName = computed(() => {
   const provider = user.value.providerData[0];
   return provider.displayName || provider.email;
@@ -113,5 +129,9 @@ const logout = () => {
 <style lang="scss">
 :root {
   --tw-border-opacity: 0.7
+}
+
+#HW_badge_cont {
+  position: absolute !important;
 }
 </style>

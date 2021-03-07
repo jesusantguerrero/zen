@@ -15,8 +15,8 @@ import { isAuthenticated } from "./utils/useFirebase";
 // We'll talk about nested routes later.
 const routes = [
   { 
-    path: "/", 
-    name: "home",
+    path: "/zenboard", 
+    name: "zenboard",
     component: ZenBoard,
 
   },
@@ -66,9 +66,9 @@ const routes = [
     },
   },
   {
-    path: "/landing",
+    path: "/",
     component: Landing,
-    name: "landing",
+    name: "home",
     meta: {
       requiresAuth: false,
     },
@@ -85,7 +85,7 @@ myRouter.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth !== false && !user) {
     next({name: "login"})
   } else if (to.meta.requiresAuth == false && user) {
-    next({name: "home"})
+    next({name: "zenboard"})
   }else {
     next();
   }

@@ -11,17 +11,17 @@
             >
               Features
             </h2>
-            <p class="mb-4 font-medium tracking-tight text-gray-500 xl:mb-6">
+            <p class="mb-4  tracking-tight text-gray-300 font-bold xl:mb-10">
               It's never been easier to build a business of your own. Our tools
               will help you with the following:
             </p>
             <ul>
               <li
-                class="flex items-center py-2 space-x-4 xl:py-3 cursor-pointer text-gray-500 font-bold hover:text-green-500 transition-colors"
+                class="flex items-center py-2 space-x-4 xl:py-3 cursor-pointer text-white font-bold hover:text-green-500 transition-colors"
                 v-for="feat in features"
                 :key="feat.icon"
               >
-                <i :class="`fa fa-${feat.icon} text-2xl`"></i>
+                <i :class="`fa fa-${feat.icon} text-2xl text-green-400`"></i>
                 <span class="font-medium hover:text-green-500">
                   {{ feat.title }}
                 </span>
@@ -36,7 +36,7 @@
             >
               Eisenhower Matrix
             </h2>
-            <p class="mb-4 font-medium tracking-tight text-gray-500  xl:mb-6">
+            <p class="mb-4 font-medium tracking-tight text-gray-300 font-bold xl:mb-10">
               The app it built around this technique to help find the most important tasks to deliver daily:
             </p>
           <div class="grid md:grid-cols-2 gap-2">
@@ -47,7 +47,12 @@
               :key="matrix"
             >
               <h1 class="capitalize font-bold" :class="[value.color]">{{ matrix }}</h1>
-              <matrix-help-view :matrix="matrix" class="text-gray-500"></matrix-help-view>
+              <matrix-help-view 
+                :matrix="matrix" 
+                class="text-gray-200 bg-transparent"
+                title-class="text-white"
+                >
+              </matrix-help-view>
             </div>
           </div>
         </div>

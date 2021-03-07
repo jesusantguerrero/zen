@@ -56,7 +56,7 @@ header {
 
     &::after {
         content: "";
-        @apply bg-gray-800;
+        background: linear-gradient(to left bottom,#3a4a73 0,#1b243f);
         display: block;
         position: absolute;
         width: 100%;
