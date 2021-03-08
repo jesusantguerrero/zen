@@ -49,13 +49,19 @@ export function useCollection() {
         return collectionRef
     }
 
+    const getAllShared = (collectionName) => {
+        const collectionRef = db.collection(collectionName).doc(firebaseState.user.uid).collection('accounts')   
+        return collectionRef
+    }
+
     return {
         save,
         update,
         updateBatch,
         destroy,
         getOne,
-        getAll
+        getAll,
+        getAllShared
 
     }
 

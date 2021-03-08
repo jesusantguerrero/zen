@@ -19,6 +19,8 @@
             :show-controls="true"
             :allow-move="false"
             :handle-mode="true"
+            @done="onDone"
+            @undone="onDone"
             @deleted="destroyTask"
             @edited="setTaskToEdit"
             @change="handleDragChanges"
@@ -53,12 +55,15 @@
         <task-group
             title="backlog"
             type="backlog"
+            color="text-gray-400"
             :tasks="state.quadrants['backlog'].tasks"
             :search="search"
-            color="text-gray-400"
             :handle-mode="true"
             :is-quadrant="true"
+            :show-controls="true"
             :max-height="isBacklog ? 0 : 350"
+            @done="onDone"
+            @undone="onDone"
             @deleted="destroyTask"
             @edited="setTaskToEdit"
             @change="handleDragChanges"
@@ -199,6 +204,10 @@ const destroyTask = async (task) => {
       })
     })
   }
+}
+const onDone = (task) => {
+  const quadrant = state.quadrants[task.matrix];
+  quadrant.tasks = quadrant.tasks.filter(localTask => task.uid != localTask.uid)
 }
 
 const moveTo = async (task, matrix) => {

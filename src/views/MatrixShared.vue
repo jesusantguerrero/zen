@@ -20,13 +20,16 @@
    <div>
        <h2 class="text-3xl font-extrabold pt-5 pb-10">Shared Lists</h2>
        <div class="space-y-2">
-         <div class="flex w-full px-52" v-for="list in shared" :key="list.id">
+         <div class="flex w-full px-52" v-for="list in shared" :key="list.uid">
             <div class="w-full">
             <div class="border-2 rounded-md py-4 bg-white w-full">
                <h4 class="font-bold">
-                  {{ list.owner_name }}
+                  {{ list.name }} ({{ list.email }})
                </h4>
-               <button class="bg-gray-600 text-white px-2 py-2 rounded-md mt-5 focus:outline-none" > See Lists </button>
+               <div class="space-x-2">
+                  <button class="bg-gray-600 text-white px-2 py-2 rounded-md mt-5 focus:outline-none" @click="selectedUser=list"> See Lists </button>
+                  <button class="bg-gray-600 text-white px-2 py-2 rounded-md mt-5 focus:outline-none" @click="selectedUser=null"> Hide </button>
+               </div>
             </div>
 
             </div>
@@ -34,27 +37,33 @@
        </div>
     </div>
 
-   <matrix-board :search="search" :show-help="showHelp" v-if="selectedUser">
-
-   </matrix-board>
+   <matrix-board-shared 
+      v-if="selectedUser"
+      :search="search" 
+      :show-help="showHelp" 
+      :matrixes="selectedUser.matrix" 
+      :selected-user="selectedUser.uid" 
+   > 
+   </matrix-board-shared>
 </div>
 </template>
 
 <script setup>
 import { ref } from "vue"
-import MatrixBoard from "../components/organisms/MatrixBoard.vue"
+import MatrixBoardShared from "../components/organisms/MatrixBoardShared.vue"
 import { useCollection } from "../utils/useCollection"
 
-const { getAll } = useCollection();
+const { getAllShared } = useCollection();
 
 const search = ref("")
 const showHelp = ref(false)
+const selectedUser = ref(false)
 
 const sharedRef = ref(null)
 const shared = ref([])
 
 const getShared = () => {
-  sharedRef.value = getAll('shared').onSnapshot(snap => {
+  sharedRef.value = getAllShared('shared').onSnapshot(snap => {
     shared.value = [];
     snap.forEach((doc) => {
         shared.value.push({...doc.data(), uid: doc.id });

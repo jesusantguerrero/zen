@@ -7,6 +7,7 @@ import About from "./views/About.vue";
 import Settings from "./views/Settings.vue";
 import PlanAhead from "./views/PlanAhead.vue";
 import Metrics from "./views/Metrics.vue";
+import Landing from "./views/landing/index.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import { isAuthenticated } from "./utils/useFirebase";
 
@@ -15,8 +16,8 @@ import { isAuthenticated } from "./utils/useFirebase";
 // We'll talk about nested routes later.
 const routes = [
   { 
-    path: "/", 
-    name: "home",
+    path: "/zenboard", 
+    name: "zenboard",
     component: ZenBoard,
 
   },
@@ -68,6 +69,14 @@ const routes = [
       requiresAuth: false,
     },
   },
+  {
+    path: "/",
+    component: Landing,
+    name: "home",
+    meta: {
+      requiresAuth: false,
+    },
+  },
 ];
 
 const myRouter = createRouter({
@@ -80,7 +89,7 @@ myRouter.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth !== false && !user) {
     next({name: "login"})
   } else if (to.meta.requiresAuth == false && user) {
-    next({name: "home"})
+    next({name: "zenboard"})
   }else {
     next();
   }

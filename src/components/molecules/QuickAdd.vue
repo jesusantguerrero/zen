@@ -25,7 +25,16 @@
 
       <div class="task-item__controls flex items-center" v-if="!isReminder">
         <div class="mx-2 text-gray-400 hover:text-gray-600">
+          <person-select
+            v-if="type=='delegate'"
+            v-model="task.contacts"
+            :items="contacts"
+            :multiple="true"
+            @selected="addContact"
+            @added="createContact"
+          /> 
           <date-select 
+            v-else
             v-model="task.due_date" 
           />    
         </div>
@@ -53,7 +62,7 @@
             <div class="text-gray-400 hover:text-gray-600 ">
               <tags-select
                 v-model="task.tags"
-                :tags="state.tags"
+                :tags="tags"
                 :multiple="true" 
                 @selected="addTag"
                 @added="createTag"
@@ -78,8 +87,10 @@ import { computed, reactive, defineProps, defineEmit, onMounted, ref, inject} fr
 import { onClickOutside } from  "@vueuse/core"
 import { useDateTime } from "../../utils/useDateTime"
 import { useCollection } from "./../../utils/useCollection"
+import { useCustomSelect } from "./../../utils/useCustomSelect"
 import DateSelect from "../atoms/DateSelect.vue"
 import TagsSelect from "../atoms/TagsSelect.vue"
+import PersonSelect from "../atoms/PersonSelect.vue"
 import ChecklistContainer from "../organisms/ListContainer.vue";
 import { ElNotification } from "element-plus";
 
@@ -104,6 +115,7 @@ const task = reactive({
   due_date: "",
   duration: "",
   tags: [],
+  contacts: [],
   checklist: [],
   tracks: [],
   order: 0,
@@ -116,7 +128,8 @@ const task = reactive({
 // UI
 const state = reactive({
   isExpanded: false,
-  tags: []
+  tags: [],
+  contacts: []
 })
 
 const taskForm = ref(null)
@@ -165,6 +178,7 @@ const clearForm = () => {
   task.duration = "";
   task.matrix = props.type || "backlog";
   task.tags = [];
+  task.contacts = [];
   task.order = 0;
   task.duration_ms = 0
   task.checklist = [];
@@ -186,17 +200,6 @@ const save = () => {
   clearForm()
 }
 
-const { save: saveDoc } = useCollection()
-state.tags = inject('tags', [])
-const createTag = (tag) => {
-  saveDoc('tags', tag).then((tagUid) => {
-    const createdTag = state.tags.find(localTag => localTag.uid == tagUid)
-    addTag(createdTag)
-  })
-}
-
-const addTag = (tag) => {
-  task.tags.push(tag)
-}
-
+const {list: tags, addToList: createTag, selectItem: addTag} = useCustomSelect(task, 'tags')
+const {list: contacts, addToList: createContact, selectItem: selectContact} = useCustomSelect(task, 'contacts')
 </script>

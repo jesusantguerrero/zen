@@ -1,8 +1,8 @@
 <template>
-<div class="prose prose-sm text-center mx-auto py-5">
-    <h4 class="text-center"> {{ item.title }}</h4>
+<div class="prose prose-sm md:prose-md  text-center mx-auto py-5">
+    <h3 class="text-center" :class="titleClass"> {{ item.title }}</h3>
     
-    <div class="bg-gray-50  h-30 mx-2 pb-5 mb-5 mt-2" >
+    <div class="bg-transparent h-30 mx-2 pb-5 mb-5 mt-2" >
         <div v-html="item.content"> </div>
     </div>
 </div>
@@ -16,7 +16,8 @@ const emit = defineEmit({
 })
 
 const props = defineProps({
-    matrix: String
+    matrix: String,
+    titleClass: String
 })
 
 const state = reactive({

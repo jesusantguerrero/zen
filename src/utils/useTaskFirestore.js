@@ -1,9 +1,17 @@
 import { DateTime } from "luxon";
+import { format as formatDate} from "date-fns"
 import { db, firebaseState } from "./useFirebase";
 const collectionName = "tasks";
 
+const getDate = (task) => {
+    return task.due_date instanceof Date ? formatDate(task.due_date, "yyyy-MM-dd") : task.due_date;
+}
+
 export function useTaskFirestore() {
     const saveTask = (task) => {
+        if (task.due_date) {
+            task.due_date = getDate(task)
+        }
         return db.collection(collectionName).add({
             ...task,
             user_uid: firebaseState.user.uid,
@@ -19,6 +27,9 @@ export function useTaskFirestore() {
 
     const updateTask = (task) => {
         const trackRef = db.collection(collectionName).doc(task.uid)
+        if (task.due_date) {
+            task.due_date = getDate(task)
+        }
         return trackRef.update(task, { merge: true })
         .then(() => {
             return task.uid;
@@ -77,10 +88,10 @@ export function useTaskFirestore() {
         return tasks;
     }
 
-    const getUncommitedTasks = async (date) => {
+    const getUncommitedTasks = async (date, userUuid) => {
         const tasks = [];
         await db.collection(collectionName)
-        .where("user_uid", "==", firebaseState.user.uid)
+        .where("user_uid", "==", userUuid || firebaseState.user.uid)
         .where("done", "==", false)
         .orderBy("order")
         .get()

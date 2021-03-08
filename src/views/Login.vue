@@ -8,7 +8,7 @@
             </div>
 
             <div
-                class="form-group"
+                class="form-group text-left"
             >
                 <label for="email" class="inline-block mb-2">Email</label>
                 <p :class="{ control: true }">
@@ -73,7 +73,7 @@
             </button>
 
             <button
-                class="btn btn-action capitalize rounded-sm flex google-btn"
+                class="btn btn-action capitalize rounded-sm flex google-btn justify-center"
                 type="submit"
                 @click.prevent.stop="loginWithProvider('google')"
             >
@@ -81,15 +81,15 @@
                 {{ modeLabel }} With Google
             </button>
 
-            <p class="text-center">
-                <small v-if="mode=='register'"> Already have an account?
-                    <button  @click.prevent.stop="mode='login'"> Login </button>
-                </small>
+            <div class="">
+                <div v-if="mode=='register'"> Already have an account?
+                    <router-link class="text-green-400 font-bold"  to="/login"> Login </router-link>
+                </div>
 
-                 <small v-else> Dont have an account?
-                    <router-link  to="/register"> Create one </router-link>
-                </small>
-            </p>
+                 <div v-else> Dont have an account?
+                    <router-link  to="/register" class="text-green-400 font-bold"> Create one </router-link>
+                </div>
+            </div>
             <p class="copyrights pt-10">&copy; {{ currentYear }}</p>
         </form>
     </div>
@@ -190,7 +190,7 @@ const validateRegistration = () => {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(#1fa1d0, #087a9c);
+    background: linear-gradient(to left bottom,#3a4a73 0,#1b243f);
     background: url(../assets/zen-photo.jpg);
     background-position: center;
     background-size: cover;
@@ -200,7 +200,7 @@ const validateRegistration = () => {
 
     &::after {
         content: "";
-        @apply bg-gray-800;
+        background: linear-gradient(to left bottom,#3a4a73 0,#1b243f);
         display: block;
         position: absolute;
         width: 100%;
@@ -218,12 +218,8 @@ const validateRegistration = () => {
         z-index: 2;
     }
 
-    div {
-        text-align: left;
-    }
-
     .btn-action {
-        @apply bg-gray-800;
+        @apply bg-green-600;
         width: 100%;
         color: white;
         border: none;
@@ -233,7 +229,7 @@ const validateRegistration = () => {
         height: 40px;
 
         &:hover {
-            @apply bg-gray-700;
+            @apply bg-green-500;
         }
     }
 

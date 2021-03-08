@@ -133,10 +133,10 @@ watch(currentTask, () => {
 const trackRef = ref(null);
 
 watch(() => state.week, (week) => {
-  trackRef.value =  getTracksByDates(week[0], week[6]).then(collectionRef => {
-  collectionRef.get().then(querySnapshot => {
+  getTracksByDates(week[0], week[6]).then(collectionRef => {
+      trackRef.value =  collectionRef.onSnapshot(snap => {
       state.tracks = []
-      querySnapshot.forEach((doc) => {
+      snap.forEach((doc) => {
           state.tracks.push({...doc.data(), uid: doc.id });
       });
   })
@@ -164,7 +164,7 @@ const tracksGroup = computed(() => {
 
     if (state.tracks) {
     state.tracks.forEach(track => {
-        const date = formatDate(new Date(track.started_at.toDate()), "yyyy-MM-dd");
+        const date = format(track.started_at.toDate(), "yyyy-MM-dd");
 
         if (!trackGroup[date]) {
             trackGroup[date] = {
@@ -256,7 +256,9 @@ const formattedWeek = computed(() => {
 })
 
 onUnmounted(() => {
-  // trackRef.value && trackRef.value()
+  if (trackRef.value) {
+    trackRef.value()
+  }
 });
 
 </script>

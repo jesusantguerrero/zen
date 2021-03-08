@@ -1,6 +1,6 @@
 <template>
 <div>
-  <modal-base v-model:is-open="isOpenLocal" title="Edit task">
+  <modal-base v-model:is-open="isOpenLocal" title="Edit task" @closed="clearForm()" @click-outside="clearForm()" :click-to-close="false">
       <template #title>
            <div class="flex justify-between pr-5">
                   <div class="flex items-center w-full text-left">
@@ -61,8 +61,19 @@
                     @input="setHeight">
                   </textarea>
                   
-                  <div class="task-item__checklist pt-5 text-left">
-                    <checklist-container :items="task.checklist" :allow-edit="true"></checklist-container>
+                  <div class="task-item__checklist pt-5 text-left flex">
+                    <checklist-container :items="task.checklist" :task="task" :allow-edit="true" class="w-10/12"></checklist-container>
+                    <div class="w-2/12 text-sm px-2" v-if="task.matrix == 'delegate'">
+                      <h4 class="font-bold text-gray-500 text-sm"> Delegated to: </h4>
+                      <person-select
+                        v-if="task.matrix=='delegate'"
+                        v-model="task.contacts"
+                        :items="contacts"
+                        :multiple="true" 
+                        @selected="addContact"
+                        @added="createContact"
+                      /> 
+                    </div>
                   </div>
               </div>
           </form>
@@ -79,7 +90,11 @@
           /> 
 
           <div class="text-right">
-              <button class="bg-green-400 text-white focus:outline-none px-5 py-2 rounded-md" 
+              <button class="bg-gray-400 hover:bg-gray-500 text-white focus:outline-none px-5 py-2 rounded-md mr-2" 
+              @click.prevent="close()"> 
+                Cancel
+              </button>
+              <button class="bg-green-400 hover:bg-green-500 text-white focus:outline-none px-5 py-2 rounded-md" 
               @click.prevent="save()"> 
                 Save 
               </button>
@@ -91,12 +106,14 @@
 </template>
 
 <script setup>
-import { defineProps, ref, watch, computed, reactive, defineEmit, toRefs, inject, onMounted, nextTick } from "vue"
+import { defineProps, ref, watch, computed, reactive, defineEmit, toRefs, inject, onMounted, nextTick, watchEffect } from "vue"
 import { useTaskFirestore } from "./../../utils/useTaskFirestore"
 import { useDateTime } from "./../../utils/useDateTime"
 import { useCollection } from "./../../utils/useCollection"
+import { useCustomSelect } from "./../../utils/useCustomSelect"
 import DateSelect from "../atoms/DateSelect.vue"
 import TagsSelect from "../atoms/TagsSelect.vue"
+import PersonSelect from "../atoms/PersonSelect.vue"
 import ModalBase from "../molecules/ModalBase.vue";
 import ChecklistContainer from "./ListContainer.vue";
 
@@ -147,11 +164,13 @@ const setHeight = () => {
 }
 
 const task = reactive({
+  uid: false,
   title: "",
   description: "",
   due_date: "",
   duration: "",
   tags: [],
+  contacts: [],
   checklist: [],
   tracks: [],
   done: false,
@@ -160,6 +179,7 @@ const task = reactive({
 })
 
 const { taskData } = toRefs(props);
+
 const setTaskData = (taskData) => {
   if (taskData && task) {
     const data = Object.assign(taskData, {});
@@ -171,10 +191,12 @@ const setTaskData = (taskData) => {
   }
 }
 
-watch(() => taskData.value, (taskData) => {
-  setTaskData(taskData)
+watch(()=> props.isOpen, (isOpen) => {
+  if(taskData.value || isOpenLocal.value) {
+    setTaskData(taskData.value)
+  }
 }, { immediate: true, deep: true })
-const tags = inject("tags", []);
+
 
 const isReminder = computed(() => {
   return props.mode == 'reminder'
@@ -199,12 +221,14 @@ const typeColor = computed(() => {
 
 // functionnality flow
 const clearForm = () => {
+  task.uid = false;
   task.title = "";
   task.description = "";
   task.due_date = "";
   task.duration = "";
   task.matrix = props.type || "backlog";
   task.tags = [];
+  task.contacts = [];
   task.checklist = [];
 }
 
@@ -228,17 +252,8 @@ const close = () => {
 }
 
 // tags
-const { save: saveDoc } = useCollection()
-const createTag = (tag) => {
-  saveDoc('tags', tag).then((tagUid) => {
-    const createdTag = tags.value.find(localTag => localTag.uid == tagUid)
-    addTag(createdTag)
-  })
-}
-
-const addTag = (tag) => {
-  task.tags.push(tag)
-}
+const {list: tags, addToList: createTag, selectItem: addTag} = useCustomSelect(task, 'tags')
+const {list: contacts, addToList: createContact, selectItem: selectContact} = useCustomSelect(task, 'contacts')
 </script>
 
 <style lang="scss" scoped>

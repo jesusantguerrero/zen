@@ -7,7 +7,7 @@
 
   >
     <div class="flex justify-between">
-      <div class="flex items-center text-xs">
+      <div class="flex items-start md:items-center text-xs">
         <div v-if="handleMode" class="handle text-gray-300 cursor-move mr-2"><i class="fa fa-arrows-alt"></i></div>
         
         <div 
@@ -23,22 +23,43 @@
         <div v-else class="mr-3 rounded-md px-2 py-1 border-2 border-transparent" :class="[typeColor, keyStyles]"> 
             <i :class="[!task.is_key ? 'fa fa-sticky-note' : 'fa fa-fire']"></i>
         </div>
-        <h4 class="cursor-pointer m-0 text-left text-sm"> {{ task.title }}</h4>
+        <h4 class="task-item__title cursor-pointer m-0 text-left text-sm "> {{ task.title }}</h4>
       </div>
 
-      <div class="task-item__controls flex items-center">  
-        <div class="md:flex">
-          <div class="task-item__tracked mx-2 text-gray-400 hover:text-gray-600 md:text-md cursor-default"
+      <div class="task-item__controls flex md:items-center items-start">  
+        <div class="md:flex flex-wrap justify-end mr-1">
+          <person-select
+            v-if="type=='delegate'"
+            v-model="task.contacts"
+            :items="contacts"
+            :multiple="true" 
+            @update:modelValue="emit('updated', task)" 
+            @selected="addContact"
+            @added="createContact"
+          /> 
+          <div
+            v-else-if="type=='delete'" 
+            class="mx-2 text-gray-400 hover:text-red-400 md:text-md cursor-pointer text-sm md:text-base"
+            @click="emit('deleted', task)"
+            title="Delete">
+            <i class="fa fa-trash mr-1"></i>
+          </div>
+          <div
+            v-else 
+            class="task-item__tracked ml-2 text-gray-400 hover:text-gray-600 md:text-md cursor-default text-sm md:text-base flex items-center"
             title="Time tracked">
             <i class="fa fa-clock mr-1"></i>
             <span> {{ timeTrackedLabel }}</span>
           </div>
 
-          <div class="cursor-default md:text-xs w-20" :class="dateStates.color" :title="dateStates.title" v-if="task.due_date">
-            <i class="fa fa-calendar mr-1"></i>
-            <span> {{ task.due_date }}</span>
-          </div>
-          <button class="bg-gray-700 text-white text-xs px-2 rounded-sm hover:bg-gray-500 transition-colors" v-if="task.done" @click.stop="undo">Undo</button>
+          <date-select 
+            :class="dateStates.color" 
+            :title="dateStates.title" 
+            @update:modelValue="emit('updated', {...task, due_date: $event })" 
+            v-if="task.due_date || type == 'schedule'"
+            v-model="task.due_date" 
+          />   
+          <button class="bg-gray-600 text-white text-xs px-2 rounded-md hover:bg-gray-500 transition-colors" v-if="task.done" @click.stop="emit('undo', task)">Undo</button>
         </div>
 
         <el-dropdown trigger="click" @command="handleCommand" v-if="showControls" :disabled="isDisabled" @click.stop="">
@@ -49,7 +70,9 @@
             <el-dropdown-menu>
               <el-dropdown-item command="edit" icon="el-icon-edit">Edit</el-dropdown-item>
               <el-dropdown-item command="delete" icon="el-icon-delete">Delete </el-dropdown-item>
-              <el-dropdown-item command="toggle-key" icon="el-icon-key" v-if="task.matrix=='todo'"> Key task </el-dropdown-item>
+              <el-dropdown-item command="done" icon="el-icon-check" v-if="!task.done"> Mark as done </el-dropdown-item>
+              <el-dropdown-item command="undo" icon="el-icon-refresh-left" v-else> undo </el-dropdown-item>
+              <el-dropdown-item command="toggle-key" icon="el-icon-s-flag" v-if="task.matrix=='todo'"> Key task </el-dropdown-item>
               <el-dropdown-item command="up" icon="el-icon-arrow-left" v-if="task.matrix=='schedule'">Move to todo</el-dropdown-item>
               <el-dropdown-item command="down" icon="el-icon-arrow-right" v-if="task.matrix=='todo'">Move to schedule</el-dropdown-item>
             </el-dropdown-menu>
@@ -75,8 +98,15 @@
         </div>
       </button>
 
-      <div class="text-right w-full">
-        <span v-for="tag in task.tags" :key="tag.name" class="mr-1 bg-gray-200 px-2 py-1 rounded-md"> {{ tag.name}}</span>
+      <div class="w-full flex justify-end">
+          <tags-select
+            v-model="task.tags"
+            :tags="tags"
+            :multiple="true" 
+            @update:modelValue="emit('updated', {...task, tags: $event })" 
+            @selected="addTag"
+            @added="createTag"
+          /> 
       </div>
     </div>
 
@@ -102,8 +132,12 @@
 <script setup>
 import { defineProps, toRefs, ref, computed, defineEmit, watch } from "vue"
 import ChecklistContainer from "../organisms/ListContainer.vue"
+import PersonSelect from "../atoms/PersonSelect.vue"
+import TagsSelect from "../atoms/TagsSelect.vue"
+import DateSelect from "../atoms/DateSelect.vue"
 import { ElNotification } from "element-plus";
 import { useDateTime } from "../../utils/useDateTime";
+import { useCustomSelect } from "../../utils/useCustomSelect";
 
 const props = defineProps({
   task: Object,
@@ -115,13 +149,16 @@ const props = defineProps({
   currentTimer: Object,
   isItemAsHandler: Boolean
 })
+
 const emit = defineEmit({
   deleted: Object,
   selected: Object,
   edited: Object,
   up: Object,
   down: Object,
-  undo: Object
+  undo: Object,
+  done: Object,
+  updated: Array
 })
 
 const { task, currentTask, currentTimer} = toRefs(props)
@@ -130,6 +167,7 @@ const timeTrackedLabel = computed(() => {
   return task.value.duration_ms ||  "00:00:00"
 })
 
+task.value.contacts = task.value.contacts || [] 
 
 const typeColor = computed(() => {
   const colors = {
@@ -197,6 +235,12 @@ const handleCommand = (commandName) => {
     case 'down':
       emit('down', task)
       break
+    case 'done':
+      emit('done', task)
+      break
+    case 'undo':
+      emit('undo', task)
+      break
     case 'toggle-key':
       emit('toggle-key', task)
     default:
@@ -215,9 +259,9 @@ const updateItems = () => {
   })
 }
 
-const undo = () => {
-  emit('undo', task)
-}
+// Selects
+const {list: tags, addToList: createTag, selectItem: addTag} = useCustomSelect(task, 'tags')
+const {list: contacts, addToList: createContact, selectItem: selectContact} = useCustomSelect(task, 'contacts')
 </script>
 
 
@@ -228,5 +272,13 @@ const undo = () => {
 
 .task-item__description {
   overflow-wrap: break-word;
+}
+
+.task-item__title {
+  overflow-wrap: break-word;
+}
+
+.task-item {
+  min-width: 345px;
 }
 </style>

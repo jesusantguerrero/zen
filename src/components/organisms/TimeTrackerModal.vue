@@ -61,7 +61,16 @@
                     </button>
                  </div>
 
-                 <h4 class="font-bold">  Set Times </h4>
+                 <h4 class="font-bold"> Alert volume </h4>
+                 <div class="form-group flex space-x-2 w-full pr-10">
+                    <el-slider
+                        v-model="promodoroState.volume"
+                        class="w-full"
+                        :step="10">
+                    </el-slider>
+                 </div>
+
+                 <h4 class="font-bold">  Set Time (in minutes) </h4>
                  <div class="flex">
                     <div class="form-group">
                         <label for="">
@@ -151,6 +160,7 @@ watch(()=> isOpenLocal.value, (isOpen) => {
 const formData = reactive({
     template: [],
     modes: {},
+    volume: 0,
     pushSubscription: null
 })
 
@@ -159,6 +169,8 @@ watch(()=> props.settings, (settings) => {
         formData.template = settings.template;
         formData.modes = settings.modes;
         formData.pushSubscription = settings.pushSubscription;
+        formData.volume = settings.volume || 100
+        promodoroState.volume = settings.volume || 100
     }
 }, { immediate: true })
 
@@ -171,6 +183,7 @@ const save = () => {
         })
 
         settings.promodoro_modes = formData.modes
+        settings.promodoro_alert_volume = promodoroState.volume;
         updateSettings(settings).then(() => {
             emit('saved', settings)
         })

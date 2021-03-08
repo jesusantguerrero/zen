@@ -81,7 +81,6 @@ exports.slack = functions.https.onRequest(async (request, response) => {
     }
 })
 
-
 const getUserSettings = async(uid) => {
     return admin.firestore().collection('settings').doc(uid).get().then(ref => ref.data());
 }
@@ -105,7 +104,6 @@ exports.saveSubscription = functions.https.onRequest((req, res) => {
     }
 })
 
-
 exports.paypalCancel = functions.https.onRequest((req, res) => {
     const user = await getUserSettings(req.body.uid);
     return paypal.cancelSubscription(user.agreementId, req.body);
@@ -127,5 +125,32 @@ exports.paypalUpgrade = functions.https.onRequest((req, res) => {
     const user = await getUser(req.body.uid);
     paypal.upgrateSubscription(agreementId, req.body);
     res.send('upgraded')
+})
+
+exports.shareMatrix = functions.https.onCall(async (data, context) => {
+    const user = context.auth;
+    if (user) {
+        const shareReceiver = await admin.auth().getUserByEmail(data.email).then(record => record).catch(() => null);
+        const userData = await admin.auth().getUser(user.uid).then(record => record).catch(() => null);
+        if (shareReceiver) {
+            await admin.firestore().collection('shared').doc(shareReceiver.uid).collection('accounts').doc(user.uid).set({
+                matrix: data.matrixes,
+                name: userData.displayName,
+                email: userData.email
+            }, { merge: true});
+    
+            await admin.firestore().collection('sharing').doc(user.uid).collection('accounts').doc(shareReceiver.uid).set({
+                matrix: data.matrixes,
+                receiver_name: shareReceiver.displayName,
+                receiver_email: data.email
+            }, { merge: true});
+
+            return "completed";
+
+        }
+        return data
+    }
+
+    return "";
 })
 

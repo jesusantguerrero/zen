@@ -10,7 +10,7 @@
         :class="[showHelp && (!isLineUp || isLineUpMatrix(matrix))? `border-2 ${state.quadrants[matrix].border} border-dashed pr-5`: '']"
         v-for="matrix in state.matrix" :key="matrix">
           <task-group
-            v-if="!isLineUp || isLineUpMatrix(matrix)"
+            v-if="matrixes.includes(matrix)"
             :title="matrix"
             :type="matrix"
             :search="search"
@@ -107,6 +107,8 @@ const props = defineProps({
         type: String,
         default: 'matrix'
     },
+    matrixes: Array,
+    selectedUser: String,
     showHelp: Boolean,
     search: String
 })
@@ -163,7 +165,7 @@ const state = reactive({
 const { toISO } = useDateTime() 
 const { getUncommitedTasks, saveTask, updateTask, updateTaskBatch, deleteTask } = useTaskFirestore()
 
-getUncommitedTasks().then(tasks => {
+getUncommitedTasks(null, props.selectedUser, props.matrixes).then(tasks => {
     state.tasks = tasks
 });
 
@@ -246,6 +248,7 @@ const setTaskToEdit = (task) => {
   state.isTaskModalOpen = false;
   state.isTaskModalOpen = true;
 }
+
 const onEdittedTask = (task) => {
   const index = state.quadrants[task.matrix].tasks.findIndex(localTask => localTask.uid == task.uid)
   state.quadrants[task.matrix].tasks[index] = {...task};
