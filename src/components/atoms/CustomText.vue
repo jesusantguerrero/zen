@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import { defineProps, watch, defineEmit, ref } from "vue";
+import { defineProps, watch, defineEmit, ref, onMounted } from "vue";
 
 
 const props = defineProps({
@@ -37,6 +37,11 @@ const setHeight = () => {
     description.style.height = (description.scrollHeight) + "px"
   })
 }
+
+
+onMounted(() => {
+  setHeight()
+})
 
 const onInput = () => {
     setHeight()
