@@ -80,3 +80,30 @@ exports.slack = functions.https.onRequest(async (request, response) => {
     }
 })
 
+exports.shareMatrix = functions.https.onCall(async (data, context) => {
+    const user = context.auth;
+    if (user) {
+        const shareReceiver = await admin.auth().getUserByEmail(data.email).then(record => record).catch(() => null);
+        const userData = await admin.auth().getUser(user.uid).then(record => record).catch(() => null);
+        if (shareReceiver) {
+            await admin.firestore().collection('shared').doc(shareReceiver.uid).collection('accounts').doc(user.uid).set({
+                matrix: data.matrixes,
+                name: userData.displayName,
+                email: userData.email
+            }, { merge: true});
+    
+            await admin.firestore().collection('sharing').doc(user.uid).collection('accounts').doc(shareReceiver.uid).set({
+                matrix: data.matrixes,
+                receiver_name: shareReceiver.displayName,
+                receiver_email: data.email
+            }, { merge: true});
+
+            return "completed";
+
+        }
+        return data
+    }
+
+    return "";
+})
+

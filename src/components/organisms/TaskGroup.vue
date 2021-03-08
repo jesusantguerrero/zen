@@ -3,6 +3,9 @@
     <div class="flex justify-between cursor-pointer items-center" v-if="showTitle">
       <h4 class="mb-2 font-bold block" :class="[isQuadrant ? `md:text-2xl font-bold ${color} capitalize`: '']">
          {{ title }} ({{ tasks.length }}) 
+         <small @click="isShareModalOpen=true">
+            Share
+         </small>
       </h4>
       
       <div class="flex">
@@ -55,6 +58,14 @@
           </div>
         </el-collapse-transition>
       </slot>
+
+    <share-modal
+      v-model:is-open="isShareModalOpen"
+      :settings="state"
+      @cancel="isModalOpen=false"
+      @saved="onSettingsSaved"
+    >
+    </share-modal>
   </div>
 </template>
 
@@ -69,6 +80,7 @@ import { useMediaQuery, useWindowSize } from "@vueuse/core"
 import TaskItem from "../molecules/TaskItem.vue"
 import IconExpand from "../atoms/IconExpand.vue"
 import IconCollapse from "../atoms/IconCollapse.vue"
+import ShareModal from "./ShareModal.vue";
 
 const props = defineProps({
     tasks: {
@@ -111,6 +123,7 @@ const props = defineProps({
     placeholder: String,
     isItemAsHandler: Boolean
 })
+const isShareModalOpen = ref(false);
 const listGroup = ref(null);
 
 onMounted(() => {
