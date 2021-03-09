@@ -28,7 +28,8 @@ setLoaded(() => {
   isLoaded.value = true;
   const messaging = firebaseInstance.messaging();
   messaging.onMessage((payload) => {
-      console.log(payload)
+    alert(JSON.stringify(payload))
+      console.log(payload, "Mi mensaje favorito")
   })
 })
 
