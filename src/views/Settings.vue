@@ -1,6 +1,6 @@
 <template>
   <div class="pt-24 mx-5 md:pt-28 md:mx-28">
-    <div class="mb-20 md:flex">
+    <div class="mb-20 md:flex" v-if="false">
       <div class="max-w-8xl mx-auto sm:px-6 lg:px-8 flex">
         <a
           href="https://slack.com/oauth/v2/authorize?scope=commands,users.profile:write&client_id=461198650023.1793899340544"
@@ -12,8 +12,7 @@
       </div>
     </div>
 
-
-    <div>
+    <div v-if="false">
        <h2 class="text-3xl font-extrabold pb-10">Billing</h2>
        <div class="flex w-full px-52">
          <div class="w-full text-left">

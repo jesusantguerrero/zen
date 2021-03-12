@@ -3,7 +3,7 @@
   <hero-section></hero-section>
   <content-section></content-section>
   <features-section class="bg-secondary"></features-section>
-  <content-video-section></content-video-section>
+  <!-- <content-video-section></content-video-section> -->
   <footer-section></footer-section>
 </div>
 </template>

@@ -1,5 +1,5 @@
 <template>
-  <section class="px-2 py-32 pb-48 bg-white md:px-0 mb-20 md:mb-0">
+  <section class="px-2 py-32 pb-72 bg-white md:px-0 md:pb-44">
     <div class="container items-center max-w-6xl px-8 mx-auto xl:px-5">
       <div class="flex flex-wrap items-center sm:-mx-3">
         <div class="w-full md:w-1/2 md:px-3">
@@ -41,11 +41,21 @@
                   <polyline points="12 5 19 12 12 19"></polyline>
                 </svg>
               </router-link>
+              <button
+                @click="showVideo=!showVideo"
+                class="flex items-center w-full px-6 py-3 mb-3 text-lg text-white bg-gray-400 rounded-md sm:mb-0 hover:bg-gray-700 sm:w-auto"
+              >
+                Learn More
+              
+              </button>
             </div>
           </div>
         </div>
-        <div class="w-full md:w-1/2">
-          <mock-tasks class="shadow-md px-2 py-2 border-2 rounded-md h-20"></mock-tasks>
+        <div class="w-full md:w-1/2 ">
+          <div class="shadow-md bg-white rounded-md overflow-hidden border-2 border-white" v-if="showVideo">
+              <div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/embed/d881ba48b6a44f428080e11853859ebf" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+            </div>    
+          <mock-tasks v-else class="shadow-md px-2 py-2 border-2 rounded-md h-20"></mock-tasks>
         </div>
       </div>
     </div>
@@ -53,6 +63,8 @@
 </template>
 
 <script setup>
+import { ref } from "vue";
 import MockTasks from "./mockTask.vue";
+const showVideo = ref(false);
 
 </script>

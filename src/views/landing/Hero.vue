@@ -20,10 +20,10 @@
                         </div>
                     </div>
                     <div @click="showMenu = !showMenu" class="absolute right-0 z-50 flex flex-col items-end w-10 h-10 p-2 mr-4 rounded-full cursor-pointer md:hidden" :class="{ 'text-green-700 hover:bg-gray-200': showMenu, 'hover:bg-green-700 text-green-200': !showMenu }">
-                        <svg class="w-6 h-6" x-show="!showMenu" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor" x-cloak>
+                        <svg class="w-6 h-6" v-show="!showMenu" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
                             <path d="M4 6h16M4 12h16M4 18h16"></path>
                         </svg>
-                        <svg class="w-6 h-6" x-show="showMenu" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" x-cloak>
+                        <svg class="w-6 h-6" v-show="showMenu" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </div>
@@ -40,11 +40,16 @@
                         Sign Up
                     </router-link>
                 </div>
-                <!-- <div class="mt-8 text-sm text-green-300">By signing up, you agree to our terms and services.</div> -->
             </div>
         </div>
     </header>
 </template>
+
+<script setup>
+import { ref } from "vue";
+
+const showMenu = ref(false)
+</script>
 
 <style lang="scss" scoped>
 header {

@@ -51,25 +51,9 @@
 <script setup>
 import { ref } from "vue"
 import MatrixBoardShared from "../components/organisms/MatrixBoardShared.vue"
-import { useCollection } from "../utils/useCollection"
-
-const { getAllShared } = useCollection();
 
 const search = ref("")
 const showHelp = ref(false)
 const selectedUser = ref(false)
 
-const sharedRef = ref(null)
-const shared = ref([])
-
-const getShared = () => {
-  sharedRef.value = getAllShared('shared').onSnapshot(snap => {
-    shared.value = [];
-    snap.forEach((doc) => {
-        shared.value.push({...doc.data(), uid: doc.id });
-    })
-  })
-}
-
-getShared()
 </script>
