@@ -13,7 +13,9 @@ import AppHeader from './components/organisms/AppHeader.vue'
 import AppFooter from './components/organisms/AppFooter.vue'
 import { logout, setLoaded, firebaseState, firebaseInstance } from "./utils/useFirebase"
 import { useCustomSelect } from "./utils/useCustomSelect"
+import { useCollection } from "./utils/useCollection"
 
+const { getAllShared } = useCollection();
 const isLoaded = ref(false);
 const { push } = useRouter();
 const logoutUser = () => {
@@ -28,7 +30,7 @@ setLoaded(() => {
   isLoaded.value = true;
   const messaging = firebaseInstance.messaging();
   messaging.onMessage((payload) => {
-      console.log(payload)
+    console.log(payload, "Mi mensaje favorito")
   })
 })
 
@@ -36,7 +38,23 @@ setLoaded(() => {
 const { itemsRef: contactsRef, getInitialItems: getInitialContacts} = useCustomSelect([], 'contacts')
 const { itemsRef: tagsRef, getInitialItems: getInitialTags} = useCustomSelect([], 'tags')
 
+const sharedRef = ref(null)
+const shared = ref([])
+
+const getShared = () => {
+  sharedRef.value = getAllShared('shared').onSnapshot(snap => {
+    shared.value = [];
+    snap.forEach((doc) => {
+        shared.value.push({...doc.data(), uid: doc.id });
+    })
+  })
+}
+
+provide('shared', shared);
+
+
 watch(() => isLoaded.value, () => {
+  getShared()
   getInitialTags()
   getInitialContacts()
 })

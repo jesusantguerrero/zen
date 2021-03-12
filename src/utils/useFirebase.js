@@ -4,6 +4,8 @@ import "firebase/auth";
 import "firebase/firestore";
 import "firebase/analytics";
 import "firebase/messaging";
+import "firebase/functions"
+import "firebase/performance"
 import CONFIG from "../config/";
 import { useSettingsFirestore } from "./useSettingsFirestore"
 
@@ -20,6 +22,7 @@ const firebaseConfig = {
 }
 
 firebase.initializeApp(firebaseConfig)
+firebase.performance()
 firebase.analytics()
 
 const onLoaded = ref(null)

@@ -4,3 +4,4 @@ dist
 dist-ssr
 *.local
 .vercel
+firebase-messaging-sw.js

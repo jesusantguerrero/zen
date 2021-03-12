@@ -73,7 +73,7 @@
             </button>
 
             <button
-                class="btn btn-action capitalize rounded-sm flex google-btn"
+                class="btn btn-action capitalize rounded-sm flex google-btn justify-center"
                 type="submit"
                 @click.prevent.stop="loginWithProvider('google')"
             >
@@ -190,7 +190,7 @@ const validateRegistration = () => {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(#1fa1d0, #087a9c);
+    background: linear-gradient(to left bottom,#3a4a73 0,#1b243f);
     background: url(../assets/zen-photo.jpg);
     background-position: center;
     background-size: cover;
@@ -200,7 +200,7 @@ const validateRegistration = () => {
 
     &::after {
         content: "";
-        @apply bg-gray-800;
+        background: linear-gradient(to left bottom,#3a4a73 0,#1b243f);
         display: block;
         position: absolute;
         width: 100%;
@@ -219,7 +219,7 @@ const validateRegistration = () => {
     }
 
     .btn-action {
-        @apply bg-gray-800;
+        @apply bg-green-600;
         width: 100%;
         color: white;
         border: none;
@@ -229,7 +229,7 @@ const validateRegistration = () => {
         height: 40px;
 
         &:hover {
-            @apply bg-gray-700;
+            @apply bg-green-500;
         }
     }
 

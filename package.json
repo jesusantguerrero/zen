@@ -26,10 +26,12 @@
     "vue-router": "^4.0.3"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.4.0",
     "@vitejs/plugin-vue": "^1.1.2",
     "@vue/compiler-sfc": "^3.0.5",
-    "@tailwindcss/typography": "^0.4.0",
     "autoprefixer": "^10.2.3",
+    "fslightbox": "^3.2.3",
+    "fslightbox-vue": "^1.2.0",
     "postcss": "^8.2.4",
     "sass": "^1.32.5",
     "tailwindcss": "^2.0.2",

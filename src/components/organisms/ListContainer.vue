@@ -155,7 +155,6 @@ onUnmounted(() => {
 
 .checklist__item {
     &:hover {
-
         .checklist-item__move,
         .checklist-item__delete {
             opacity: 1;

@@ -57,7 +57,7 @@ export function usePromodoro() {
             promodoroState.template = settings.promodoro_template
         }
 
-        promodoroState.pushSubscription = typeof settings.pushSubscription == 'string' ? JSON.parse(settings.pushSubscription) : settings.pushSubscription;
+        promodoroState.pushSubscription = settings.pushSubscription;
         
         const modes = settings.promodoro_modes;
         const { promodoro, rest, long } = promodoroState.modes;

@@ -1,6 +1,8 @@
 import ZenBoard from "./views/ZenBoard.vue";
+import Overview from "./views/Overview.vue";
 import Login from "./views/Login.vue";
 import Matrix from "./views/Matrix.vue";
+import MatrixShared from "./views/MatrixShared.vue";
 import Standup from "./views/Standup.vue";
 import About from "./views/About.vue";
 import Settings from "./views/Settings.vue";
@@ -15,13 +17,22 @@ import { isAuthenticated } from "./utils/useFirebase";
 // We'll talk about nested routes later.
 const routes = [
   { 
-    path: "/", 
-    name: "home",
+    path: "/zenboard", 
+    name: "zenboard",
     component: ZenBoard,
+
+  },
+  { 
+    path: "/zenboard/overview", 
+    name: "overview",
+    component: Overview,
 
   },
   { path: "/matrix", 
     component: Matrix 
+  },
+  { path: "/shared", 
+    component: MatrixShared 
   },
   { 
     path: "/standup", 
@@ -66,9 +77,9 @@ const routes = [
     },
   },
   {
-    path: "/landing",
+    path: "/",
     component: Landing,
-    name: "landing",
+    name: "home",
     meta: {
       requiresAuth: false,
     },
@@ -85,7 +96,7 @@ myRouter.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth !== false && !user) {
     next({name: "login"})
   } else if (to.meta.requiresAuth == false && user) {
-    next({name: "home"})
+    next({name: "zenboard"})
   }else {
     next();
   }
