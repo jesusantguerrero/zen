@@ -47,8 +47,12 @@
         <slot name="empty"></slot>
     </div>
 
-    <div class="task__checlikst mb-6" v-if="showChecklist">
-      <checklist-container :items="task.checklist" :task="task" :allow-edit="isEditMode"></checklist-container>
+    <div class="task__checlikst mb-10" v-if="showChecklist">
+      <checklist-container 
+        v-model="state.checklistTitle"
+        :items="task.checklist" 
+        :task="task" :allow-edit="isEditMode">
+      </checklist-container>
     </div>
 
     <div class="absolute bottom-2 text-right w-full left-5 pr-10">
@@ -96,6 +100,7 @@ const { taskData, currentTimer } = toRefs(props)
 // State
 const state = reactive({
   task: {},
+  checklistTitle: "",
   isEditMode: false,
   isDisabled: computed(() => {
     return currentTimer.value && currentTimer.value.task_uid == state.task.uid;
@@ -143,7 +148,7 @@ const markAsDone = async () => {
     canSave = await ElMessageBox.confirm(`There are ${unresolvedItems.length} unresolved item(s)`, "Are you sure?", {
       confirmButtonText: "Mark all as done",
       cancelButtonText: "Cancel"
-    }).then(() => true)
+    }).then(() => true).catch(() => false)
 
     canSave && unresolvedItems.forEach(item => item.done = true);
   }
@@ -157,7 +162,24 @@ const markAsDone = async () => {
   clearTaskData()
 }
 
-const saveChanges = () => {
+const saveChanges = async () => {
+  let canSave = true;
+  if (state.checklistTitle) {
+    canSave = await ElMessageBox.confirm(`There are an unsaved checklist item`, "Are you sure?", {
+      confirmButtonText: "Add item and save",
+      cancelButtonText: "Remove item and save"
+    }).then(() => true).catch(() => false)
+
+    if (canSave) {
+      state.task.checklist.push({ 
+        title: state.checklistTitle,
+        done: false
+      });
+    } 
+  }
+  
+  state.checklistTitle = "";
+
   emit('updated', state.task)
   isEditMode.value = false;
 }

@@ -31,9 +31,9 @@ const routes = [
   { path: "/matrix", 
     component: Matrix 
   },
-  { path: "/shared", 
-    component: MatrixShared 
-  },
+  // { path: "/shared", 
+  //   component: MatrixShared 
+  // },
   { 
     path: "/standup", 
     component: Standup 
@@ -45,10 +45,10 @@ const routes = [
   { path: "/about", 
     component: About 
   },
-  { path: "/settings", 
-    name: 'settings',
-    component: Settings
-  },
+  // { path: "/settings", 
+  //   name: 'settings',
+  //   component: Settings
+  // },
   { 
     path: "/plan-ahead", 
     component: PlanAhead, 

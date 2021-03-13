@@ -3,9 +3,9 @@
     <div class="flex justify-between cursor-pointer items-center" v-if="showTitle">
       <h4 class="mb-2 font-bold block" :class="[isQuadrant ? `md:text-2xl font-bold ${color} capitalize`: '']">
          {{ title }} ({{ tasks.length }}) 
-         <small @click="isShareModalOpen=true">
+         <!--<small @click="isShareModalOpen=true" class="text-sm" v-if="type!='backlog'">
             Share
-         </small>
+         </small>-->
       </h4>
       
       <div class="flex">

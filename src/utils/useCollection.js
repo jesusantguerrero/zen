@@ -28,7 +28,7 @@ export function useCollection() {
         return batch.commit()
     }
 
-    const destroy = (task) => {
+    const destroy = (collectionName, task) => {
         return db.collection(collectionName).doc(task.uid).delete()
         .catch(function(error) {
             console.error("Error adding document: ", error);
