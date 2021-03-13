@@ -88,10 +88,10 @@ export function useTaskFirestore() {
         return tasks;
     }
 
-    const getUncommitedTasks = async (date) => {
+    const getUncommitedTasks = async (date, userUuid) => {
         const tasks = [];
         await db.collection(collectionName)
-        .where("user_uid", "==", firebaseState.user.uid)
+        .where("user_uid", "==", userUuid || firebaseState.user.uid)
         .where("done", "==", false)
         .orderBy("order")
         .get()

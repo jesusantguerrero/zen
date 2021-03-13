@@ -19,20 +19,12 @@
                             </div>
                         </div>
                     </div>
-                    <div @click="showMenu = !showMenu" class="absolute right-0 z-50 flex flex-col items-end w-10 h-10 p-2 mr-4 rounded-full cursor-pointer md:hidden" :class="{ 'text-green-700 hover:bg-gray-200': showMenu, 'hover:bg-green-700 text-green-200': !showMenu }">
-                        <svg class="w-6 h-6" x-show="!showMenu" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor" x-cloak>
-                            <path d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                        <svg class="w-6 h-6" x-show="showMenu" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" x-cloak>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </div>
                 </div>
             </nav>
 
             <div class="container py-32 mx-auto text-center sm:px-4 z-50">
                 <h1 class="text-4xl font-extrabold leading-10 tracking-tight text-white sm:text-5xl sm:leading-none md:text-4xl xl:text-5xl"><span class="block">Keep yourself in the zone</span> <span class="relative inline-block mt-3 text-transparent text-white">and focus in the moment.</span></h1>
-                <div class="max-w-lg mx-auto mt-6 text-sm text-center text-green-200 md:mt-12 sm:text-base md:max-w-xl md:text-lg xl:text-xl">Take the step to improve your daily routine and get things done!</div>
+                <div class="max-w-lg mx-auto mt-6 text-sm text-center text-green-200 md:mt-12 sm:text-base px-10 -md:max-w-xl md:text-lg xl:text-xl">Take the step to improve your daily routine and get things done!</div>
                 <div class="relative flex justify-center items-center max-w-md mx-auto mt-12 text-center">
                     <router-link 
                         to="/register" 
@@ -40,11 +32,16 @@
                         Sign Up
                     </router-link>
                 </div>
-                <!-- <div class="mt-8 text-sm text-green-300">By signing up, you agree to our terms and services.</div> -->
             </div>
         </div>
     </header>
 </template>
+
+<script setup>
+import { ref } from "vue";
+
+const showMenu = ref(false)
+</script>
 
 <style lang="scss" scoped>
 header {
@@ -56,7 +53,7 @@ header {
 
     &::after {
         content: "";
-        @apply bg-gray-800;
+        background: linear-gradient(to left bottom,#3a4a73 0,#1b243f);
         display: block;
         position: absolute;
         width: 100%;

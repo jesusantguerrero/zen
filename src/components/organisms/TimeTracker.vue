@@ -64,8 +64,8 @@ import { usePromodoro } from "./../../utils/usePromodoro";
 import { useSlack } from "./../../utils/useSlack";
 import { firebaseState } from "./../../utils/useFirebase";
 import { ElMessageBox, ElNotification } from "element-plus";
-import TimeTrackerModal from "./TimeTrackerModal.vue";
 import { useTitle } from "@vueuse/core";
+import TimeTrackerModal from "./TimeTrackerModal.vue";
 
 const { saveTrack, updateTrack } = useTrackFirestore();
 const props = defineProps({

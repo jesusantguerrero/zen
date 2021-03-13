@@ -1,6 +1,6 @@
 <template>
 <div>
-  <modal-base v-model:is-open="isOpenLocal" title="Edit task" @closed="clearForm()" @click-outside="clearForm()" :click-to-close="false">
+  <modal-base v-model:is-open="state.isOpenLocal" title="Edit task" @closed="clearForm()" @click-outside="clearForm()" :click-to-close="false">
       <template #title>
            <div class="flex justify-between pr-5">
                   <div class="flex items-center w-full text-left">
@@ -62,7 +62,14 @@
                   </textarea>
                   
                   <div class="task-item__checklist pt-5 text-left flex">
-                    <checklist-container :items="task.checklist" :task="task" :allow-edit="true" class="w-10/12"></checklist-container>
+                    <checklist-container 
+                      v-model="state.checklistTitle"
+                      :items="task.checklist" 
+                      :task="task" 
+                      :allow-edit="true" 
+                      class="w-10/12"
+                    >
+                    </checklist-container>
                     <div class="w-2/12 text-sm px-2" v-if="task.matrix == 'delegate'">
                       <h4 class="font-bold text-gray-500 text-sm"> Delegated to: </h4>
                       <person-select
@@ -106,16 +113,16 @@
 </template>
 
 <script setup>
-import { defineProps, ref, watch, computed, reactive, defineEmit, toRefs, inject, onMounted, nextTick, watchEffect } from "vue"
+import { defineProps, ref, watch, computed, reactive, defineEmit, toRefs } from "vue"
 import { useTaskFirestore } from "./../../utils/useTaskFirestore"
 import { useDateTime } from "./../../utils/useDateTime"
-import { useCollection } from "./../../utils/useCollection"
 import { useCustomSelect } from "./../../utils/useCustomSelect"
 import DateSelect from "../atoms/DateSelect.vue"
 import TagsSelect from "../atoms/TagsSelect.vue"
 import PersonSelect from "../atoms/PersonSelect.vue"
 import ModalBase from "../molecules/ModalBase.vue";
 import ChecklistContainer from "./ListContainer.vue";
+import { ElMessageBox } from "element-plus"
 
 const props = defineProps({
     isOpen: Boolean,
@@ -137,13 +144,16 @@ const emit = defineEmit({
     "closed": Boolean
 })
 
-const isOpenLocal = ref(false)
+const state = reactive({
+  isOpenLocal: false,
+  checklistTitle: ""
+})
 
 watch(()=> props.isOpen, (isOpen) => {
-    isOpenLocal.value = isOpen;
+    state.isOpenLocal = isOpen;
 }, { immediate: true })
 
-watch(()=> isOpenLocal.value, (isOpen) => {
+watch(()=> state.isOpenLocal, (isOpen) => {
     emit("update:isOpen", isOpen)
     if (isOpen) {
       setHeight()
@@ -192,7 +202,7 @@ const setTaskData = (taskData) => {
 }
 
 watch(()=> props.isOpen, (isOpen) => {
-  if(taskData.value || isOpenLocal.value) {
+  if(taskData.value || state.isOpenLocal) {
     setTaskData(taskData.value)
   }
 }, { immediate: true, deep: true })
@@ -234,20 +244,42 @@ const clearForm = () => {
 
 const { updateTask } = useTaskFirestore()
 const { formatDate } = useDateTime()
-const save = () => {
+const confirmChecklist = async () => {
+  let canSave = true;
+  if (state.checklistTitle) {
+    canSave = await ElMessageBox.confirm(`There are an unsaved checklist item`, "Are you sure?", {
+      confirmButtonText: "Add item and save",
+      cancelButtonText: "Remove item and save"
+    }).then(() => true).catch(() => false)
+
+    if (canSave) {
+      task.checklist.push({ 
+        title: state.checklistTitle,
+        done: false
+      });
+    } 
+  }
+  
+  state.checklistTitle = "";
+}
+
+const save = async () => {
+  await confirmChecklist();
+  // check item
+
   const formData =  {...task}
   formData.tracks = [];
   formData.due_date = formData.due_date && typeof formData.due_date == 'object' ? formatDate(formData.due_date , "yyyy-MM-dd") : formData.due_date
   updateTask(formData).then(() => {
     emit('saved', formData)
     clearForm()
-    isOpenLocal.value = false
+    state.isOpenLocal = false
   })
 }
 
 const close = () => {
     emit('closed')
-    isOpenLocal.value = false
+    state.isOpenLocal = false
     clearForm()
 }
 

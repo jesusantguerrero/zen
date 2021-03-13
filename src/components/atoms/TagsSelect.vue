@@ -6,10 +6,55 @@
             popper-class='tag-select'
             :width="240"
             :show-arrow="false"
+            @hide="state.selectedTag=null"
             @after-enter="focusInput()"
         >
 
-            <div class="pt-2 pb-5 px-1 w-full">
+            <div v-if="state.selectedTag">
+                <div class="flex items-center mb-5">
+                    <button @click="state.selectedTag = null" class="px-2 py-1 hover:bg-gray-200 rounded-md focus:outline-none"><i class="fa fa-chevron-left"></i></button>
+                    <div class="font-bold ml-2"> Edit Tag</div>
+                </div>
+                <div class="text-left mb-6">
+                    <label for="" class="mb-2 inline-block font-bold">Tag Name</label>
+                    <input
+                        class="w-full h-8 rounded-md px-2 border-2 border-gray-100 focus:outline-none focus:border-gray-200" 
+                        type="text" 
+                        placeholder="Add or create a tag"
+                        v-model.trim="state.selectedTag.name"
+                        ref="input"
+                    />
+                </div>
+
+                <div class="mt-2">
+                     <label for="" class="mb-2 inline-block font-bold">Pick a color</label>
+                     <div class="grid grid-cols-4">
+                        <div v-for="colors in state.tagColors" 
+                            :key="colors[0]" class="h-10 w-10 my-2 rounded-full overflow-hidden flex cursor-pointer" 
+                            :class="[`border-2 border-transparent ${colors.hover}`, state.selectedTag.colors && state.selectedTag.colors[0] == colors[0] && 'border-gray-600' ]"
+                            @click="state.selectedTag.colors=colors"
+                        >
+                            <div :class="colors[0]" class="w-1/2 h-full"></div>
+                            <div :class="colors[1]" class="w-1/2 h-full"></div>
+                        </div>
+                     </div>
+                </div>
+
+                <div class="flex justify-end">
+                    <button 
+                        @click="deleteTag(state.selectedTag)"
+                        class="px-5 py-2 rounded-md focus:outline-none transition-colors bg-red-400 hover:bg-red-500 text-white mr-2">
+                        Delete
+                    </button>
+                    <button
+                        @click="updateTag(state.selectedTag)" 
+                        class="px-5 py-2 rounded-md focus:outline-none transition-colors bg-green-400 hover:bg-green-500 text-white "> 
+                        Save 
+                    </button>
+                </div>
+            </div>
+
+            <div class="pt-2 pb-5 px-1 w-full" v-else>
                 <input
                     class="w-full h-8 rounded-md px-2 border-2 border-gray-100 focus:outline-none focus:border-gray-200" 
                     type="text" 
@@ -24,21 +69,31 @@
                 />
 
                 <div 
-                    class="tags-container mt-2 space-y-1 max-h-48 overflow-auto w-full ic-scroller" 
+                    class="tags-container mt-2 space-y-1 max-h-48 overflow-auto w-full ic-scroller pr-2" 
                     ref="container">
                     <div v-for="(tag, index) in filteredList" 
                         :key="tag" 
-                        class="px-2 py-2 cursor-pointer rounded-sm transition-colors"
+                        class="px-2 py-2 cursor-pointer transition-colors capitalize flex rounded-md fnnt-bold"
                         :class="[
                             `select-item-${index}`,
                             preSelectedValue == tag && 'bg-gray-500 text-white', 
-                            isSelected(tag.uid) ? 'bg-gray-200 hover:bg-gray-500 hover:text-white' : 'hover:bg-gray-500 hover:text-white'
+                            isSelected(tag.uid) ? 'bg-gray-200 hover:bg-gray-200 ' : 'hover:bg-gray-200'
                         ]"
                         @click.stop="selectTag(tag)"
                     >
-                        {{ tag.name }}
+                        <div class="w-2 h-5" :class="tag.colors && tag.colors[1]">
+                        </div>
+
+                        <div class="w-full h-full ml-2">
+                            {{ tag.name }}
+                        </div>
+
+                        <div @click.prevent.stop="state.selectedTag=tag" class="px-2 py-1 transition-colors rounded-full flex items-center justify-center hover:bg-gray-700 hover:text-white w-10">
+                            <i class="fa fa-edit"></i>
+                        </div>
                     </div>
                 </div>
+             
 
                 <div v-if="searchText && filteredList.length == 0 && allowAdd">
                     <button class="px-2 h-8 w-full" @click="addTag"> 
@@ -48,7 +103,6 @@
                     <span> This tag doesn't exists</span>
                 </div>
             </div>
-
 
             <template #reference>
             <button 
@@ -65,6 +119,7 @@
                         :key="tag.name" 
                         
                         class="mr-1 text-white bg-gray-500 pl-2 rounded-md"
+                        :class="tag.colors"
                     > 
                         {{ tag.name}}
 
@@ -88,6 +143,8 @@
 <script setup>
 import { computed, defineEmit, reactive, watch, ref, toRefs } from "vue";
 import { useFuseSearch } from "../../utils/useFuseSearch"
+import { useCollection } from "../../utils/useCollection"
+import { ElMessageBox, ElNotification } from "element-plus";
 
 const props = defineProps({
     tags: {
@@ -117,9 +174,24 @@ const props = defineProps({
     }
 })
 const selectedTags = ref([])
-watch(() => [...props.modelValue], (value) => {
-    selectedTags.value = value
-}, { immediate: true })
+const setSelectedTags = () => {
+ selectedTags.value = props.modelValue.map(item => {
+    const tag = props.tags.find(tag => tag.uid == item.uid);
+        if (!item.colors || (tag && tag.colors && tag.colors[0] != item.colors[0]) ) {
+            item.colors = tag ? tag.colors || [] : []
+        }
+        return item;
+    })
+}
+watch(() => [...props.modelValue], () => {
+   setSelectedTags()
+}, { immediate: true });
+
+watch(() => props.tags, () => {
+    setSelectedTags()
+});
+
+
 const input = ref(null);
 const button = ref(null);
 
@@ -132,6 +204,17 @@ const emit = defineEmit({
 const state = reactive({
     cursor: -1,
     isOpen: false,
+    selectedTag: null,
+    tagColors: [
+        ['bg-green-200', 'bg-green-400', 'hover:border-green-600'],
+        ['bg-blue-200', 'bg-blue-400', 'hover:border-blue-600'],
+        ['bg-red-200', 'bg-red-400', 'hover:border-red-600'],
+        ['bg-yellow-200', 'bg-yellow-400', 'hover:border-yellow-600'],
+        ['bg-purple-200', 'bg-purple-400', 'hover:border-purple-600'],
+        ['bg-pink-200', 'bg-pink-400', 'hover:border-pink-600'],
+        ['bg-indigo-200', 'bg-indigo-400', 'hover:border-indigo-600'],
+        ['bg-gray-200', 'bg-gray-400', 'hover:border-gray-600'],
+    ]
 })
 
 // Tags
@@ -202,6 +285,35 @@ const addTag = () => {
             name: searchText.value
         });
         searchText.value = "";
+    }
+}
+
+const { update: updateTags, destroy: deleteTags } = useCollection();
+const updateTag = (tag) => {
+    if (tag.uid) {
+        updateTags('tags', tag).then(() => {
+            ElNotification({
+                message: "Tag updated",
+                type: "success"
+            });
+            state.selectedTag = null;
+        });
+    }
+}
+
+const deleteTag = async (tag) => {
+    const canDelete = await ElMessageBox.confirm(`Are you sure you want to delete the tag: "${tag.name}"?<br> This tag won't be deleted from already saved tasks`, "Delete Tag", {
+        dangerouslyUseHTMLString: true,
+    })
+
+    if (tag.uid && canDelete) {
+        deleteTags('tags', tag).then(() => {
+               ElNotification({
+                message: "Tag deleted",
+                type: "success"
+            });
+            state.selectedTag = null;
+        });
     }
 }
 

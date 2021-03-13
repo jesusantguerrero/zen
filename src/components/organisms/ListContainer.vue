@@ -41,10 +41,11 @@
     >
         <input type="checkbox" disabled class="mr-2">
         <input 
-            v-model="checkItemTitle"
+            :value="modelValue"
             class="w-full h-8 bg-gray-100 focus:outline-none"
             type="text" 
             ref="input"
+            @input="emit('update:modelValue', input.value)"
             @keydown.enter.exact.prevent="saveItem()" 
             @focus="isFocused=true"
             @blur="isFocused=false"
@@ -62,6 +63,7 @@ import { defineProps, ref, defineEmit, onMounted, onUnmounted, computed, onBefor
 import { VueDraggableNext as Draggable } from "vue-draggable-next"
 
 const props = defineProps({
+    modelValue: String,
     items: Array,
     task: Object,
     allowEdit: Boolean
@@ -69,20 +71,26 @@ const props = defineProps({
 
 const emit = defineEmit({
     'updated': Array,
-    'update:items': Array
+    'update:items': Array,
+    'update:modelValue': String
 })
 
 const isFocused = ref(false)
 const input = ref(null)
 
 const checkItemTitle = ref("")
+watch(() => props.modelValue, (value) => {
+    if (value != checkItemTitle.value) {
+        checkItemTitle.value = value;
+    }
+})
 
 const deleteItem = (index) => {
     props.items.splice(index, 1);
 }
 
 const clearForm = () => {
-    checkItemTitle.value = ""
+    emit('update:modelValue', "")
 }
 
 const saveItem = () => {
@@ -155,7 +163,6 @@ onUnmounted(() => {
 
 .checklist__item {
     &:hover {
-
         .checklist-item__move,
         .checklist-item__delete {
             opacity: 1;
