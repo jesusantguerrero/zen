@@ -11,9 +11,9 @@
         >
 
             <div v-if="state.selectedTag">
-                <div class="flex justify-between mb-5">
-                    <button @click="state.selectedTag = null"><i class="fa fa-chevron-left"></i></button>
-                    <div> Edit Tag</div>
+                <div class="flex items-center mb-5">
+                    <button @click="state.selectedTag = null" class="px-2 py-1 hover:bg-gray-200 rounded-md focus:outline-none"><i class="fa fa-chevron-left"></i></button>
+                    <div class="font-bold ml-2"> Edit Tag</div>
                 </div>
                 <div class="text-left mb-6">
                     <label for="" class="mb-2 inline-block font-bold">Tag Name</label>
@@ -73,22 +73,22 @@
                     ref="container">
                     <div v-for="(tag, index) in filteredList" 
                         :key="tag" 
-                        class="px-2 py-2 cursor-pointer transition-colors capitalize flex rounded-md"
+                        class="px-2 py-2 cursor-pointer transition-colors capitalize flex rounded-md fnnt-bold"
                         :class="[
                             `select-item-${index}`,
                             preSelectedValue == tag && 'bg-gray-500 text-white', 
-                            isSelected(tag.uid) ? 'bg-gray-200 hover:bg-gray-500 hover:text-white' : 'hover:bg-gray-500 hover:text-white'
+                            isSelected(tag.uid) ? 'bg-gray-200 hover:bg-gray-200 ' : 'hover:bg-gray-200'
                         ]"
                         @click.stop="selectTag(tag)"
                     >
-                        <div class="w-5 h-5 rounded-full" :class="tag.colors && tag.colors[1]">
+                        <div class="w-2 h-5" :class="tag.colors && tag.colors[1]">
                         </div>
 
                         <div class="w-full h-full ml-2">
                             {{ tag.name }}
                         </div>
 
-                        <div @click.prevent.stop="state.selectedTag=tag" class="px-2 py-1 transition-colors rounded-full flex items-center justify-center hover:bg-gray-700 w-10">
+                        <div @click.prevent.stop="state.selectedTag=tag" class="px-2 py-1 transition-colors rounded-full flex items-center justify-center hover:bg-gray-700 hover:text-white w-10">
                             <i class="fa fa-edit"></i>
                         </div>
                     </div>
@@ -144,7 +144,7 @@
 import { computed, defineEmit, reactive, watch, ref, toRefs } from "vue";
 import { useFuseSearch } from "../../utils/useFuseSearch"
 import { useCollection } from "../../utils/useCollection"
-import { ElNotification } from "element-plus";
+import { ElMessageBox, ElNotification } from "element-plus";
 
 const props = defineProps({
     tags: {
@@ -174,15 +174,23 @@ const props = defineProps({
     }
 })
 const selectedTags = ref([])
-watch(() => [...props.modelValue], (value) => {
-    selectedTags.value = value.map(item => {
-        if (!item.colors) {
-            const tag = props.tags.find(tag => tag.uid == item.uid)
+const setSelectedTags = () => {
+ selectedTags.value = props.modelValue.map(item => {
+    const tag = props.tags.find(tag => tag.uid == item.uid);
+        if (!item.colors || (tag && tag.colors && tag.colors[0] != item.colors[0]) ) {
             item.colors = tag ? tag.colors || [] : []
         }
         return item;
     })
-}, { immediate: true })
+}
+watch(() => [...props.modelValue], () => {
+   setSelectedTags()
+}, { immediate: true });
+
+watch(() => props.tags, () => {
+    setSelectedTags()
+});
+
 
 const input = ref(null);
 const button = ref(null);
@@ -293,8 +301,12 @@ const updateTag = (tag) => {
     }
 }
 
-const deleteTag = (tag) => {
-    if (tag.uid) {
+const deleteTag = async (tag) => {
+    const canDelete = await ElMessageBox.confirm(`Are you sure you want to delete the tag: "${tag.name}"?<br> This tag won't be deleted from already saved tasks`, "Delete Tag", {
+        dangerouslyUseHTMLString: true,
+    })
+
+    if (tag.uid && canDelete) {
         deleteTags('tags', tag).then(() => {
                ElNotification({
                 message: "Tag deleted",
