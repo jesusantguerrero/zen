@@ -24,6 +24,23 @@
                 <input type="email" desabled class="focus:outline-none bg-white w-full border-b-2 border-gray-100 focus:border-gray-200 px-2">
             </div>
         </div>
+
+        <div>
+            <h4>  User preferences </h4>
+                <div class="form-group">
+                    <label for="">
+                        <input type="checkbox" v-model="showNotification" @click="requestNotification">
+                        Show Notification
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label for="">
+                        <input type="checkbox" @click="subscribeUserToPush">
+                        Subscribe to push notifications
+                    </label>
+            </div>
+        </div>
     </form>
   </div>
 </template>
