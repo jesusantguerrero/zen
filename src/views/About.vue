@@ -30,7 +30,7 @@
                 <about-form v-if="state.selectedSection=='info'" hide-button="true"></about-form>
                 <help-view v-if="state.selectedSection=='tutorial'" hide-button="true"></help-view>
                 <div v-if="state.selectedSection=='license'" class="text-center font-bold mt-10">
-                    <h2 class="text-xl"> MIT </h2>
+                    <h2 class="text-xl"> GNU GENERAL PUBLIC LICENSE </h2>
                 </div>
               </div>
 
@@ -56,7 +56,7 @@ import HelpView from "../components/molecules/HelpView.vue"
 import { reactive } from "vue";
 
 const state = reactive({
-   appVersion: "1.10.0-beta",
+   appVersion: "1.11.0-beta",
     selectedSection: 'info',
     sections: {
         info: "Information",

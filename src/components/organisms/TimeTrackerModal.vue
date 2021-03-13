@@ -8,21 +8,6 @@
 
         <template #body>
             <form action="" @submit.prevent="save" class="pt-5  px-5 text-left mx-auto">
-                <h4>  User preferences </h4>
-                <div class="form-group">
-                    <label for="">
-                        <input type="checkbox" v-model="showNotification" @click="requestNotification">
-                        Show Notification
-                    </label>
-                </div>
-                
-                <div class="form-group">
-                    <label for="">
-                        <input type="checkbox" @click="subscribeUserToPush">
-                        Subscribe to push notifications
-                    </label>
-                </div>
-
                  <h4 class="font-bold">  Workflow Template </h4>
                  <div class="form-group">
                     <div class="workflow-item capitalize text-sm mb-10 inline-block"

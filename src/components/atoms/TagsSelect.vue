@@ -118,7 +118,7 @@
                         v-for="tag in selectedTags.slice(0, limit)" 
                         :key="tag.name" 
                         
-                        class="mr-1 text-white bg-gray-500 pl-2 rounded-md"
+                        class="mr-1 text-white bg-gray-500 pl-2 rounded-md flex items-center"
                         :class="tag.colors"
                     > 
                         {{ tag.name}}

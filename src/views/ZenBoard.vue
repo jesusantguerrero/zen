@@ -69,7 +69,7 @@
             <input
               type="search"
               v-model.trim="searchOptions.text"
-              class="w-full px-2 text-sm h-10 rounded-md focus:outline-none border-2 border-gray-200"
+              class="w-44 px-2 text-sm h-10 rounded-md focus:outline-none border-2 border-gray-200"
               placeholder="Search task"
             />
 
