@@ -3,13 +3,13 @@
     <div class="flex justify-between cursor-pointer items-center" v-if="showTitle">
       <h4 class="mb-2 font-bold block" :class="[isQuadrant ? `md:text-2xl font-bold ${color} capitalize`: '']">
          {{ title }} ({{ tasks.length }}) 
-         <!--<small @click="isShareModalOpen=true" class="text-sm" v-if="type!='backlog'">
+         <!--<small @click="isShareModalOpen=true" class="text-sm" v-if="type!='backlog'" v-if="!isCompact">
             Share
          </small>-->
       </h4>
       
       <div class="flex">
-        <small class="text-sm  mr-2 text-gray-400 font-bold">{{ helpText }}</small>
+        <small class="text-sm  mr-2 text-gray-400 font-bold" v-if="!isCompact">{{ helpText }}</small>
         <div @click="toggleExpanded">
           <icon-expand v-if="!isExpanded"/>
           <icon-collapse v-else/>
@@ -20,10 +20,10 @@
       <slot name="addForm"></slot>
       <slot name="content">
         <el-collapse-transition>
-          <div class="list-group w-full ic-scroller" ref="listGroup"  v-show="isExpanded">
+          <div class="list-group ic-scroller" :class="{'w-full': !isCompact}" ref="listGroup"  v-show="isExpanded">
             <draggable
               class="dragArea"
-              :class="{empty: !tasks.length,  [type]: true , [dragClass]: true}" 
+              :class="{empty: !tasks.length,  [type]: true , [dragClass]: true, 'set-placeholder': !isCompact}" 
               :list="tasks" 
               :handle="handleClass"
               :group="{name: type, pull: true, put: true }"
@@ -42,6 +42,7 @@
                 :current-task="currentTask"
                 :current-timer="currentTimer"
                 :is-item-as-handler="isItemAsHandler"
+                :is-compact="isCompact"
                 :class="taskClass"
                 @toggle-key="onToggleKey(task)"
                 @selected="emit('selected', task)"
@@ -121,7 +122,8 @@ const props = defineProps({
       type: String
     },
     placeholder: String,
-    isItemAsHandler: Boolean
+    isItemAsHandler: Boolean,
+    isCompact: Boolean
 })
 const isShareModalOpen = ref(false);
 const listGroup = ref(null);
@@ -130,7 +132,7 @@ onMounted(() => {
   if (props.maxHeight && listGroup.value) {
     listGroup.value.style.setProperty("--max-height", `${props.maxHeight}px`);
     if (props.placeholder) {
-      listGroup.value.style.setProperty("--placeholder", `"${props.placeholder}"`);
+      listGroup.value.style.setProperty("--placeholder", `"${props.placeholder || ""}"`);
     }
   }
 })
@@ -290,11 +292,11 @@ const onToggleKey = (task) => {
 
 .dragArea {
   @apply rounded-md;
-  background: rgba(229, 231, 235, .2);
   padding-bottom: 40px;
 }
 
-.dragArea {
+.dragArea.set-placeholder {
+    background: rgba(229, 231, 235, .2);
     &::after {
       @apply text-gray-400 font-bold;
       display: block;

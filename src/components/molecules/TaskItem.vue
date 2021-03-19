@@ -81,7 +81,7 @@
       </div>
     </div>
 
-    <div class="flex items-center mt-1 text-xs" :class="{'justify-between': task.due_date }">
+    <div class="flex items-center mt-1 text-xs" :class="{'justify-between': task.due_date }" v-if="!isCompact">
       <button 
         title="Description" 
         class="px-2 py-1 rounded-md hover:bg-gray-200 focus:outline-none" 
@@ -147,7 +147,8 @@ const props = defineProps({
   showSelect: Boolean,
   showControls: Boolean,
   currentTimer: Object,
-  isItemAsHandler: Boolean
+  isItemAsHandler: Boolean,
+  isCompact: Boolean
 })
 
 const emit = defineEmit({

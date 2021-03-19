@@ -25,16 +25,45 @@
             <!-- Overdue -->
             <div class="quick__add py-4 w-3/12">
               <h4 class="font-bold text-gray-500"> Badges</h4>
-              <div class="text-white font-bold h-20 bg-white rounded-md ring ring-offset-2 ring-transparent ring-offset-gray-200 shadow-md">
-              
+              <div class="text-gray-400 font-bold bg-white rounded-md ring ring-offset-2 ring-transparent ring-offset-gray-200 shadow-md">
+                <div class="px-5 py-4 space-y-5 pb-10">
+                  <div class="flex justify-between items-center">
+                    See More
+                    <i class="fa fa-chevron-right"></i>
+                  </div>
+                  <badge-item v-for="badge in state.badgesSummary" :key="badge.title" :badge="badge" />                   
+                  <badge-item :badge="state.badges[0]">
+                      <span class="text-3xl zen"> Z </span>
+                  </badge-item>                   
+                </div>
               </div>
             </div>
-
             <!-- Overdue -->
             <div class="quick__add py-4 w-9/12">
               <h4 class="font-bold text-gray-500"> Overdue</h4>
-              <div class="text-white font-bold h-20 bg-white rounded-md ring ring-offset-2 ring-transparent ring-offset-gray-200 shadow-md">
-              
+              <div class="text-gray-400 font-bold bg-white rounded-md ring ring-offset-2 ring-transparent ring-offset-gray-200 shadow-md px-5 py-3">
+                  <div>
+                    <task-group
+                        title="Overdues"
+                        type="schedule"
+                        color="text-blue-400"
+                        :search="''"
+                        :tags="[]"
+                        :tasks="state.overdues"
+                        :show-controls="false"
+                        :max-height="0"
+                        :is-compact="true"
+                        :is-quadrant="false"
+
+                      >
+                        <template #empty v-if="!state.overdues.length">
+                        <div class="w-8/12 md:w-6/12 mx-auto mt-10 text-center">
+                          <img src="../assets/undraw_following.svg" class="w-12/12 md:w-5/12 mx-auto"> 
+                          <div class="mt-10 md:mt-5 text-gray-500 font-bold"> There's no tasks</div>
+                        </div>
+                      </template>
+                    </task-group>
+                  </div>
               </div>
             </div>
           
@@ -154,11 +183,13 @@
 <script setup>
 import { inject, nextTick, onUnmounted, reactive, ref, watch, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { ElMessageBox, ElNotification } from "element-plus";
+import { ElNotification } from "element-plus";
 import { useTaskFirestore } from "../utils/useTaskFirestore";
+import { useDateTime } from "../utils/useDateTime";
 import { useTrackFirestore } from "../utils/useTrackFirestore";
 import { firebaseState, updateSettings } from "../utils/useFirebase";
 import { startFireworks } from "../utils/useConfetti";
+import BadgeItem from "../components/atoms/BadgeItem.vue";
 import TaskGroup from "../components/organisms/TaskGroup.vue";
 import WelcomeModal from "../components/organisms/WelcomeModal.vue";
 import TaskModal from "../components/organisms/TaskModal.vue";
@@ -199,7 +230,68 @@ const state = reactive({
   isTimeTrackerModalOpen: true,
   track: null,
   mobileMode: "zen",
-  tabSelected: 'todo'
+  tabSelected: 'todo',
+  badges: [
+    {      
+      iconClass: 'fa-award',
+      level: 1,
+      tier: 'task',
+      name: 'Doer',
+      xp: 1,
+      nextLevelXp: 10
+    },
+    {      
+      iconClass: 'fa-award',
+      level: 1,
+      tier: 'task',
+      name: 'Finisher',
+      xp: 1,
+      nextLevelXp: 10
+    },
+    {      
+      iconClass: 'fa-medal',
+      level: 1,
+      tier: 'system',
+      name: 'Streak',
+      xp: 1,
+      nextLevelXp: 10
+    },
+    {      
+      iconClass: 'fa-medal',
+      level: 1,
+      tier: 'system',
+      name: 'Zen',
+      xp: 1,
+      nextLevelXp: 10
+    },
+      {      
+      iconClass: 'fa-trophy',
+      level: 1,
+      tier: 'matrix',
+      name: 'Matrix Master',
+      xp: 1,
+      nextLevelXp: 10
+    },
+    {      
+      iconClass: 'fa-shield-alt',
+      level: 1,
+      tier: 'pomodoro',
+      name: 'Pomodoro King',
+      xp: 1,
+      nextLevelXp: 10
+    }
+  ],
+  badgesSummary: computed(() => {
+    return state.badges.slice(0, 2)
+  }),
+  overdues: computed(() => {
+    const { formatDate } = useDateTime()
+    return Object.entries(state.matrix).reduce((list, matrix) => {
+      return [...list,...matrix[1].list.filter((item) => {
+        return item.due_date && item.due_date < formatDate();
+      })]
+    }, [])
+  })
 });
 
 state.isWelcomeOpen = state.isWelcomeOpen || !firebaseState.settings || !firebaseState.settings.hide_welcome;
@@ -357,7 +449,7 @@ const shared = inject('shared')
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .zen__datails {
   min-height: 400px;
 }
