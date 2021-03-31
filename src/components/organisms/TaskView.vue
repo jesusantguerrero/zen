@@ -1,6 +1,7 @@
 <template>
   <div
     class="zen__datails shadow-md bg-white px-5 py-3 border-2 border-gray-100 rounded-md relative overflow-hidden"
+    @keydown.ctrl.enter.exact="saveChanges()"
   >
     <h1 class="text-xl font-bold text-gray-400 flex justify-between">
       <input 
@@ -163,6 +164,10 @@ const markAsDone = async () => {
 }
 
 const saveChanges = async () => {
+  if (!state.isEditMode) {
+    return
+  }
+  
   let canSave = true;
   if (state.checklistTitle) {
     canSave = await ElMessageBox.confirm(`There are an unsaved checklist item`, "Are you sure?", {
