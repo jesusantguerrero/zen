@@ -17,7 +17,8 @@
 import { useRoute } from "vue-router";
 import { useCollection } from "../../utils/useCollection";
 import { v4 as uuid } from "uuid";
-import { onMounted, reactive, ref } from "vue";
+import { firebaseInstance } from "../../utils/useFirebase"
+import { onMounted, ref } from "vue";
 
 const route = useRoute();
 const formData = ref({});
@@ -34,14 +35,8 @@ onMounted(() => {
 
 const accept = async () => {
   const { save } = useCollection();
-
   const code = uuid();
-
-  await save("onetimecode", {
-    code: code,
-  });
-
-  save("connections", formData.value)
+  save("connections", {...formData.value, code })
     .then(() => {
       return (location.href = `${formData.value.redirect_uri}?code=${code}&state=${formData.value.state}`);
     })
