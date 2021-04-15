@@ -23,18 +23,18 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.prize-badge {
-  position: relative;
-  &::after {
-    position: absolute;
-    content: '';
-    background: white;
-    top: 0;
-    left: 0;
-    width: 50%;
-    height: 100%;
-    opacity: .3;
+<style lang="scss">
+  .prize-badge {
+    position: relative;
+    &::after {
+      position: absolute;
+      content: '';
+      background: white;
+      top: 0;
+      left: 0;
+      width: 50%;
+      height: 100%;
+      opacity: .3;
+    }
   }
-}
 </style>

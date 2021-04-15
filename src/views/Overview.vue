@@ -14,10 +14,28 @@
 
         <div class="">
           <!-- Agenda -->
-          <div class="quick__add py-4">
-            <h4 class="font-bold text-gray-500"> Today's agenda</h4>
-            <div class="text-white font-bold h-20 bg-white rounded-md ring ring-offset-2 ring-transparent ring-offset-gray-200 shadow-md">
-             
+          <div class="quick__add py-4 text-gray-500">
+            <h4 class="font-bold"> Today's agenda</h4>
+            <div class="font-bold bg-white rounded-md ring ring-offset-2 ring-transparent ring-offset-gray-200 shadow-md px-5 py-3">
+              <task-group
+                        title="Stale"
+                        color="text-blue-400"
+                        :search="''"
+                        :tags="[]"
+                        :tasks="state.stale"
+                        :show-controls="false"
+                        :max-height="0"
+                        :is-compact="true"
+                        :is-quadrant="false"
+
+                      >
+                        <template #empty v-if="!state.overdues.length">
+                        <div class="w-8/12 md:w-6/12 mx-auto mt-10 text-center">
+                          <img src="../assets/undraw_following.svg" class="w-12/12 md:w-5/12 mx-auto"> 
+                          <div class="mt-10 md:mt-5 text-gray-500 font-bold"> There's no tasks</div>
+                        </div>
+                      </template>
+              </task-group>
             </div>
           </div>
 
@@ -84,18 +102,13 @@
           <!-- Matrix summary -->
           <div class="quick__add py-4">
             <h4 class="font-bold text-gray-500"> Matrix summary</h4>
-            <div class="grid grid-cols-2 gap-4 text-white font-bold">
-              <div class="h-20 flex justify-center items-center shadow-md rounded-md bg-green-400 cursor-pointer ring ring-offset-2 ring-transparent ring-offset-green-500">
-                Todo ({{ state.matrix.todo.list.length }})
-              </div>
-              <div class="h-20 flex justify-center items-center shadow-md rounded-md bg-blue-400 cursor-pointer ring ring-offset-2 ring-transparent ring-offset-blue-500">
-                Schedule ({{ state.matrix.schedule.list.length }})
-              </div>
-              <div class="h-20 flex justify-center items-center shadow-md rounded-md bg-yellow-400 cursor-pointer ring ring-offset-2 ring-transparent ring-offset-yellow-500">
-                Delegate ({{ state.matrix.delegate.list.length }})
-              </div>
-              <div class="h-20 flex justify-center items-center shadow-md rounded-md bg-red-400 cursor-pointer hover:scale-110 ring ring-offset-2 ring-transparent ring-offset-red-500">
-                Delete ({{ state.matrix.delete.list.length }})
+            <div class="grid lg:grid-cols-2 gap-4 text-white font-bold">
+              <div class="h-20 flex justify-center items-center shadow-md rounded-md cursor-pointer ring ring-offset-2 ring-transparent" 
+                v-for="(matrix, matrixName) in state.matrix"
+                :key="matrixName"
+                :class="matrix.classes">
+                  <span class="capitalize mr-2">{{ matrixName}}</span>
+                 ({{ matrix.list.length }})
               </div>
             </div>
           </div>
@@ -118,28 +131,6 @@
               <div class="flex space-x-2">
                 <div v-for="person in  shared" :key="person.uid" class="text-center cursor-pointer">
                   <el-avatar class="block"> {{ person.name }} </el-avatar>
-                </div>
-              </div>
-          </div>
-
-          <!-- Shared -->
-           <div class="quick__add py-4">
-              <div class="font-bold text-gray-500 flex justify-between mb-5">
-                <h4>
-                  Sharing with
-                </h4> 
-                <div class="md:flex items-center h-10">
-                  <input
-                    type="search"
-                    v-model.trim="searchOptions.text"
-                    class="w-full px-2 text-sm h-10 rounded-md focus:outline-none border-2 border-gray-200"
-                    placeholder="Search contact"
-                  />
-                </div>
-              </div>
-              <div class="flex space-x-2">
-                <div v-for="i in  [1,2]" :key="i" class="text-center">
-                  <el-avatar class="block">JG</el-avatar>
                 </div>
               </div>
           </div>
@@ -193,6 +184,7 @@ import BadgeItem from "../components/atoms/BadgeItem.vue";
 import TaskGroup from "../components/organisms/TaskGroup.vue";
 import WelcomeModal from "../components/organisms/WelcomeModal.vue";
 import TaskModal from "../components/organisms/TaskModal.vue";
+import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
 
 const {
   saveTask,
@@ -209,19 +201,23 @@ const state = reactive({
   matrix: {
     todo: {
       ref: null,
-      list: []
+      list: [],
+      classes: "bg-green-400 ring-offset-green-500"
     },
     schedule: {
       ref: null,
-      list: []
+      list: [],
+      classes: "bg-blue-400 ring-offset-blue-500"
     },
     delegate: {
       ref: null,
-      list: []
+      list: [],
+      classes: "bg-yellow-400 ring-offset-yellow-500"
     },
     delete: {
       ref: null,
-      list: []
+      list: [],
+      classes: "bg-red-400 ring-offset-red-500"
     },
   },
   showReminder: false,
@@ -289,6 +285,14 @@ const state = reactive({
     return Object.entries(state.matrix).reduce((list, matrix) => {
       return [...list,...matrix[1].list.filter((item) => {
         return item.due_date && item.due_date < formatDate();
+      })]
+    }, [])
+  }),
+  stale: computed(() => {
+      return Object.entries(state.matrix).reduce((list, matrix) => {
+      return [...list,...matrix[1].list.filter((item) => {
+        item.diff = differenceInCalendarDays(item.created_at.toDate(), new Date());
+        return item.diff;
       })]
     }, [])
   })
