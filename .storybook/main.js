@@ -1,10 +1,12 @@
 const { clear } = require("console");
 const path = require("path");
+const tailwindcss = require("tailwindcss");
 
 module.exports = {
   stories: ["../src/**/*.stories.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
   plugins: [
-    require('tailwindcss'),
+    require('postcss-import')(),
+    tailwindcss('./tailwind.config.js'),
     require('autoprefixer')
   ],
   webpackFinal: async (config, { configType }) => {
@@ -14,10 +16,7 @@ module.exports = {
         "style-loader",
         "css-loader",
         {
-          loader: "sass-loader",
-          options: {
-            additionalData: '@import "@/assets/scss/main.scss";'
-          }
+          loader: "sass-loader"
         },
       ],
       include: path.resolve(__dirname, "../"),

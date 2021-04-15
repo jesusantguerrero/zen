@@ -1,20 +1,20 @@
-import BadgeItem from '@atoms/BadgeItem.vue';
+import CustomText from '@atoms/CustomText.vue';
 
 export default {
-  title: 'Atoms/BadgeItem',
-  component: BadgeItem,
+  title: 'Atoms/CustomText',
+  component: CustomText,
   argTypes: {},
 };
 
 const Template = (args) => ({
   // Components used in your story `template` are defined in the `components` object
-  components: { BadgeItem },
+  components: { CustomText },
   // The story's `args` need to be mapped into the template through the `setup()` method
   setup() {
     return { args };
   },
   // And then the `args` are bound to your component with `v-bind="args"`
-  template: '<badge-item v-bind="args" />',
+  template: '<custom-text v-bind="args" />',
 });
 
 export const Default = Template.bind({});

@@ -1,7 +1,7 @@
-import MyButton from './Button.vue';
+import MyButton from '@atoms/Button.vue';
 
 export default {
-  title: 'Example/Button',
+  title: 'Atoms/Button',
   component: MyButton,
   argTypes: {
     backgroundColor: { control: 'color' },
