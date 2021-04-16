@@ -5,7 +5,7 @@
     <div class="flex items-baseline">
       <router-link class="text-2xl font-bold zen" to="/"> Zen.</router-link>
       <div class="hidden md:flex md:items-center md:ml-4" v-if="user">
-        <menu-item class="mx-2 pl-2" to="/">Zenboard </menu-item>
+        <menu-item class="mx-2 pl-2" to="/zenboard">Zenboard </menu-item>
         <menu-item class="ml-2 px-2" to="/standup">Stand Up</menu-item>
         <menu-item class="mx-2 px-2" to="/matrix">Matrix</menu-item>
         <menu-item class="mx-2 px-2" to="/metrics">Metrics</menu-item>
@@ -125,5 +125,9 @@ const logout = () => {
 
 #HW_badge_cont {
   position: absolute !important;
+}
+
+.router-link-active h2{
+  @apply text-gray-700
 }
 </style>

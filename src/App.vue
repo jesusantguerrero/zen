@@ -2,7 +2,6 @@
   <div class="text-center">
     <app-header :user="firebaseState.user" class="z-50" @logout="logoutUser" v-if="firebaseState.user"/>
     <router-view> </router-view>
-    <app-footer v-if="firebaseState.user"></app-footer>
   </div>
 </template>
 
@@ -10,7 +9,6 @@
 import { nextTick, ref, provide, onUnmounted, watch } from 'vue'
 import { useRouter } from "vue-router"
 import AppHeader from './components/organisms/AppHeader.vue'
-import AppFooter from './components/organisms/AppFooter.vue'
 import { logout, setLoaded, firebaseState, firebaseInstance } from "./utils/useFirebase"
 import { useCustomSelect } from "./utils/useCustomSelect"
 import { useCollection } from "./utils/useCollection"

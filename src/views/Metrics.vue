@@ -87,7 +87,7 @@ import { useTrackFirestore } from '../utils/useTrackFirestore'
 import { useDateTime } from '../utils/useDateTime'
 import { getMilliseconds } from '../utils/useTracker'
 import TaskGroup from "../components/organisms/TaskGroup.vue"
-import DatePagerWeek from "../components/molecules/DatePagerWeek.vue"
+import DatePagerWeek from "../components/atoms/DatePagerWeek.vue"
 import ReportPomodoros from "../components/organisms/ReportPomodoros.vue"
 import ReportTasks from "../components/organisms/ReportTasks.vue"
 import { format } from 'date-fns'

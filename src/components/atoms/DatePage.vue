@@ -6,8 +6,7 @@
     >
       <i class="fa fa-chevron-left"></i>
     </button>
-    <el-date-picker v-model="date" ref="input" type="date" @change="emitDate">
-    </el-date-picker>
+      <el-date-picker v-model="state.date" ref="input" type="date" @change="emitDate" />
     <button
       class="bg-white px-2 focus:outline-none hover:bg-gray-200 transition-colors"
       @click="nextDate()"
@@ -18,7 +17,7 @@
 </template>
 
 <script setup>
-import { defineEmit, onMounted, ref, watch } from "vue";
+import { defineEmit, onMounted, reactive, ref, watch } from "vue";
 import { useDateTime } from "../../utils/useDateTime";
 import { ElDatePicker } from "element-plus"
 
@@ -30,26 +29,29 @@ const emit = defineEmit({
   "update:modelValue": Date,
 });
 
-const date = ref(null);
+const state = reactive({
+  date: new Date()
+})
 
 watch(
   () => props.modelValue,
   (value) => {
-    date.value = value;
+    state.date = value || state.date;
   },
   { immediate: true }
 );
 
-const { formattedDate } = useDateTime(date);
+const { formattedDate } = useDateTime(state.date);
 
 const emitDate = () => {
-  emit("update:modelValue", date.value);
+  emit("update:modelValue", state.date);
 };
 
 const input = ref(null);
 onMounted(() => {
   input.tabIndex = -1;
 });
+
 const focusInput = (evt) => {
   const inputElement =
     input.value && input.value.$el.nextSibling.querySelector(".el-input__inner");
@@ -59,31 +61,31 @@ const focusInput = (evt) => {
 };
 
 const previousDate = () => {
-  date.value = new Date(date.value.setDate(date.value.getDate() - 1));
-  emit("update:modelValue", date.value);
+  state.date = new Date(state.date.setDate(state.date.getDate() - 1));
+  emit("update:modelValue", state.date);
 };
 
 const nextDate = () => {
-  date.value = new Date(date.value.setDate(date.value.getDate() + 1));
-  emit("update:modelValue", date.value);
+  state.date = new Date(state.date.setDate(state.date.getDate() + 1));
+  emit("update:modelValue", state.date);
 };
 </script>
 
 <style lang="scss">
-.date-pager {
-  .el-date-editor--date {
-    width: 130px !important;
-  }
+  .date-pager {
+    .el-date-editor--date {
+      width: 130px !important;
+    }
 
-  .el-input__inner {
-    border: none;
-    padding-right: 20px;
-  }
+    .el-input__inner {
+      border: none;
+      padding-right: 20px;
+    }
 
-  .el-input__icon,
-  .el-input__suffix,
-  .el-input__suffix-inner {
-    background: transparent;
+    .el-input__icon,
+    .el-input__suffix,
+    .el-input__suffix-inner {
+      background: transparent;
+    }
   }
-}
 </style>

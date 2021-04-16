@@ -69,5 +69,9 @@ const focusInput = (evt) => {
     .el-input__prefix {
         width: 0;
     }
+
+    .el-input__icon {
+        width: 0;
+    }
 }
 </style>
