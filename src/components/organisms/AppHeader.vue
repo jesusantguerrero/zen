@@ -20,10 +20,11 @@
     <div class="hidden md:flex md:items-center" v-if="user">
       <router-link 
         to="/plan-ahead" 
-        class="hidden lg:inline-block mr-2 rounded-md ring ring-gray-400 ring-offset-0 px-5 py-1 text-white bg-gray-600 hover:bg-gray-700">
+        class="hidden lg:inline-block mr-2 rounded-md ring ring-green-400 ring-offset-0 px-5 py-1 text-white bg-green-500 hover:bg-green-400">
         <i class="fa fa-tasks mr-2"></i>
          Plan Ahead
       </router-link>
+
        <div class="text-sm lg:text-lg font-bold cursor-pointer text-gray-400 mx-2 p-2 changelog flex relative hover:bg-green-100 rounded-md">
           <i class="fa fa-bullhorn"></i>
        </div>

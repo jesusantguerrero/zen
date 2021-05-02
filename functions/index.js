@@ -1,5 +1,8 @@
 const functions = require("firebase-functions");
 const admin = require('firebase-admin');
+const tasks = require('./api/tasks');
+const { firestore } = require("firebase-admin");
+const { Duration  } = require('luxon')
 admin.initializeApp();
 
 // utils
@@ -22,7 +25,31 @@ const workers = {
 // const getUser = async(uid) => {
 //     return admin.auth().getUser(uid).then(record => record).catch(() => null)
 // }
+// tasks and tracks calc
+const timeReducer = (tracks) => {
+    if (!tracks) return 0
+    return tracks.reduce((milliseconds, track)=> {
+        const duration = track.duration_ms ? Number(track.duration_ms) : 0
+        return milliseconds + duration;
+    }, 0)
+}
 
+
+exports.calcTaskTime = functions.firestore.document('tracks/{trackId}').onUpdate((async (change) => {
+    const taskUid = change.after.data().task_uid;
+    const tracksData = await firestore().collection('tracks').where('task_uid', '==', taskUid).where('uid', '!=', change.after.data().uid).get()
+    const tracks = [];
+    tracksData.forEach(doc => {
+        tracks.push({...doc.data(), uid: doc.id})
+    })
+    const savedTime = timeReducer(tracks) + change.after.data().duration_ms;
+    const timeTracked = Duration.fromMillis(savedTime).toFormat("hh:mm:ss");
+
+    firestore().collection('tasks').doc(taskUid).set({
+        duration_ms: timeTracked,
+        duration: savedTime
+    }, { merge: true })
+}))
 
 // Matrix sharing
 exports.shareMatrix = functions.https.onCall(async (data, context) => {
@@ -52,34 +79,37 @@ exports.shareMatrix = functions.https.onCall(async (data, context) => {
     return "";
 })
 
-// Social integrations
-exports.slack = functions.https.onRequest(async (request, response) => {
-    const [scope, arg] = request.body.text.split(' ')
-    if (!scope == 'login') {
-        return response.json({
-            response_type: "ephemeral",
-            message: "This command doesnt exist",
+exports.oauthaccess = functions.https.onRequest(async (request, response) => {
+    try {
+        const results = await admin.firestore().collection('connections').where('code', '==', request.body.code).limit(1).get()
+        let codeData = {}
+
+        results.forEach(snap => {
+            codeData = { uid: snap.id, ...snap.data()}
         })
-    }
-    
-    const user = await admin.auth().getUserByEmail(arg).then(record => record).catch(() => null);
-    if (user) {
-        await admin.firestore().collection('settings').doc(user.uid).set({
-            slack: request.body
-        }, { merge: true});
-       
-        return response.json({
-            "response_type": "in_channel",
-            message: "Logged in",
-        })
-    } else {
+
+        if (request.body.client_secret && codeData.uid, codeData.code) {
+            // Verify client secret or redirect_uri or both but electron wouldn't work
+            const token = await admin.auth().createCustomToken(codeData.user_uid);
+            await admin.firestore().collection('connections').doc(codeData.uid).set({
+                code: false,
+                refreshToken: token
+            }, { merge: true });
+            return response.json({access_token: token})
+        }
         return response.json({
             "response_type": "ephemeral",
             text: `This email it is not in our app`
         });
+    } catch (e) {
+        return response.json({
+            "response_type": "ephemeral",
+            text: `This email it is not in our app ${e}`
+        });
     }
 })
 
+exports.api = tasks.api;
 
 // Schedulers
 const execReminders = async() => {

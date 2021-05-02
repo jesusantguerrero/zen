@@ -2,8 +2,8 @@
   <div 
     class="task-item mb-2 bg-white border-gray-200 hover:border-green-200 border-2 px-4 rounded-md items-center transition-all cursor-pointer"
     :class="{'border-green-400': isSelected, 'py-3 shadow-md ' : !isCompact }"
-    @click="emit('selected', task)"
-    @dblclick.prevent="emit('edited', task)"
+    @click="$emit('selected', task)"
+    @dblclick.prevent="$emit('edited', task)"
 
   >
     <div class="flex justify-between">
@@ -16,13 +16,15 @@
           :class="[isDisabled && 'cursor-not-allowed', isSelected ? 'bg-green-400 text-white' : 'bg-green-100 text-green-400']"
           :title="isDisabled? 'Can change task when timer is running' : 'Click to select'"
           :disabled="isDisabled"
-          @click.stop="emit('selected', task)"
+          @click.stop="$emit('selected', task)"
         > 
             <i :class="[!task.is_key ? 'fa fa-sticky-note' : 'fa fa-fire']"></i>
         </div>
+
         <div v-else class="mr-3 rounded-md px-2 py-1 border-2 border-transparent" :class="[typeColor, keyStyles]"> 
             <i :class="[!task.is_key ? 'fa fa-sticky-note' : 'fa fa-fire']"></i>
         </div>
+
         <h4 class="task-item__title cursor-pointer m-0 text-left text-sm "> {{ task.title }}</h4>
       </div>
 
@@ -33,33 +35,36 @@
             v-model="task.contacts"
             :items="contacts"
             :multiple="true" 
-            @update:modelValue="emit('updated', task)" 
+            @update:modelValue="$emit('updated', task)" 
             @selected="addContact"
             @added="createContact"
           /> 
+          
           <div
             v-else-if="type=='delete'" 
             class="mx-2 text-gray-400 hover:text-red-400 md:text-md cursor-pointer text-sm md:text-base"
-            @click="emit('deleted', task)"
+            @click="$emit('deleted', task)"
             title="Delete">
             <i class="fa fa-trash mr-1"></i>
           </div>
-          <div
-            v-else 
-            class="task-item__tracked ml-2 text-gray-400 hover:text-gray-600 md:text-md cursor-default text-sm md:text-base flex items-center"
-            title="Time tracked">
-            <i class="fa fa-clock mr-1"></i>
-            <span> {{ timeTrackedLabel }}</span>
-          </div>
+
+          <time-tracker-button 
+            :default-value="timeTrackedLabel"
+            :is-current="isCurrent"
+            :currentTimer="currentTimer"
+            :task="currentTask"
+          />
+
+          <span> Hola</span>
 
           <date-select 
             :class="dateStates.color" 
             :title="dateStates.title" 
-            @update:modelValue="emit('updated', {...task, due_date: $event })" 
+            @update:modelValue="$emit('updated', {...task, due_date: $event })" 
             v-if="task.due_date || type == 'schedule'"
             v-model="task.due_date" 
           />   
-          <button class="bg-gray-600 text-white text-xs px-2 rounded-md hover:bg-gray-500 transition-colors" v-if="task.done" @click.stop="emit('undo', task)">Undo</button>
+          <button class="bg-gray-600 text-white text-xs px-2 rounded-md hover:bg-gray-500 transition-colors" v-if="task.done" @click.stop="$emit('undo', task)">Undo</button>
         </div>
 
         <el-dropdown trigger="click" @command="handleCommand" v-if="showControls" :disabled="isDisabled" @click.stop="">
@@ -103,7 +108,7 @@
             v-model="task.tags"
             :tags="tags"
             :multiple="true" 
-            @update:modelValue="emit('updated', {...task, tags: $event })" 
+            @update:modelValue="$emit('updated', {...task, tags: $event })" 
             @selected="addTag"
             @added="createTag"
           /> 
@@ -129,139 +134,163 @@
 
 </template>
 
-<script setup>
-import { defineProps, toRefs, ref, computed, defineEmit, watch } from "vue"
+<script>
+import { toRefs, computed, reactive } from "vue"
 import ChecklistContainer from "../organisms/ListContainer.vue"
 import PersonSelect from "../atoms/PersonSelect.vue"
 import TagsSelect from "../atoms/TagsSelect.vue"
 import DateSelect from "../atoms/DateSelect.vue"
+import TimeTrackerButtom from "../atoms/tracker/TimeTrackerButton.vue";
 import { ElNotification } from "element-plus";
 import { useDateTime } from "../../utils/useDateTime";
 import { useCustomSelect } from "../../utils/useCustomSelect";
+export default {
+  components: {
+    ChecklistContainer,
+    PersonSelect,
+    TagsSelect,
+    DateSelect,
+    TimeTrackerButtom
+  },
+  props: {
+    task: Object,
+    type: String,
+    currentTask: Object,
+    handleMode: Boolean,
+    showSelect: Boolean,
+    showControls: Boolean,
+    currentTimer: Object,
+    isItemAsHandler: Boolean,
+    isCompact: Boolean,
+    allowRun: Boolean
+  },
+  emits: {
+    deleted: Object,
+    selected: Object,
+    edited: Object,
+    up: Object,
+    down: Object,
+    undo: Object,
+    done: Object,
+    updated: Array
+  },
+  setup(props, { emit }) {
+    const { task, currentTask, currentTimer} = toRefs(props)
+    const state = reactive({
+      timeTrackedLabel: computed(() => {
+        return task.value.duration_ms ||  "00:00:00"
+      }),
+      typeColor: computed(() => {
+        const colors = {
+          todo: `bg-green-100 ${task.value.is_key ? 'text-gray-100' : 'text-green-500'}`,
+          schedule: 'bg-blue-100 text-blue-500',
+          delegate: 'bg-yellow-100 text-yellow-500',
+          delete: 'bg-red-100 text-red-500',
+          backlog: 'bg-gray-100 text-gray-500'
+        }
 
-const props = defineProps({
-  task: Object,
-  type: String,
-  currentTask: Object,
-  handleMode: Boolean,
-  showSelect: Boolean,
-  showControls: Boolean,
-  currentTimer: Object,
-  isItemAsHandler: Boolean,
-  isCompact: Boolean
-})
+        return colors[props.type] || colors['todo']
 
-const emit = defineEmit({
-  deleted: Object,
-  selected: Object,
-  edited: Object,
-  up: Object,
-  down: Object,
-  undo: Object,
-  done: Object,
-  updated: Array
-})
+      }),
+      keyStyles: computed(() => {
+        return task.value.is_key && props.type == 'todo' ? 'border-green-300 border-2 bg-green-500 text-white' : ''
+      }),
 
-const { task, currentTask, currentTimer} = toRefs(props)
+      isDisabled: computed(() => {
+        return currentTimer.value && currentTimer.value.task_uid;
+      }),
 
-const timeTrackedLabel = computed(() => {
-  return task.value.duration_ms ||  "00:00:00"
-})
+      isSelected: computed(( ) => {
+        return currentTask.value && currentTask.value.uid == task.value.uid
+      }),
 
-task.value.contacts = task.value.contacts || [] 
+      dateStates: computed(() => {
+        const { formatDate } = useDateTime()
+        const stateStyles = {
+          normal: {
+            color: 'text-gray-400',
+            title: 'due date'
+          },
+          due: {
+            color: 'text-blue-400',
+            title: 'due to today'
+          },
+          overdue: {
+            color: 'text-red-400',
+            title: 'Overdue'
+          }
+        }
 
-const typeColor = computed(() => {
-  const colors = {
-    todo: `bg-green-100 ${task.value.is_key ? 'text-gray-100' : 'text-green-500'}`,
-    schedule: 'bg-blue-100 text-blue-500',
-    delegate: 'bg-yellow-100 text-yellow-500',
-    delete: 'bg-red-100 text-red-500',
-    backlog: 'bg-gray-100 text-gray-500'
-  }
+        let dateState = 'normal';
+        if (task.value.due_date == formatDate()) {
+          dateState = 'due' 
+        } else if (task.value.due_date && task.value.due_date < formatDate()) {
+          dateState = 'overdue'
+        }
 
-  return colors[props.type] || colors['todo']
-})
+        return  stateStyles[dateState]
+      }),
+      isExpanded: false
+    })
 
-const keyStyles = computed(() => {
-  return task.value.is_key && props.type == 'todo' ? 'border-green-300 border-2 bg-green-500 text-white' : ''
-})
+    task.value.contacts = task.value.contacts || [] 
 
-const isDisabled = computed(() => {
-  return currentTimer.value && currentTimer.value.task_uid;
-})
-
-const isSelected = computed(( ) => {
-  return currentTask.value && currentTask.value.uid == task.value.uid
-})
-
-const { formatDate } = useDateTime()
-const dateStates = computed(() => {
-  const stateStyles = {
-    normal: {
-      color: 'text-gray-400',
-      title: 'due date'
-    },
-    due: {
-      color: 'text-blue-400',
-      title: 'due to today'
-    },
-    overdue: {
-      color: 'text-red-400',
-      title: 'Overdue'
+    const handleCommand = (commandName) => {
+      switch (commandName) {
+        case 'delete':
+          emit('deleted', task);
+          break;
+        case 'edit':
+          emit('edited', task)
+          break
+        case 'up':
+          emit('up', task)
+          break
+        case 'down':
+          emit('down', task)
+          break
+        case 'done':
+          emit('done', task)
+          break
+        case 'undo':
+          emit('undo', task)
+          break
+        case 'toggle-key':
+          emit('toggle-key', task)
+        default:
+          break;
+      }
     }
+
+    const toggleExpand = () => {
+      state.isExpanded = !state.isExpanded
+    }
+
+    const updateItems = () => {
+      ElNotification({
+        title: 'changed'
+      })
+    }
+
+    // Selects
+    const {list: tags, addToList: createTag, selectItem: addTag} = useCustomSelect(task, 'tags')
+    const {list: contacts, addToList: createContact, selectItem: selectContact} = useCustomSelect(task, 'contacts')
+
+    return {
+      ...toRefs(state),
+      handleCommand,
+      toggleExpand,
+      updateItems,
+      tags,createTag, addTag,
+      contacts, createContact, selectContact
+    }
+
   }
 
-  let dateState = 'normal';
-  if (task.value.due_date == formatDate()) {
-    dateState = 'due' 
-  } else if (task.value.due_date && task.value.due_date < formatDate()) {
-    dateState = 'overdue'
-  }
-
-  return  stateStyles[dateState]
-});
-
-const handleCommand = (commandName) => {
-  switch (commandName) {
-    case 'delete':
-      emit('deleted', task);
-      break;
-    case 'edit':
-      emit('edited', task)
-      break
-    case 'up':
-      emit('up', task)
-      break
-    case 'down':
-      emit('down', task)
-      break
-    case 'done':
-      emit('done', task)
-      break
-    case 'undo':
-      emit('undo', task)
-      break
-    case 'toggle-key':
-      emit('toggle-key', task)
-    default:
-      break;
-  }
 }
 
-const isExpanded = ref(false);
-const toggleExpand = () => {
-isExpanded.value = !isExpanded.value
-}
 
-const updateItems = () => {
-  ElNotification({
-    title: 'changed'
-  })
-}
 
-// Selects
-const {list: tags, addToList: createTag, selectItem: addTag} = useCustomSelect(task, 'tags')
-const {list: contacts, addToList: createContact, selectItem: selectContact} = useCustomSelect(task, 'contacts')
 </script>
 
 

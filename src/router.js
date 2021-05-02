@@ -1,4 +1,5 @@
 import ZenBoard from "./views/ZenBoard.vue";
+import Dashboard from "./views/Dashboard.vue";
 import Overview from "./views/Overview.vue";
 import Login from "./views/Login.vue";
 import Matrix from "./views/Matrix.vue";
@@ -21,6 +22,12 @@ const routes = [
     path: "/zenboard", 
     name: "zenboard",
     component: ZenBoard,
+
+  },
+  { 
+    path: "/dashboard", 
+    name: "dashboard",
+    component: Dashboard,
 
   },
   { 

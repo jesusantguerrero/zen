@@ -27,6 +27,10 @@ module.exports = {
       __dirname,
       "../src/components/atoms"
     );
+    config.resolve.alias["@molecules"] = path.resolve(
+      __dirname,
+      "../src/components/molecules"
+    );
 
     return config;
   },

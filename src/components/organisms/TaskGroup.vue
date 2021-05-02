@@ -43,6 +43,7 @@
                 :current-timer="currentTimer"
                 :is-item-as-handler="isItemAsHandler"
                 :is-compact="isCompact"
+                :allow-run="allowRun"
                 :class="taskClass"
                 @toggle-key="onToggleKey(task)"
                 @selected="emit('selected', task)"
@@ -123,7 +124,8 @@ const props = defineProps({
     },
     placeholder: String,
     isItemAsHandler: Boolean,
-    isCompact: Boolean
+    isCompact: Boolean,
+    allowRun: Boolean
 })
 const isShareModalOpen = ref(false);
 const listGroup = ref(null);
