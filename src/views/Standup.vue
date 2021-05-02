@@ -60,7 +60,6 @@ import { useTrackFirestore } from '../utils/useTrackFirestore'
 import TaskGroup from "../components/organisms/TaskGroup.vue"
 import QuickAdd from "../components/molecules/QuickAdd.vue"
 import SearchBar from "../components/molecules/SearchBar.vue"
-import TimeTracker from "../components/organisms/TimeTracker.vue"
 import ChartView from "../components/organisms/ChartView.vue"
 // state and ui
 const state = reactive({
