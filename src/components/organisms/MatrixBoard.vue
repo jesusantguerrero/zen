@@ -89,7 +89,7 @@
 
     <div class="w-full bg-white rounded-md shadow-md px-5 py-4" v-if="mode == 'timeline'">
       <div class="font-bold text-gray-500 text-left  mb-2">
-            Timeline: <span class="font-normal text-sm">Track the number of days since the task was created until today</span>
+            Timeline: <span class="font-normal text-sm">Track the number of days since the task was created until todaynp</span>
       </div>
       <roadmap-view 
         :show-toolbar="true"
@@ -114,6 +114,7 @@
 import { computed, defineProps, reactive, watch, ref, onUnmounted } from 'vue'
 import { ElMessageBox, ElNotification } from 'element-plus';
 import { RoadmapView } from "vue-temporal-components";
+import "vue-temporal-components/dist/vue-temporal-components.css";
 import { useTaskFirestore } from "../../utils/useTaskFirestore"
 import { useDateTime } from "../../utils/useDateTime"
 import TaskGroup from "../organisms/TaskGroup.vue"
