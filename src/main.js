@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import "./assets/scss/main.scss";
+import "vue-temporal-components/dist/vue-temporal-components.css";
 import ElementPlus from 'element-plus'
 import 'element-plus/lib/theme-chalk/index.css'
 import VueFinalModal from "vue-final-modal"

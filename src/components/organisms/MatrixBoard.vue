@@ -114,7 +114,6 @@
 import { computed, defineProps, reactive, watch, ref, onUnmounted } from 'vue'
 import { ElMessageBox, ElNotification } from 'element-plus';
 import { RoadmapView } from "vue-temporal-components";
-import "vue-temporal-components/dist/vue-temporal-components.css";
 import { useTaskFirestore } from "../../utils/useTaskFirestore"
 import { useDateTime } from "../../utils/useDateTime"
 import TaskGroup from "../organisms/TaskGroup.vue"
