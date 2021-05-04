@@ -6,8 +6,19 @@
          Eisenhower Matrix
       </h2>  
       <div class="space-x-2 flex">
+         <div class="w-32">
+            <jet-select
+               v-model:selected="state.viewMode"
+               :options="state.modes"
+               label="name"
+               key-track="value"
+               class="w-32"
+            >
+            </jet-select>
+         
+         </div>
          <input type="search" 
-            v-model.trim="search" 
+            v-model.trim="state.search" 
             class="px-2 text-md h-10 rounded-md focus:outline-none border-2 border-gray-200 w-full"
             placeholder="Search task"  
          >
@@ -17,16 +28,32 @@
       </div>
    </div>
 
-   <matrix-board :search="search" :show-help="showHelp">
+   <matrix-board :search="search" :show-help="showHelp" :mode="state.selectedView" />
 
-   </matrix-board>
 </div>
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { computed, reactive, ref } from "vue"
 import MatrixBoard from "../components/organisms/MatrixBoard.vue"
+import JetSelect from "../components/atoms/JetSelect.vue";
 
-const search = ref("")
-const showHelp = ref(false)
+const state = reactive({
+   showHelp:  false,
+   search: "",
+   modes: [{
+      name: 'Board',
+      value: 'matrix'
+   },{
+      name: 'Time Line',
+      value: 'timeline'
+   }],
+   viewMode: {
+      name: 'Board',
+      value: 'matrix'
+   },
+   selectedView: computed(() => {
+      return state.viewMode.value;
+   })
+})
 </script>
