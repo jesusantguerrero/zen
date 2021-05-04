@@ -88,6 +88,9 @@
     </div>
 
     <div class="w-full bg-white rounded-md shadow-md px-5 py-4" v-if="mode == 'timeline'">
+      <div class="font-bold text-gray-500 text-left  mb-2">
+            Timeline: <span class="font-normal text-sm">Track the number of days since the task was created until today</span>
+      </div>
       <roadmap-view 
         :show-toolbar="true"
         :tasks="state.roadmapTasks" 
