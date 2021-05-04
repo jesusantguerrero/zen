@@ -28,7 +28,7 @@
 
             <div
               class="select-none"
-              :class="[state.isMini ? 'w-full text-center' : 'text-5xl']"
+              :class="[state.isMini ? 'w-full text-center text-2xl' : 'text-5xl']"
             >
               {{ currentTime }}
               <div class="flex w-full h-1" :class="[state.isMini ? '' : 'mt-2']">

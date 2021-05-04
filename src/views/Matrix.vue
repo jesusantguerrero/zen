@@ -17,9 +17,7 @@
       </div>
    </div>
 
-   <matrix-board :search="search" :show-help="showHelp">
-
-   </matrix-board>
+   <matrix-board :search="search" :show-help="showHelp" />
 </div>
 </template>
 

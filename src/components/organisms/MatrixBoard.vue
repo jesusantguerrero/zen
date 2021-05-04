@@ -1,88 +1,100 @@
 <template>
-  <div class="mb-20 md:block lg:flex matrix">
-    <div 
-        class="grid md:grid-cols-2 md:gap-10" 
-        :class="{'w-full':isLineUp, 'sm:w-full lg:w-8/12': isMatrix}"
-        v-if="isMatrix || isLineUp"
-      >
+  <div class="mb-20">
+    <div class="md:block lg:flex matrix">
       <div 
-        class="zen__comming-up w-full mb-10 md:mb-0 ic-scroller pl-5 pt-3" 
-        :class="[showHelp && (!isLineUp || isLineUpMatrix(matrix))? `border-2 ${state.quadrants[matrix].border} border-dashed pr-5`: '']"
-        v-for="matrix in state.matrix" :key="matrix">
-          <task-group
-            v-if="!isLineUp || isLineUpMatrix(matrix)"
-            :title="matrix"
-            :type="matrix"
-            :search="search"
-            :tasks="state.quadrants[matrix].tasks"
-            :color="state.quadrants[matrix].color"
-            :show-controls="true"
-            :allow-move="false"
-            :handle-mode="true"
-            @done="onDone"
-            @undone="onDone"
-            @deleted="destroyTask"
-            @edited="setTaskToEdit"
-            @change="handleDragChanges"
-            @down="moveTo($event, 'schedule')"
-            @up="moveTo($event, 'todo')"
-            @move="onMove"
-            :is-quadrant="true"
-          >
-            <template #addForm v-if="!showHelp">
-              <div class="quick__add mb-4">
-                <quick-add 
-                  @saved="addTask"
-                  :allow-edit="true"
-                  :type="matrix"
-                ></quick-add>
-              </div>
-            </template>
+          class="grid md:grid-cols-2 md:gap-10" 
+          :class="{'w-full':isLineUp, 'sm:w-full lg:w-8/12': isMatrix}"
+          v-if="isMatrix || isLineUp"
+        >
+        <div 
+          class="zen__comming-up w-full mb-10 md:mb-0 ic-scroller pl-5 pt-3" 
+          :class="[showHelp && (!isLineUp || isLineUpMatrix(matrix))? `border-2 ${state.quadrants[matrix].border} border-dashed pr-5`: '']"
+          v-for="matrix in state.matrix" :key="matrix">
+            <task-group
+              v-if="!isLineUp || isLineUpMatrix(matrix)"
+              :title="matrix"
+              :type="matrix"
+              :search="search"
+              :tasks="state.quadrants[matrix].tasks"
+              :color="state.quadrants[matrix].color"
+              :show-controls="true"
+              :allow-move="false"
+              :handle-mode="true"
+              @done="onDone"
+              @undone="onDone"
+              @deleted="destroyTask"
+              @edited="setTaskToEdit"
+              @change="handleDragChanges"
+              @down="moveTo($event, 'schedule')"
+              @up="moveTo($event, 'todo')"
+              @move="onMove"
+              :is-quadrant="true"
+            >
+              <template #addForm v-if="!showHelp">
+                <div class="quick__add mb-4">
+                  <quick-add 
+                    @saved="addTask"
+                    :allow-edit="true"
+                    :type="matrix"
+                  ></quick-add>
+                </div>
+              </template>
 
-            <template #content v-if="showHelp">
-              <matrix-help-view :matrix="matrix"></matrix-help-view>
-            </template>
+              <template #content v-if="showHelp">
+                <matrix-help-view :matrix="matrix"></matrix-help-view>
+              </template>
+            </task-group>
+        </div>
+      </div>
+
+      <div 
+        :class="{
+          'md:w-full': isBacklog, 
+          'md:w-4/12 md:ml-20': isMatrix,
+          'border-2 border-gray-400 border-dashed pr-5 pl-5': showHelp}
+          " class="pt-3" v-if="isBacklog || isMatrix">
+          <task-group
+              title="backlog"
+              type="backlog"
+              color="text-gray-400"
+              :tasks="state.quadrants['backlog'].tasks"
+              :search="search"
+              :handle-mode="true"
+              :is-quadrant="true"
+              :show-controls="true"
+              :max-height="isBacklog ? 0 : 350"
+              @done="onDone"
+              @undone="onDone"
+              @deleted="destroyTask"
+              @edited="setTaskToEdit"
+              @change="handleDragChanges"
+              @move="onMove"
+            >
+              <template #addForm v-if="!showHelp">
+                <div class="quick__add mb-4">
+                  <quick-add 
+                    @saved="addTask"
+                    :allow-edit="true"
+                    type="backlog"
+                  ></quick-add>
+                </div>
+              </template>
+
+              <template #content v-if="showHelp">
+                <matrix-help-view matrix="backlog"></matrix-help-view>
+              </template>
           </task-group>
       </div>
     </div>
 
-    <div 
-      :class="{
-        'md:w-full': isBacklog, 
-        'md:w-4/12 md:ml-20': isMatrix,
-        'border-2 border-gray-400 border-dashed pr-5 pl-5': showHelp}
-        " class="pt-3" v-if="isBacklog || isMatrix">
-        <task-group
-            title="backlog"
-            type="backlog"
-            color="text-gray-400"
-            :tasks="state.quadrants['backlog'].tasks"
-            :search="search"
-            :handle-mode="true"
-            :is-quadrant="true"
-            :show-controls="true"
-            :max-height="isBacklog ? 0 : 350"
-            @done="onDone"
-            @undone="onDone"
-            @deleted="destroyTask"
-            @edited="setTaskToEdit"
-            @change="handleDragChanges"
-            @move="onMove"
-          >
-            <template #addForm v-if="!showHelp">
-              <div class="quick__add mb-4">
-                <quick-add 
-                  @saved="addTask"
-                  :allow-edit="true"
-                  type="backlog"
-                ></quick-add>
-              </div>
-            </template>
-
-            <template #content v-if="showHelp">
-              <matrix-help-view matrix="backlog"></matrix-help-view>
-            </template>
-        </task-group>
+    <div class="w-full bg-white rounded-md shadow-md px-5 py-4">
+      <roadmap-view 
+        :show-toolbar="true"
+        :tasks="state.roadmapTasks" 
+        @task-clicked="setTaskToEdit"
+        focused-text-class="text-green-500"
+        marker-bg-class="bg-green-400"
+      /> 
     </div>
 
     <task-modal 
@@ -100,6 +112,7 @@ import { computed, defineProps, reactive, watch, ref } from 'vue'
 import { ElMessageBox, ElNotification } from 'element-plus'
 import { useTaskFirestore } from "../../utils/useTaskFirestore"
 import { useDateTime } from "../../utils/useDateTime"
+import { RoadmapView } from "vue-temporal-components";
 import TaskGroup from "../organisms/TaskGroup.vue"
 import QuickAdd from "../molecules/QuickAdd.vue"
 import TaskModal from "./TaskModal.vue"
@@ -161,6 +174,14 @@ const state = reactive({
       tasks: []
     }
   },
+  roadmapTasks: computed(() => {
+    return state.tasks.map((task) => {
+      task.start = task.created_at.toDate();
+      task.end = new Date();
+      task.colorClass = 'bg-green-500'
+      return task;
+    })
+  }),
   isTaskModalOpen: false
 })
 
@@ -205,6 +226,7 @@ const destroyTask = async (task) => {
     })
   }
 }
+
 const onDone = (task) => {
   const quadrant = state.quadrants[task.matrix];
   quadrant.tasks = quadrant.tasks.filter(localTask => task.uid != localTask.uid)
