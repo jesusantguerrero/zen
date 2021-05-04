@@ -1,6 +1,7 @@
 <template>
   <div
     class="zen__datails shadow-md bg-white px-5 py-3 border-2 border-gray-100 rounded-md relative overflow-hidden"
+    @keydown.ctrl.enter.exact="saveChanges()"
   >
     <h1 class="text-xl font-bold text-gray-400 flex justify-between">
       <input 
@@ -31,6 +32,16 @@
               <i class="fa fa-calendar mr-2 text-gray-400 hover:text-gray-600"></i>
               <span> {{ task.due_date}}</span>
           </div>
+
+          <el-tooltip class="item" effect="dark" content="Remove" placement="top" v-if="!isEditMode">
+              <div 
+                class="mx-2 text-gray-400 hover:text-red-600 cursor-pointer"
+                :disabled="isDisabled"
+                @click="removeFocus()"
+              >
+                <i class="fa fa-times"></i>
+              </div>
+          </el-tooltip>
       </div>
     </h1>
 
@@ -79,7 +90,8 @@ const { formatDate } = useDateTime();
 // Events and props
 const emit = defineEmit({
   done: Object,
-  updated: Object 
+  updated: Object,
+  removed: null,
 })
 const props = defineProps({
   taskData: {
@@ -162,7 +174,25 @@ const markAsDone = async () => {
   clearTaskData()
 }
 
+const removeFocus = async () => {
+  if (state.isDisabled) {
+    ElNotification({
+      type: "info",
+      message: "Stop timer first to remove focus"
+    })
+    return 
+  }
+
+  emit('removed')
+  clearTaskData()
+}
+
 const saveChanges = async () => {
+  if (!state.isEditMode) {
+    return
+  }
+  
+
   let canSave = true;
   if (state.checklistTitle) {
     canSave = await ElMessageBox.confirm(`There are an unsaved checklist item`, "Are you sure?", {

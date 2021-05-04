@@ -29,6 +29,7 @@
             :task-data="currentTask"
             :current-timer="currentTimer"
             @done="onDone"
+            @removed="onRemoved"
             @updated="onTaskUpdated"
           >
             <template #empty v-if="!currentTask.title">
@@ -298,6 +299,10 @@ const onDone = (task) => {
     }
     startFireworks();
   });
+};
+
+const onRemoved = () => {
+  currentTask.value = {};
 };
 
 const onTaskUpdated = (task) => {
