@@ -185,7 +185,7 @@ const fetchTasks = () => {
 const uncommitedTasksRef = ref(fetchTasks());
 
 onUnmounted(() => {
-  if (uncommitedTasksRef) {
+  if (uncommitedTasksRef.value) {
     uncommitedTasksRef.value();
   }
 });
