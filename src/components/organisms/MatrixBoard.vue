@@ -97,7 +97,19 @@
         @task-clicked="setTaskToEdit"
         focused-text-class="text-green-500"
         marker-bg-class="bg-green-400"
-      /> 
+      >
+        <template v-slot:description="{focusedTextClass, item: task, differenceInCalendarDays: days}">
+           <div class="mx-2 text-left h-full flex items-center">
+            <span class="capitalize text-gray-400" :class="state.quadrants[task.matrix].color">
+              {{ task.matrix}}:
+            </span>
+               {{ task.title }} 
+              <span class="text-sm font-bold ml-2" :class="focusedTextClass">
+                {{ days }} days
+              </span>
+            </div>
+        </template>
+      </roadmap-view> 
     </div>
 
     <task-modal 
@@ -114,7 +126,6 @@
 import { computed, defineProps, reactive, watch, ref, onUnmounted } from 'vue'
 import { ElMessageBox, ElNotification } from 'element-plus';
 import { RoadmapView } from "vue-temporal-components";
-import "vue-temporal-components/dist/vue-temporal-components.css";
 import { useTaskFirestore } from "../../utils/useTaskFirestore"
 import { useDateTime } from "../../utils/useDateTime"
 import TaskGroup from "../organisms/TaskGroup.vue"
