@@ -96,7 +96,7 @@
 </template>
 
 <script setup>
-import { computed, defineProps, reactive, watch, ref } from 'vue'
+import { computed, defineProps, reactive, watch, ref, onUnmounted } from 'vue'
 import { ElMessageBox, ElNotification } from 'element-plus'
 import { useTaskFirestore } from "../../utils/useTaskFirestore"
 import { useDateTime } from "../../utils/useDateTime"
@@ -168,11 +168,31 @@ const state = reactive({
 const { toISO } = useDateTime() 
 const { getUncommitedTasks, saveTask, updateTask, updateTaskBatch, deleteTask } = useTaskFirestore()
 
-getUncommitedTasks().then(tasks => {
-    state.tasks = tasks
+const fetchTasks = () => {
+  getUncommitedTasks().then(collectionRef => {
+    const unsubscribe = collectionRef.onSnapshot((snap) => {
+      const tasks = [];
+      snap.forEach((doc) => {
+        tasks.push({ ...doc.data(), uid: doc.id });
+      });
+      state.tasks = tasks
+  });
+
+    return unsubscribe;
+  });
+}
+
+const uncommitedTasksRef = ref(fetchTasks());
+
+onUnmounted(() => {
+  if (uncommitedTasksRef) {
+    uncommitedTasksRef.value();
+  }
 });
 
 watch(() => state.tasks, () => {
+  Object.values(state.quadrants).forEach((quadrant) => quadrant.tasks = []);
+  
   state.tasks.forEach(task => {
     if (state.quadrants[task.matrix] && !state.quadrants[task.matrix].tasks) {
       state.quadrants[task.matrix].tasks = [task];

@@ -88,19 +88,13 @@ export function useTaskFirestore() {
         return tasks;
     }
 
-    const getUncommitedTasks = async (date, userUuid) => {
-        const tasks = [];
-        await db.collection(collectionName)
+    const getUncommitedTasks = async (userUuid) => {
+        const uncommitedRef = db.collection(collectionName)
         .where("user_uid", "==", userUuid || firebaseState.user.uid)
         .where("done", "==", false)
         .orderBy("order")
-        .get()
-        .then(querySnapshot => {
-            querySnapshot.forEach((doc) => {
-                tasks.push({...doc.data(), uid: doc.id });
-            });
-        })
-        return tasks;
+    
+        return uncommitedRef
     }
 
     const getTaskByMatrix = async (matrix) => {
