@@ -50,6 +50,7 @@
                 @edited="emit('edited', task)"
                 @undo="onUndo(task)"
                 @done="onDone(task)"
+                @clone="onClone(task)"
                 @up="emit('up', task)"
                 @down="emit('down', task)"
               />
@@ -72,6 +73,7 @@
 <script setup>
 import { computed, defineProps, onMounted, ref, toRefs } from "vue"
 import { VueDraggableNext as Draggable } from "vue-draggable-next"
+import { v4 as uuid } from "uuid";
 import { useFuseSearch } from "../../utils/useFuseSearch"
 import { useTaskFirestore } from "../../utils/useTaskFirestore"
 import { useDateTime } from "../../utils/useDateTime"
@@ -210,7 +212,7 @@ const emitChange = ( evt, matrix ) => {
   emit('change', evt, matrix)
 }
 
-const { updateTask } = useTaskFirestore();
+const { updateTask, saveTask } = useTaskFirestore();
 const keyTasks = computed(() => {
   return tasks.value.filter(item => item.is_key).length;
 });
@@ -248,6 +250,24 @@ const onDone = async (task) => {
   updateTask(task).then(() => {
     emit('done', task)
   })
+}
+
+const onClone = (task) => {
+  const formData = {...task}
+  formData.uid = null
+  formData.title += " copy";
+  formData.duration_ms = null
+  formData.duration = 0
+  formData.order = 0
+  formData.track = [];
+  formData.copied_from = task.uid;
+  formData.is_copy = true
+  saveTask(formData).then(() => {
+      ElNotification({
+        message: "Task Copied"
+      })
+      emit('clone', formData);
+  });
 }
 
 const updateFields = (task) => {

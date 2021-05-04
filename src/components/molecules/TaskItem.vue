@@ -72,6 +72,7 @@
               <el-dropdown-item command="delete" icon="el-icon-delete">Delete </el-dropdown-item>
               <el-dropdown-item command="done" icon="el-icon-check" v-if="!task.done"> Mark as done </el-dropdown-item>
               <el-dropdown-item command="undo" icon="el-icon-refresh-left" v-else> undo </el-dropdown-item>
+              <el-dropdown-item command="clone" icon="el-icon-document-copy"> Duplicate </el-dropdown-item>
               <el-dropdown-item command="toggle-key" icon="el-icon-s-flag" v-if="task.matrix=='todo'"> Key task </el-dropdown-item>
               <el-dropdown-item command="up" icon="el-icon-arrow-left" v-if="task.matrix=='schedule'">Move to todo</el-dropdown-item>
               <el-dropdown-item command="down" icon="el-icon-arrow-right" v-if="task.matrix=='todo'">Move to schedule</el-dropdown-item>
@@ -240,6 +241,9 @@ const handleCommand = (commandName) => {
       break
     case 'undo':
       emit('undo', task)
+      break
+    case 'clone':
+      emit('clone', task)
       break
     case 'toggle-key':
       emit('toggle-key', task)

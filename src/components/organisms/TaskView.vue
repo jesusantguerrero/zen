@@ -126,13 +126,19 @@ const state = reactive({
 })
 
 // Tasks domain
+const clearTaskData = () => {
+  state.task = {}
+}
+
 const setTaskData = (taskData) => {
-  if (taskData && state.task) {
+  if (taskData && state.task && taskData.title) {
     const data = Object.assign({...taskData}, {});
     Object.keys(data).forEach((key) => {
       const objectData = data[key]
       state.task[key] = Array.isArray(objectData) ? [...objectData] : objectData
     });
+  } else {
+    clearTaskData()
   }
 }
 
@@ -140,9 +146,7 @@ watch(() => taskData.value, (taskData) => {
   setTaskData(taskData)
 }, { immediate: true, deep: true })
 
-const clearTaskData = () => {
-  state.task = {}
-}
+
 
 // Controls Domain
 const markAsDone = async () => {
