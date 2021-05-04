@@ -29,6 +29,7 @@
             :task-data="currentTask"
             :current-timer="currentTimer"
             @done="onDone"
+            @removed="onRemoved"
             @updated="onTaskUpdated"
           >
             <template #empty v-if="!currentTask.title">
@@ -122,6 +123,7 @@
               :tags="selectedTags"
               placeholder="Click a task select"
               @change="handleDragChanges"
+              @clone="onClone"
               @deleted="destroyTask"
               @edited="setTaskToEdit"
               @selected="setCurrentTask"
@@ -249,6 +251,11 @@ const setCurrentTask = (task) => {
   currentTask.value = task;
 };
 
+const onClone = (task) => {
+  const data = state.todo.sort( (a, b) => a.created_at.toDate() < b.created_at.toDate() ? 1 : -1);
+  setCurrentTask(data[0]);
+}
+
 // Edit task
 const taskToEdit = ref({});
 const setTaskToEdit = (task) => {
@@ -298,6 +305,10 @@ const onDone = (task) => {
     }
     startFireworks();
   });
+};
+
+const onRemoved = () => {
+  currentTask.value = {};
 };
 
 const onTaskUpdated = (task) => {
@@ -364,6 +375,11 @@ const destroyTask = async (task) => {
       state[task.matrix] = state[task.matrix].filter(
         (localTask) => task.uid != localTask.uid
       );
+
+      if (task.uid == currentTask.value.uid) {
+        onRemoved();
+      }
+
       ElNotification({
         type: "success",
         message: "Task deleted",

@@ -129,7 +129,8 @@ const task = reactive({
 const state = reactive({
   isExpanded: false,
   tags: [],
-  contacts: []
+  contacts: [],
+  checklistTitle: ""
 })
 
 const taskForm = ref(null)
