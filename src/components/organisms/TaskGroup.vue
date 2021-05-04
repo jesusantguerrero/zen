@@ -73,7 +73,6 @@
 <script setup>
 import { computed, defineProps, onMounted, ref, toRefs } from "vue"
 import { VueDraggableNext as Draggable } from "vue-draggable-next"
-import { v4 as uuid } from "uuid";
 import { useFuseSearch } from "../../utils/useFuseSearch"
 import { useTaskFirestore } from "../../utils/useTaskFirestore"
 import { useDateTime } from "../../utils/useDateTime"
