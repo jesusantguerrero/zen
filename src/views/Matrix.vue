@@ -22,19 +22,20 @@
             class="px-2 text-md h-10 rounded-md focus:outline-none border-2 border-gray-200 w-full"
             placeholder="Search task"  
          >
-         <button title="help" class="bg-gray-600 hover:bg-gray-700 transition-all text-white px-5 py-1 rounded-md ml-2 focus:outline-none" @click="showHelp = !showHelp">
+         <button title="help" class="bg-gray-600 hover:bg-gray-700 transition-all text-white px-5 py-1 rounded-md ml-2 focus:outline-none" 
+         @click="state.showHelp = !state.showHelp">
             <i class="fa fa-question"></i>
          </button>
       </div>
    </div>
 
-   <matrix-board :search="state.search" :show-help="showHelp" :mode="state.selectedView" />
+   <matrix-board :search="state.search" :show-help="state.showHelp" :mode="state.selectedView" />
 
 </div>
 </template>
 
 <script setup>
-import { computed, reactive, ref } from "vue"
+import { computed, reactive } from "vue"
 import MatrixBoard from "../components/organisms/MatrixBoard.vue"
 import JetSelect from "../components/atoms/JetSelect.vue";
 

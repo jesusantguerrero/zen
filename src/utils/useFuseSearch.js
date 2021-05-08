@@ -1,5 +1,5 @@
 import Fuse from "fuse.js"
-import { computed, ref} from "vue";
+import { computed, isRef, ref, toRef} from "vue";
 
 export function useFuseSearch(searchRef, listRef, tagsRef, keys = []) {
     const search = searchRef || ref(null)
@@ -18,9 +18,10 @@ export function useFuseSearch(searchRef, listRef, tagsRef, keys = []) {
       }  
       
       const filteredList = computed(() => {
-        if (!list.value) return [];
-        const fuse = new Fuse([...list.value], options);
-        const result = search.value && list.value.length ? fuse.search(search.value).map(item => item.item) : list.value;
+        const listValue = list.value;
+        if (!listValue) return [];
+        const fuse = new Fuse([...listValue], options);
+        const result = search.value && listValue.length ? fuse.search(search.value).map(item => item.item) : listValue;
         const searchResult = result.sort((fist, second) => {
           fist.order > second.order ? 1 : -1;
         })
