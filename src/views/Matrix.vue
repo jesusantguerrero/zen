@@ -28,7 +28,7 @@
       </div>
    </div>
 
-   <matrix-board :search="search" :show-help="showHelp" :mode="state.selectedView" />
+   <matrix-board :search="state.search" :show-help="showHelp" :mode="state.selectedView" />
 
 </div>
 </template>
