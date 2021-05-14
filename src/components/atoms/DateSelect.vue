@@ -24,6 +24,7 @@
 <script setup>
 import { defineEmit, onMounted, ref, watch } from "vue";
 import { useDateTime } from "../../utils/useDateTime";
+import { ElDatePicker } from "element-plus"
 const date = ref(null)
 const { formattedDate, getDateFromString } = useDateTime(date);
 
@@ -66,6 +67,10 @@ const focusInput = (evt) => {
     }
 
     .el-input__prefix {
+        width: 0;
+    }
+
+    .el-input__icon {
         width: 0;
     }
 }
