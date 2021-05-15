@@ -47,15 +47,12 @@
             title="Delete">
             <i class="fa fa-trash mr-1"></i>
           </div>
-
-          <time-tracker-button 
+          <time-tracker-button
+            :allow-run="allowRun"
             :default-value="timeTrackedLabel"
-            :is-current="isCurrent"
             :currentTimer="currentTimer"
             :task="currentTask"
           />
-
-          <span> Hola</span>
 
           <date-select 
             :class="dateStates.color" 
@@ -136,21 +133,22 @@
 
 <script>
 import { toRefs, computed, reactive } from "vue"
+import { ElNotification } from "element-plus";
 import ChecklistContainer from "../organisms/ListContainer.vue"
 import PersonSelect from "../atoms/PersonSelect.vue"
 import TagsSelect from "../atoms/TagsSelect.vue"
 import DateSelect from "../atoms/DateSelect.vue"
-import TimeTrackerButtom from "../atoms/tracker/TimeTrackerButton.vue";
-import { ElNotification } from "element-plus";
+import TimeTrackerButton from "../atoms/tracker/TimeTrackerButton.vue";
 import { useDateTime } from "../../utils/useDateTime";
 import { useCustomSelect } from "../../utils/useCustomSelect";
+
 export default {
   components: {
     ChecklistContainer,
     PersonSelect,
     TagsSelect,
     DateSelect,
-    TimeTrackerButtom
+    TimeTrackerButton
   },
   props: {
     task: Object,

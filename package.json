@@ -27,7 +27,8 @@
     "vue": "^3.0.5",
     "vue-draggable-next": "^2.0.1",
     "vue-final-modal": "^1.8.5",
-    "vue-router": "^4.0.3"
+    "vue-router": "^4.0.3",
+    "vue-temporal-components": "^0.1.5"
   },
   "devDependencies": {
     "@babel/core": "^7.13.15",

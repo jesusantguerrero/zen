@@ -43,6 +43,7 @@
                 :current-timer="currentTimer"
                 :is-item-as-handler="isItemAsHandler"
                 :class="taskClass"
+                :allow-run="allowRun"
                 @toggle-key="onToggleKey(task)"
                 @selected="emit('selected', task)"
                 @deleted="emit('deleted', task)"
@@ -122,7 +123,8 @@ const props = defineProps({
       type: String
     },
     placeholder: String,
-    isItemAsHandler: Boolean
+    isItemAsHandler: Boolean,
+    allowRun: Boolean
 })
 const isShareModalOpen = ref(false);
 const listGroup = ref(null);

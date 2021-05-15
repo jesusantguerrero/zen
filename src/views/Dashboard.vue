@@ -6,17 +6,15 @@
         :class="[state.mobileMode == 'zen' ? 'block' : 'hidden']"
       >
         <header>
-          <div class="md:block text-2xl font-bold text-gray-400 flex items-center">
-            <h1 class="inline-block"> Dashboard </h1>
-        
-            <button 
-              class="text-sm bg-white p-2 rounded-md font-bold shadow-sm border hover:shadow-md"
+          <h1 class="md:block text-2xl font-bold text-gray-400 flex items-center">
+            Dashboard
+            <button class="text-sm bg-white p-2 rounded-md font-bold shadow-md border"
               @click="$emit('update', false)"
             >
-                <i class="fa fa-chevron-left"></i>
+             <i class="fa fa-chevron-left"></i>
               Legacy Home Screen
             </button>
-          </div>
+          </h1>
 
           <div class="flex justify-between mt-5">
             <tab-header v-model="state.tabSelected" :tabs="state.tabs" class="rounded-md overflow-hidden"/>
