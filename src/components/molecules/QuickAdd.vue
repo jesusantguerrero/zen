@@ -55,7 +55,13 @@
         </textarea>
         
         <div class="task-item__checklist">
-          <checklist-container :items="task.checklist" :allow-edit="allowEdit"></checklist-container>
+          <checklist-container 
+            v-model="state.checklistTitle"
+            :items="task.checklist" 
+            :allow-edit="allowEdit"
+            :task="task"
+            >
+          </checklist-container>
         </div>
 
         <div class="flex justify-between items-center mt-2">
@@ -73,7 +79,7 @@
             <button class="px-5 py-2 rounded-md focus:outline-none transition-colors bg-green-400 hover:bg-green-500 text-white " type="submit" @click.prevent="save()"> Save</button>
           </div>
         </div>
-        <div class="text-xs mr-2 font-bold text-green-400 text-right pt-2">
+        <div class="text-xs mr-2 font-bold text-gray-600 text-right pt-2">
             <i class="fa fa-lightbulb"></i>
             ProTip! save with ctrl + enter
           </div>
@@ -148,7 +154,6 @@ onMounted(() => {
     state.isExpanded = false;
   })
 })
-
 
 const isReminder = computed(() => {
   return props.mode == 'reminder'

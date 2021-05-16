@@ -1,10 +1,12 @@
 import ZenBoard from "./views/ZenBoard.vue";
+import Dashboard from "./views/Dashboard.vue";
 import Overview from "./views/Overview.vue";
 import Login from "./views/Login.vue";
 import Matrix from "./views/Matrix.vue";
 import MatrixShared from "./views/MatrixShared.vue";
 import Standup from "./views/Standup.vue";
 import About from "./views/About.vue";
+import OauthAccept from "./views/auth/OauthAccept.vue";
 import Settings from "./views/Settings.vue";
 import PlanAhead from "./views/PlanAhead.vue";
 import Metrics from "./views/Metrics.vue";
@@ -20,6 +22,12 @@ const routes = [
     path: "/zenboard", 
     name: "zenboard",
     component: ZenBoard,
+
+  },
+  { 
+    path: "/dashboard", 
+    name: "dashboard",
+    component: Dashboard,
 
   },
   { 
@@ -77,6 +85,25 @@ const routes = [
     },
   },
   {
+    path: "/oauth2/authorize",
+    component: Login,
+    name: "oauthLogin",
+    props: {
+      mode: 'oauth'
+    },
+    meta: {
+      requiresAuth: false,
+    },
+  },
+  {
+    path: "/oauth2/accept",
+    component: OauthAccept,
+    name: "oauthAccept",
+    props: {
+      mode: 'oauth'
+    }
+  },
+  {
     path: "/",
     component: Landing,
     name: "home",
@@ -96,6 +123,9 @@ myRouter.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth !== false && !user) {
     next({name: "login"})
   } else if (to.meta.requiresAuth == false && user) {
+    if (['oauthLogin'].includes(to.name, from.name)) {
+      return next({ name: "oauthAccept", query: to.query })
+    }
     next({name: "zenboard"})
   }else {
     next();

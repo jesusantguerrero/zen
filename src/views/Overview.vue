@@ -12,34 +12,131 @@
           <small class="text-sm">See your day in a glance</small>
         </header>
 
-        <div class="">
-          <!-- Agenda -->
-          <div class="quick__add py-4">
-            <h4 class="font-bold text-gray-500"> Today's agenda</h4>
-            <div class="text-white font-bold h-20 bg-white rounded-md ring ring-offset-2 ring-transparent ring-offset-gray-200 shadow-md">
-             
-            </div>
-          </div>
+      <div
+        class="zen__view md:block md:w-full md:mr-20"
+        :class="[state.mobileMode == 'zen' ? 'block' : 'hidden']"
+      >
+        <header>
+          <div class="flex justify-between mt-5">
+            <tab-header v-model="state.tabSelected" :tabs="state.tabs" class="rounded-md overflow-hidden"/>
 
-          <div class="flex space-x-4">
-            <!-- Overdue -->
-            <div class="quick__add py-4 w-3/12">
-              <h4 class="font-bold text-gray-500"> Badges</h4>
-              <div class="text-white font-bold h-20 bg-white rounded-md ring ring-offset-2 ring-transparent ring-offset-gray-200 shadow-md">
-              
+            <div class="flex itemx-center space-x-2">
+              <div class="md:flex items-center h-10">
+                <input
+                  type="search"
+                  v-model.trim="searchOptions.text"
+                  class="w-44 px-2 text-sm h-10 rounded-md focus:outline-none border-2 border-gray-200"
+                  placeholder="Search task"
+                />
+
+                <tags-select
+                  v-model="searchOptions.tags"
+                  :multiple="true"
+                  placeholder="Filter by tag"
+                  :tags="tags"
+                  class="w-full h-full md:ml-2 bg-white px-2 py-2 rounded-md border-gray-200 border-2"
+                  :allow-add="false"
+                />
               </div>
             </div>
-
-            <!-- Overdue -->
-            <div class="quick__add py-4 w-9/12">
-              <h4 class="font-bold text-gray-500"> Overdue</h4>
-              <div class="text-white font-bold h-20 bg-white rounded-md ring ring-offset-2 ring-transparent ring-offset-gray-200 shadow-md">
-              
-              </div>
-            </div>
-          
           </div>
+        </header>
+
+        <div class="mt-5">
+          <quick-add
+            @saved="addTask"
+            type="todo"
+            :allow-edit="true"
+          />
+
+          <task-group
+            v-if="state.tabSelected == 'todo'"
+            :show-title="false"
+            title="Todo"
+            class="py-3"
+            type="todo"
+            placeholder="Click a task select"
+            :allow-select="false"
+            :tasks="state.matrix.todo.list"
+            :search="searchOptions.text"
+            :show-select="true"
+            :show-controls="true"
+            :current-task="currentTask"
+            :current-timer="currentTimer"
+            :is-item-as-handler="true"
+            :tags="selectedTags"
+            @toggle-timer="setCurrentTask"
+            @change="handleDragChanges"
+            @deleted="destroyTask"
+            @edited="setTaskToEdit"
+            @down="moveTo($event, 'schedule')"
+          >
+          </task-group>
+
+          <task-group
+            v-if="state.tabSelected == 'schedule'"
+            :show-title="false"
+            title="Schedule"
+            :tasks="state.matrix.schedule.list"
+            :tags="selectedTags"
+            :active="false"
+            :show-controls="true"
+            :search="searchOptions.text"
+            type="schedule"
+            class="py-3"
+            placeholder="Move task to todo to select"
+            :is-item-as-handler="true"
+            @deleted="destroyTask"
+            @edited="setTaskToEdit"
+            @up="moveTo($event, 'todo')"
+            @change="handleDragChanges"
+          >
+          </task-group>
+
+          <task-group
+              v-if="state.tabSelected == 'stale'"
+              title="Stale"
+              color="text-blue-400"
+              :search="''"
+              :tags="[]"
+              :tasks="state.stale"
+              :show-controls="false"
+              :max-height="0"
+              :is-compact="true"
+              :is-quadrant="false"
+
+            >
+              <template #empty v-if="!state.overdues.length">
+              <div class="w-8/12 md:w-6/12 mx-auto mt-10 text-center">
+                <img src="../assets/undraw_following.svg" class="w-12/12 md:w-5/12 mx-auto"> 
+                <div class="mt-10 md:mt-5 text-gray-500 font-bold"> There's no tasks</div>
+              </div>
+            </template>
+          </task-group>
+
+          <task-group
+              title="Overdues"
+              type="schedule"
+              color="text-blue-400"
+              v-if="state.tabSelected == 'overdues'"
+              :search="''"
+              :tags="[]"
+              :tasks="state.overdues"
+              :show-controls="false"
+              :max-height="0"
+              :is-compact="true"
+              :is-quadrant="false"
+
+            >
+              <template #empty v-if="!state.overdues.length">
+              <div class="w-8/12 md:w-6/12 mx-auto mt-10 text-center">
+                <img src="../assets/undraw_following.svg" class="w-12/12 md:w-5/12 mx-auto"> 
+                <div class="mt-10 md:mt-5 text-gray-500 font-bold"> There's no tasks</div>
+              </div>
+            </template>
+          </task-group>
         </div>
+      </div>
       </div>
 
       <div
@@ -55,24 +152,19 @@
           <!-- Matrix summary -->
           <div class="quick__add py-4">
             <h4 class="font-bold text-gray-500"> Matrix summary</h4>
-            <div class="grid grid-cols-2 gap-4 text-white font-bold">
-              <div class="h-20 flex justify-center items-center shadow-md rounded-md bg-green-400 cursor-pointer ring ring-offset-2 ring-transparent ring-offset-green-500">
-                Todo ({{ state.matrix.todo.list.length }})
-              </div>
-              <div class="h-20 flex justify-center items-center shadow-md rounded-md bg-blue-400 cursor-pointer ring ring-offset-2 ring-transparent ring-offset-blue-500">
-                Schedule ({{ state.matrix.schedule.list.length }})
-              </div>
-              <div class="h-20 flex justify-center items-center shadow-md rounded-md bg-yellow-400 cursor-pointer ring ring-offset-2 ring-transparent ring-offset-yellow-500">
-                Delegate ({{ state.matrix.delegate.list.length }})
-              </div>
-              <div class="h-20 flex justify-center items-center shadow-md rounded-md bg-red-400 cursor-pointer hover:scale-110 ring ring-offset-2 ring-transparent ring-offset-red-500">
-                Delete ({{ state.matrix.delete.list.length }})
+            <div class="grid lg:grid-cols-2 gap-4 text-white font-bold">
+              <div class="h-20 flex justify-center items-center shadow-md rounded-md cursor-pointer ring ring-offset-2 ring-transparent" 
+                v-for="(matrix, matrixName) in state.matrix"
+                :key="matrixName"
+                :class="matrix.classes">
+                  <span class="capitalize mr-2">{{ matrixName}}</span>
+                 ({{ matrix.list.length }})
               </div>
             </div>
           </div>
 
           <!-- Shared -->
-           <div class="quick__add py-4">
+           <div class="quick__add py-4" v-if="false">
               <div class="font-bold text-gray-500 flex justify-between mb-5">
                 <h4>
                   Shared with me
@@ -93,26 +185,39 @@
               </div>
           </div>
 
-          <!-- Shared -->
-           <div class="quick__add py-4">
+          <div class="py-4">
               <div class="font-bold text-gray-500 flex justify-between mb-5">
                 <h4>
-                  Sharing with
+                  Your yesterday's work
                 </h4> 
-                <div class="md:flex items-center h-10">
-                  <input
-                    type="search"
-                    v-model.trim="searchOptions.text"
-                    class="w-full px-2 text-sm h-10 rounded-md focus:outline-none border-2 border-gray-200"
-                    placeholder="Search contact"
-                  />
-                </div>
               </div>
-              <div class="flex space-x-2">
-                <div v-for="i in  [1,2]" :key="i" class="text-center">
-                  <el-avatar class="block">JG</el-avatar>
-                </div>
+              <background-icon-card
+                class="bg-blue-400 h-36 text-white"
+                icon="fas fa-clock"
+                value="Quick Standup"
+              >
+                <template #action>
+                  <Button class="bg-blue-500"> Go to standup </Button>
+                </template>
+              </background-icon-card>
+          </div>
+          
+          <div class="py-4">
+              <div class="font-bold text-gray-500 flex justify-between">
+                <h4>
+                  What's comming today
+                </h4> 
               </div>
+     
+            <background-icon-card
+              class="bg-gray-700 h-36 text-white mt-5"
+              icon="fas fa-calendar"
+              value="Schedule"
+            >
+              <template #action>
+                <Button class="bg-gray-800"> Connect Calendar </Button>
+              </template>
+            </background-icon-card>
           </div>
         </div>
       </div>
@@ -130,38 +235,27 @@
       @closed="taskToEdit = null"
     >
     </task-modal>
-
-    <!-- mobile nav -->
-    <div class="md:hidden bg-gray-600 text-white flex h-10 fixed bottom-0 w-full left-0">
-      <div
-        class="text-xl font-bold text-center w-full h-full my-auto flex items-center justify-center"
-        :class="{ 'bg-gray-900': state.mobileMode == 'zen' }"
-        @click="state.mobileMode = 'zen'"
-      >
-        Zen
-      </div>
-      <div
-        class="text-xl font-bold text-center h-full w-full my-auto flex items-center justify-center"
-        :class="{ 'bg-gray-900': state.mobileMode == 'lineup' }"
-        @click="state.mobileMode = 'lineup'"
-      >
-        Lineup
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
 import { inject, nextTick, onUnmounted, reactive, ref, watch, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { ElMessageBox, ElNotification } from "element-plus";
+import { ElNotification } from "element-plus";
 import { useTaskFirestore } from "../utils/useTaskFirestore";
+import { useDateTime } from "../utils/useDateTime";
 import { useTrackFirestore } from "../utils/useTrackFirestore";
 import { firebaseState, updateSettings } from "../utils/useFirebase";
 import { startFireworks } from "../utils/useConfetti";
+import BadgeItem from "../components/atoms/BadgeItem.vue";
+import Button from "../components/atoms/Button.vue";
+import BackgroundIconCard from "../components/molecules/BackgroundIconCard.vue";
+import TagsSelect from "../components/atoms/TagsSelect.vue";
+import TabHeader from "../components/atoms/TabHeader.vue";
 import TaskGroup from "../components/organisms/TaskGroup.vue";
 import WelcomeModal from "../components/organisms/WelcomeModal.vue";
 import TaskModal from "../components/organisms/TaskModal.vue";
+import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
 
 const {
   saveTask,
@@ -178,19 +272,23 @@ const state = reactive({
   matrix: {
     todo: {
       ref: null,
-      list: []
+      list: [],
+      classes: "bg-green-400 ring-offset-green-500"
     },
     schedule: {
       ref: null,
-      list: []
+      list: [],
+      classes: "bg-blue-400 ring-offset-blue-500"
     },
     delegate: {
       ref: null,
-      list: []
+      list: [],
+      classes: "bg-yellow-400 ring-offset-yellow-500"
     },
     delete: {
       ref: null,
-      list: []
+      list: [],
+      classes: "bg-red-400 ring-offset-red-500"
     },
   },
   showReminder: false,
@@ -199,7 +297,45 @@ const state = reactive({
   isTimeTrackerModalOpen: true,
   track: null,
   mobileMode: "zen",
-  tabSelected: 'todo'
+  tabSelected: 'todo',
+  tabs: [
+    {
+      label: "Todo",
+      name: "todo",
+      focusClass: "text-green-400",
+    },
+    {
+      label: "Schedule",
+      name: "schedule",
+      focusClass: "text-blue-400",
+    },
+    {
+      label: "Stale",
+      name: "stale",
+      focusClass: "text-yellow-400",
+    },
+    {
+      label: "Overdues",
+      name: "overdues",
+      focusClass: "text-red-400",
+    },
+  ],
+  overdues: computed(() => {
+    const { formatDate } = useDateTime()
+    return Object.entries(state.matrix).reduce((list, matrix) => {
+      return [...list,...matrix[1].list.filter((item) => {
+        return item.due_date && item.due_date < formatDate();
+      })]
+    }, [])
+  }),
+  stale: computed(() => {
+      return Object.entries(state.matrix).reduce((list, matrix) => {
+      return [...list,...matrix[1].list.filter((item) => {
+        item.diff = differenceInCalendarDays(item.created_at.toDate(), new Date());
+        return item.diff;
+      })]
+    }, [])
+  })
 });
 
 state.isWelcomeOpen = state.isWelcomeOpen || !firebaseState.settings || !firebaseState.settings.hide_welcome;
@@ -357,7 +493,7 @@ const shared = inject('shared')
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .zen__datails {
   min-height: 400px;
 }

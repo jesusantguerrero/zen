@@ -4,7 +4,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "deploy:google": "npm run build && firebase deploy --only hosting",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook",
+    "build:tailwind": "postcss src/assets/scss/base.scss -o src/assets/scss/tailwind.scss"
   },
   "dependencies": {
     "@vueuse/core": "^4.0.12",
@@ -16,10 +20,10 @@
     "element-plus": "^1.0.2-beta.30",
     "firebase": "^8.2.4",
     "fuse.js": "^6.4.6",
+    "lodash-es": "^4.17.21",
     "luxon": "^1.25.0",
     "mongoose": "^5.11.14",
     "randomcolor": "^0.6.2",
-    "rrule": "^2.6.8",
     "vue": "^3.0.5",
     "vue-draggable-next": "^2.0.1",
     "vue-final-modal": "^1.8.5",
@@ -27,16 +31,32 @@
     "vue-temporal-components": "^0.1.5"
   },
   "devDependencies": {
+    "@babel/core": "^7.13.15",
+    "@storybook/addon-actions": "^6.2.9",
+    "@storybook/addon-essentials": "^6.2.9",
+    "@storybook/addon-links": "^6.2.9",
+    "@storybook/addon-postcss": "^2.0.0",
+    "@storybook/vue3": "^6.2.9",
     "@tailwindcss/typography": "^0.4.0",
     "@vitejs/plugin-vue": "^1.1.2",
     "@vue/compiler-sfc": "^3.0.5",
     "autoprefixer": "^10.2.3",
+    "babel-loader": "^8.2.2",
+    "css-loader": "^5.2.1",
     "fslightbox": "^3.2.3",
     "fslightbox-vue": "^1.2.0",
     "postcss": "^8.2.4",
+    "postcss-cli": "^8.3.1",
+    "postcss-import": "^14.0.1",
+    "postcss-loader": "^5.2.0",
     "sass": "^1.32.5",
+    "sass-loader": "^10.1.1",
+    "style-loader": "^2.0.0",
     "tailwindcss": "^2.0.2",
-    "vite": "^2.0.0-beta.55"
+    "typescript": "^4.2.4",
+    "uuid": "^8.3.2",
+    "vite": "^2.0.0-beta.55",
+    "vue-loader": "^16.2.0"
   },
   "description": "Keep yourself in the zone and focus in the moment.",
   "main": "postcss.config.js",

@@ -5,7 +5,8 @@
     <div class="flex items-baseline">
       <router-link class="text-2xl font-bold zen" to="/"> Zen.</router-link>
       <div class="hidden md:flex md:items-center md:ml-4" v-if="user">
-        <menu-item class="mx-2 pl-2" to="/">Zenboard </menu-item>
+        <!-- <menu-item class="mx-2 pl-2" to="/zenboard/overview">Dashboard </menu-item> -->
+        <menu-item class="mx-2 pl-2" to="/zenboard">Zenboard </menu-item>
         <menu-item class="ml-2 px-2" to="/standup">Stand Up</menu-item>
         <menu-item class="mx-2 px-2" to="/matrix">Matrix</menu-item>
         <menu-item class="mx-2 px-2" to="/metrics">Metrics</menu-item>
@@ -20,10 +21,11 @@
     <div class="hidden md:flex md:items-center" v-if="user">
       <router-link 
         to="/plan-ahead" 
-        class="hidden lg:inline-block mr-2 rounded-md ring ring-gray-400 ring-offset-0 px-5 py-1 text-white bg-gray-600 hover:bg-gray-700">
+        class="hidden lg:inline-block mr-2 rounded-md ring ring-green-400 ring-offset-0 px-5 py-1 text-white bg-green-500 hover:bg-green-400">
         <i class="fa fa-tasks mr-2"></i>
          Plan Ahead
       </router-link>
+
        <div class="text-sm lg:text-lg font-bold cursor-pointer text-gray-400 mx-2 p-2 changelog flex relative hover:bg-green-100 rounded-md">
           <i class="fa fa-bullhorn"></i>
        </div>
@@ -125,5 +127,9 @@ const logout = () => {
 
 #HW_badge_cont {
   position: absolute !important;
+}
+
+.router-link-active h2{
+  @apply text-gray-700
 }
 </style>

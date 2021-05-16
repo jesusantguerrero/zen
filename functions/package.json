@@ -13,9 +13,11 @@
   },
   "main": "index.js",
   "dependencies": {
+    "axios": "^0.21.1",
     "es6-promise-pool": "^2.5.0",
     "firebase-admin": "^9.2.0",
     "firebase-functions": "^3.11.0",
+    "luxon": "^1.26.0",
     "web-push": "^3.4.4"
   },
   "devDependencies": {

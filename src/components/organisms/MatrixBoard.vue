@@ -89,7 +89,7 @@
 
     <div class="w-full bg-white rounded-md shadow-md px-5 py-4" v-if="mode == 'timeline'">
       <div class="font-bold text-gray-500 text-left  mb-2">
-            Timeline: <span class="font-normal text-sm">Track the number of days since the task was created until todaynp</span>
+            Timeline: <span class="font-normal text-sm">Track the number of days since the task was created until today</span>
       </div>
       <roadmap-view 
         :show-toolbar="true"
@@ -108,6 +108,20 @@
                 {{ days }} days
               </span>
             </div>
+        </template>
+
+        <template #actionsRight>
+           <div class="flex items-center">
+              <label class="mr-2"> Sort By:</label>
+              <jet-select
+                v-model:selected="roadmapState.sortBy"
+                :options="roadmapState.sortFields"
+                label="label"
+                key-track="value"
+                class="w-32"
+              >
+              </jet-select>
+           </div>
         </template>
       </roadmap-view> 
     </div>
@@ -133,6 +147,9 @@ import TaskGroup from "../organisms/TaskGroup.vue"
 import QuickAdd from "../molecules/QuickAdd.vue"
 import TaskModal from "./TaskModal.vue"
 import MatrixHelpView from "../molecules/MatrixHelpView.vue"
+import JetSelect from "../atoms/JetSelect.vue";
+import { orderBy } from "lodash-es"
+import { differenceInCalendarDays } from 'date-fns';
 
 
 // state and ui
@@ -201,13 +218,39 @@ const state = reactive({
 const { search } = toRefs(props);
 const { tasks } = toRefs(state);
 const { filteredList } = useFuseSearch(search, tasks);
+
+// 
+const roadmapState = reactive({
+  sortBy: {
+    name: 'matrix',
+    label: 'Matrix'
+  },
+  sortFields: [
+    {
+      name: 'matrix',
+      label: 'Matrix'
+    },
+    {
+      name: 'diff',
+      label: 'Duration'
+    },
+    {
+      name: 'order',
+      label: 'Order'
+    }
+  ]
+})
+
 const roadmapTasks = computed(() => {
-    return filteredList.value.map((task) => {
+    const filtered =  filteredList.value.map((task) => {
       task.start = task.created_at.toDate();
       task.end = new Date();
       task.colorClass = state.quadrants[task.matrix].background
+      task.diff = differenceInCalendarDays(task.start, task.end)
       return task;
     })
+
+    return orderBy(filtered, roadmapState.sortBy.name);
 })
 
 // Tasks manipulation
