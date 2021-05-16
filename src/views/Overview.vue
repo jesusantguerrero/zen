@@ -12,81 +12,131 @@
           <small class="text-sm">See your day in a glance</small>
         </header>
 
-        <div class="">
-          <!-- Agenda -->
-          <div class="quick__add py-4 text-gray-500">
-            <h4 class="font-bold"> Today's agenda</h4>
-            <div class="font-bold bg-white rounded-md ring ring-offset-2 ring-transparent ring-offset-gray-200 shadow-md px-5 py-3">
-              <task-group
-                        title="Stale"
-                        color="text-blue-400"
-                        :search="''"
-                        :tags="[]"
-                        :tasks="state.stale"
-                        :show-controls="false"
-                        :max-height="0"
-                        :is-compact="true"
-                        :is-quadrant="false"
+      <div
+        class="zen__view md:block md:w-full md:mr-20"
+        :class="[state.mobileMode == 'zen' ? 'block' : 'hidden']"
+      >
+        <header>
+          <div class="flex justify-between mt-5">
+            <tab-header v-model="state.tabSelected" :tabs="state.tabs" class="rounded-md overflow-hidden"/>
 
-                      >
-                        <template #empty v-if="!state.overdues.length">
-                        <div class="w-8/12 md:w-6/12 mx-auto mt-10 text-center">
-                          <img src="../assets/undraw_following.svg" class="w-12/12 md:w-5/12 mx-auto"> 
-                          <div class="mt-10 md:mt-5 text-gray-500 font-bold"> There's no tasks</div>
-                        </div>
-                      </template>
-              </task-group>
-            </div>
-          </div>
+            <div class="flex itemx-center space-x-2">
+              <div class="md:flex items-center h-10">
+                <input
+                  type="search"
+                  v-model.trim="searchOptions.text"
+                  class="w-44 px-2 text-sm h-10 rounded-md focus:outline-none border-2 border-gray-200"
+                  placeholder="Search task"
+                />
 
-          <div class="flex space-x-4">
-            <!-- Overdue -->
-            <div class="quick__add py-4 w-3/12">
-              <h4 class="font-bold text-gray-500"> Badges</h4>
-              <div class="text-gray-400 font-bold bg-white rounded-md ring ring-offset-2 ring-transparent ring-offset-gray-200 shadow-md">
-                <div class="px-5 py-4 space-y-5 pb-10">
-                  <div class="flex justify-between items-center">
-                    See More
-                    <i class="fa fa-chevron-right"></i>
-                  </div>
-                  <badge-item v-for="badge in state.badgesSummary" :key="badge.title" :badge="badge" />                   
-                  <badge-item :badge="state.badges[0]">
-                      <span class="text-3xl zen"> Z </span>
-                  </badge-item>                   
-                </div>
+                <tags-select
+                  v-model="searchOptions.tags"
+                  :multiple="true"
+                  placeholder="Filter by tag"
+                  :tags="tags"
+                  class="w-full h-full md:ml-2 bg-white px-2 py-2 rounded-md border-gray-200 border-2"
+                  :allow-add="false"
+                />
               </div>
             </div>
-            <!-- Overdue -->
-            <div class="quick__add py-4 w-9/12">
-              <h4 class="font-bold text-gray-500"> Overdue</h4>
-              <div class="text-gray-400 font-bold bg-white rounded-md ring ring-offset-2 ring-transparent ring-offset-gray-200 shadow-md px-5 py-3">
-                  <div>
-                    <task-group
-                        title="Overdues"
-                        type="schedule"
-                        color="text-blue-400"
-                        :search="''"
-                        :tags="[]"
-                        :tasks="state.overdues"
-                        :show-controls="false"
-                        :max-height="0"
-                        :is-compact="true"
-                        :is-quadrant="false"
-
-                      >
-                        <template #empty v-if="!state.overdues.length">
-                        <div class="w-8/12 md:w-6/12 mx-auto mt-10 text-center">
-                          <img src="../assets/undraw_following.svg" class="w-12/12 md:w-5/12 mx-auto"> 
-                          <div class="mt-10 md:mt-5 text-gray-500 font-bold"> There's no tasks</div>
-                        </div>
-                      </template>
-                    </task-group>
-                  </div>
-              </div>
-            </div>
-          
           </div>
+        </header>
+
+        <div class="mt-5">
+          <quick-add
+            @saved="addTask"
+            type="todo"
+            :allow-edit="true"
+          />
+
+          <task-group
+            v-if="state.tabSelected == 'todo'"
+            :show-title="false"
+            title="Todo"
+            class="py-3"
+            type="todo"
+            placeholder="Click a task select"
+            :allow-select="false"
+            :tasks="state.matrix.todo.list"
+            :search="searchOptions.text"
+            :show-select="true"
+            :show-controls="true"
+            :current-task="currentTask"
+            :current-timer="currentTimer"
+            :is-item-as-handler="true"
+            :tags="selectedTags"
+            @toggle-timer="setCurrentTask"
+            @change="handleDragChanges"
+            @deleted="destroyTask"
+            @edited="setTaskToEdit"
+            @down="moveTo($event, 'schedule')"
+          >
+          </task-group>
+
+          <task-group
+            v-if="state.tabSelected == 'schedule'"
+            :show-title="false"
+            title="Schedule"
+            :tasks="state.matrix.schedule.list"
+            :tags="selectedTags"
+            :active="false"
+            :show-controls="true"
+            :search="searchOptions.text"
+            type="schedule"
+            class="py-3"
+            placeholder="Move task to todo to select"
+            :is-item-as-handler="true"
+            @deleted="destroyTask"
+            @edited="setTaskToEdit"
+            @up="moveTo($event, 'todo')"
+            @change="handleDragChanges"
+          >
+          </task-group>
+
+          <task-group
+              v-if="state.tabSelected == 'stale'"
+              title="Stale"
+              color="text-blue-400"
+              :search="''"
+              :tags="[]"
+              :tasks="state.stale"
+              :show-controls="false"
+              :max-height="0"
+              :is-compact="true"
+              :is-quadrant="false"
+
+            >
+              <template #empty v-if="!state.overdues.length">
+              <div class="w-8/12 md:w-6/12 mx-auto mt-10 text-center">
+                <img src="../assets/undraw_following.svg" class="w-12/12 md:w-5/12 mx-auto"> 
+                <div class="mt-10 md:mt-5 text-gray-500 font-bold"> There's no tasks</div>
+              </div>
+            </template>
+          </task-group>
+
+          <task-group
+              title="Overdues"
+              type="schedule"
+              color="text-blue-400"
+              v-if="state.tabSelected == 'overdues'"
+              :search="''"
+              :tags="[]"
+              :tasks="state.overdues"
+              :show-controls="false"
+              :max-height="0"
+              :is-compact="true"
+              :is-quadrant="false"
+
+            >
+              <template #empty v-if="!state.overdues.length">
+              <div class="w-8/12 md:w-6/12 mx-auto mt-10 text-center">
+                <img src="../assets/undraw_following.svg" class="w-12/12 md:w-5/12 mx-auto"> 
+                <div class="mt-10 md:mt-5 text-gray-500 font-bold"> There's no tasks</div>
+              </div>
+            </template>
+          </task-group>
         </div>
+      </div>
       </div>
 
       <div
@@ -114,7 +164,7 @@
           </div>
 
           <!-- Shared -->
-           <div class="quick__add py-4">
+           <div class="quick__add py-4" v-if="false">
               <div class="font-bold text-gray-500 flex justify-between mb-5">
                 <h4>
                   Shared with me
@@ -134,6 +184,41 @@
                 </div>
               </div>
           </div>
+
+          <div class="py-4">
+              <div class="font-bold text-gray-500 flex justify-between mb-5">
+                <h4>
+                  Your yesterday's work
+                </h4> 
+              </div>
+              <background-icon-card
+                class="bg-blue-400 h-36 text-white"
+                icon="fas fa-clock"
+                value="Quick Standup"
+              >
+                <template #action>
+                  <Button class="bg-blue-500"> Go to standup </Button>
+                </template>
+              </background-icon-card>
+          </div>
+          
+          <div class="py-4">
+              <div class="font-bold text-gray-500 flex justify-between">
+                <h4>
+                  What's comming today
+                </h4> 
+              </div>
+     
+            <background-icon-card
+              class="bg-gray-700 h-36 text-white mt-5"
+              icon="fas fa-calendar"
+              value="Schedule"
+            >
+              <template #action>
+                <Button class="bg-gray-800"> Connect Calendar </Button>
+              </template>
+            </background-icon-card>
+          </div>
         </div>
       </div>
     </div>
@@ -150,24 +235,6 @@
       @closed="taskToEdit = null"
     >
     </task-modal>
-
-    <!-- mobile nav -->
-    <div class="md:hidden bg-gray-600 text-white flex h-10 fixed bottom-0 w-full left-0">
-      <div
-        class="text-xl font-bold text-center w-full h-full my-auto flex items-center justify-center"
-        :class="{ 'bg-gray-900': state.mobileMode == 'zen' }"
-        @click="state.mobileMode = 'zen'"
-      >
-        Zen
-      </div>
-      <div
-        class="text-xl font-bold text-center h-full w-full my-auto flex items-center justify-center"
-        :class="{ 'bg-gray-900': state.mobileMode == 'lineup' }"
-        @click="state.mobileMode = 'lineup'"
-      >
-        Lineup
-      </div>
-    </div>
   </div>
 </template>
 
@@ -181,6 +248,10 @@ import { useTrackFirestore } from "../utils/useTrackFirestore";
 import { firebaseState, updateSettings } from "../utils/useFirebase";
 import { startFireworks } from "../utils/useConfetti";
 import BadgeItem from "../components/atoms/BadgeItem.vue";
+import Button from "../components/atoms/Button.vue";
+import BackgroundIconCard from "../components/molecules/BackgroundIconCard.vue";
+import TagsSelect from "../components/atoms/TagsSelect.vue";
+import TabHeader from "../components/atoms/TabHeader.vue";
 import TaskGroup from "../components/organisms/TaskGroup.vue";
 import WelcomeModal from "../components/organisms/WelcomeModal.vue";
 import TaskModal from "../components/organisms/TaskModal.vue";
@@ -227,59 +298,28 @@ const state = reactive({
   track: null,
   mobileMode: "zen",
   tabSelected: 'todo',
-  badges: [
-    {      
-      iconClass: 'fa-award',
-      level: 1,
-      tier: 'task',
-      name: 'Doer',
-      xp: 1,
-      nextLevelXp: 10
+  tabs: [
+    {
+      label: "Todo",
+      name: "todo",
+      focusClass: "text-green-400",
     },
-    {      
-      iconClass: 'fa-award',
-      level: 1,
-      tier: 'task',
-      name: 'Finisher',
-      xp: 1,
-      nextLevelXp: 10
+    {
+      label: "Schedule",
+      name: "schedule",
+      focusClass: "text-blue-400",
     },
-    {      
-      iconClass: 'fa-medal',
-      level: 1,
-      tier: 'system',
-      name: 'Streak',
-      xp: 1,
-      nextLevelXp: 10
+    {
+      label: "Stale",
+      name: "stale",
+      focusClass: "text-yellow-400",
     },
-    {      
-      iconClass: 'fa-medal',
-      level: 1,
-      tier: 'system',
-      name: 'Zen',
-      xp: 1,
-      nextLevelXp: 10
+    {
+      label: "Overdues",
+      name: "overdues",
+      focusClass: "text-red-400",
     },
-      {      
-      iconClass: 'fa-trophy',
-      level: 1,
-      tier: 'matrix',
-      name: 'Matrix Master',
-      xp: 1,
-      nextLevelXp: 10
-    },
-    {      
-      iconClass: 'fa-shield-alt',
-      level: 1,
-      tier: 'pomodoro',
-      name: 'Pomodoro King',
-      xp: 1,
-      nextLevelXp: 10
-    }
   ],
-  badgesSummary: computed(() => {
-    return state.badges.slice(0, 2)
-  }),
   overdues: computed(() => {
     const { formatDate } = useDateTime()
     return Object.entries(state.matrix).reduce((list, matrix) => {

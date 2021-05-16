@@ -6,15 +6,17 @@
         :class="[state.mobileMode == 'zen' ? 'block' : 'hidden']"
       >
         <header>
-          <h1 class="md:block text-2xl font-bold text-gray-400 flex items-center">
-            Dashboard
-            <button class="text-sm bg-white p-2 rounded-md font-bold shadow-md border"
+          <div class="md:block text-2xl font-bold text-gray-400 flex items-center">
+            <h1 class="inline-block"> Dashboard </h1>
+        
+            <button 
+              class="text-sm bg-white p-2 rounded-md font-bold shadow-sm border hover:shadow-md ml-5 focus:outline-none"
               @click="$emit('update', false)"
             >
-             <i class="fa fa-chevron-left"></i>
+                <i class="fa fa-chevron-left"></i>
               Legacy Home Screen
             </button>
-          </h1>
+          </div>
 
           <div class="flex justify-between mt-5">
             <tab-header v-model="state.tabSelected" :tabs="state.tabs" class="rounded-md overflow-hidden"/>
@@ -70,7 +72,7 @@
             :is-item-as-handler="true"
             :allow-run="true"
             :tags="selectedTags"
-            @runPressed="setCurrentTask"
+            @toggle-timer="setCurrentTask"
             @change="handleDragChanges"
             @deleted="destroyTask"
             @edited="setTaskToEdit"
@@ -112,26 +114,28 @@
 
         <div class="comming-up__list space-y-2 divide-gray-200 divide-solid">
           <time-tracker-wrapper
+            ref="TimeTracker"
             class="bg-white shadow-md rounded-md justify-center py-5" 
             :task="currentTask" 
             :toggle-size="true"
-            v-model:currentTimer="currentTimer"
+            v-model:timer="currentTimer"
             
             >
           </time-tracker-wrapper>
 
           <background-icon-card
             class="bg-blue-400 h-36 text-white"
-            icon="fas fa-wallet"
+            icon="fas fa-clock"
             value="Quick Standup"
           >
             <template #action>
               <Button class="bg-blue-500"> Go to standup </Button>
             </template>
           </background-icon-card>
+
           <background-icon-card
             class="bg-gray-700 h-36 text-white"
-            icon="fas fa-wallet"
+            icon="fas fa-border-all"
             value="Overview"
           >
             <template #action>
@@ -186,6 +190,7 @@ import {
   ref,
   watch,
   computed,
+  onMounted,
 } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessageBox, ElNotification } from "element-plus";
@@ -200,7 +205,6 @@ import TaskGroup from "../components/organisms/TaskGroup.vue";
 import QuickAdd from "../components/molecules/QuickAdd.vue";
 import BackgroundIconCard from "../components/molecules/BackgroundIconCard.vue";
 import TimeTrackerWrapper from "../components/organisms/TimeTrackerWrapper.vue";
-import TaskView from "../components/organisms/TaskView.vue";
 import TaskTrackView from "../components/organisms/TaskTrackView.vue";
 import WelcomeModal from "../components/organisms/WelcomeModal.vue";
 import TaskModal from "../components/organisms/TaskModal.vue";
@@ -262,9 +266,17 @@ const tags = inject("tags", []);
 
 // Current task
 const currentTask = ref({});
+const TimeTracker = ref(null)
 const setCurrentTask = (task) => {
   currentTask.value = task;
+  nextTick(() => {
+    TimeTracker.value.togglePlay()
+  })
 };
+
+onMounted(() => {
+  console.log(TimeTracker.value)
+})
 
 // Edit task
 const taskToEdit = ref({});
