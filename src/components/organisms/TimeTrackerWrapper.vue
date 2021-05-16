@@ -3,15 +3,15 @@
     class="flex items-center px-5"
   >
     <time-tracker-clock
-      ref="TimeTracker"
+      ref="Tracker"
       :task="task"
-      :current-timer="currentTimer"
+      :current-timer="timer"
       :template="state.template"
       :size="size"    
       :disabled="!task || !task.title"
       @pomodoroStarted="createTrack"
       @pomodoroStopped="updateTrackFromLocal"
-      @update:currentTimer="$emit('update:currentTimer', $event)"
+      @update:timer="$emit('update:timer', $event)"
     />
 
     <el-dropdown trigger="click" @command="handleCommand" v-if="size == 'mini'">
@@ -38,8 +38,8 @@
   </div>
 </template>
 
-<script setup>
-import {  reactive, watch, defineProps, ref} from "vue";
+<script>
+import {  reactive, watch, ref} from "vue";
 import { useTrackFirestore } from "./../../utils/useTrackFirestore";
 import { usePromodoro } from "./../../utils/usePromodoro";
 import { firebaseState } from "./../../utils/useFirebase";
@@ -47,128 +47,149 @@ import { ElNotification } from "element-plus";
 import TimeTrackerClock from "../molecules/TimeTrackerClock.vue";
 import TimeTrackerModal from "./TimeTrackerModal.vue";
 
-const { saveTrack, updateTrack } = useTrackFirestore();
-const props = defineProps({
-  size: {
+export default {
+  components: {
+    TimeTrackerClock,
+    TimeTrackerModal
+  },
+  props: {
+      size: {
     type: String
   },
   task: {
     type: Object
   },
-  currentTimer: {
+  timer: {
     type: Object
   }
-})
-
-// state
-const state = reactive({
-  template: [
-    "promodoro",
-    "rest",
-    "promodoro",
-    "rest",
-    "promodoro",
-    "rest",
-    "promodoro",
-    "long",
-  ],
-  currentStep: 0,
-  modes: {
-    long: {
-      label: "Long Rest",
-      min: 15,
-      sec: 0,
-      color: "text-green-400",
-      colorBg: "bg-green-400",
-      colorBorder: "border-green-400",
-    },
-    promodoro: {
-      min: 25,
-      sec: 0,
-      color: "text-red-400",
-      colorBg: "bg-red-400",
-      colorBorder: "border-red-400",
-      text: "Pomodoro session",
-    },
-    rest: {
-      min: 5,
-      sec: 0,
-      color: "text-blue-400",
-      colorBg: "bg-blue-400",
-      colorBorder: "border-blue-400",
-      text: "Take a short break",
-    },
   },
-  volume: 100,
-  pushSubscription: null,
-  lastTrackId: null
-});
-const TimeTracker = ref(null)
+  setup(props) {
+    const { saveTrack, updateTrack } = useTrackFirestore();
+    // state
+    const state = reactive({
+      template: [
+        "promodoro",
+        "rest",
+        "promodoro",
+        "rest",
+        "promodoro",
+        "rest",
+        "promodoro",
+        "long",
+      ],
+      currentStep: 0,
+      modes: {
+        long: {
+          label: "Long Rest",
+          min: 15,
+          sec: 0,
+          color: "text-green-400",
+          colorBg: "bg-green-400",
+          colorBorder: "border-green-400",
+        },
+        promodoro: {
+          min: 25,
+          sec: 0,
+          color: "text-red-400",
+          colorBg: "bg-red-400",
+          colorBorder: "border-red-400",
+          text: "Pomodoro session",
+        },
+        rest: {
+          min: 5,
+          sec: 0,
+          color: "text-blue-400",
+          colorBg: "bg-blue-400",
+          colorBorder: "border-blue-400",
+          text: "Take a short break",
+        },
+      },
+      volume: 100,
+      pushSubscription: null,
+      lastTrackId: null
+    });
+    const Tracker = ref(null)
+    // Settings
+    const { promodoroState, setSettings } = usePromodoro()
+    const isModalOpen = ref(false)
 
-// Settings
-const { promodoroState, setSettings } = usePromodoro()
-const isModalOpen = ref(false)
+    setSettings(firebaseState.settings);
 
-setSettings(firebaseState.settings);
+    watch(() => promodoroState, (localState) => {
+      state.template = localState.template;
+      state.modes = localState.modes;
+      state.pushSubscription = localState.pushSubscription;
+      state.volume = localState.volume
+    }, { immediate: true })
 
-watch(() => promodoroState, (localState) => {
-  state.template = localState.template;
-  state.modes = localState.modes;
-  state.pushSubscription = localState.pushSubscription;
-  state.volume = localState.volume
-}, { immediate: true })
+    const onSettingsSaved = (settings) => {  
+      isModalOpen.value = false;
+      
+      if (state.now) {
+        ElNotification({
+          title: "Stop the timer",
+          message: "You must stop the timer before update configuration",
+          type: "info"
+        })
+        return
+      } 
+      
+      setSettings(settings)
+      ElNotification({
+        title: "Updated",
+        message: "Configuration Updated"
+      })
+      setDurationTarget()
+    }
 
-const onSettingsSaved = (settings) => {  
-  isModalOpen.value = false;
-  
-  if (state.now) {
-    ElNotification({
-      title: "Stop the timer",
-      message: "You must stop the timer before update configuration",
-      type: "info"
-    })
-    return
-  } 
-  
-  setSettings(settings)
-  ElNotification({
-    title: "Updated",
-    message: "Configuration Updated"
-  })
-  setDurationTarget()
-}
+    const handleCommand = (command) => {
+      switch (command) {
+        case 'configuration':
+          isModalOpen.value = true;
+          break;
+        case 'nextmode':
+          Tracker.value.nextMode()
+          break;
+        default:
+          break;
+      }
+    } 
 
-const handleCommand = (command) => {
-  switch (command) {
-    case 'configuration':
-      isModalOpen.value = true;
-      break;
-    case 'nextmode':
-      console.log(TimeTracker.value);
-      TimeTracker.value.nextMode()
-      break;
-    default:
-      break;
+    const togglePlay = () => {
+      if (!props.timer || props.task.uid != props.timer.task_uid) {
+        Tracker.value.reset();
+      }
+      Tracker.value.toggleTracker()
+    }
+
+    const createTrack = (formData) => {
+      saveTrack(formData)
+        .then(uid => {
+          state.lastTrackId = uid
+        })
+    }
+
+    const updateTrackFromLocal = (trackData) => {
+      const formData = { trackData, uid: state.lastTrackId }
+      updateTrack(formData).then(() => {
+        props.task.tracks.push(formData);
+        ElNotification({
+          title: "Pomodoro Saved",
+          message: "Pomodoro saved",
+          type: "success"
+        })
+      })
+    };
+
+    return {
+      togglePlay,
+      updateTrackFromLocal,
+      createTrack,
+      handleCommand,
+      onSettingsSaved,
+      state,
+      Tracker
+    }
   }
-} 
-
-const createTrack = (formData) => {
-  saveTrack(formData)
-    .then(uid => {
-      state.lastTrackId = uid
-    })
 }
-
-
-const updateTrackFromLocal = (trackData) => {
-  const formData = { trackData, uid: state.lastTrackId }
-  updateTrack(formData).then(() => {
-    props.task.tracks.push(formData);
-    ElNotification({
-      title: "Pomodoro Saved",
-      message: "Pomodoro saved",
-      type: "success"
-    })
-  })
-};
 </script>

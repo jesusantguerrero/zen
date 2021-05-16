@@ -51,7 +51,9 @@
             :allow-run="allowRun"
             :default-value="timeTrackedLabel"
             :currentTimer="currentTimer"
+            :is-current="currentTask.uid == task.uid"
             :task="currentTask"
+            @toggle-timer="$emit('toggle-timer', task)"
           />
 
           <date-select 
@@ -170,7 +172,8 @@ export default {
     down: Object,
     undo: Object,
     done: Object,
-    updated: Array
+    updated: Array,
+    'toggle-timer': Object
   },
   setup(props, { emit }) {
     const { task, currentTask, currentTimer} = toRefs(props)

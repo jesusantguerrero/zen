@@ -45,6 +45,7 @@
                 :class="taskClass"
                 :allow-run="allowRun"
                 @toggle-key="onToggleKey(task)"
+                @toggle-timer="emit('toggle-timer', task)"
                 @selected="emit('selected', task)"
                 @deleted="emit('deleted', task)"
                 @updated="updateFields"
@@ -147,7 +148,8 @@ const emit = defineEmit({
   move: Object,
   change: Object,
   undo: Object,
-  done: Object
+  done: Object,
+  'toggle-timer': Object
 })
 
 const { tasks, search,tags, showSelect, currentTask, currentTimer, isItemAsHandler, handleMode } = toRefs(props)

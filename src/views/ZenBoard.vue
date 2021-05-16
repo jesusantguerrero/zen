@@ -10,7 +10,7 @@
             <h1 class="inline-block"> Dashboard </h1>
         
             <button 
-              class="text-sm bg-white p-2 rounded-md font-bold shadow-sm border hover:shadow-md"
+              class="text-sm bg-white p-2 rounded-md font-bold shadow-sm border hover:shadow-md ml-5 focus:outline-none"
               @click="$emit('update', false)"
             >
                 <i class="fa fa-chevron-left"></i>
@@ -72,7 +72,7 @@
             :is-item-as-handler="true"
             :allow-run="true"
             :tags="selectedTags"
-            @runPressed="setCurrentTask"
+            @toggle-timer="setCurrentTask"
             @change="handleDragChanges"
             @deleted="destroyTask"
             @edited="setTaskToEdit"
@@ -114,17 +114,18 @@
 
         <div class="comming-up__list space-y-2 divide-gray-200 divide-solid">
           <time-tracker-wrapper
+            ref="TimeTracker"
             class="bg-white shadow-md rounded-md justify-center py-5" 
             :task="currentTask" 
             :toggle-size="true"
-            v-model:currentTimer="currentTimer"
+            v-model:timer="currentTimer"
             
             >
           </time-tracker-wrapper>
 
           <background-icon-card
             class="bg-blue-400 h-36 text-white"
-            icon="fas fa-wallet"
+            icon="fas fa-clock"
             value="Quick Standup"
           >
             <template #action>
@@ -133,7 +134,7 @@
           </background-icon-card>
           <background-icon-card
             class="bg-gray-700 h-36 text-white"
-            icon="fas fa-wallet"
+            icon="fas fa-border-all"
             value="Overview"
           >
             <template #action>
@@ -188,6 +189,7 @@ import {
   ref,
   watch,
   computed,
+  onMounted,
 } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessageBox, ElNotification } from "element-plus";
@@ -264,9 +266,17 @@ const tags = inject("tags", []);
 
 // Current task
 const currentTask = ref({});
+const TimeTracker = ref(null)
 const setCurrentTask = (task) => {
   currentTask.value = task;
+  nextTick(() => {
+    TimeTracker.value.togglePlay()
+  })
 };
+
+onMounted(() => {
+  console.log(TimeTracker.value)
+})
 
 // Edit task
 const taskToEdit = ref({});

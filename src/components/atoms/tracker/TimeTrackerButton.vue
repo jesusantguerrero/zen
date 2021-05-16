@@ -9,7 +9,7 @@
       class="fa fa-clock mr-1"
       :class="allowRun ? trackerIcon : 'fa-clock'"
     ></i>
-    <span> {{ isCurrent ? timeTracked : defaultValue }}</span>
+    <span> {{ isCurrent && currentTimer.currentTime ? timeTracked : defaultValue }}</span>
   </div>
 </template>
 
@@ -61,10 +61,10 @@ export default {
           : 0;
       }),
       trackerIcon: computed(() =>
-        props.isCurrent ? "fas fa-stop" : "fas fa-play"
+        props.isCurrent && props.currentTimer.currentTime ? "fas fa-stop" : "fas fa-play"
       ),
     });
-    console.log("hola");
+
     return {
       ...toRefs(state),
       timeTracked,

@@ -18,18 +18,11 @@ const workers = {
     }
 }
 
-// const getUserSettings = async(uid) => {
-//     return admin.firestore().collection('settings').doc(uid).get().then(ref => ref.data());
-// }
-
-// const getUser = async(uid) => {
-//     return admin.auth().getUser(uid).then(record => record).catch(() => null)
-// }
 // tasks and tracks calc
 const timeReducer = (tracks) => {
     if (!tracks) return 0
     return tracks.reduce((milliseconds, track)=> {
-        const duration = track.duration_ms ? Number(track.duration_ms) : 0
+        const duration = track.duration_ms ? Number(track.duration_ms || 0) : 0
         return milliseconds + duration;
     }, 0)
 }
