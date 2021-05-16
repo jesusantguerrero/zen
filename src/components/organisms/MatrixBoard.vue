@@ -93,7 +93,7 @@
       </div>
       <roadmap-view 
         :show-toolbar="true"
-        :tasks="state.roadmapTasks" 
+        :tasks="roadmapTasks" 
         @task-clicked="setTaskToEdit"
         focused-text-class="text-green-500"
         marker-bg-class="bg-green-400"
@@ -123,11 +123,12 @@
 </template>
 
 <script setup>
-import { computed, defineProps, reactive, watch, ref, onUnmounted } from 'vue'
+import { computed, defineProps, reactive, watch, ref, onUnmounted, toRefs } from 'vue'
 import { ElMessageBox, ElNotification } from 'element-plus';
 import { RoadmapView } from "vue-temporal-components";
 import { useTaskFirestore } from "../../utils/useTaskFirestore"
 import { useDateTime } from "../../utils/useDateTime"
+import { useFuseSearch } from "../../utils/useFuseSearch"
 import TaskGroup from "../organisms/TaskGroup.vue"
 import QuickAdd from "../molecules/QuickAdd.vue"
 import TaskModal from "./TaskModal.vue"
@@ -194,15 +195,19 @@ const state = reactive({
       tasks: []
     }
   },
-  roadmapTasks: computed(() => {
-    return state.tasks.map((task) => {
+  isTaskModalOpen: false
+})
+
+const { search } = toRefs(props);
+const { tasks } = toRefs(state);
+const { filteredList } = useFuseSearch(search, tasks);
+const roadmapTasks = computed(() => {
+    return filteredList.value.map((task) => {
       task.start = task.created_at.toDate();
       task.end = new Date();
       task.colorClass = state.quadrants[task.matrix].background
       return task;
     })
-  }),
-  isTaskModalOpen: false
 })
 
 // Tasks manipulation
