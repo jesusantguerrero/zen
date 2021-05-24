@@ -296,7 +296,11 @@ const addTask = (task) => {
   formattedTask.due_date = toISO(formattedTask.due_date)
   saveTask(formattedTask).then((uid) => {
     task.uid = uid;
-    state.quadrants[task.matrix].tasks.push(task);
+    ElNotification({
+        type: "success",
+        message: "Task created",
+        title: "Task created"
+    })
   })
 }
 
