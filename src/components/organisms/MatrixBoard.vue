@@ -291,7 +291,11 @@ watch(() => state.tasks, () => {
 })
 
 const getMatrixTasks = (matrix) => {
-  return filteredList.value.filter(task => task.matrix == matrix)
+    const tasks = [...filteredList.value.filter(task => task.matrix == matrix)].sort((a, b) => {
+      return a.order - b.order;
+    })
+
+    return search.value ? tasks : state.quadrants[matrix].tasks;
 }
 
 const addTask = (task) => {
@@ -345,23 +349,31 @@ const moveTo = async (task, matrix) => {
 const handleDragChanges = (e, matrix) => {
   if (e.added) {
     e.added.element.matrix = matrix;
+    e.added.element.order = e.added.newIndex;
     updateTask(e.added.element).then(() => {
-      ElNotification({
-        message: `Moved to ${matrix}`
+      sortOrder(matrix).then(() => {
+        ElNotification({
+          message: `Moved to ${matrix}`
+        })
       })
     })
   }
 
   if (e.moved) {
-    updateTaskBatch(state.quadrants[matrix].tasks.map((task, index) => {
-      task.order = index
-      return task
-    })).then(() => {
+    sortOrder(matrix).then(() => {
       ElNotification({
         message: `Moved to ${matrix}`
       })
     })
   }
+}
+
+const sortOrder = (matrix) => {
+   const tasks = getMatrixTasks(matrix)
+    return updateTaskBatch(tasks.map((task, index) => {
+      task.order = index
+      return task
+    }))
 }
 
 // Edit task
