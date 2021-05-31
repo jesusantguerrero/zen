@@ -25,7 +25,7 @@
             <i :class="[!task.is_key ? 'fa fa-sticky-note' : 'fa fa-fire']"></i>
         </div>
 
-        <h4 class="task-item__title cursor-pointer m-0 text-left text-sm "> {{ task.title }}</h4>
+        <h4 class="task-item__title cursor-pointer m-0 text-left text-sm "> {{ task.title }} {{ task.order }}</h4>
       </div>
 
       <div class="task-item__controls flex md:items-center items-start">  
