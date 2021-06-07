@@ -31,7 +31,7 @@
     </div>
   </div>
   
-  <matrix-board :mode="currentMode" :show-help="showHelp"></matrix-board>
+  <matrix-board :search="state.search" :mode="currentMode" :show-help="showHelp"></matrix-board>
 </div>
 </template>
 
@@ -42,6 +42,7 @@ import MatrixBoard from "../components/organisms/MatrixBoard.vue"
 
 const state = reactive({
   list: ['backlog', 'matrix', 'lineup'],
+  search: "",
   position: 0
 })
 
