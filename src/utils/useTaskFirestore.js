@@ -88,7 +88,7 @@ export function useTaskFirestore() {
         return tasks;
     }
 
-    const getUncommitedTasks = async (userUuid) => {
+    const getUncommitedTasks = (userUuid) => {
         const uncommitedRef = db.collection(collectionName)
         .where("user_uid", "==", userUuid || firebaseState.user.uid)
         .where("done", "==", false)

@@ -165,7 +165,11 @@ const state = reactive({
 const { toISO } = useDateTime() 
 const { getUncommitedTasks, saveTask, updateTask, updateTaskBatch, deleteTask } = useTaskFirestore()
 
-getUncommitedTasks(null, props.selectedUser, props.matrixes).then(tasks => {
+getUncommitedTasks(null, props.selectedUser, props.matrixes).get().then(snap => {
+    const tasks = [];
+    snap.forEach((doc) => {
+      tasks.push({ ...doc.data(), uid: doc.id });
+    });
     state.tasks = tasks
 });
 
