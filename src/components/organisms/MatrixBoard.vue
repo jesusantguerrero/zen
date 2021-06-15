@@ -257,8 +257,8 @@ const { toISO } = useDateTime()
 const { getUncommitedTasks, saveTask, updateTask, updateTaskBatch, deleteTask } = useTaskFirestore()
 
 const fetchTasks = () => {
-  getUncommitedTasks().then(collectionRef => {
-    const unsubscribe = collectionRef.onSnapshot((snap) => {
+  const collectionRef = getUncommitedTasks()
+  const unsubscribe = collectionRef.get().then((snap) => {
       const tasks = [];
       snap.forEach((doc) => {
         tasks.push({ ...doc.data(), uid: doc.id });
@@ -267,14 +267,13 @@ const fetchTasks = () => {
   });
 
     return unsubscribe;
-  });
 }
 
 const uncommitedTasksRef = ref(fetchTasks());
 
 onUnmounted(() => {
   if (uncommitedTasksRef.value) {
-    uncommitedTasksRef.value();
+    // uncommitedTasksRef.value();
   }
 });
 
