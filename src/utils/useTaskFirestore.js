@@ -4,7 +4,7 @@ import { db, firebaseState } from "./useFirebase";
 const collectionName = "tasks";
 
 const getDate = (task) => {
-    return task.due_date instanceof Date ? formatDate(task.due_date, "yyyy-MM-dd") : task.due_date;
+    return task.due_date instanceof Date ? task.due_date : DateTime.fromISO(task.due_date).toJSDate();
 }
 
 export function useTaskFirestore() {
@@ -62,7 +62,9 @@ export function useTaskFirestore() {
 
     const getAllFromUser = async (where = {}) => {
         const tasks = [];
-        await db.collection(collectionName).where("user_uid", "==", firebaseState.user.uid).get().then(querySnapshot => {
+        await db.collection(collectionName).where("user_uid", "==", firebaseState.user.uid)
+        .withConverter(taskConverter)
+        .get().then(querySnapshot => {
             querySnapshot.forEach((doc) => {
                 tasks.push({...doc.data(), uid: doc.id });
             });
@@ -78,6 +80,7 @@ export function useTaskFirestore() {
         .where("user_uid", "==", firebaseState.user.uid)
         .where("done", "==", true)
         .where("commit_date", "==", commitDate)
+        .withConverter(taskConverter)
         .get()
         .then(querySnapshot => {
             querySnapshot.forEach((doc) => {
@@ -93,6 +96,7 @@ export function useTaskFirestore() {
         .where("user_uid", "==", userUuid || firebaseState.user.uid)
         .where("done", "==", false)
         .orderBy("order")
+        .withConverter(taskConverter)
     
         return uncommitedRef
     }
@@ -102,11 +106,18 @@ export function useTaskFirestore() {
             .where("user_uid", "==", firebaseState.user.uid)
             .where("done", "==", false)
             .where("matrix", "==", matrix)
+            .withConverter(taskConverter)
             .orderBy("order")
             
         return matrixRef
     }
 
+    const taskConverter = {
+        fromFirestore( snapshot, options) {
+            const data = snapshot.data(options);
+            return { ...data, due_date: !data.due_date ? null : data.due_date.toDate ? data.due_date.toDate() : data.due_date };
+        }
+    }
     return {
         saveTask,
         updateTask,
@@ -117,5 +128,4 @@ export function useTaskFirestore() {
         getCommitedTasks,
         getAllFromUser
     }
-
 }
