@@ -7,7 +7,7 @@
           v-if="isMatrix || isLineUp"
         >
         <div 
-          class="zen__comming-up w-full mb-10 md:mb-0 ic-scroller pl-5 pt-3" 
+          class="w-full pt-3 pl-5 mb-10 zen__comming-up md:mb-0 ic-scroller" 
           :class="[showHelp && (!isLineUp || isLineUpMatrix(matrix))? `border-2 ${state.quadrants[matrix].border} border-dashed pr-5`: '']"
           v-for="matrix in state.matrix" :key="matrix">
             <task-group
@@ -31,7 +31,7 @@
               :is-quadrant="true"
             >
               <template #addForm v-if="!showHelp">
-                <div class="quick__add mb-4">
+                <div class="mb-4 quick__add">
                   <quick-add 
                     @saved="addTask"
                     :allow-edit="true"
@@ -70,7 +70,7 @@
               @move="onMove"
             >
               <template #addForm v-if="!showHelp">
-                <div class="quick__add mb-4">
+                <div class="mb-4 quick__add">
                   <quick-add 
                     @saved="addTask"
                     :allow-edit="true"
@@ -86,9 +86,9 @@
       </div>
     </div>
 
-    <div class="w-full bg-white rounded-md shadow-md px-5 py-4" v-if="mode == 'timeline'">
-      <div class="font-bold text-gray-500 text-left  mb-2">
-            Timeline: <span class="font-normal text-sm">Track the number of days since the task was created until today</span>
+    <div class="w-full px-5 py-4 bg-white rounded-md shadow-md" v-if="mode == 'timeline'">
+      <div class="mb-2 font-bold text-left text-gray-500">
+            Timeline: <span class="text-sm font-normal">Track the number of days since the task was created until today</span>
       </div>
       <roadmap-view 
         :show-toolbar="true"
@@ -98,12 +98,12 @@
         marker-bg-class="bg-green-400"
       >
         <template v-slot:description="{focusedTextClass, item: task, differenceInCalendarDays: days}">
-           <div class="mx-2 text-left h-full flex items-center">
-            <span class="capitalize text-gray-400" :class="state.quadrants[task.matrix].color">
+           <div class="flex items-center h-full mx-2 text-left">
+            <span class="text-gray-400 capitalize" :class="state.quadrants[task.matrix].color">
               {{ task.matrix}}:
             </span>
                {{ task.title }} 
-              <span class="text-sm font-bold ml-2" :class="focusedTextClass">
+              <span class="ml-2 text-sm font-bold" :class="focusedTextClass">
                 {{ days }} days
               </span>
             </div>
@@ -297,7 +297,12 @@ const getMatrixTasks = (matrix) => {
     return search.value ? tasks : state.quadrants[matrix].tasks;
 }
 
+const getNextIndex = (list) => {
+  return Math.max(...list.map((item) => Number(item.order || 0))) + 1;
+};
+
 const addTask = (task) => {
+  task.order = getNextIndex(state.quadrants[task.matrix].tasks);
   const formattedTask = {...task}
   formattedTask.due_date = toISO(formattedTask.due_date)
   saveTask(formattedTask).then((uid) => {
@@ -307,6 +312,7 @@ const addTask = (task) => {
         message: "Task created",
         title: "Task created"
     })
+    state.quadrants[task.matrix].tasks.push(task);
   })
 }
 
