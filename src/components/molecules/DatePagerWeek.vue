@@ -1,18 +1,18 @@
 <template>
-   <div class="date-pager flex rounded-md border-gray-200 border-2 overflow-hidden">
+   <div class="date-pager flex rounded-md dark:bg-gray-700 dark:border-gray-600 border-gray-200 border-2 overflow-hidden">
     <button
-      class="bg-white px-2 focus:outline-none hover:bg-gray-200 transition-colors"
+      class="bg-white dark:bg-gray-700 dark:text-gray-300 dark:hover:text-gray-50 px-2 focus:outline-none hover:bg-gray-200 transition-colors"
       @click="controls.previous()"
     >
       <i class="fa fa-chevron-left"></i>
     </button>
-    <div v-if="selectedWeek" class="bg-white flex items-center font-bold text-sm text-gray-500">
+    <div v-if="selectedWeek" class="bg-white dark:bg-gray-700 dark:text-gray-300 dark:hover:text-gray-50 flex items-center font-bold text-sm text-gray-500">
       {{ formatDate(selectedWeek[0]) }} - {{ formatDate(selectedWeek[6]) }}
     </div>
     <el-date-picker v-model="date" ref="input" type="date" @change="emitDate" v-if="false">
     </el-date-picker>
     <button
-      class="bg-white px-2 focus:outline-none hover:bg-gray-200 transition-colors"
+      class="bg-white dark:bg-gray-700 dark:text-gray-300 dark:hover:text-gray-50 px-2 focus:outline-none hover:bg-gray-200 transition-colors"
       @click="controls.next()"
     >
       <i class="fa fa-chevron-right"></i>

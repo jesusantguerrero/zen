@@ -1,7 +1,7 @@
 <template>
-   <div class="date-pager flex rounded-md border-gray-200 border-2 overflow-hidden">
+   <div class="date-pager flex rounded-md border-gray-200 dark:bg-gray-700 border-2 overflow-hidden">
     <button
-      class="bg-white px-2 focus:outline-none hover:bg-gray-200 transition-colors"
+      class="bg-white dark:bg-gray-700 px-2 focus:outline-none hover:bg-gray-200 transition-colors"
       @click="controls.previous()"
     >
       <i class="fa fa-chevron-left"></i>

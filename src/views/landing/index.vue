@@ -4,7 +4,7 @@
   <content-section></content-section>
   <features-section class="bg-secondary"></features-section>
   <!-- <content-video-section></content-video-section> -->
-  <footer-section></footer-section>
+  <site-footer></site-footer>
 </div>
 </template>
 
@@ -14,6 +14,7 @@ import ContentSection from "./Content.vue"
 import ContentVideoSection from "./ContentVideo.vue"
 import FeaturesSection from "./Features.vue"
 import FooterSection from "./Footer.vue"
+import SiteFooter from "./SiteFooter.vue"
 
 </script>
 
@@ -26,5 +27,9 @@ import FooterSection from "./Footer.vue"
    color: white !important;
    margin-bottom: 10px;
  }
+}
+
+.bg-primary {
+ background: #3a4a73;
 }
 </style>

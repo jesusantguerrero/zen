@@ -1,5 +1,5 @@
 <template>
-    <div class="tag-select flex justify-center items-center">
+    <div class="flex items-center justify-center tag-select">
         <el-popover
             v-model="state.isOpen"
             placement="bottom-end"
@@ -9,9 +9,9 @@
             @after-enter="focusInput()"
         >
 
-            <div class="pt-2 pb-5 px-1 w-full">
+            <div class="w-full px-1 pt-2 pb-5">
                 <input
-                    class="w-full h-8 rounded-md px-2 border-2 border-gray-100 focus:outline-none focus:border-gray-200" 
+                    class="w-full h-8 px-2 border-2 border-gray-100 rounded-md focus:outline-none focus:border-gray-200" 
                     type="text" 
                     placeholder="Select or create a person"
                     v-model.trim="searchText"
@@ -23,23 +23,29 @@
                     @keydown.down.prevent="moveCursorDown()"
                 />
 
-                <div class="items-container mt-2 space-y-1 max-h-48 overflow-auto w-full ic-scroller" ref="container">
+                <div class="w-full mt-2 space-y-1 overflow-auto items-container max-h-48 ic-scroller" ref="container">
                     <div 
                         v-for="tag in filteredList" 
                         :key="tag" 
-                        class="px-2 py-2 cursor-pointer rounded-sm transition-colors"
+                        class="flex items-center px-2 py-2 transition-colors rounded-sm cursor-pointer"
                         :class="[
                             preSelectedValue == tag && 'bg-gray-500 text-white', 
                             isSelected(tag.uid) ? 'bg-gray-200 hover:bg-gray-500 hover:text-white' : 'hover:bg-gray-500 hover:text-white'
                         ]"
                         @click.stop="selectItem(tag)"
                     >
-                        {{ tag.name }}
+                        <el-avatar :src="tag.photoUrl" :size="32">
+                            {{ initials(tag.name) }}
+                        </el-avatar>
+                        <div class="ml-2">
+                            <h4 class="mb-0"> {{ tag.name }} </h4>
+                            <small> {{ tag.email }}</small>
+                        </div>
                     </div>
                 </div>
 
                 <div v-if="searchText && filteredList.length == 0 && allowAdd">
-                    <button class="px-2 h-8 w-full" @click="addItem"> 
+                    <button class="w-full h-8 px-2" @click="addItem"> 
                         Add person:  "{{ searchText}}"
                     </button>
                 </div>
@@ -54,11 +60,11 @@
             <button 
                 ref="button"
                 :class="{'text-gray-500': formattedItems }" 
-                class="flex focus:outline-none space-x-1 items-center text-xs w-full h-full"
+                class="flex items-center w-full h-full space-x-1 text-xs focus:outline-none"
                 @mousedown.prevent
                 @focus.prevent="focusButton"
             >
-                    <el-avatar v-if="!selectedItems.length" :size="24" class="text-xs hover:bg-gray-500 transition-colors">     
+                    <el-avatar v-if="!selectedItems.length" :size="24" class="text-xs transition-colors hover:bg-gray-500">     
                         <span class="text-xs"><i class="fa fa-user"></i></span>
                     </el-avatar>
                     <el-avatar
@@ -67,6 +73,7 @@
                         :style="{background: tag.color}"
                         :size="24"
                         :title="tag.name"
+                        :src="tag.photoUrl"
                         class="mr-1 text-white"
                     > 
                         {{ initials(tag.name) }}
@@ -74,7 +81,7 @@
                     <span 
                         v-if="moreItems"
                         :title="moreItems"
-                        class="mr-1 text-white bg-gray-500 px-2 py-1 rounded-md"> 
+                        class="px-2 py-1 mr-1 text-white bg-gray-500 rounded-md"> 
                         + {{ selectedItems.slice(limit).length }}
                     </span>
 
@@ -85,7 +92,7 @@
 </template>
 
 <script setup>
-import { computed, defineEmit, reactive, watch, ref, toRefs } from "vue";
+import { computed, reactive, watch, ref, toRefs } from "vue";
 import { useFuseSearch } from "../../utils/useFuseSearch"
 import randomcolor from "randomcolor";
 
@@ -118,7 +125,7 @@ const props = defineProps({
 })
 
 
-const emit = defineEmit({
+const emit = defineEmits({
     'update:modelValue': Array,
     'added': Object,
     'selected': Object

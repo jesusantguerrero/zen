@@ -13,6 +13,7 @@
     "template": "remoteconfig.template.json"
   },
   "hosting": {
+    "site": "zenboards", 
     "public": "dist",
     "ignore": [
       "firebase.json",

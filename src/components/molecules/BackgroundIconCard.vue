@@ -5,12 +5,15 @@
             <i class="fa text-7xl" :class="icon"></i>
         </slot>
     </div>
-    <div class="text-3xl font-bold">
-       {{ value }}
-        <small class="block text-sm">
-            {{ title }}
-        </small>
-    </div>
+    <slot name="content">
+        <div class="text-3xl font-bold">
+        {{ value }}
+            <small class="block text-sm">
+                {{ title }}
+            </small>
+        </div>
+    
+    </slot>
     <div class="mt-2">
         <slot name="action">
 

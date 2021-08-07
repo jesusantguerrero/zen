@@ -1,16 +1,16 @@
 <template>
     <modal-base v-model:is-open="isOpenLocal">
         <template #title>
-            <h1 class="py-2 px-5 text-xl font-bold text-left">
+            <h1 class="px-5 py-2 text-xl font-bold text-left">
                 Pomodoro Configuration
             </h1>
         </template>
 
         <template #body>
-            <form action="" @submit.prevent="save" class="pt-5  px-5 text-left mx-auto">
+            <form action="" @submit.prevent="save" class="px-5 pt-5 mx-auto text-left">
                  <h4 class="font-bold">  Workflow Template </h4>
                  <div class="form-group">
-                    <div class="workflow-item capitalize text-sm mb-10 inline-block"
+                    <div class="inline-block mb-10 text-sm capitalize workflow-item"
                         v-for="(item, index) in formData.template"
                         :key="`template-item-${index}`"
                         @click="removeItem(index)">
@@ -21,7 +21,7 @@
 
                  <h4 class="font-bold">  Workflow Items </h4>
                  <div class="form-group">
-                    <div class="workflow-item capitalize text-sm mb-10"
+                    <div class="mb-10 text-sm capitalize workflow-item"
                         v-for="(item, key) in formData.modes"
                         :key="key"
                         @click="addWorkflowItem(key)">
@@ -31,17 +31,17 @@
                  </div>
 
                  <h4 class="font-bold">  Select sound </h4>
-                 <div class="form-group flex space-x-2">
-                    <select name="" class="form-control w-full">
+                 <div class="flex space-x-2 form-group">
+                    <select name="" class="w-full form-control">
                         <option value="">Alarm Clock</option>
                     </select>
-                    <button class="bg-gray-700 text-white px-5 py-1 focus:outline-none rounded-md w-40" @click.prevent="playSound()">
+                    <button class="w-40 px-5 py-1 text-white bg-gray-700 rounded-md focus:outline-none" @click.prevent="playSound()">
                         Test Audio
                     </button>
                  </div>
 
                  <h4 class="font-bold"> Alert volume </h4>
-                 <div class="form-group flex space-x-2 w-full pr-10">
+                 <div class="flex w-full pr-10 space-x-2 form-group">
                     <el-slider
                         v-model="promodoroState.volume"
                         class="w-full"
@@ -88,10 +88,10 @@
         </template>
 
         <template #footer>
-            <button  class="bg-gray-500 text-white px-5 py-1 focus:outline-none rounded-md mr-2" @click="emit('cancel')">
+            <button  class="px-5 py-1 mr-2 text-white bg-gray-500 rounded-md focus:outline-none" @click="emit('cancel')">
                 Cancel
             </button>
-            <button class="bg-green-400 text-white px-5 py-1 focus:outline-none rounded-md" @click="save()">
+            <button class="px-5 py-1 text-white bg-green-400 rounded-md focus:outline-none" @click="save()">
                 Save
             </button>
         </template>
@@ -99,7 +99,7 @@
 </template>
 
 <script setup>
-import { defineProps, reactive, ref, watch, defineEmit } from "vue";
+import { defineProps, reactive, ref, watch } from "vue";
 import { usePromodoro } from "./../../utils/usePromodoro";
 import ModalBase from "../molecules/ModalBase.vue";
 import { updateSettings } from "../../utils/useFirebase";
@@ -119,7 +119,7 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmit({
+const emit = defineEmits({
     saved: Object,
     cancel: null,
     "update:isOpen": Boolean

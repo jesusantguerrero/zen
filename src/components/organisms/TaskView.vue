@@ -1,25 +1,25 @@
 <template>
   <div
-    class="zen__datails shadow-md bg-white px-5 py-3 border-2 border-gray-100 rounded-md relative overflow-hidden"
+    class="relative px-5 py-3 overflow-hidden bg-white border-2 border-gray-100 rounded-md shadow-md zen__datails dark:bg-gray-700 dark:border-gray-600"
     @keydown.ctrl.enter.exact="saveChanges()"
   >
-    <h1 class="text-xl font-bold text-gray-400 flex justify-between">
+    <h1 class="flex justify-between text-xl font-bold text-gray-400">
       <input 
         ref="titleInput" 
         v-model="task.title" 
-        class="focus:outline-none bg-white w-full" 
+        class="w-full bg-white focus:outline-none dark:bg-transparent" 
         :class="{'border-b-2 border-gray-100 focus:border-gray-200 px-2': isEditMode}"
         :disabled="!isEditMode"
-      >
+      />
 
-      <div class="task-item__controls flex text-sm" v-if="task.uid"> 
+      <div class="flex text-sm task-item__controls" v-if="task.uid"> 
           <div class="mx-2 cursor-pointer" @click="allowEdit()" v-if="!isEditMode">
-              <i class="fa fa-pencil-alt mr-2 text-gray-400 hover:text-gray-600"></i>
+              <i class="mr-2 text-gray-400 fa fa-pencil-alt hover:text-gray-600"></i>
           </div>
 
           <el-tooltip class="item" effect="dark" :content="markAsDoneLabel" placement="top" v-if="!isEditMode">
               <div 
-                class="mx-2 text-gray-400 hover:text-gray-600 cursor-pointer"
+                class="mx-2 text-gray-400 cursor-pointer hover:text-gray-600"
                 :class="{'text-green-400 font-extrabold': task.commit_date}"
                 :disabled="isDisabled"
                 @click="markAsDone()"
@@ -28,14 +28,14 @@
               </div>
           </el-tooltip>
         
-          <div class="mx-2 w-32 text-sm" v-if="task.due_date">
-              <i class="fa fa-calendar mr-2 text-gray-400 hover:text-gray-600"></i>
-              <span> {{ task.due_date}}</span>
-          </div>
-
+          <date-select v-if="task.due_date" 
+            v-model="task.due_date"
+            class="w-20 ml-2 text-gray-400 hover:text-gray-600"
+          />
+           
           <el-tooltip class="item" effect="dark" content="Remove" placement="top" v-if="!isEditMode">
               <div 
-                class="mx-2 text-gray-400 hover:text-red-600 cursor-pointer"
+                class="mx-2 text-gray-400 cursor-pointer hover:text-red-600"
                 :disabled="isDisabled"
                 @click="removeFocus()"
               >
@@ -45,20 +45,20 @@
       </div>
     </h1>
 
-    <div class="task__description mb-4 mt-5 text-gray-500 text-lg">
+    <div class="mt-5 mb-4 text-lg text-gray-500 task__description">
         <custom-text
             v-if="task.description || isEditMode" 
             v-model="task.description" 
             :placeholder="isEditMode ? 'Add a description' : ''"
             :disabled="!isEditMode"
             :class="{'border-2 bg-gray-50 focus:border-gray-100 px-2': isEditMode}"
-            class="w-full py-2 focus:outline-none bg-white text-gray-500 text-sm"
+            class="w-full py-2 text-sm text-gray-500 bg-white focus:outline-none"
         >
         </custom-text>
         <slot name="empty"></slot>
     </div>
 
-    <div class="task__checlikst mb-10" v-if="showChecklist">
+    <div class="mb-10 task__checlikst" v-if="showChecklist">
       <checklist-container 
         v-model="state.checklistTitle"
         :items="task.checklist" 
@@ -66,11 +66,11 @@
       </checklist-container>
     </div>
 
-    <div class="absolute bottom-2 text-right w-full left-5 pr-10">
-         <button class="mx-2 py-1 bg-red-400 text-white px-5 rounded-md text-sm" @click="cancelChanges()" v-if="isEditMode">
+    <div class="absolute w-full pr-10 text-right bottom-2 left-5">
+         <button class="px-5 py-1 mx-2 text-sm text-white bg-red-400 rounded-md" @click="cancelChanges()" v-if="isEditMode">
               <span> Cancel </span>
           </button>
-         <button class="mx-2 py-1 bg-green-400 text-white px-5 rounded-md text-sm" @click="saveChanges()" v-if="isEditMode">
+         <button class="px-5 py-1 mx-2 text-sm text-white bg-green-400 rounded-md" @click="saveChanges()" v-if="isEditMode">
               <span> Save </span>
           </button>
     </div>
@@ -79,16 +79,17 @@
 
 <script setup>
 import { ElMessageBox, ElNotification } from "element-plus";
-import { defineProps, toRefs, defineEmit, computed, ref, nextTick, reactive, watch } from "vue";
+import { defineProps, toRefs, computed, ref, nextTick, reactive, watch } from "vue";
 import { useDateTime } from "../../utils/useDateTime";
 import ChecklistContainer from "./ListContainer.vue";
 import CustomText from "../atoms/CustomText.vue"
+import DateSelect from "../atoms/DateSelect.vue";
 
 // utils
 const { formatDate } = useDateTime();
 
 // Events and props
-const emit = defineEmit({
+const emit = defineEmits({
   done: Object,
   updated: Object,
   removed: null,

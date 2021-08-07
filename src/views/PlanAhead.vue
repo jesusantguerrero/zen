@@ -1,9 +1,9 @@
 <template>
 <div class="pt-24 mx-5 md:pt-28 md:mx-10 lg:mx-28">
 
-  <div class="md:flex justify-between space-x-4 mb-10 items-center">
+  <div class="items-center justify-between mb-10 space-x-4 md:flex">
     <div class="w-full">
-      <el-steps :active="state.position" finish-status="success" simple style="backgound-color: white">
+      <el-steps :active="state.position" finish-status="success" simple class="bg-white dark:bg-gray-700 dark:text-gray-300">
         <el-step :title="step" v-for="step in state.list" :key="step">
           <template v-slot:icon="{ scope }">
               <i class="fa fa-check"></i>
@@ -11,27 +11,32 @@
           </template>
 
           <template #title>
-            <span class="capitalize font-bold"> {{ step }} </span>
+            <span class="font-bold capitalize"> {{ step }} </span>
           </template>
         </el-step>
       </el-steps>
     </div>
 
     <div class="flex justify-end mt-5 space-x-2 md:mt-0">
-      <button @click="previuosPosition" v-if="!isFirstPosition" class="bg-gray-400 text-white hover:bg-gray-700 px-5 py-2 w-40 rounded-md focus:outline-none h-10">
+      <button @click="previuosPosition" v-if="!isFirstPosition" class="w-40 h-10 px-5 py-2 text-white bg-gray-400 rounded-md hover:bg-gray-700 focus:outline-none">
         Previous 
       </button>
-      <button @click="nextPosition" v-if="!isLastPosition" class="bg-gray-600 hover:bg-gray-700 text-white px-5 py-2 w-40 rounded-md focus:outline-none h-10"> 
+      <button @click="nextPosition" v-if="!isLastPosition" class="w-40 h-10 px-5 py-2 text-white bg-gray-600 rounded-md hover:bg-gray-700 focus:outline-none"> 
         Next 
       </button>
-      <button @click="done" v-else class="bg-green-400 hover:bg-green-600 text-white px-5 py-2 w-40 rounded-md focus:outline-none h-10"> 
+      <button @click="done" v-else class="w-40 h-10 px-5 py-2 text-white bg-green-400 rounded-md hover:bg-green-600 focus:outline-none"> 
         <i class="fa-fa-check"></i>
         Start my Zen. 
       </button>
     </div>
   </div>
   
-  <matrix-board :search="state.search" :mode="currentMode" :show-help="showHelp"></matrix-board>
+  <matrix-board 
+    :search="state.search" 
+    :mode="currentMode" 
+    :show-help="showHelp" 
+    :show-uncategorized="showUncategorized"
+  />
 </div>
 </template>
 
@@ -58,6 +63,10 @@ const isLastPosition = computed(() => {
 
 const isFirstPosition = computed(() => {
   return state.position == 0;
+})
+
+const showUncategorized = computed(() => {
+  return state.position === 1;
 })
 
 const nextPosition = () => {

@@ -1,7 +1,7 @@
 <template>
   <section class="py-20 bg-gray-50">
     <div
-      class="container items-center max-w-6xl px-10 mx-auto sm:px-20 md:px-32 lg:px-16"
+      class="container items-center px-10 mx-auto sm:px-20 md:px-32 lg:px-16"
     >
       <div class="flex flex-wrap -mx-3">
         <div class="order-1 w-full px-3 lg:w-1/2 lg:order-0">
@@ -11,13 +11,13 @@
             >
               Features
             </h2>
-            <p class="mb-4  tracking-tight text-gray-300 font-bold xl:mb-10">
+            <p class="mb-4 font-bold tracking-tight text-gray-300 xl:mb-10">
               It's never been easier to build a business of your own. Our tools
               will help you with the following:
             </p>
             <ul>
               <li
-                class="flex items-center py-2 space-x-4 xl:py-3 cursor-pointer text-white font-bold hover:text-green-500 transition-colors"
+                class="flex items-center py-2 space-x-4 font-bold text-white transition-colors cursor-pointer xl:py-3 hover:text-green-500"
                 v-for="feat in features"
                 :key="feat.icon"
               >
@@ -36,17 +36,17 @@
             >
               Eisenhower Matrix
             </h2>
-            <p class="mb-4 font-medium tracking-tight text-gray-300 font-bold xl:mb-10">
+            <p class="mb-4 font-medium font-bold tracking-tight text-gray-300 xl:mb-10">
               The app it built around this technique to help find the most important tasks to deliver daily:
             </p>
-          <div class="grid md:grid-cols-2 gap-2">
+          <div class="grid gap-2 md:grid-cols-2">
             <div
               v-for="(value, matrix) in matrixes"
-              class="border-2 border-dashed pt-5"
+              class="pt-5 border-2 border-dashed"
               :class="[value.border]"
               :key="matrix"
             >
-              <h1 class="capitalize font-bold" :class="[value.color]">{{ matrix }}</h1>
+              <h1 class="font-bold capitalize" :class="[value.color]">{{ matrix }}</h1>
               <matrix-help-view 
                 :matrix="matrix" 
                 class="text-gray-200 bg-transparent"

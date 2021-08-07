@@ -1,5 +1,5 @@
 <template>
-  <div class="md:space-x-2 text-left md:flex">
+  <div class="text-left md:space-x-2 md:flex">
     <!-- search -->
     <search-input v-model="searchOptions.text"> </search-input>
     <!-- /search -->
@@ -15,7 +15,7 @@
             :multiple="true"
             :tags="tags"
             placeholder="Filter by tag"
-            class="ml-2 bg-white px-2 py-2 rounded-md border-gray-200 border-2"
+            class="px-2 py-2 ml-2 bg-white border-2 border-gray-200 rounded-md dark:bg-gray-900 dark:border-gray-700 dark:text-gray-300"
             :allow-add="false"
         ></tags-select>
         <!-- tags-select -->
@@ -27,7 +27,6 @@
 import {
   reactive,
   defineProps,
-  defineEmit,
   watch,
   computed,
   inject
@@ -44,7 +43,7 @@ const props = defineProps({
 });
 
 
-const emit = defineEmit({
+const emit = defineEmits({
   "update:modelValue": String,
   "update:date": Date,
   "update:tags": Array,

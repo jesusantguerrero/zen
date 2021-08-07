@@ -12,7 +12,7 @@
     <div class="flex items-center">
       <button 
         v-if="!state.isMini"
-        class=" focus:outline-none rounded-full h-14 w-14 text-2xl text-gray-400" 
+        class=" focus:outline-none dark:hover:bg-gray-600 rounded-full h-14 w-14 text-2xl text-gray-400" 
         :class="{'hover:bg-gray-100': hasPrevMode}"
         @click="prevMode" 
         :disabled="!hasPrevMode"   
@@ -47,7 +47,7 @@
         </div>
         <button 
           v-if="!state.isMini"
-          class="hover:bg-gray-100 focus:outline-none rounded-full h-14 w-14 text-2xl text-gray-400" 
+          class="hover:bg-gray-100 dark:hover:bg-gray-600 focus:outline-none rounded-full h-14 w-14 text-2xl text-gray-400" 
           @click="nextMode">
           <i class="fa fa-chevron-right"></i>
         </button>

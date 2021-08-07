@@ -1,7 +1,7 @@
 <template>
 <div class="pt-24 mx-5 md:pt-28 md:mx-28">
   <div class="section-header md:flex justify-between items-center mb-10">
-      <h2 class="text-2xl font-bold text-gray-400 text-left">
+      <h2 class="text-2xl font-bold text-gray-400 dark:text-gray-300 text-left">
          Metrics
       </h2>
       <div class="md:space-x-2 text-left md:flex">
@@ -18,24 +18,24 @@
       </div>
   </div> 
 
-  <div class="flex bg-white pt-5 rounded-md shadow-md">
-      <div class="space-y-4 bg-white w-3/12 px-5 pt-2 text-gray-400">
-        <div class="font-bold text-gray-500 text-left  mb-10">
+  <div class="flex bg-white dark:bg-gray-700 dark:border-gray-600 pt-5 rounded-md shadow-md">
+      <div class="space-y-4 bg-white dark:bg-gray-700 dark:border-gray-600 w-3/12 px-5 pt-2 text-gray-400">
+        <div class="font-bold text-gray-500 dark:text-gray-300 text-left  mb-10">
             General Stats
           </div>
-        <div class="bg-white py-8 w-full flex items-center px-5 rounded-md border-2 border-gray-200 overflow-hidden">
+        <div class="bg-white dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300 py-8 w-full flex items-center px-5 rounded-md border-2 border-gray-200 overflow-hidden">
           <i class="fa fa-clock mr-2 text-blue-400"></i>
           <span class="font-bold mr-2 text-blue-400">{{ formattedTime }}  </span>
           Total focused time
         </div>
-        <div class="bg-white py-8 w-full flex items-center px-5 rounded-md border-2 border-gray-200 overflow-hidden">
+        <div class="bg-white dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300 py-8 w-full flex items-center px-5 rounded-md border-2 border-gray-200 overflow-hidden">
           <i class="fa fa-stopwatch mr-2 text-blue-400"></i>
            <span class="font-bold mr-2 text-blue-400">{{  tracksData.started}}  </span> Started
            <span class="font-bold mx-2 text-green-500">{{  tracksData.finished }}  </span> Finished
            <span class="font-bold mx-2 text-red-400">{{  tracksData.started - tracksData.finished }}  </span> Stopped
         </div>
 
-        <div class="bg-white py-8 w-full flex items-center px-5 rounded-md border-2 border-gray-200 overflow-hidden">
+        <div class="bg-white dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300 py-8 w-full flex items-center px-5 rounded-md border-2 border-gray-200 overflow-hidden">
           <i class="fa fa-sticky-note mr-2 text-green-500"></i>
           <span class="font-bold mr-2 text-green-500">
             {{ tasksWorked.length }}
@@ -266,5 +266,27 @@ onUnmounted(() => {
 <style lang="scss">
 .el-date-full .el-date-editor.el-input {
   width: 100% !important;
+}
+
+.dark {
+  .el-input, .el-input__inner, .el-picker__popper.el-popper[role=tooltip],.el-date-picker {
+    @apply bg-gray-700 text-gray-300 hover:text-gray-50;
+  }
+
+  .el-date-picker__header, .el-picker-panel__icon-btn, .el-date-picker__header-label {
+    @apply text-gray-300 hover:text-white
+  }
+
+  .el-date-table th {
+    @apply text-white
+  }
+
+  .el-popper__arrow {
+    @apply border-gray-700;
+  }
+
+  .el-popper.is-light .el-popper__arrow::before {
+    @apply bg-gray-700
+  }
 }
 </style>

@@ -1,9 +1,9 @@
 <template>
-    <div class="tag-select flex justify-center items-center">
+    <div class="flex items-center justify-center tag-select">
         <el-popover
             v-model="state.isOpen"
             placement="bottom-end"
-            popper-class='tag-select'
+            popper-class='tag-select dark:bg-gray-900 dark:text-gray-300'
             :width="240"
             :show-arrow="false"
             @hide="state.selectedTag=null"
@@ -12,13 +12,13 @@
 
             <div v-if="state.selectedTag">
                 <div class="flex items-center mb-5">
-                    <button @click="state.selectedTag = null" class="px-2 py-1 hover:bg-gray-200 rounded-md focus:outline-none"><i class="fa fa-chevron-left"></i></button>
-                    <div class="font-bold ml-2"> Edit Tag</div>
+                    <button @click="state.selectedTag = null" class="px-2 py-1 rounded-md hover:bg-gray-200 focus:outline-none"><i class="fa fa-chevron-left"></i></button>
+                    <div class="ml-2 font-bold"> Edit Tag</div>
                 </div>
-                <div class="text-left mb-6">
-                    <label for="" class="mb-2 inline-block font-bold">Tag Name</label>
+                <div class="mb-6 text-left">
+                    <label for="" class="inline-block mb-2 font-bold">Tag Name</label>
                     <input
-                        class="w-full h-8 rounded-md px-2 border-2 border-gray-100 focus:outline-none focus:border-gray-200" 
+                        class="w-full h-8 px-2 border-2 border-gray-100 rounded-md dark:bg-gray-900 focus:outline-none focus:border-gray-200" 
                         type="text" 
                         placeholder="Add or create a tag"
                         v-model.trim="state.selectedTag.name"
@@ -27,10 +27,10 @@
                 </div>
 
                 <div class="mt-2">
-                     <label for="" class="mb-2 inline-block font-bold">Pick a color</label>
+                     <label for="" class="inline-block mb-2 font-bold">Pick a color</label>
                      <div class="grid grid-cols-4">
                         <div v-for="colors in state.tagColors" 
-                            :key="colors[0]" class="h-10 w-10 my-2 rounded-full overflow-hidden flex cursor-pointer" 
+                            :key="colors[0]" class="flex w-10 h-10 my-2 overflow-hidden rounded-full cursor-pointer" 
                             :class="[`border-2 border-transparent ${colors.hover}`, state.selectedTag.colors && state.selectedTag.colors[0] == colors[0] && 'border-gray-600' ]"
                             @click="state.selectedTag.colors=colors"
                         >
@@ -43,20 +43,20 @@
                 <div class="flex justify-end">
                     <button 
                         @click="deleteTag(state.selectedTag)"
-                        class="px-5 py-2 rounded-md focus:outline-none transition-colors bg-red-400 hover:bg-red-500 text-white mr-2">
+                        class="px-5 py-2 mr-2 text-white transition-colors bg-red-400 rounded-md focus:outline-none hover:bg-red-500">
                         Delete
                     </button>
                     <button
                         @click="updateTag(state.selectedTag)" 
-                        class="px-5 py-2 rounded-md focus:outline-none transition-colors bg-green-400 hover:bg-green-500 text-white "> 
+                        class="px-5 py-2 text-white transition-colors bg-green-400 rounded-md focus:outline-none hover:bg-green-500 "> 
                         Save 
                     </button>
                 </div>
             </div>
 
-            <div class="pt-2 pb-5 px-1 w-full" v-else>
+            <div class="w-full px-1 pt-2 pb-5" v-else>
                 <input
-                    class="w-full h-8 rounded-md px-2 border-2 border-gray-100 focus:outline-none focus:border-gray-200" 
+                    class="w-full h-8 px-2 border-2 border-gray-100 rounded-md dark:bg-gray-900 dark:focus:border-gray-400 dark:border-gray-500 dark:text-gray-300 focus:outline-none focus:border-gray-200" 
                     type="text" 
                     placeholder="Add or create a tag"
                     v-model.trim="searchText"
@@ -69,15 +69,15 @@
                 />
 
                 <div 
-                    class="tags-container mt-2 space-y-1 max-h-48 overflow-auto w-full ic-scroller pr-2" 
+                    class="w-full pr-2 mt-2 space-y-1 overflow-auto tags-container max-h-48 ic-scroller" 
                     ref="container">
                     <div v-for="(tag, index) in filteredList" 
                         :key="tag" 
-                        class="px-2 py-2 cursor-pointer transition-colors capitalize flex rounded-md fnnt-bold"
+                        class="flex px-2 py-2 capitalize transition-colors rounded-md cursor-pointer fnnt-bold"
                         :class="[
                             `select-item-${index}`,
                             preSelectedValue == tag && 'bg-gray-500 text-white', 
-                            isSelected(tag.uid) ? 'bg-gray-200 hover:bg-gray-200 ' : 'hover:bg-gray-200'
+                            isSelected(tag.uid) ? 'bg-gray-200 hover:bg-gray-200 ' : 'hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-50'
                         ]"
                         @click.stop="selectTag(tag)"
                     >
@@ -88,7 +88,7 @@
                             {{ tag.name }}
                         </div>
 
-                        <div @click.prevent.stop="state.selectedTag=tag" class="px-2 py-1 transition-colors rounded-full flex items-center justify-center hover:bg-gray-700 hover:text-white w-10">
+                        <div @click.prevent.stop="state.selectedTag=tag" class="flex items-center justify-center w-10 px-2 py-1 transition-colors rounded-full hover:bg-gray-700 hover:text-white">
                             <i class="fa fa-edit"></i>
                         </div>
                     </div>
@@ -96,7 +96,7 @@
              
 
                 <div v-if="searchText && filteredList.length == 0 && allowAdd">
-                    <button class="px-2 h-8 w-full" @click="addTag"> 
+                    <button class="w-full h-8 px-2" @click="addTag"> 
                         Add tag:  "{{ searchText}}"</button>
                 </div>
                 <div v-else-if="filteredList.length == 0 && searchText" class="text-center">
@@ -108,29 +108,29 @@
             <button 
                 ref="button"
                 :class="{'text-gray-500': true }" 
-                class="flex focus:outline-none space-x-1 items-center text-xs h-full"
+                class="flex items-center h-full space-x-1 text-xs focus:outline-none dark:bg-transparent dark:text-gray-300"
                 @mousedown.prevent
                 @focus.prevent="focusButton"
             >
-                <i class="fa fa-tags cursor-pointer"></i>
+                <i class="cursor-pointer fa fa-tags"></i>
                     <span v-if="!selectedTags.length"> {{ placeholder }} </span>
                     <span 
                         v-for="tag in selectedTags.slice(0, limit)" 
                         :key="tag.name" 
                         
-                        class="mr-1 text-white bg-gray-500 pl-2 rounded-md flex items-center"
+                        class="flex items-center pl-2 mr-1 text-white bg-gray-500 rounded-md"
                         :class="tag.colors"
                     > 
                         {{ tag.name}}
 
-                        <button  @click.prevent.stop="select(tag)" class="hover:bg-gray-700 transition-colors rounded-r-md py-1">
-                            <i class="fa fa-times px-2"></i>
+                        <button  @click.prevent.stop="select(tag)" class="py-1 transition-colors hover:bg-gray-700 rounded-r-md">
+                            <i class="px-2 fa fa-times"></i>
                         </button>
                     </span>
                     <span 
                         v-if="moreTags"
                         :title="moreTags"
-                        class="mr-1 text-white bg-gray-500 px-2 py-1 rounded-md"> 
+                        class="px-2 py-1 mr-1 text-white bg-gray-500 rounded-md"> 
                         + {{ selectedTags.slice(limit).length }}
                     </span>
 
@@ -141,7 +141,7 @@
 </template>
 
 <script setup>
-import { computed, defineEmit, reactive, watch, ref, toRefs } from "vue";
+import { computed, reactive, watch, ref, toRefs } from "vue";
 import { useFuseSearch } from "../../utils/useFuseSearch"
 import { useCollection } from "../../utils/useCollection"
 import { ElMessageBox, ElNotification } from "element-plus";
@@ -195,7 +195,7 @@ watch(() => props.tags, () => {
 const input = ref(null);
 const button = ref(null);
 
-const emit = defineEmit({
+const emit = defineEmits({
     'update:modelValue': Array,
     'added': Object,
     'selected': Object
@@ -346,3 +346,11 @@ const select = (tag) => {
 }
 
 </script>
+
+<style lang="scss">
+.dark {
+.el-popper.is-light {
+    @apply bg-gray-700 border-gray-500 text-gray-300;
+}
+}
+</style>

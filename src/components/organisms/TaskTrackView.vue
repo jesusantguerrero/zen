@@ -1,5 +1,5 @@
 <template>
-<div class="task__promodoros flex shadow-md bg-white px-5 py-3 border-2 border-gray-100 rounded-md mt-10">
+<div class="task__promodoros flex shadow-md bg-white border-gray-100 dark:bg-gray-700 dark:border-gray-600 px-5 py-3 border-2  rounded-md mt-10">
   <div class="flex">
       <div class="task__target rounded-full border-4 border-gray-400 text-gray-400 h-16 w-16 flex justify-center items-center font-extrabold">
         <span class="text-xl">

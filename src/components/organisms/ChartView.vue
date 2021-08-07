@@ -1,11 +1,11 @@
 <template>
     <div class="chart-container pt-10 md:pt-2 md:ml-10">
         <div class="flex justify-between">
-            <h1 class="text-gray-400 font-bold text-2xl"> Pomodoro Info</h1>
-            <button class="text-gray-400"> <i class="fa fa-times"></i></button>
+            <h1 class="text-gray-400 dark:text-gray-300 font-bold text-2xl"> Pomodoro Info</h1>
+            <button class="text-gray-400 dark:text-gray-300"> <i class="fa fa-times"></i></button>
         </div>
         
-        <div class="flex space-x-2 py-4 bg-white border-gray-200 border-2 rounded-md h-14"> 
+        <div class="flex space-x-2 py-4 bg-white border-gray-200 dark:bg-gray-700 dark:border-gray-600 border-2 rounded-md h-14"> 
             <div class="w-full" v-if="seriesData && seriesData.length">
                 Started: <span class="font-bold"> {{ seriesData[0] }} </span> 
             </div>

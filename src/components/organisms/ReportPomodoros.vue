@@ -1,6 +1,6 @@
 <template>
-<div class="bg-white mb-10 rounded-md px-5 py-3">
-    <div class="flex justify-between font-bold text-gray-500 text-left">
+<div class="bg-white dark:bg-gray-700 dark:border-gray-600 mb-10 rounded-md px-5 py-3">
+    <div class="flex justify-between font-bold text-gray-500 dark:text-gray-300 text-left">
         <div>
             Pomodoro Stats
         </div>
@@ -16,11 +16,11 @@
             </button>
         </div>
     </div>
-    <div class="bg-white rounded-md py-3" style="height: 400px" v-if="state.selectedMode == 'session'">
+    <div class="bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 rounded-md py-3" style="height: 400px" v-if="state.selectedMode == 'session'">
         <report-chart data-class="graphics chart" id="chart-pomo-sessions" :data="completedPromodoros" :labels="timeData" :config="state.chartConfig.pomodoros"></report-chart>
     </div>
 
-    <div class="bg-white rounded-md py-3" style="height: 400px" v-if="state.selectedMode== 'time'">
+    <div class="bg-white dark:bg-gray-700 dark:border-gray-600  dark:text-gray-300 rounded-md py-3" style="height: 400px" v-if="state.selectedMode== 'time'">
         <report-chart data-class="graphics chart" id="chart-pomo-sessions" :data="durationPromodoros" :labels="timeData" :config="state.chartConfig.pomodoroDuration"></report-chart>
     </div>
 </div>

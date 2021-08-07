@@ -2,17 +2,17 @@
   <div
     class="text-center"
   >
-    <div class="flex items-center justify-between font-bold text-2xl">
-      <div class="text-sm mr-2"   :class="`${trackerMode.color} ${trackerMode.colorBorder}`" >
+    <div class="flex items-center justify-between text-2xl font-bold">
+      <div class="mr-2 text-sm"   :class="`${trackerMode.color} ${trackerMode.colorBorder}`" >
             {{ trackerMode.text }}
       </div>
       <div 
-        class="mr-2 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer"
+        class="flex items-center justify-center w-8 h-8 mr-2 rounded-full cursor-pointer"
         title="click here to start"
         :class="`${trackerMode.color} ${trackerMode.colorBorder}`" 
         @click="toggleTracker"
         >
-        <i class="far fa-play text-3xl" :class="trackerIcon"></i>
+        <i class="text-3xl far fa-play" :class="trackerIcon"></i>
       </div>
       <div
         class="select-none"
@@ -23,7 +23,7 @@
           <div
             v-for="(stage, index) in promodoroTotal"
             :title="`Round ${index+1}: ${stage.name}`"
-            class="bg-red h-1 w-full mr-1 cursor-pointer hover:ring hover:ring-offset-1"
+            class="w-full h-1 mr-1 cursor-pointer bg-red hover:ring hover:ring-offset-1"
             :class="[state.currentStep >= stage.originalIndex ? currentStateColor : '']"
             :key="stage.name"
           ></div>
@@ -32,7 +32,7 @@
 
       <el-dropdown trigger="click" @command="handleCommand">
           <button
-            class="text-sm px-2 rounded-md ml-4 text-gray-400 border-transparent cursor-pointer border-2 hover:border-gray-200 transition-colors hover:text-md hover:bg-gray-200 py-2  focus:outline-none"
+            class="px-2 py-2 ml-4 text-sm text-gray-400 transition-colors border-2 border-transparent rounded-md cursor-pointer hover:border-gray-200 hover:text-md hover:bg-gray-200 focus:outline-none"
           >
             <i class="fa fa-ellipsis-v"></i>
           </button>
@@ -57,7 +57,7 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, reactive, watch, defineProps, defineEmit, ref} from "vue";
+import { computed, onBeforeUnmount, reactive, watch, ref} from "vue";
 import { Duration, Interval, DateTime } from "luxon";
 import { useTrackFirestore } from "./../../utils/useTrackFirestore";
 import { usePromodoro } from "./../../utils/usePromodoro";
@@ -76,7 +76,7 @@ const props = defineProps({
     type: Object
   }
 })
-const emit = defineEmit({
+const emit = defineEmits({
   "update:currentTimer": (timer) =>  timer
 })
 

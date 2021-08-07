@@ -3,19 +3,19 @@
     ref="descriptionInput"
     v-model="localValue"
     placeholder="Add a short description"
-    class="resize-none transition-all overflow-hidden"
+    class="overflow-hidden transition-all resize-none"
     @input="onInput()">
 </textarea>
 </template>
 
 <script setup>
-import { defineProps, watch, defineEmit, ref, onMounted } from "vue";
+import { watch, ref, onMounted } from "vue";
 
 
 const props = defineProps({
     modelValue: String
 });
-const emit = defineEmit({
+const emit = defineEmits({
     'update:modelValue': String
 })
 const localValue = ref('');

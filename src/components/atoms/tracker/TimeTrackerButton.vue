@@ -1,6 +1,6 @@
 <template>
   <div
-    class="task-item__tracked ml-2 text-gray-400 hover:text-gray-600 md:text-md text-sm md:text-base flex items-center"
+    class="task-item__tracked ml-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 md:text-md text-sm md:text-base flex items-center"
     title="Time tracked"
     :class="[allowRun ? 'cursor-pointer' : 'cursor-default']"
     @click="$emit('toggle-timer', isCurrent)"

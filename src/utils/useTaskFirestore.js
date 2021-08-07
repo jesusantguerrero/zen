@@ -1,10 +1,11 @@
 import { DateTime } from "luxon";
-import { format as formatDate} from "date-fns"
-import { db, firebaseState } from "./useFirebase";
+import { db, firebaseState, functions } from "./useFirebase";
+import { nextTick } from "vue";
 const collectionName = "tasks";
 
 const getDate = (task) => {
-    return task.due_date instanceof Date ? formatDate(task.due_date, "yyyy-MM-dd") : task.due_date;
+    // return task.due_date instanceof Date ? formatDate(task.due_date, "yyyy-MM-dd") : task.due_date;
+    return task.due_date instanceof Date ? task.due_date : DateTime.fromISO(task.due_date).toJSDate();
 }
 
 export function useTaskFirestore() {
@@ -18,7 +19,10 @@ export function useTaskFirestore() {
             created_at: new Date()
         })
         .then((docRef) => {
-            return docRef.id;
+            const taskUid = docRef.id;
+            task.uid = taskUid
+            runRecurrence(task)
+            return taskUid;
         })
         .catch(function(error) {
             console.error("Error adding document: ", error);
@@ -30,8 +34,10 @@ export function useTaskFirestore() {
         if (task.due_date) {
             task.due_date = getDate(task)
         }
+        task.order = task.order < 0 ? 0 : task.order;
         return trackRef.update(task, { merge: true })
         .then(() => {
+            runRecurrence(task)
             return task.uid;
         })
     }
@@ -62,7 +68,7 @@ export function useTaskFirestore() {
 
     const getAllFromUser = async (where = {}) => {
         const tasks = [];
-        await db.collection(collectionName).where("user_uid", "==", firebaseState.user.uid).get().then(querySnapshot => {
+        await db.collection(collectionName).withConverter(taskConverter).where("user_uid", "==", firebaseState.user.uid).get().then(querySnapshot => {
             querySnapshot.forEach((doc) => {
                 tasks.push({...doc.data(), uid: doc.id });
             });
@@ -72,20 +78,14 @@ export function useTaskFirestore() {
     }
 
     const getCommitedTasks = async (date = new Date()) => {
-        const tasks = [];
         const commitDate = DateTime.fromJSDate(date).toFormat('yyyy-MM-dd')
-        await db.collection(collectionName)
+        const committedRef = await db.collection(collectionName)
         .where("user_uid", "==", firebaseState.user.uid)
         .where("done", "==", true)
         .where("commit_date", "==", commitDate)
-        .get()
-        .then(querySnapshot => {
-            querySnapshot.forEach((doc) => {
-                tasks.push({...doc.data(), uid: doc.id });
-            });
-        })
+        .withConverter(taskConverter)
 
-        return tasks;
+        return committedRef
     }
 
     const getUncommitedTasks = (userUuid) => {
@@ -93,6 +93,7 @@ export function useTaskFirestore() {
         .where("user_uid", "==", userUuid || firebaseState.user.uid)
         .where("done", "==", false)
         .orderBy("order")
+        .withConverter(taskConverter)
     
         return uncommitedRef
     }
@@ -102,9 +103,24 @@ export function useTaskFirestore() {
             .where("user_uid", "==", firebaseState.user.uid)
             .where("done", "==", false)
             .where("matrix", "==", matrix)
+            .withConverter(taskConverter)
             .orderBy("order")
             
         return matrixRef
+    }
+
+    const taskConverter = {
+        fromFirestore( snapshot, options) {
+            const data = snapshot.data(options);
+            return { ...data, due_date: !data.due_date ? null : data.due_date.toDate ? data.due_date.toDate() : data.due_date };
+        }
+    }
+
+    const runRecurrence = (task) => {
+        nextTick(() => {
+            const setReminder = functions.httpsCallable('setRecurrence');
+            setReminder(task);
+        })
     }
 
     return {

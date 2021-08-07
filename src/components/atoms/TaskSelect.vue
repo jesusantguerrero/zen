@@ -8,9 +8,9 @@
             :value="item"
             input-class="option-text"
         >
-            <div class="flex justify-between h-full mx-2 items-center">
+            <div class="flex items-center justify-between h-full mx-2">
                 <div 
-                    class="mx-3 rounded-md flex items-center px-2 mr-2 h-7" 
+                    class="flex items-center px-2 mx-3 mr-2 rounded-md h-7" 
                     :class="typeColor(task)"> 
                     <i class="fa fa-sticky-note"></i>
                 </div>
@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-import { defineProps, ref, watch, defineEmit } from "vue";
+import { defineProps, ref, watch } from "vue";
 
 const props = defineProps({
     items: {
@@ -37,7 +37,7 @@ const props = defineProps({
     }
 })
 
-const emit = defineEmit({
+const emit = defineEmits({
     'update:modelValue': (task) => {}
 })
 

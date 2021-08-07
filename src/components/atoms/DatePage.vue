@@ -1,14 +1,14 @@
 <template>
-  <div class="date-pager flex rounded-md border-gray-200 border-2 overflow-hidden">
+  <div class="flex overflow-hidden border-2 border-gray-200 rounded-md date-pager dark:border-gray-500">
     <button
-      class="bg-white px-2 focus:outline-none hover:bg-gray-200 transition-colors"
+      class="px-2 transition-colors bg-white dark:bg-gray-700 dark:text-gray-300 focus:outline-none hover:bg-gray-200"
       @click="previousDate()"
     >
       <i class="fa fa-chevron-left"></i>
     </button>
       <el-date-picker v-model="state.date" ref="input" type="date" @change="emitDate" />
     <button
-      class="bg-white px-2 focus:outline-none hover:bg-gray-200 transition-colors"
+      class="px-2 transition-colors bg-white dark:bg-gray-700 dark:text-gray-300 focus:outline-none hover:bg-gray-200"
       @click="nextDate()"
     >
       <i class="fa fa-chevron-right"></i>
@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import { defineEmit, onMounted, reactive, ref, watch } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import { useDateTime } from "../../utils/useDateTime";
 import { ElDatePicker } from "element-plus"
 
@@ -25,7 +25,7 @@ const props = defineProps({
   modelValue: Date,
 });
 
-const emit = defineEmit({
+const emit = defineEmits({
   "update:modelValue": Date,
 });
 

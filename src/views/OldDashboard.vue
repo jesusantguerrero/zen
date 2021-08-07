@@ -1,13 +1,21 @@
 <template>
-  <div class="pt-24 md:pt-28 pb-20 mx-5 md:mx-28">
+  <div class="pt-24 pb-20 mx-5 md:pt-28 md:mx-28">
     <div class="text-left md:flex">
       <div
         class="zen__view md:block md:w-8/12 md:mr-20"
         :class="[state.mobileMode == 'zen' ? 'block' : 'hidden']"
       >
         <header class="flex justify-between">
-          <h1 class="md:block text-2xl font-bold text-gray-400">
-            {{ "Main task" || "No task selected" }}
+          <h1 class="text-2xl font-bold text-gray-400 md:block dark:text-gray-300">
+            Main task
+
+            <!-- <button 
+              class="p-2 ml-5 text-sm font-bold bg-white border rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white hover:shadow-md focus:outline-none"
+              @click="$emit('update', true)"
+            >
+                <i class="fa fa-chevron-left"></i>
+              New Home Screen
+            </button> -->
           </h1>
 
           <time-tracker :task="currentTask" v-model:currentTimer="currentTimer">
@@ -33,20 +41,20 @@
             @updated="onTaskUpdated"
           >
             <template #empty v-if="!currentTask.title">
-              <div class="w-8/12 md:w-6/12 mx-auto mt-10 text-center">
+              <div class="w-8/12 mx-auto mt-10 text-center md:w-6/12">
                 <img
                   src="../assets/undraw_following.svg"
-                  class="w-12/12 md:w-7/12 mx-auto"
+                  class="mx-auto w-12/12 md:w-7/12"
                 />
-                <div class="mt-10 md:mt-5 text-gray-500 font-bold">
+                <div class="mt-10 font-bold text-gray-500 md:mt-5 dark:text-gray-300">
                   Go to
                   
-                  <router-link to="/plan-ahead" class="font-bolder text-green-400 hover:text-green-500 transition-colors border-dashed cursor-pointer mr-1"
+                  <router-link to="/plan-ahead" class="mr-1 text-green-400 transition-colors border-dashed cursor-pointer font-bolder dark:text-green-500 dark:hover:text-green-400 hover:text-green-500"
                     >
                     <i class="fa fa-tasks"></i>
                     Plan Ahead
                     </router-link> or select item from 
-                    <span class="font-bolder text-gray-400 border-gray-400"
+                    <span class="text-gray-400 border-gray-400 font-bolder dark:text-white"
                     >Todo
                     <i class="fa fa-arrow-right"></i>
                   </span>
@@ -63,14 +71,14 @@
         class="zen__comming-up lineup md:block md:mt-0 md:w-4/12"
         :class="[state.mobileMode == 'lineup' ? 'block' : 'hidden']"
       >
-        <header class="mb-2 md:flex justify-between text-gray-400 font-bold items-center overflow-hidden">
+        <header class="items-center justify-between mb-2 overflow-hidden font-bold text-gray-400 md:flex">
           <h1 class="text-2xl">Lineup</h1>
 
-          <div class="md:flex items-center h-10">
+          <div class="items-center h-10 md:flex">
             <input
               type="search"
               v-model.trim="searchOptions.text"
-              class="w-44 px-2 text-sm h-10 rounded-md focus:outline-none border-2 border-gray-200"
+              class="h-10 px-2 text-sm border-2 border-gray-200 rounded-md w-44 focus:outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-300"
               placeholder="Search task"
             />
 
@@ -79,29 +87,29 @@
               :multiple="true"
               placeholder="Filter by tag"
               :tags="tags" 
-              class="w-full h-full md:ml-2 bg-white px-2 py-2 rounded-md border-gray-200 border-2"
+              class="w-full h-full px-2 py-2 bg-white border-2 border-gray-200 rounded-md md:ml-2 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-300"
               :allow-add="false"
             /> 
           </div>
         </header>
 
-        <div class="comming-up__list divide-y-2 divide-gray-200 divide-solid">
-          <div class="quick__add mb-4">
-            <h4 class="font-bold mb-2">Quick Add</h4>
+        <div class="divide-y-2 divide-gray-200 comming-up__list dark:divide-gray-600 dark:text-gray-300 divide-solid">
+          <div class="mb-4 quick__add">
+            <h4 class="mb-2 font-bold">Quick Add</h4>
             <quick-add @saved="addTask" type="todo" :allow-edit="true"></quick-add>
           </div>
-          <div class="">
-            <div class="tab-header flex"> 
+          <div class="pt-4">
+            <div class="flex tab-header "> 
               <button 
-                class="px-2 py-1 hover:bg-gray-200 font-bold focus:outline-none text-gray-500" 
-                :class="{'text-green-500 bg-gray-100': state.tabSelected=='todo'}"
+                class="px-2 py-1 font-bold text-gray-500 transition-all dark:bg-transparent dark:hover:bg-gray-700 dark:hover:text-gray-300 hover:bg-gray-200 focus:outline-none" 
+                :class="[state.tabSelected=='todo' ? 'text-green-500 bg-gray-100' : 'dark:text-gray-300']"
                 @click="state.tabSelected='todo'"
                 > 
                   Todo ({{ state.todo.length }})
               </button>
               <button 
-                class="px-2 py-1 hover:bg-gray-200 font-bold focus:outline-none text-gray-500"
-                :class="{'text-blue-500 bg-gray-100': state.tabSelected=='schedule'}"
+                class="px-2 py-1 font-bold text-gray-500 transition-all dark:bg-transparent dark:hover:bg-gray-700 dark:hover:text-gray-300 hover:bg-gray-200 focus:outline-none"
+                :class="[state.tabSelected=='schedule' ? 'text-blue-500 bg-gray-100': 'dark:text-gray-300'] "
                 @click="state.tabSelected='schedule'"
                 > 
                 Schedule ({{ state.schedule.length }})
@@ -119,14 +127,16 @@
               :current-task="currentTask"
               :current-timer="currentTimer"
               :is-item-as-handler="true"
-              type="todo"
               :tags="selectedTags"
+              :use-external-done="true"
+              type="todo"
               placeholder="Click a task select"
               @change="handleDragChanges"
               @clone="onClone"
               @deleted="destroyTask"
               @edited="setTaskToEdit"
               @selected="setCurrentTask"
+              @done="onDone"
               @down="moveTo($event, 'schedule')"
             >
             </task-group>
@@ -169,16 +179,16 @@
     </task-modal>
 
     <!-- mobile nav -->
-    <div class="md:hidden bg-gray-600 text-white flex h-10 fixed bottom-0 w-full left-0">
+    <div class="fixed bottom-0 left-0 flex w-full h-10 text-white bg-gray-600 md:hidden">
       <div
-        class="text-xl font-bold text-center w-full h-full my-auto flex items-center justify-center"
+        class="flex items-center justify-center w-full h-full my-auto text-xl font-bold text-center"
         :class="{ 'bg-gray-900': state.mobileMode == 'zen' }"
         @click="state.mobileMode = 'zen'"
       >
         Zen
       </div>
       <div
-        class="text-xl font-bold text-center h-full w-full my-auto flex items-center justify-center"
+        class="flex items-center justify-center w-full h-full my-auto text-xl font-bold text-center"
         :class="{ 'bg-gray-900': state.mobileMode == 'lineup' }"
         @click="state.mobileMode = 'lineup'"
       >
@@ -202,8 +212,8 @@ import QuickAdd from "../components/molecules/QuickAdd.vue";
 import TimeTracker from "../components/organisms/TimeTracker.vue";
 import TaskView from "../components/organisms/TaskView.vue";
 import TaskTrackView from "../components/organisms/TaskTrackView.vue";
-import WelcomeModal from "../components/organisms/WelcomeModal.vue";
-import TaskModal from "../components/organisms/TaskModal.vue";
+import WelcomeModal from "../components/organisms/modals/WelcomeModal.vue";
+import TaskModal from "../components/organisms/modals/TaskModal.vue";
 
 const {
   saveTask,
@@ -357,8 +367,9 @@ onUnmounted(() => {
 });
 
 const getNextIndex = (list) => {
-  return Math.max(...list.map((item) => Number(item.order || 0))) + 1;
-};
+  const index = Math.max(...list.map((item) => Number(item.order || 0))) + 1;
+  return index < 0 ? 0 : index;
+}
 
 const addTask = (task) => {
   task.order = getNextIndex(state.todo);

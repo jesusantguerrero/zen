@@ -1,3 +1,4 @@
+import { format, isToday, isTomorrow, formatRelative, isThisWeek, isThisYear, isDate } from "date-fns";
 import { DateTime, Duration } from "luxon";
 import { computed, ref} from "vue";
 
@@ -6,6 +7,26 @@ export function useDateTime(dateRef) {
     
     const formattedDate = computed(() => {
         return date.value && typeof date.value == 'object' ? toISO(date.value) : date.value;
+    })
+
+    const humanDate = computed(() => {
+        const isoDate = date.value && typeof date.value == 'object' ? date.value : date.value;
+        if (!isDate(isoDate)) {
+            return isoDate;
+        }
+        if (isToday(isoDate)) {
+            return 'Today';
+        } else if (isTomorrow(isoDate)) {
+            return 'Tomorrow';
+        } else if (isThisWeek(isoDate)) {
+            return formatRelative(date.value, new Date()).replace(' at 12:00 AM', '');
+        } else if (isThisWeek(isoDate)) {
+            return format(date.value, 'iiii');
+        } else if (isThisYear(isoDate)) {
+            return format(isoDate, 'MMM dd')
+        } else {
+            return format(isoDate, 'MMM dd yyyy')
+        }
     })
 
     const formatDate = (date, format) => {
@@ -31,6 +52,7 @@ export function useDateTime(dateRef) {
         formatDate,
         formatDurationFromMs,
         getDateFromString,
-        date: date.value
+        date: date.value,
+        humanDate
     }
 }

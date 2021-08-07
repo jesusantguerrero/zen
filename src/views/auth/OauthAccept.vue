@@ -1,10 +1,10 @@
 <template>
-  <div class="pt-24 md:pt-28 pb-20 mx-5 md:mx-28">
-    <div class="section-header md:flex justify-between items-center mb-10">
-      <h2 class="text-2xl font-bold text-gray-400 text-left">Settings</h2>
+  <div class="pt-24 pb-20 mx-5 md:pt-28 md:mx-28">
+    <div class="items-center justify-between mb-10 section-header md:flex">
+      <h2 class="text-2xl font-bold text-left text-gray-400">Settings</h2>
     </div>
     <div class="flex space-x-5">
-      <div class="bg-white rounded-md border border-gray-200 shadow-md w-9/12">
+      <div class="w-9/12 bg-white border border-gray-200 rounded-md shadow-md">
         <div class="example-display__presenter">
           <button class="" @click="accept">Accept</button>
         </div>
