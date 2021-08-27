@@ -4,16 +4,16 @@
         <slot>
             <i class="fa prize__icon" :class="badge.iconClass"></i>
         </slot>
-        <div class="prize__body">Level {{ badge.level }}</div>
+        <div class="prize__body" v-if="badge.level">Level {{ badge.level }}</div>
     </div>
-    <div class="prize__description">
+    <div class="prize__description" v-if="badge.name">
       <span :style="prizeNameStyle" class="font-bold"> {{ badge.name }}</span>
     </div>
   </div>
 </template>
 
 <script>
-import { computed, reactive, ref, toRefs } from 'vue';
+import { computed, reactive, toRefs } from 'vue';
 
 export default {
     props: {
@@ -84,7 +84,6 @@ export default {
     flex-direction: column;
     --tw-ring-offset-shadow: 2 0 0 0 var(--offset-width) var(--color);
     --tw-ring-shadow: 2 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--color);
-    box-shadow: 4px 4px 4px rgba(0,0,0,.3);
 
     &::after {
       position: absolute;

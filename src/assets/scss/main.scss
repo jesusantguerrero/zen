@@ -2,7 +2,10 @@
 
 
 html {
-    background: #f8f8f8
+    background: #f8f8f8;
+    &.dark {
+      background: #1F2937 !important;  
+    }
 }
 
 .checkbox-done {
@@ -12,11 +15,10 @@ html {
     min-width: 1.1rem;
     max-height: 1.1rem;
     background: transparent;
+    border-radius: 2px;
     display: block;
     margin: 0 2px;
-    border-radius: 3px;
     border: 2px solid #666;
-    border-radius: 50%;
     position: relative;
     cursor: pointer;
     transition: all ease 0.3s;

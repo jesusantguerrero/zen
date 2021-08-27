@@ -4,7 +4,7 @@
 
 <script setup>
 import SingleChart from "./../../utils/charts/SingleChart";
-import { defineProps, onMounted, ref, watch, toRefs} from "vue";
+import { onMounted, ref, watch, toRefs} from "vue";
 const props = defineProps({
   labels: {
     type: Array,
@@ -60,7 +60,7 @@ watch(() => canvas.value, (data) => {
     canvas.value && data.length && init() ;
 }, {immediate: true })
 
-watch(() => [...data.value], (data) => {
+watch(() => data.value && [...data.value], (data) => {
     canvas.value && data.length && refresh() ;
 }, {immediate: true })
 

@@ -1,25 +1,25 @@
 <template>
-<div class="checklist-container text-sm" ref="checklistContainer">
-    <h4 class="font-bold text-gray-500">
+<div class="text-sm checklist-container" ref="checklistContainer">
+    <h4 class="font-bold text-gray-500 dark:text-gray-300">
         Checklist ({{ doneItems }} / {{ items ? items.length : 0 }})
     </h4>
    <draggable v-model="items" handle=".handle">
         <div
             v-for="(check, index) in items"
             :key="check.id"
-            class="checklist__item h-8 justify-between cursor-default hover:bg-gray-50 flex items-center my-2 px-2 rounded-sm bg-white"
+            class="flex items-center justify-between h-8 px-2 my-2 bg-white rounded-sm cursor-default checklist__item dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-50"
         >   
-            <div class="w-full flex items-center">
-                <i class="fa fa-arrows-alt checklist-item__move handle mr-2 opacity-0"  v-if="allowEdit"></i>
+            <div class="flex items-center w-full">
+                <i class="mr-2 opacity-0 fa fa-arrows-alt checklist-item__move handle"  v-if="allowEdit"></i>
                 <input
                     type="checkbox"
-                    class="form-control-check mx-2 checkbox-done"
+                    class="mx-2 form-control-check checkbox-done"
                     v-model="check.done"
                     @change.stop="trackChanges"
                 />
                 <input
                     type="text"
-                    class="bg-transparent focus:outline-none w-full ml-2 cursor-default"
+                    class="w-full ml-2 bg-transparent cursor-default focus:outline-none"
                     :disabled="!allowEdit"
                     v-model="check.title"
                 />
@@ -27,7 +27,7 @@
             
             <button class="w-5">
                 <i
-                    class="fa fa-trash checklist-item__delete text-gray-400 cursor-pointer opacity-0 hover:text-red-300"
+                    class="text-gray-400 opacity-0 cursor-pointer fa fa-trash checklist-item__delete hover:text-red-300"
                     @click="deleteItem(index)"
                     v-if="allowEdit"
                 ></i>
@@ -35,14 +35,14 @@
         </div>
     </draggable>
 
-    <div class="text flex justify-between items-center border-2 border-gray-100 bg-gray-100 px-2 rounded-md shadow-sm"
+    <div class="flex items-center justify-between px-2 bg-gray-100 border-2 border-gray-100 rounded-md shadow-sm text dark:bg-gray-800 dark:border-gray-600"
         :class="{'border-gray-400': isFocused}"
         v-if="allowEdit"
     >
         <input type="checkbox" disabled class="mr-2">
         <input 
             :value="modelValue"
-            class="w-full h-8 bg-gray-100 focus:outline-none"
+            class="w-full h-8 bg-gray-100 dark:bg-gray-800 dark:text-gray-300 focus:outline-none"
             type="text" 
             ref="input"
             @input="emit('update:modelValue', input.value)"
@@ -59,7 +59,7 @@
 import { onClickOutside } from "@vueuse/core";
 import { ElNotification } from "element-plus";
 import { useTaskFirestore } from "../../utils/useTaskFirestore"
-import { defineProps, ref, defineEmit, onMounted, onUnmounted, computed, onBeforeUnmount, reactive, watch } from "vue";
+import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { VueDraggableNext as Draggable } from "vue-draggable-next"
 
 const props = defineProps({
@@ -69,7 +69,7 @@ const props = defineProps({
     allowEdit: Boolean
 })
 
-const emit = defineEmit({
+const emit = defineEmits({
     'updated': Array,
     'update:items': Array,
     'update:modelValue': String

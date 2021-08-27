@@ -1,8 +1,8 @@
 <template>
 <jet-dropdown align="right" width="full">
     <template #trigger>
-        <span class="inline-flex rounded-md w-full">
-            <button type="button" class="w-full inline-flex items-center justify-between px-3 py-3 border border-gray-200 text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:bg-gray-50 hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150 capitalize">
+        <span class="inline-flex w-full rounded-md">
+            <button type="button" class="inline-flex items-center justify-between w-full px-3 py-3 text-sm font-medium leading-4 text-gray-500 capitalize transition duration-150 ease-in-out bg-white border border-gray-200 rounded-md dark:bg-gray-900 dark:border-gray-700 dark:text-gray-300 hover:bg-gray-50 hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50">
                 {{ selected ?  selected[label] : placeholder }}
 
                 <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -13,14 +13,15 @@
     </template>
 
     <template #content>
-        <div class="w-full overflow-auto select-overlay">
+        <div class="w-full overflow-auto select-overlay dark:bg-gray-900 dark:border-gray-700 dark:text-gray-300">
             <div
                 v-for="option in options"
                 :key="option.name || option"
+                class="dark:bg-gray-900 dark:hover:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
                 >
                 <div
-                    class="py-2 px-2 cursor-pointer"
-                    :class="[groupItems ? 'bg-gray-200' : '']"
+                    class="px-2 py-2 cursor-pointer"
+                    :class="[groupItems ? 'bg-gray-200 dark:bg-gray-900 dark:hover:bg-gray-800 dark:border-gray-700 dark:text-gray-300' : '']"
                     @click="!groupItems ? emitValue(option) : ''"
                 >
                     {{ option[label] || option.name || option }}
@@ -29,7 +30,7 @@
                 <div
                     v-for="item in option[groupItems]"
                     :key="item[keyTrack]"
-                    class="bg-white hover:bg-gray-50 py-2 px-1 w-full cursor-pointer pl-5 capitalize"
+                    class="w-full px-1 py-2 pl-5 capitalize bg-white cursor-pointer hover:bg-gray-50 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-300"
                     @click="emitValue(item)"
                 >
                     {{ item[label] }}
@@ -42,7 +43,7 @@
 
 <script setup>
 import JetDropdown from './Dropdown.vue'
-import { defineProps, computed, defineEmit } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps({
     options: {
@@ -70,7 +71,7 @@ const props = defineProps({
     }
 })
 
-const emit = defineEmit({
+const emit = defineEmits({
     'update:modelValue': Object
 })
 

@@ -1,35 +1,31 @@
 <template>
   <div 
-    class="task-item mb-2 bg-white border-gray-200 hover:border-green-200 border-2 px-4 rounded-md items-center transition-all cursor-pointer"
+    class="items-center px-4 mb-2 transition-all bg-white border-2 border-gray-200 rounded-md cursor-pointer task-item dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 hover:border-green-200"
     :class="{'border-green-400': isSelected, 'py-3 shadow-md ' : !isCompact }"
     @click="$emit('selected', task)"
     @dblclick.prevent="$emit('edited', task)"
 
   >
     <div class="flex justify-between">
-      <div class="flex items-start md:items-center text-xs">
-        <div v-if="handleMode" class="handle text-gray-300 cursor-move mr-2"><i class="fa fa-arrows-alt"></i></div>
-        
-        <div 
-          v-if="showSelect" 
-          class="mr-3 rounded-md px-2 py-1 border-2 border-transparent hover:bg-green-400 hover:text-white" 
-          :class="[isDisabled && 'cursor-not-allowed', isSelected ? 'bg-green-400 text-white' : 'bg-green-100 text-green-400']"
-          :title="isDisabled? 'Can change task when timer is running' : 'Click to select'"
-          :disabled="isDisabled"
-          @click.stop="$emit('selected', task)"
-        > 
+      <div class="flex items-start text-xs md:items-center"> 
+        <div class="flex items-center mr-2" v-if="showSelect" >
+          <input
+            type="checkbox"
+            class="mr-4 form-control-check checkbox-done"
+            v-model="task.done"
+            @click.stop="$emit('done', task)"
+          /> 
+        </div> 
+
+        <div v-else class="px-2 py-1 mr-3 border-2 border-transparent rounded-md" :class="[typeColor, keyStyles]"> 
             <i :class="[!task.is_key ? 'fa fa-sticky-note' : 'fa fa-fire']"></i>
         </div>
 
-        <div v-else class="mr-3 rounded-md px-2 py-1 border-2 border-transparent" :class="[typeColor, keyStyles]"> 
-            <i :class="[!task.is_key ? 'fa fa-sticky-note' : 'fa fa-fire']"></i>
-        </div>
-
-        <h4 class="task-item__title cursor-pointer m-0 text-left text-sm "> {{ task.title }}</h4>
+        <h4 class="m-0 text-sm text-left cursor-pointer task-item__title "> {{ task.title }}</h4>
       </div>
 
-      <div class="task-item__controls flex md:items-center items-start">  
-        <div class="md:flex flex-wrap justify-end mr-1">
+      <div class="flex items-start task-item__controls md:items-center">  
+        <div class="flex-wrap items-center justify-end mr-1 md:flex">
           <person-select
             v-if="type=='delegate'"
             v-model="task.contacts"
@@ -42,10 +38,10 @@
           
           <div
             v-else-if="type=='delete'" 
-            class="mx-2 text-gray-400 hover:text-red-400 md:text-md cursor-pointer text-sm md:text-base"
+            class="mx-2 text-sm text-gray-400 cursor-pointer hover:text-red-400 md:text-md md:text-base"
             @click="$emit('deleted', task)"
             title="Delete">
-            <i class="fa fa-trash mr-1"></i>
+            <i class="mr-1 fa fa-trash"></i>
           </div>
           <time-tracker-button
             :allow-run="allowRun"
@@ -55,19 +51,28 @@
             :task="currentTask"
             @toggle-timer="$emit('toggle-timer', task)"
           />
-
-          <date-select 
-            :class="dateStates.color" 
-            :title="dateStates.title" 
-            @update:modelValue="$emit('updated', {...task, due_date: $event })" 
-            v-if="task.due_date || type == 'schedule'"
-            v-model="task.due_date" 
-          />   
-          <button class="bg-gray-600 text-white text-xs px-2 rounded-md hover:bg-gray-500 transition-colors" v-if="task.done" @click.stop="$emit('undo', task)">Undo</button>
+          
+          <div>
+            <date-select 
+              v-if="task.due_date || type == 'schedule'"
+              v-model="task.due_date" 
+              v-model:schedule="task.schedule"
+              :disabled="!allowUpdate"
+              :class="dateStates.color" 
+              :title="dateStates.title"
+              :accept-recurrence="true"
+              placeholder="due date"
+              @update:schedule="$emit('updated', {...task, schedule: $event })" 
+              @update:modelValue="$emit('updated', {...task, due_date: $event })" 
+            /> 
+          </div>
+          <button class="h-6 px-2 ml-2 text-xs text-white transition-colors bg-gray-600 rounded-md hover:bg-gray-500" v-if="task.done" @click.stop="$emit('undo', task)">
+            <i class="fas fa-undo"></i> Undo
+          </button>
         </div>
 
         <el-dropdown trigger="click" @command="handleCommand" v-if="showControls" :disabled="isDisabled" @click.stop="">
-          <div class="px-2 py-1 hover:bg-gray-200 rounded-md text-sm focus:outline-none text-gray-400 hover:text-gray-600" :title="isDisabled? 'Can updates tasks when timer is running' : ''" @click.stop="">
+          <div class="px-2 py-1 text-sm text-gray-400 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-50 focus:outline-none hover:text-gray-600" :title="isDisabled? 'Can updates tasks when timer is running' : ''" @click.stop="">
             <i class="fa fa-ellipsis-v"></i>
           </div>
           <template #dropdown>
@@ -95,15 +100,15 @@
       </button>
       <button 
         title="Checklist" 
-        class="px-2 py-1 rounded-md  hover:bg-gray-200 focus:outline-none w-20 flex items-center" 
+        class="flex items-center w-20 px-2 py-1 rounded-md hover:bg-gray-200 focus:outline-none" 
         @click.stop="toggleExpand" v-if="task.checklist.length">
-        <i class="fa fa-list-ul mr-2"></i>
+        <i class="mr-2 fa fa-list-ul"></i>
         <div> 
           <span class="font-bold">{{ task.checklist.filter(item => item.done).length  }}</span> / {{ task.checklist.length  }} 
         </div>
       </button>
 
-      <div class="w-full flex justify-end">
+      <div class="flex justify-end w-full">
           <tags-select
             v-model="task.tags"
             :tags="tags"
@@ -119,12 +124,12 @@
     <el-collapse-transition>
       <div class="task-item__body" v-show="isExpanded">
         <div
-          class="task-item__description pt-2 text-left whitespace-pre-line" 
+          class="pt-2 text-left whitespace-pre-line task-item__description" 
           placeholder="Add a short description"
-          :class="{'text-gray-400 text-sm': !task.description }">
-            {{ task.description || 'No description provided'}}
-      </div>
-        <div class="task-item__checklist mt-5">
+          :class="{'text-gray-400 text-sm': !task.description }"
+          v-html="task.description"
+        />
+        <div class="mt-5 task-item__checklist">
           <checklist-container :items="task.checklist" :task="task"  @updated="updateItems"></checklist-container>
         </div>
       </div>
@@ -163,7 +168,8 @@ export default {
     currentTimer: Object,
     isItemAsHandler: Boolean,
     isCompact: Boolean,
-    allowRun: Boolean
+    allowRun: Boolean,
+    allowUpdate: Boolean,
   },
   emits: {
     deleted: Object,
@@ -185,11 +191,11 @@ export default {
       }),
       typeColor: computed(() => {
         const colors = {
-          todo: `bg-green-100 ${task.value.is_key ? 'text-gray-100' : 'text-green-500'}`,
-          schedule: 'bg-blue-100 text-blue-500',
-          delegate: 'bg-yellow-100 text-yellow-500',
-          delete: 'bg-red-100 text-red-500',
-          backlog: 'bg-gray-100 text-gray-500'
+          todo: `bg-green-100 dark:bg-gray-600 dark:border-gray-500 ${task.value.is_key ? 'text-gray-100 ' : 'text-green-500'}`,
+          schedule: 'bg-blue-100 dark:bg-gray-600 dark:border-gray-500 dark:text-blue-500 text-blue-500',
+          delegate: 'bg-yellow-100 dark:bg-gray-600 dark:border-gray-500 dark:text-yellow-400 text-yellow-500',
+          delete: 'bg-red-100 dark:bg-gray-600 dark:border-gray-500 text-red-400',
+          backlog: 'bg-gray-100 text-gray-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300'
         }
 
         return colors[props.type] || colors['todo']
@@ -233,7 +239,8 @@ export default {
 
         return  stateStyles[dateState]
       }),
-      isExpanded: false
+      isExpanded: false,
+      processing: false
     })
 
     task.value.contacts = task.value.contacts || [] 

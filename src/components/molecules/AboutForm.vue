@@ -1,5 +1,5 @@
 <template>
-<div class="prose prose-xl text-center mx-auto py-5">
+<div class="py-5 mx-auto prose prose-xl text-center">
     <div>
         <img src="../../assets/undraw_following.svg" alt="" class="w-4/12 mx-auto">
     </div>
@@ -10,10 +10,10 @@
         Zen. is a productivity app that integrates Eisenhower Matrix, GTD principle and Pomodoros in a unique way in order to improve your dev routine.
     </div>
 
-    <div class="text-center mb-10" v-if="!hideButton">
-        <button class="bg-gray-600 text-white hover:bg-gray-700 focus:outline-none rounded-md px-5 py-1" @click="emit('closed')">
+    <div class="mb-10 text-center" v-if="!hideButton">
+        <button class="px-5 py-1 text-white bg-gray-600 rounded-md hover:bg-gray-700 focus:outline-none" @click="emit('closed')">
             See how it works
-            <i class="fa fa-chevron-right ml-2"></i>
+            <i class="ml-2 fa fa-chevron-right"></i>
         </button>
     </div>
 </div>
@@ -21,13 +21,10 @@
 
 
 <script setup>
-import { defineProps } from "vue"
-
-
 defineProps({
     hideButton: Boolean
 })
-const emit = defineEmit({
+const emit = defineEmits({
     closed: Function
 })
 </script>

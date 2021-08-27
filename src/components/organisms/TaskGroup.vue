@@ -1,18 +1,15 @@
 <template>
   <div class="task-group">
-    <div class="flex justify-between cursor-pointer items-center" v-if="showTitle">
-      <h4 class="mb-2 font-bold block" :class="[isQuadrant ? `md:text-2xl font-bold ${color} capitalize`: '']">
+    <div class="flex items-center justify-between cursor-pointer" v-if="showTitle">
+      <h4 class="block mb-2 font-bold" :class="[isQuadrant ? `md:text-2xl font-bold ${color} capitalize`: '']">
          {{ title }} ({{ tasks.length }}) 
-         <!--<small @click="isShareModalOpen=true" class="text-sm" v-if="type!='backlog'">
-            Share
-         </small>-->
       </h4>
       
       <div class="flex">
-        <small class="text-sm  mr-2 text-gray-400 font-bold">{{ helpText }}</small>
+        <small class="mr-2 text-sm font-bold text-gray-400 dark:text-gray-300">{{ helpText }}</small>
         <div @click="toggleExpanded">
-          <icon-expand v-if="!isExpanded"/>
-          <icon-collapse v-else/>
+          <icon-expand v-if="!isExpanded" class="fill-current dark:text-gray-50"/>
+          <icon-collapse v-else class="fill-current dark:text-gray-50"/>
         </div>
       </div>
     </div>
@@ -20,7 +17,7 @@
       <slot name="addForm"></slot>
       <slot name="content">
         <el-collapse-transition>
-          <div class="list-group w-full ic-scroller" ref="listGroup"  v-show="isExpanded">
+          <div class="w-full list-group ic-scroller" ref="listGroup"  v-show="isExpanded">
             <draggable
               class="dragArea"
               :class="{empty: !tasks.length,  [type]: true , [dragClass]: true}" 
@@ -31,7 +28,7 @@
               @change="emitChange($event, type)"
             >
               <task-item 
-                v-for="task in filteredList" 
+                v-for="task in tasks" 
                 :key="task" 
                 :task="task" 
                 :type="type"
@@ -44,6 +41,7 @@
                 :is-item-as-handler="isItemAsHandler"
                 :class="taskClass"
                 :allow-run="allowRun"
+                :allow-update="allowUpdate"
                 @toggle-key="onToggleKey(task)"
                 @toggle-timer="emit('toggle-timer', task)"
                 @selected="emit('selected', task)"
@@ -61,21 +59,12 @@
           </div>
         </el-collapse-transition>
       </slot>
-
-    <share-modal
-      v-model:is-open="isShareModalOpen"
-      :settings="state"
-      @cancel="isModalOpen=false"
-      @saved="onSettingsSaved"
-    >
-    </share-modal>
   </div>
 </template>
 
 <script setup>
-import { computed, defineProps, onMounted, ref, toRefs } from "vue"
+import { computed, onMounted, ref, toRefs } from "vue"
 import { VueDraggableNext as Draggable } from "vue-draggable-next"
-import { useFuseSearch } from "../../utils/useFuseSearch"
 import { useTaskFirestore } from "../../utils/useTaskFirestore"
 import { useDateTime } from "../../utils/useDateTime"
 import { ElNotification, ElMessageBox } from "element-plus"
@@ -83,7 +72,7 @@ import { useMediaQuery, useWindowSize } from "@vueuse/core"
 import TaskItem from "../molecules/TaskItem.vue"
 import IconExpand from "../atoms/IconExpand.vue"
 import IconCollapse from "../atoms/IconCollapse.vue"
-import ShareModal from "./ShareModal.vue";
+import ShareModal from "./modals/ShareModal.vue";
 
 const props = defineProps({
     tasks: {
@@ -98,7 +87,6 @@ const props = defineProps({
     type: String,
     icons: Array,
     handleMode: Boolean,
-    search: String,
     showControls: Boolean,
     showSelect: Boolean,
     currentTask: {
@@ -107,7 +95,6 @@ const props = defineProps({
         return {}
       }
     },
-    tags: Array,
     currentTimer: Object,
     showTitle: {
       type: Boolean,
@@ -125,7 +112,12 @@ const props = defineProps({
     },
     placeholder: String,
     isItemAsHandler: Boolean,
-    allowRun: Boolean
+    allowUpdate: {
+      type: Boolean,
+      default: true,
+    },
+    allowRun: Boolean,
+    useExternalDone: Boolean
 })
 const isShareModalOpen = ref(false);
 const listGroup = ref(null);
@@ -139,7 +131,7 @@ onMounted(() => {
   }
 })
 
-const emit = defineEmit({
+const emit = defineEmits({
   deleted: Object,
   selected: Object,
   edited: Object,
@@ -152,11 +144,9 @@ const emit = defineEmit({
   'toggle-timer': Object
 })
 
-const { tasks, search,tags, showSelect, currentTask, currentTimer, isItemAsHandler, handleMode } = toRefs(props)
+const { tasks, showSelect, currentTask, currentTimer, isItemAsHandler, handleMode } = toRefs(props)
 
-const { filteredList } = useFuseSearch(search, tasks, tags);
-
-const { width, height } = useWindowSize()
+const { width } = useWindowSize()
 
 const handleClass = computed(() => {
   if (width.value > 758 && (handleMode.value || isItemAsHandler.value)) {
@@ -250,6 +240,12 @@ const onDone = async (task) => {
 
   task.commit_date = formatDate();
   task.done = true;
+  
+  if (props.useExternalDone) {
+    emit('done', task);
+    return
+  }
+  
   updateTask(task).then(() => {
     emit('done', task)
   })
@@ -312,14 +308,14 @@ const onToggleKey = (task) => {
 }
 
 .dragArea {
-  @apply rounded-md;
+  @apply rounded-md dark:bg-gray-500 ;
   background: rgba(229, 231, 235, .2);
   padding-bottom: 40px;
 }
 
 .dragArea {
     &::after {
-      @apply text-gray-400 font-bold;
+      @apply text-gray-400 dark:text-gray-300 font-bold;
       display: block;
       width: 100%;
       height: 100%;

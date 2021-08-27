@@ -1,25 +1,25 @@
 <template>
-   <div class="flex items-center border-2 border-gray-200 bg-white overflow-hidden rounded-md">
-        <i class="fa fa-search ml-2 text-gray-300"></i>
+   <div class="flex items-center overflow-hidden bg-white border-2 border-gray-200 rounded-md dark:bg-gray-700 dark:border-gray-500">
+        <i class="ml-2 text-gray-300 fa fa-search"></i>
         <input 
             ref="input"
             type="search" 
             v-model.trim="searchText" 
             @input="emit('update:modelValue', searchText)"
-            class="px-2 text-md h-10  focus:outline-none w-full text-sm"
+            class="w-full h-10 px-2 text-sm text-md dark:bg-gray-700 dark:text-gray-300 focus:outline-none"
             placeholder="Search tasks ..."
         >
     </div>
 </template>
 
 <script setup>
-import { defineEmit, ref, watch } from "vue";
+import { ref, watch } from "vue";
 
 const props = defineProps({
     modelValue: String
 })
 
-const emit = defineEmit({
+const emit = defineEmits({
     'update:modelValue': Date
 })
 

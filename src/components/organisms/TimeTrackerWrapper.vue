@@ -170,11 +170,10 @@ export default {
     }
 
     const updateTrackFromLocal = (trackData) => {
-      const formData = { trackData, uid: state.lastTrackId }
+      const formData = { ...trackData, uid: state.lastTrackId }
       updateTrack(formData).then(() => {
-        props.task.tracks.push(formData);
         ElNotification({
-          title: "Pomodoro Saved",
+          title: "Pomodoro Saved more",
           message: "Pomodoro saved",
           type: "success"
         })
