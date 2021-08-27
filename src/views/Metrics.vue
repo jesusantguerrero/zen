@@ -12,5 +12,5 @@
 </template>
 
 <script setup>
-import MetricsTemplate from "../components/Templates/Metrics.vue";
+import MetricsTemplate from "../components/templates/Metrics.vue";
 </script>
