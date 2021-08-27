@@ -27,7 +27,6 @@
             <div class="example-display__presenter">
               <settings-profile v-if="selectedOption == 'profile'"/> 
               <settings-tags v-if="selectedOption == 'tags'"/> 
-              <settings-billing v-if="selectedOption == 'billing'" />
               <settings-notification v-if="selectedOption == 'Notification Preferences'"></settings-notification>
               <div class="px-10 pb-20 text-left"  v-if="selectedOption == 'Integrations'">
                 <div class="flex items-center mt-5 integrations">
@@ -52,7 +51,6 @@
 import { computed, reactive, toRefs } from "vue"
 import SettingsProfile from "../components/templates/SettingsProfile.vue"
 import SettingsTags from "../components/templates/SettingsTags.vue"
-import SettingsBilling from "../components/templates/SettingsBilling.vue"
 import SettingsNotification from "../components/templates/SettingsNotification.vue"
 import { firebaseState, functions } from "../utils/useFirebase"
 
@@ -61,14 +59,12 @@ export default {
   components: {
     SettingsProfile,
     SettingsTags,
-    SettingsBilling,
     SettingsNotification
   },
   setup() {
     const state = reactive({
       menu: [
         // 'profile', 'tags', 
-      'billing', 
       'Notification Preferences',
       'Integrations'
     ],

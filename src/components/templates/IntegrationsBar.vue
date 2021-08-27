@@ -88,7 +88,7 @@
     </div>
   </div>
 
-  <div class="fixed z-50 flex space-x-2 group right-5 bottom-5" v-if="isSubscribed">
+  <div class="fixed z-50 flex space-x-2 group right-5 bottom-5">
     <div
       title="integrations"
       class="flex items-center justify-center w-16 h-16 text-3xl text-white bg-green-400 rounded-full shadow-md cursor-pointer"
@@ -103,7 +103,6 @@
 import { onUnmounted, reactive } from "vue";
 import { useCollection } from "../../utils/useCollection";
 import { functions } from "../../utils/useFirebase";
-import { useSubscription } from "../../utils/useSubscription";
 import { AtButton } from "atmosphere-ui";
 import TagsSelect from "../atoms/TagsSelect.vue";
 import {
@@ -115,8 +114,6 @@ getIssues,
 import { ElNotification } from "element-plus";
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
 import IconJira from "../atoms/integrations/IconJira.vue";
-
-const { isSubscribed } = useSubscription();
 
 const state = reactive({
   list: [],

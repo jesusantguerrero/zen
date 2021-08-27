@@ -19,7 +19,6 @@
           </button>
         </mobile-menu>
       <div class="hidden md:flex md:items-center" v-if="user">
-        <subscription-badge />
         <app-notification
             :notifications="unreadNotifications"
         />
@@ -61,7 +60,6 @@
 <script setup>
 import { computed, toRefs, onMounted, watch, inject } from "vue";
 import MenuItem from "../molecules/MenuItem.vue";
-import SubscriptionBadge from "../atoms/SubscriptionBadge.vue";
 import MobileMenu from "./MobileMenu.vue";
 import AppNotification from "../organisms/AppNotification.vue";
 import { useRouter } from "vue-router";
