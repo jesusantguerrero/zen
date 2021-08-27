@@ -10,6 +10,7 @@
           <menu-item class="pl-2 mx-2" to="/zenboard" icon="schedule">Zenboard </menu-item>
           <menu-item class="px-2 ml-2" to="/standup" icon="history">Stand Up</menu-item>
           <menu-item class="px-2 mx-2" to="/matrix" icon="grid_view">Matrix</menu-item>
+          <menu-item class="px-2 mx-2" to="/metrics" icon="grid_view">Metrics</menu-item>
         </div>
       </div>
   

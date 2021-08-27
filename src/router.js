@@ -4,6 +4,7 @@ import Home from "./views/Home.vue";
 import ZenBoard from "./views/ZenBoard.vue";
 import Matrix from "./views/Matrix.vue";
 import Standup from "./views/Standup.vue";
+import Metrics from "./views/Metrics.vue";
 import PlanAhead from "./views/PlanAhead.vue";
 import About from "./views/About.vue";
 import OauthAccept from "./views/auth/OauthAccept.vue";
@@ -32,6 +33,10 @@ export const routes = [
   },
   { path: "/matrix", 
     component: Matrix 
+  },
+  { 
+    path: "/metrics", 
+    component: Metrics 
   },
   { 
     path: "/standup", 

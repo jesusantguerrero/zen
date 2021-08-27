@@ -1,10 +1,8 @@
 <template>
   <div class="text-center">
-    <SubscriptionProvider :state="firebaseState">
       <app-header :user="firebaseState.user" class="z-50" @logout="logoutUser" v-if="firebaseState.user"/>
       <router-view> </router-view>
       <integrations-bar v-if="firebaseState.user" />
-    </SubscriptionProvider>
   </div>
 </template>
 
@@ -12,7 +10,6 @@
 import { nextTick, ref, provide, onUnmounted, watch } from 'vue'
 import AppHeader from './components/organisms/AppHeader.vue'
 import IntegrationsBar from './components/templates/IntegrationsBar.vue'
-import { SubscriptionProvider } from './components/_headless/SubscriptionProvider'
 import { logout, setLoaded, functions, firebaseState, firebaseInstance } from "./utils/useFirebase"
 import { useCustomSelect } from "./utils/useCustomSelect"
 import { useCollection } from "./utils/useCollection"

@@ -2,7 +2,6 @@ const functions = require("firebase-functions");
 const admin = require('firebase-admin');
 const tasks = require('./services/api/tasks');
 const serviceMatrix = require('./services/matrix');
-const serviceSubscription = require('./services/subscription');
 const serviceIntegrations = require('./services/integrations');
 
 const { firestore } = require("firebase-admin");
@@ -162,6 +161,3 @@ exports.getServiceResources = serviceIntegrations.integrations;
 
 // API related functions
 exports.api = tasks.api;
-
-// subscription
-exports.subscription = serviceSubscription.default;

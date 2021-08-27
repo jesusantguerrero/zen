@@ -101,11 +101,6 @@ const initFirebase = new Promise(resolve => {
             const settings = await getUserSettings(user.uid)
             firebaseState.settings = settings;
             firebaseState.user = user;
-            if (!settings || !settings.subscription_id || !settings.trials_ends_at) {
-                await updateSettings({
-                    trials_ends_at: add(new Date(), { days: 7 }),
-                });
-            }
             onLoaded.value && onLoaded.value()
         }
         resolve(user);
