@@ -88,7 +88,7 @@
     </div>
   </div>
 
-  <div class="fixed z-50 flex space-x-2 group right-5 bottom-5">
+  <div class="fixed z-50 flex space-x-2 group right-5 bottom-5" v-if="state.integrations.length">
     <div
       title="integrations"
       class="flex items-center justify-center w-16 h-16 text-3xl text-white bg-green-400 rounded-full shadow-md cursor-pointer"
