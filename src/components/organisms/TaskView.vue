@@ -30,6 +30,7 @@
         
           <date-select v-if="task.due_date" 
             v-model="task.due_date"
+            @update:modelValue="$emit('updated', {...task, due_date: $event })"
             class="w-20 ml-2 text-gray-400 hover:text-gray-600"
           />
            

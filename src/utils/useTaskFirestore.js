@@ -89,7 +89,9 @@ export function useTaskFirestore() {
 
     const getAllFromUser = async (where = {}) => {
         const tasks = [];
-        await db.collection(collectionName).withConverter(taskConverter).where("user_uid", "==", firebaseState.user.uid).get().then(querySnapshot => {
+        await db.collection(collectionName).where("user_uid", "==", firebaseState.user.uid)
+        .withConverter(taskConverter)
+        .get().then(querySnapshot => {
             querySnapshot.forEach((doc) => {
                 tasks.push({...doc.data(), uid: doc.id });
             });
@@ -155,5 +157,4 @@ export function useTaskFirestore() {
         getAllFromUser,
         saveTaskBatch
     }
-
 }
