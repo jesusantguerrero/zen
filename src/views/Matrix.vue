@@ -1,46 +1,72 @@
 <template>
 <div class="pt-24 mx-5 md:pt-28 md:mx-10 lg:mx-28">
    
-   <div class="section-header md:flex justify-between items-center mb-10">
-      <h2 class="text-2xl font-bold text-gray-400 text-left">
-         Eisenhower Matrix
+   <div class="items-center justify-between mb-2 section-header md:flex">
+      <h2 class="items-center space-x-2 text-2xl font-bold text-left text-gray-400">
+         <div>
+            <span v-if="state.matrixOwner">{{ state.matrixOwner }} 's</span>  Eisenhower Matrix
+         </div>
       </h2>  
-      <div class="space-x-2 flex">
+      <div class="flex space-x-2">
          <div class="w-32">
             <jet-select
                v-model:selected="state.viewMode"
                :options="state.modes"
                label="name"
                key-track="value"
-               class="w-32"
-            >
-            </jet-select>
-         
+               class="w-32 "
+            />         
          </div>
          <input type="search" 
             v-model.trim="state.search" 
-            class="px-2 text-md h-10 rounded-md focus:outline-none border-2 border-gray-200 w-full"
+            class="w-full h-10 px-2 border-2 border-gray-200 rounded-md text-md focus:outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-300"
             placeholder="Search task"  
          >
-         <button title="help" class="bg-gray-600 hover:bg-gray-700 transition-all text-white px-5 py-1 rounded-md ml-2 focus:outline-none" 
+         <button title="help" class="h-10 px-5 py-1 ml-2 text-white transition-all bg-gray-600 rounded-md hover:bg-gray-700 focus:outline-none" 
          @click="state.showHelp = !state.showHelp">
             <i class="fa fa-question"></i>
          </button>
       </div>
    </div>
 
-   <matrix-board :search="state.search" :show-help="state.showHelp" :mode="state.selectedView" />
+   <div class="flex justify-between w-full text-right" v-if="false">
+      <div class="flex">
+         <share-board /> 
+         <matrix-teammates v-model:selected="state.selectedUser" />           
+      </div>
+      
+      <button class="px-5 py-1 font-bold border rounded-md focus:outline-none"
+         :class="state.showUncategorized ? 'text-gray-200 bg-gray-600' : 'text-gray-700 bg-gray-200'"
+         @click="toggleUncategorized">Show Uncategorized 
+      </button>
+   </div>
+
+   <matrix-board 
+      class="mt-8"
+      :search="state.search" 
+      :show-help="state.showHelp" 
+      :show-uncategorized="state.showUncategorized" 
+      :mode="state.selectedView" 
+      :user="state.user"
+      :allow-update="!state.selectedUser"
+      :allow-add="!state.selectedUser"
+   />
 
 </div>
 </template>
 
 <script setup>
-import { computed, reactive } from "vue"
+import { computed, reactive, watch } from "vue"
 import MatrixBoard from "../components/organisms/MatrixBoard.vue"
+import ShareBoard from "../components/organisms/ShareBoard.vue"
 import JetSelect from "../components/atoms/JetSelect.vue";
+import MatrixTeammates from "../components/organisms/MatrixTeammates.vue";
+import { useRoute, useRouter } from "vue-router"
+import { firebaseState } from "../utils/useFirebase";
 
 const state = reactive({
    showHelp:  false,
+   showUncategorized:  true,
    search: "",
    modes: [{
       name: 'Board',
@@ -48,13 +74,45 @@ const state = reactive({
    },{
       name: 'Time Line',
       value: 'timeline'
-   }],
+   },
+   {
+      name: 'Overdue',
+      value: 'matrix:overdue'
+   },{
+      name: 'Stale',
+      value: 'matrix:stale'
+   }
+   ],
    viewMode: {
       name: 'Board',
       value: 'matrix'
    },
    selectedView: computed(() => {
       return state.viewMode.value;
-   })
+   }),
+   selectedUser: null,
+   user: computed(() => {
+      return state.selectedUser ? state.selectedUser.uid : firebaseState.user.uid;
+   }),
+   matrixOwner: computed(() => {
+      return state.selectedUser ? state.selectedUser.name : '';
+   }),
 })
+
+const { query, fullPath } = useRoute()
+const { replace } = useRouter()
+watch(() => state.viewMode.value, () => {
+   replace(`/matrix?tab=${state.viewMode.value}`)
+})
+
+watch(fullPath, () => {
+   if (query.tab) {
+      state.viewMode = state.modes.find(mode => mode.value == query.tab) || state.viewMode;
+   }
+}, { immediate: true, deep: true })
+
+const toggleUncategorized = () => {
+   state.showUncategorized=!state.showUncategorized;
+}
+
 </script>

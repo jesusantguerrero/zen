@@ -1,26 +1,27 @@
 <template>
-<div class="bg-white mb-10 rounded-md px-5 py-3">
-    <div class="flex justify-between font-bold text-gray-500 text-left">
+<div class="px-5 py-3 mb-10 bg-white rounded-md dark:bg-gray-700 dark:border-gray-600">
+    <div class="flex justify-between font-bold text-left text-gray-500 dark:text-gray-300">
         <div>
             Pomodoro Stats
         </div>
 
-        <div>
+        <div class="flex">
             <button 
-                class="bg-gray-400 text-white px-2 py-2 rounded-3xl text-sm w-24 focus:outline-none ml-2 hover:bg-gray-500" 
+                class="w-24 px-2 py-2 ml-2 text-sm text-white bg-gray-400 rounded-3xl focus:outline-none hover:bg-gray-500" 
                 :class="{'bg-gray-600': state.selectedMode == key}"
                 v-for="(mode, key) in state.modes" 
                 :key="key" 
                 @click="state.selectedMode = key">
                  {{ mode }}
             </button>
+            <slot />
         </div>
     </div>
-    <div class="bg-white rounded-md py-3" style="height: 400px" v-if="state.selectedMode == 'session'">
+    <div class="py-3 bg-white rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300" style="height: 400px" v-if="state.selectedMode == 'session'">
         <report-chart data-class="graphics chart" id="chart-pomo-sessions" :data="completedPromodoros" :labels="timeData" :config="state.chartConfig.pomodoros"></report-chart>
     </div>
 
-    <div class="bg-white rounded-md py-3" style="height: 400px" v-if="state.selectedMode== 'time'">
+    <div class="py-3 bg-white rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300" style="height: 400px" v-if="state.selectedMode== 'time'">
         <report-chart data-class="graphics chart" id="chart-pomo-sessions" :data="durationPromodoros" :labels="timeData" :config="state.chartConfig.pomodoroDuration"></report-chart>
     </div>
 </div>
@@ -28,7 +29,7 @@
 
 <script setup>
 import { useDateTime } from "../../utils/useDateTime";
-import { defineProps, reactive, toRefs, computed } from "vue";
+import { reactive, toRefs, computed } from "vue";
 import ReportChart from "./ReportChart.vue"
 
 
@@ -44,7 +45,7 @@ const props = defineProps({
 })
 
 const { statsByDay } = toRefs(props);
-
+const redColor = "rgba(96, 165, 250, 1)";
 const state = reactive({
   modes: {
       session: 'By Session',
@@ -55,15 +56,15 @@ const state = reactive({
     pomodoros: {
       title: ['Started', 'Completed'],
       type: 'bar',
-      backgroundColor:['rgba(3,169,244 ,.2)', 'rgba(255, 99, 132, .2)'],
-      borderColor: ['rgba(54, 162, 235, .6)', 'rgba(255, 99, 132, .6)'],
+      backgroundColor:[redColor, 'rgba(96, 165, 250, 1)'],
+      borderColor: [redColor, 'rgba(96, 165, 250, 1)'],
       borderWidth: 2
     },
     pomodoroDuration: {
       title: ['Hours'],
       type: 'line',
-      backgroundColor:['rgba(3,169,244 ,.2)', 'rgba(255, 99, 132, .2)'],
-      borderColor: ['rgba(54, 162, 235, .6)', 'rgba(255, 99, 132, .6)'],
+      backgroundColor:[redColor, 'rgba(96, 165, 250, 1)'],
+      borderColor: [redColor, 'rgba(96, 165, 250, 1)'],
       borderWidth: 2,
       duration: true
     }
@@ -74,7 +75,7 @@ const state = reactive({
 
 const {  formatDurationFromMs } = useDateTime()
 const completedPromodoros = computed(() => {
-  return statsByDay.value.map((stat) => {
+  return statsByDay.value && statsByDay.value.map((stat) => {
     return stat ? [stat.pomodoro.started, stat.pomodoro.finished] : [0, 0]
   })
 })
@@ -84,7 +85,7 @@ const durationConfig = computed({
 })
 
 const durationPromodoros = computed(() => {
-  return statsByDay.value.map((stat) => {
+  return statsByDay.value && statsByDay.value.map((stat) => {
     return stat ? [stat.pomodoro.duration_ms] : [0]
   })
 })

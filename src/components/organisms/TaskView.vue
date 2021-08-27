@@ -1,18 +1,18 @@
 <template>
   <div
-    class="relative px-5 py-3 overflow-hidden bg-white border-2 border-gray-100 rounded-md shadow-md zen__datails"
+    class="relative px-5 py-3 overflow-hidden bg-white border-2 border-gray-100 rounded-md shadow-md zen__datails dark:bg-gray-700 dark:border-gray-600"
     @keydown.ctrl.enter.exact="saveChanges()"
   >
     <h1 class="flex justify-between text-xl font-bold text-gray-400">
       <input 
         ref="titleInput" 
         v-model="task.title" 
-        class="w-full bg-white focus:outline-none" 
+        class="w-full bg-white focus:outline-none dark:bg-transparent" 
         :class="{'border-b-2 border-gray-100 focus:border-gray-200 px-2': isEditMode}"
         :disabled="!isEditMode"
-      >
+      />
 
-      <div class="flex items-center text-sm task-item__controls" v-if="task.uid"> 
+      <div class="flex text-sm task-item__controls" v-if="task.uid"> 
           <div class="mx-2 cursor-pointer" @click="allowEdit()" v-if="!isEditMode">
               <i class="mr-2 text-gray-400 fa fa-pencil-alt hover:text-gray-600"></i>
           </div>
@@ -28,15 +28,12 @@
               </div>
           </el-tooltip>
         
-          <div class="mx-2 text-sm" v-if="task.due_date">
-              <date-select
-                @update:modelValue="$emit('updated', {...task, due_date: $event })" 
-                v-if="task.due_date"
-                v-model="task.due_date" 
-              />  
-          </div>
-
-
+          <date-select v-if="task.due_date" 
+            v-model="task.due_date"
+            @update:modelValue="$emit('updated', {...task, due_date: $event })"
+            class="w-20 ml-2 text-gray-400 hover:text-gray-600"
+          />
+           
           <el-tooltip class="item" effect="dark" content="Remove" placement="top" v-if="!isEditMode">
               <div 
                 class="mx-2 text-gray-400 cursor-pointer hover:text-red-600"
@@ -57,8 +54,7 @@
             :disabled="!isEditMode"
             :class="{'border-2 bg-gray-50 focus:border-gray-100 px-2': isEditMode}"
             class="w-full py-2 text-sm text-gray-500 bg-white focus:outline-none"
-        >
-        </custom-text>
+        />
         <slot name="empty"></slot>
     </div>
 
@@ -83,7 +79,7 @@
 
 <script setup>
 import { ElMessageBox, ElNotification } from "element-plus";
-import { defineProps, toRefs, defineEmit, computed, ref, nextTick, reactive, watch } from "vue";
+import { toRefs, computed, ref, nextTick, reactive, watch } from "vue";
 import { useDateTime } from "../../utils/useDateTime";
 import ChecklistContainer from "./ListContainer.vue";
 import CustomText from "../atoms/CustomText.vue"
@@ -93,7 +89,7 @@ import DateSelect from "../atoms/DateSelect.vue";
 const { formatDate } = useDateTime();
 
 // Events and props
-const emit = defineEmit({
+const emit = defineEmits({
   done: Object,
   updated: Object,
   removed: null,

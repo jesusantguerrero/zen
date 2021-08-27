@@ -3,12 +3,17 @@
     <div class="md:block lg:flex matrix">
       <div 
           class="grid md:grid-cols-2 md:gap-10" 
-          :class="{'w-full':isLineUp, 'sm:w-full lg:w-8/12': isMatrix}"
+          :class="{
+            'w-full':isLineUp, 
+            'sm:w-full lg:w-full': isMatrix && !showUncategorized,
+            'sm:w-full md:8/12': isMatrix && showUncategorized
+          }"
           v-if="isMatrix || isLineUp"
         >
         <div 
-          class="w-full pt-3 pl-5 mb-10 zen__comming-up md:mb-0 ic-scroller" 
-          :class="[showHelp && (!isLineUp || isLineUpMatrix(matrix))? `border-2 ${state.quadrants[matrix].border} border-dashed pr-5`: '']"
+          class="w-full pt-3 mb-10 md:mb-0 ic-scroller" 
+          :class="[showHelp && (!isLineUp || isLineUpMatrix(matrix))? `border-2 ${state.quadrants[matrix].border} border-dashed pr-5 pl-3`: '', 
+          ]"
           v-for="matrix in state.matrix" :key="matrix">
             <task-group
               v-if="!isLineUp || isLineUpMatrix(matrix)"
@@ -17,7 +22,8 @@
               :search="search"
               :tasks="getMatrixTasks(matrix)"
               :color="state.quadrants[matrix].color"
-              :show-controls="true"
+              :show-controls="allowUpdate"
+              :allow-update="allowUpdate"
               :allow-move="false"
               :handle-mode="true"
               @done="onDone"
@@ -30,7 +36,7 @@
               @move="onMove"
               :is-quadrant="true"
             >
-              <template #addForm v-if="!showHelp">
+              <template #addForm v-if="!showHelp && allowAdd">
                 <div class="mb-4 quick__add">
                   <quick-add 
                     @saved="addTask"
@@ -50,17 +56,19 @@
       <div 
         :class="{
           'md:w-full': isBacklog, 
-          'md:w-4/12 md:ml-20': isMatrix,
-          'border-2 border-gray-400 border-dashed pr-5 pl-5': showHelp}
-          " class="pt-3" v-if="isBacklog || isMatrix">
+          'md:w-4/12 md:ml-20': isMatrix && showUncategorized,
+          'md:hidden': isMatrix && !showUncategorized,
+          'border-2 border-gray-400 border-dashed pr-5 pl-5': showHelp
+        }" 
+        class="pt-3" v-if="isBacklog || showUncategorized && !state.isTimeLine">
           <task-group
-              title="backlog"
+              title="No prioritized"
               type="backlog"
               color="text-gray-400"
               :tasks="getMatrixTasks('backlog')"
-              :handle-mode="true"
+              :handle-mode="allowUpdate"
               :is-quadrant="true"
-              :show-controls="true"
+              :show-controls="allowUpdate"
               :max-height="isBacklog ? 0 : 350"
               @done="onDone"
               @undone="onDone"
@@ -69,7 +77,7 @@
               @change="handleDragChanges"
               @move="onMove"
             >
-              <template #addForm v-if="!showHelp">
+              <template #addForm v-if="!showHelp && allowAdd">
                 <div class="mb-4 quick__add">
                   <quick-add 
                     @saved="addTask"
@@ -136,7 +144,7 @@
 </template>
 
 <script setup>
-import { computed, defineProps, reactive, watch, ref, onUnmounted, toRefs } from 'vue'
+import { computed, reactive, watch, ref, onUnmounted, toRefs } from 'vue'
 import { ElMessageBox, ElNotification } from 'element-plus';
 import { RoadmapView } from "vue-temporal-components";
 import { useTaskFirestore } from "../../utils/useTaskFirestore"
@@ -144,7 +152,7 @@ import { useDateTime } from "../../utils/useDateTime"
 import { useFuseSearch } from "../../utils/useFuseSearch"
 import TaskGroup from "../organisms/TaskGroup.vue"
 import QuickAdd from "../molecules/QuickAdd.vue"
-import TaskModal from "./TaskModal.vue"
+import TaskModal from "./modals/TaskModal.vue"
 import MatrixHelpView from "../molecules/MatrixHelpView.vue"
 import JetSelect from "../atoms/JetSelect.vue";
 import { orderBy } from "lodash-es"
@@ -158,7 +166,17 @@ const props = defineProps({
         default: 'matrix'
     },
     showHelp: Boolean,
-    search: String
+    showUncategorized: Boolean,
+    search: String,
+    user: String,
+    allowUpdate: {
+      type: Boolean,
+      default: true
+    },
+    allowAdd: {
+      type: Boolean,
+      default: true
+    }
 })
 
 const isBacklog = computed(() => {
@@ -166,7 +184,7 @@ const isBacklog = computed(() => {
 })
 
 const isMatrix = computed(() => {
-    return props.mode == 'matrix'
+    return props.mode.includes('matrix')
 })
 
 const isLineUp = computed(() => {
@@ -211,7 +229,8 @@ const state = reactive({
       tasks: []
     }
   },
-  isTaskModalOpen: false
+  isTaskModalOpen: false,
+  isTimeLine: computed(() => props.mode == 'timeline')
 })
 
 const { search } = toRefs(props);
@@ -254,10 +273,10 @@ const roadmapTasks = computed(() => {
 
 // Tasks manipulation
 const { toISO } = useDateTime() 
-const { getUncommitedTasks, saveTask, updateTask, updateTaskBatch, deleteTask } = useTaskFirestore()
+const { getUncommittedTasks, saveTask, updateTask, updateTaskBatch, deleteTask } = useTaskFirestore()
 
 const fetchTasks = () => {
-  const collectionRef = getUncommitedTasks()
+  const collectionRef = getUncommittedTasks(props.user)
   const unsubscribe = collectionRef.get().then((snap) => {
       const tasks = [];
       snap.forEach((doc) => {
@@ -266,10 +285,14 @@ const fetchTasks = () => {
       state.tasks = tasks
   });
 
-    return unsubscribe;
+  return unsubscribe;
 }
 
 const uncommitedTasksRef = ref(fetchTasks());
+
+watch(() => props.user, () => {
+  uncommitedTasksRef.value = fetchTasks();
+})
 
 onUnmounted(() => {
   if (uncommitedTasksRef.value) {
@@ -277,10 +300,26 @@ onUnmounted(() => {
   }
 });
 
-watch(() => state.tasks, () => {
+const getTasks = (mode = "default") => {
+  const modes = {
+    "default": state.tasks,
+     overdue:  state.tasks.filter((item) => {
+        return item.due_date && item.due_date < new Date();
+      }),
+      stale:  state.tasks.filter((item) => {
+        return item.created_at && differenceInCalendarDays(new Date(), item.created_at.toDate()) > 14;
+      })
+  }
+
+  return modes[mode] || modes['default']
+}
+
+watch(() => [state.tasks, props.mode], () => {
   Object.values(state.quadrants).forEach((quadrant) => quadrant.tasks = []);
-  
-  state.tasks.forEach(task => {
+  const mode = props.mode.slice(props.mode.search(':') + 1);
+  const tasks = getTasks(mode);
+
+  tasks.forEach(task => {
     if (state.quadrants[task.matrix] && !state.quadrants[task.matrix].tasks) {
       state.quadrants[task.matrix].tasks = [task];
     } else if (state.quadrants[task.matrix]) {
@@ -394,10 +433,3 @@ const onEdittedTask = (task) => {
   taskToEdit.value = null
 }
 </script>
-
-<style lang="scss" scoped>
-.zen__comming-up {
-  min-height: 500px;
-  overflow: auto;
-}
-</style>

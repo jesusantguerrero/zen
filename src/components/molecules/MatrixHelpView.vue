@@ -1,8 +1,8 @@
 <template>
-<div class="prose prose-sm md:prose-md  text-center mx-auto py-5">
-    <h3 class="text-center" :class="titleClass"> {{ item.title }}</h3>
+<div class="py-5 mx-auto prose-sm prose text-center md:prose-lg">
+    <h3 class="text-center dark:text-gray-50" :class="titleClass"> {{ item.title }}</h3>
     
-    <div class="bg-transparent h-30 mx-2 pb-5 mb-5 mt-2" >
+    <div class="pb-5 mx-2 mt-2 mb-5 bg-transparent h-30 dark:text-gray-300" >
         <div v-html="item.content"> </div>
     </div>
 </div>
@@ -10,8 +10,8 @@
 
 
 <script setup>
-import { computed, defineEmit, defineProps, reactive} from "vue"
-const emit = defineEmit({
+import { computed, reactive} from "vue"
+const emit = defineEmits({
     closed: Function
 })
 

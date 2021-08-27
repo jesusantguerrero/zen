@@ -6,8 +6,10 @@ import "firebase/analytics";
 import "firebase/messaging";
 import "firebase/functions"
 import "firebase/performance"
+import "firebase/storage"
 import CONFIG from "../config/";
 import { useSettingsFirestore } from "./useSettingsFirestore"
+import { add } from "date-fns";
 
 const { getUserSettings, updateUserSettings } = useSettingsFirestore()
 const firebaseConfig = {
@@ -50,9 +52,8 @@ export const login = async (email, password) => {
 }
 
 export const loginWithProvider = async(providerName) => {
-    firebase.auth().getRedirectResult().then(result => {
-        firebaseState.user = result.user
-    })
+    // await firebase.auth().signInWithRedirect(getProvider(providerName))
+    // location.reload();
 
     firebase.auth().signInWithPopup(getProvider(providerName)).then(() => {
         location.reload()
@@ -112,3 +113,7 @@ export const isAuthenticated = () => {
     return initFirebase;
 }
 
+export const functions = firebaseInstance.functions()
+if (import.meta.env.DEV) {
+    functions.useEmulator("localhost", 5001);
+}

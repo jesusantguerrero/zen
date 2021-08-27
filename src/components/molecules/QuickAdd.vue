@@ -1,20 +1,20 @@
 <template>
-  <form class="task-item text-sm mb-2 shadow-md bg-white border-gray-200 border-2 px-4 py-3 rounded-md items-center cursor-default"
+  <form class="items-center px-4 py-3 mb-2 text-sm bg-white border-2 border-gray-200 rounded-md shadow-md cursor-default task-item dark:bg-gray-700 dark:border-gray-600"
      @submit.prevent
      @keydown.ctrl.enter="save()"
      @keydown.enter.prevent.exact
      ref="taskForm"
     >
     <div class="flex justify-between">
-      <div class="flex items-center w-full">
-        <button class="mx-3 rounded-md px-2 py-1 focus:outline-none transition-colors hover:text-white" :class="typeColor" @click="save()"> 
-            <i :class="icon"> </i>
+      <div class="flex justify-start w-full">
+        <button class="px-2 py-1 mr-3 transition-colors rounded-md focus:outline-none dark:bg-gray-600 hover:text-white" :class="typeColor" @click="save()"> 
+            <i :class="icon" />
         </button>
 
         <div class="w-full">
           <input 
             type="text" 
-            class="focus:outline-none w-full px-2" 
+            class="w-full px-2 focus:outline-none dark:bg-gray-700 dark:text-gray-300" 
             :placeholder="placeholder" 
             v-model="task.title"
             @click="state.isExpanded = true"
@@ -23,7 +23,7 @@
         </div>
       </div>
 
-      <div class="task-item__controls flex items-center" v-if="!isReminder">
+      <div class="flex items-center task-item__controls" v-if="!isReminder">
         <div class="mx-2 text-gray-400 hover:text-gray-600">
           <person-select
             v-if="type=='delegate'"
@@ -39,22 +39,22 @@
           />    
         </div>
 
-        <div class="mx-2 text-gray-400 hover:text-red-400 text-lg" @click="clearForm()">
+        <div class="mx-2 text-lg text-gray-400 hover:text-red-400" @click="clearForm()">
           <i class="fa fa-times"></i>
         </div>
       </div>
     </div>
     
     <el-collapse-transition>
-      <div class="task-item__body w-full p-3" v-if="state.isExpanded">
+      <div class="w-full p-3 task-item__body" v-if="state.isExpanded">
         <textarea 
           v-model="task.description"
-          class="task-item__description w-full pt-2 focus:outline-none" 
+          class="w-full pt-2 task-item__description focus:outline-none dark:bg-gray-700 dark:text-gray-300" 
           placeholder="Add a short description"
           @keydown.enter.exact.stop="">
         </textarea>
         
-        <div class="task-item__checklist">
+        <div class="text-left task-item__checklist">
           <checklist-container 
             v-model="state.checklistTitle"
             :items="task.checklist" 
@@ -64,8 +64,8 @@
           </checklist-container>
         </div>
 
-        <div class="flex justify-between items-center mt-2">
-            <div class="text-gray-400 hover:text-gray-600 ">
+        <div class="flex items-center justify-between mt-2">
+            <div class="text-gray-400 hover:text-gray-600 dark:bg-gray-700 dark:text-gray-300">
               <tags-select
                 v-model="task.tags"
                 :tags="tags"
@@ -75,11 +75,11 @@
               /> 
             </div>
 
-          <div class="mt-2 text-right w-6/12">
-            <button class="px-5 py-2 rounded-md focus:outline-none transition-colors bg-green-400 hover:bg-green-500 text-white " type="submit" @click.prevent="save()"> Save</button>
+          <div class="w-6/12 mt-2 text-right">
+            <button class="px-5 py-2 text-white transition-colors bg-green-400 rounded-md focus:outline-none hover:bg-green-500 " type="submit" @click.prevent="save()"> Save</button>
           </div>
         </div>
-        <div class="text-xs mr-2 font-bold text-gray-600 text-right pt-2">
+        <div class="pt-2 mr-2 text-xs font-bold text-right text-gray-600 dark:text-white">
             <i class="fa fa-lightbulb"></i>
             ProTip! save with ctrl + enter
           </div>
@@ -89,7 +89,7 @@
 </template>
 
 <script setup>
-import { computed, reactive, defineProps, defineEmit, onMounted, ref, inject} from "vue"
+import { computed, reactive, onMounted, ref } from "vue"
 import { onClickOutside } from  "@vueuse/core"
 import { useDateTime } from "../../utils/useDateTime"
 import { useCollection } from "./../../utils/useCollection"
@@ -111,7 +111,7 @@ const props = defineProps({
     type: String,
     allowEdit: Boolean
 })
-const emit =  defineEmit({
+const emit =  defineEmits({
   'saved': (task) => {}
 })
 

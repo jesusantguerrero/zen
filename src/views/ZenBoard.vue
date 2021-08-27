@@ -1,44 +1,33 @@
 <template>
-  <component :is="defaultDashboard" @update="updateDashboard"></component>
+  <div>
+    <component 
+      :is="state.defaultDashboard" 
+      @update="updateDashboard" 
+    />
+  </div>
 </template>
 
-<script>
-import { reactive, computed, toRefs } from "vue";
+<script setup>
+import { reactive, computed } from "vue";
 import { firebaseState, updateSettings } from "../utils/useFirebase";
-import Dashboard from "./Dashboard.vue"
-import OldDashboard from "./OldDashboard.vue"
+import Dashboard from "./dashboard/Dashboard.vue"
+import OldDashboard from "./dashboard/OldDashboard.vue"
 
-export default {
-  components: {
-    OldDashboard,
-    Dashboard
-  },
-  setup() {
-    // state and ui
-    const state = reactive({
-      isNewDashboard: false,
-      defaultDashboard: computed(() => state.isNewDashboard ? 'Dashboard' : 'OldDashboard')
+// state and ui
+const state = reactive({
+  isNewDashboard: false,
+  defaultDashboard: computed(() => state.isNewDashboard ? Dashboard : OldDashboard)
+});
     
-    });
+state.isNewDashboard = state.isNewDashboard || !firebaseState.settings || firebaseState.settings.is_new_dashboard;
     
-    state.isNewDashboard = state.isNewDashboard || !firebaseState.settings || firebaseState.settings.is_new_dashboard;
-    
-    const updateDashboard = (isNew) => {
-      updateSettings({
-        is_new_dashboard: isNew,
-      }).then(() => {
-        state.isNewDashboard = isNew;
-      });
-    };
-    
-    return {
-      updateDashboard,
-      ...toRefs(state)
-    }
-  }
-
-}
-
+const updateDashboard = (isNew) => {
+  updateSettings({
+    is_new_dashboard: isNew,
+  }).then(() => {
+    state.isNewDashboard = isNew;
+  });
+};
 </script>
 
 <style scoped>

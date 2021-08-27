@@ -1,14 +1,14 @@
 <template>
     <div class="login-box">
-        <form class="form-signin md:w-1/2 w-full px-12" @submit.prevent="loginUser">
-            <div class="w-full flex justify-center items-center mb-20 sm:pt-20">
-                <div class="text-8xl text-center zen">
+        <form class="w-full px-12 form-signin md:w-1/2" @submit.prevent="loginUser">
+            <div class="flex items-center justify-center w-full mb-20 sm:pt-20">
+                <div class="text-center text-8xl zen">
                     Zen.
                 </div>
             </div>
 
             <div
-                class="form-group text-left"
+                class="text-left form-group"
             >
                 <label for="email" class="inline-block mb-2">Email</label>
                 <p :class="{ control: true }">
@@ -64,16 +64,16 @@
             </div>
 
             <button
-                class="btn btn-action capitalize rounded-sm"
+                class="capitalize rounded-sm btn btn-action"
                 type="submit"
                 :disabled="isConfirmationInvalid"
             >
                 {{ mode }}
-                <i v-if="isLoading" class="fa fa-spinner fa-pulse ml-2"></i>
+                <i v-if="isLoading" class="ml-2 fa fa-spinner fa-pulse"></i>
             </button>
 
             <button
-                class="btn btn-action capitalize rounded-sm flex google-btn justify-center"
+                class="flex justify-center capitalize rounded-sm btn btn-action google-btn"
                 type="submit"
                 @click.prevent.stop="loginWithProvider('google')"
             >
@@ -83,21 +83,21 @@
 
             <div class="">
                 <div v-if="mode=='register'"> Already have an account?
-                    <router-link class="text-green-400 font-bold"  to="/login"> Login </router-link>
+                    <router-link class="font-bold text-green-400"  to="/login"> Login </router-link>
                 </div>
 
                  <div v-else> Dont have an account?
-                    <router-link  to="/register" class="text-green-400 font-bold"> Create one </router-link>
+                    <router-link  to="/register" class="font-bold text-green-400"> Create one </router-link>
                 </div>
             </div>
-            <p class="copyrights pt-10">&copy; {{ currentYear }}</p>
+            <p class="pt-10 copyrights">&copy; {{ currentYear }}</p>
         </form>
     </div>
 </template>
 
 
 <script setup>
-import { reactive, ref, computed, nextTick, defineProps, toRefs } from "vue";
+import { reactive, ref, computed, nextTick, toRefs } from "vue";
 import { useRouter } from "vue-router"
 import { register, login, loginWithProvider }  from "../utils/useFirebase";
 import { ElNotification } from "element-plus"

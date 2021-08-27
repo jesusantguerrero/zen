@@ -1,44 +1,50 @@
 <template>
-    <header class="w-full antialiased bg-gray-900 select-none relative">
-        <div class="mx-auto max-w-7xl z-50 relative">
-            <nav class="flex items-center w-full h-24" x-data="{ showMenu: false }">
-                <div class="relative flex flex-wrap items-center justify-between w-full h-24 mx-auto font-medium md:justify-center">
-                    <router-link to="/landing" class="w-1/4 py-4 pl-6 pr-4 md:pl-4 md:py-0 z-index">
-                        <span class="text-3xl leading-none text-white select-none logo zen">Zen<span class="text-green-500">.</span></span>
-                    </router-link>
-                    <div class="fixed top-0 left-0 z-40 items-center hidden w-full h-full p-3 text-xl bg-gray-900 bg-opacity-50 md:text-sm lg:text-base md:w-3/4 md:bg-transparent md:p-0 md:relative md:flex" :class="{'flex': showMenu, 'hidden': !showMenu }">
-                        <div class="flex-col w-full h-full overflow-hidden bg-white rounded-lg select-none md:bg-transparent md:rounded-none md:relative md:flex md:flex-row md:overflow-auto">
-                            <div class="flex flex-col items-center justify-center w-full h-full mt-12 text-center text-green-700 md:text-green-400 md:w-2/3 md:mt-0 md:flex-row md:items-cente font-bold">
-                                <a href="#" class="inline-block px-4 py-2 mx-2 text-left text-green-700 md:text-white md:px-0 lg:mx-3 md:text-center">Home</a>
-                                <a href="#" class="inline-block px-4 py-2 mx-2 text-left md:px-0 hover:text-green-800 md:hover:text-white lg:mx-3 md:text-center">Features</a>
-                                <a href="https://freesgen.hashnode.dev/" class="inline-block px-4 py-2 mx-2 text-left md:px-0 hover:text-green-800 md:hover:text-white lg:mx-3 md:text-center">Blog</a>
-                                <a href="https://forms.gle/bmeGgRdLHLFcsqBf6" class="inline-block px-4 py-2 mx-2 text-left md:px-0 hover:text-green-800 md:hover:text-white lg:mx-3 md:text-center">Contact</a>
-                            </div>
-                            <div class="flex flex-col items-center justify-end w-full h-full pt-4 md:w-1/3 md:flex-row md:py-0">
-                                <router-link to="/login" class="w-full pl-6 mr-0 font-bold text-green-400 hover:text-white md:pl-0 md:mr-3 lg:mr-5 md:w-auto">Sign In</router-link>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </nav>
+    <!-- <div class="flex justify-start px-2 py-3 text-xs font-bold bg-white border-b md:px-10 md:justify-between md:flex">
+        <div class="px-2 text-xs text-gray-500 transition cursor-pointer md:text-sm md:px-14 max-w-7xl md:text-left hover:text-green-500">
+            <span class="px-1 py-1 mr-3 text-white bg-green-400 rounded-md"> New </span>
+            Introducing zenboard 2.0 - The Eisenhower Matrix revamped
+            <i class="fa fa-chevron-right"></i>
+        </div>
+        <div class="mt-4 space-x-4 md:mt-0">
+          
+        </div>
+    </div> -->
+    <header class="relative w-full px-10 pb-16 antialiased bg-gray-900 select-none md:pb-0 md:px-0">
+        <site-header />
 
-            <div class="container py-32 mx-auto text-center sm:px-4 z-50">
-                <h1 class="text-4xl font-extrabold leading-10 tracking-tight text-white sm:text-5xl sm:leading-none md:text-4xl xl:text-5xl"><span class="block">Keep yourself in the zone</span> <span class="relative inline-block mt-3 text-transparent text-white">and focus in the moment.</span></h1>
-                <div class="max-w-lg mx-auto mt-6 text-sm text-center text-green-200 md:mt-12 sm:text-base px-10 -md:max-w-xl md:text-lg xl:text-xl">Take the step to improve your daily routine and get things done!</div>
-                <div class="relative flex justify-center items-center max-w-md mx-auto mt-12 text-center">
+        <div class="relative z-50 py-10 mx-auto max-w-7xl md:items-center md:py-32 sm:px-4 md:flex md:justify-between">
+            <div class="w-full text-left">
+                <h1 class="text-2xl font-extrabold tracking-tight text-white md:leading-10 md:text-4xl sm:text-5xl sm:leading-none xl:text-3xl"><span class="block">Keep yourself in the zone</span> <span class="inline-block mt-3 text-transparent text-white ">and focus in the moment.</span></h1>
+                <div class="max-w-lg mt-6 text-sm text-green-200 md:mt-4 sm:text-base -md:max-w-xl md:text-lg xl:text-xl">Take the step to improve your daily routine and get things done!</div>
+                <div class="max-w-md mt-12 text-left md:space-x-5 md:items-center md:flex">
                     <router-link 
                         to="/register" 
-                        class="btn btn-action rounded-md w-40 border-0">
-                        Sign Up
+                        class="px-5 font-bold border-0 rounded-md btn btn-action">
+                        Organize your daily routine
                     </router-link>
                 </div>
             </div>
+            <div class="w-full">
+                <div class="mt-10 md:mt-0">
+                    <at-video 
+                        class="overflow-hidden rounded-md shadow-lg"
+                        imageUrl="src\assets\dashboard.png"
+                        src="https://www.framer.com/images/developers/hero.mp4"
+                        :style="{with: '400px'}"
+                    /> 
+                </div>    
+            </div>
         </div>
+
+        <down-wave class="z-50" />
     </header>
 </template>
 
 <script setup>
 import { ref } from "vue";
+import SiteHeader from "./SiteHeader.vue"
+import { AtVideo } from "atmosphere-ui";
+import DownWave from "./waves/down-wave.vue";
 
 const showMenu = ref(false)
 </script>
@@ -58,14 +64,15 @@ header {
         position: absolute;
         width: 100%;
         top: 0;
-        opacity: .85;
+        opacity: .95;
         left: 0;
         height: 100%;
+        z-index: 40;
     }
 }
 
 .btn-action {
-    @apply bg-green-500 flex items-center justify-center;
+    @apply bg-green-400 flex items-center justify-center;
     color: white;
     border: none;
     margin: 10px 0;
@@ -73,7 +80,7 @@ header {
     height: 40px;
 
     &:hover {
-        @apply bg-green-700;
+        @apply bg-green-500;
     }
 }
 </style>

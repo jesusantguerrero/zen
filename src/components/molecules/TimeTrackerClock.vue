@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="font-bold justify-center items-center flex"
+    class="flex items-center justify-center font-bold"
     :class="[state.isMini ? 'flex-row space-x-5' : 'flex-col space-y-4 rounded-md text-2xl py-4']"
   >
     <div 
@@ -12,7 +12,7 @@
     <div class="flex items-center">
       <button 
         v-if="!state.isMini"
-        class=" focus:outline-none rounded-full h-14 w-14 text-2xl text-gray-400" 
+        class="text-2xl text-gray-400 rounded-full  focus:outline-none dark:hover:bg-gray-600 h-14 w-14" 
         :class="{'hover:bg-gray-100': hasPrevMode}"
         @click="prevMode" 
         :disabled="!hasPrevMode"   
@@ -20,7 +20,7 @@
         <i class="fa fa-chevron-left"></i>
       </button>
         <div 
-          class="justify-center items-center flex cursor-pointer"
+          class="flex items-center justify-center cursor-pointer"
           @click="toggleTracker"
           :class="[trackerMode.color, trackerMode.colorBorder, state.isMini ? 'w-20 flex-row-reverse': 'h-52 w-52 rounded-full flex-col space-y-3 border-2']"
           title="Click here to start"
@@ -35,7 +35,7 @@
                 <div
                   v-for="(stage, index) in promodoroTotal"
                   :title="`Round ${index+1}: ${stage.name}`"
-                  class="bg-red h-1 w-full mr-1 cursor-pointer hover:ring hover:ring-offset-1"
+                  class="w-full h-1 mr-1 cursor-pointer bg-red hover:ring hover:ring-offset-1"
                   :class="[state.currentStep >= stage.originalIndex ? currentStateColor : 'bg-gray-200']"
                   :key="stage.name"
                 ></div>
@@ -47,7 +47,7 @@
         </div>
         <button 
           v-if="!state.isMini"
-          class="hover:bg-gray-100 focus:outline-none rounded-full h-14 w-14 text-2xl text-gray-400" 
+          class="text-2xl text-gray-400 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 focus:outline-none h-14 w-14" 
           @click="nextMode">
           <i class="fa fa-chevron-right"></i>
         </button>

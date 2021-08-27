@@ -1,16 +1,16 @@
 <template>
-<div class="hidden md:fixed bottom-0 shadow-md w-full bg-gray-700 text-white  px-2 md:px-32">
+<div class="bottom-0 hidden w-full px-2 text-white bg-gray-700 shadow-md md:fixed md:px-32">
   <div
-    class="flex items-center zen justify-between h-8"
+    class="flex items-center justify-between h-8 zen"
   >
     <div class="w-full text-center">
       Zen.
     </div>
-    <div class="w-full text-center hidden md:block">
+    <div class="hidden w-full text-center md:block">
       Jesus Guerrero
     </div>
 
-    <div class="w-full text-center text-white hidden md:block">
+    <div class="hidden w-full text-center text-white md:block">
       2021
     </div>
   </div>
@@ -18,7 +18,6 @@
 </template>
 
 <script setup>
-import { defineEmit } from "vue";
 import MenuItem from "../molecules/MenuItem.vue";
 
 defineProps({
@@ -27,7 +26,7 @@ defineProps({
   },
 });
 
-const emit = defineEmit({
+const emit = defineEmits({
   logout: Function,
 });
 

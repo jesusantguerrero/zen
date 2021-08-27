@@ -1,66 +1,80 @@
-import ZenBoard from "./views/ZenBoard.vue";
-import Dashboard from "./views/Dashboard.vue";
-import Overview from "./views/Overview.vue";
+import Landing from "./views/landing/index.vue";
 import Login from "./views/Login.vue";
+import Home from "./views/Home.vue";
+import ZenBoard from "./views/ZenBoard.vue";
 import Matrix from "./views/Matrix.vue";
-import MatrixShared from "./views/MatrixShared.vue";
 import Standup from "./views/Standup.vue";
+import Metrics from "./views/Metrics.vue";
+import PlanAhead from "./views/PlanAhead.vue";
 import About from "./views/About.vue";
 import OauthAccept from "./views/auth/OauthAccept.vue";
+import OauthConnect from "./views/auth/OauthConnect.vue";
 import Settings from "./views/Settings.vue";
-import PlanAhead from "./views/PlanAhead.vue";
-import Metrics from "./views/Metrics.vue";
-import Landing from "./views/landing/index.vue";
+import Privacy from "./views/Privacy.vue"
+import Terms from "./views/Terms.vue"
+import Notifications from "./views/Notifications.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import { isAuthenticated } from "./utils/useFirebase";
 
 // 2. Define some routes
 // Each route should map to a component.
 // We'll talk about nested routes later.
-const routes = [
+export const routes = [
+  { 
+    path: "/home",
+    name: "home",
+    component: Home,
+  },
   { 
     path: "/zenboard", 
     name: "zenboard",
     component: ZenBoard,
 
   },
-  { 
-    path: "/dashboard", 
-    name: "dashboard",
-    component: Dashboard,
-
-  },
-  { 
-    path: "/zenboard/overview", 
-    name: "overview",
-    component: Overview,
-
-  },
   { path: "/matrix", 
     component: Matrix 
-  },
-  // { path: "/shared", 
-  //   component: MatrixShared 
-  // },
-  { 
-    path: "/standup", 
-    component: Standup 
   },
   { 
     path: "/metrics", 
     component: Metrics 
   },
+  { 
+    path: "/standup", 
+    component: Standup 
+  },
   { path: "/about", 
     component: About 
   },
-  // { path: "/settings", 
-  //   name: 'settings',
-  //   component: Settings
-  // },
+  { path: "/settings", 
+    name: 'settings',
+    component: Settings
+  },
   { 
     path: "/plan-ahead", 
     component: PlanAhead, 
     name: "planAhead" 
+  },
+  { 
+    path: "/notifications", 
+    component: Notifications, 
+    name: "notifications" 
+  },
+  {
+    path: "/terms",
+    component: Terms,
+    name: "terms",
+    meta: {
+      requiresAuth: false,
+    },
+  },
+  {
+    path: "/privacy-policy",
+    component: Privacy,
+    name: "privacy",
+    meta: {
+      title: 'Privacy policy - Zen',
+      requiresAuth: false,
+    },
   },
   {
     path: "/login",
@@ -104,9 +118,17 @@ const routes = [
     }
   },
   {
+    path: "/oauth2/connect/:service",
+    component: OauthConnect,
+    name: "oauthConnect",
+    props: {
+      mode: 'oauth'
+    }
+  },
+  {
     path: "/",
     component: Landing,
-    name: "home",
+    name: "landing",
     meta: {
       requiresAuth: false,
     },
@@ -127,7 +149,7 @@ myRouter.beforeEach(async (to, from, next) => {
       return next({ name: "oauthAccept", query: to.query })
     }
     next({name: "zenboard"})
-  }else {
+  } else {
     next();
   }
 });

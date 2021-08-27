@@ -1,8 +1,8 @@
 <template>
-<div class="prose prose-xl text-center mx-auto py-5">
+<div class="py-5 mx-auto prose prose-xl text-center">
     <h2 class="text-center"> {{ item.title }}</h2>
     
-    <div class="image mx-2">
+    <div class="mx-2 image">
         <img  v-if="isSelected('planahead')" src="../../assets/undraw_following.svg" alt="" class="w-full mx-auto">
         <img  v-if="isSelected('zenboard')" src="../../assets/undraw_time_management_30iu.svg" alt="" class="w-full mx-auto">
         <img  v-if="isSelected('standup')" src="../../assets/undraw_project_completed_w0oq.svg" alt="" class="w-full mx-auto">
@@ -10,15 +10,15 @@
     </div>
     
     <div
-        class="bg-gray-50  h-30 mx-2 pb-5 mb-5 mt-2" 
+        class="pb-5 mx-2 mt-2 mb-5 bg-gray-50 h-30" 
         >
         <span class="font-bold"> {{ item.title }} </span>
         <div v-html="item.content"> </div>
     </div>
     
-    <div class="mb-5 text-left grid grid-cols-2 md:flex mx-2 mt-5">
+    <div class="grid grid-cols-2 mx-2 mt-5 mb-5 text-left md:flex">
         <div v-for="(item, itemName) in state.items" :key="itemName"
-            class="list-item bg-gray-50 hover:bg-gray-200 w-full text-center text-xs" 
+            class="w-full text-xs text-center list-item bg-gray-50 hover:bg-gray-200" 
             :class="{'bg-gray-300': isSelected(itemName)}" 
             @click="setSelected(itemName)" 
         >
@@ -26,10 +26,10 @@
         </div>
     </div>
 
-    <div class="text-center mb-10" v-if="!hideButton">
-        <button class="bg-green-400 text-white hover:bg-green-500 focus:outline-none rounded-md px-5 py-1" @click="emit('closed')">
-            Start Building
-            <i class="fa fa-chevron-right ml-2"></i>
+    <div class="mb-10 text-center" v-if="!hideButton">
+        <button class="px-5 py-1 text-white bg-green-400 rounded-md hover:bg-green-500 focus:outline-none" @click="emit('closed')">
+            Plan your day
+            <i class="ml-2 fa fa-chevron-right"></i>
         </button>
     </div>
 </div>
@@ -37,8 +37,8 @@
 
 
 <script setup>
-import { computed, defineEmit, defineProps, reactive} from "vue"
-const emit = defineEmit({
+import { computed, reactive} from "vue"
+const emit = defineEmits({
     closed: Function
 })
 

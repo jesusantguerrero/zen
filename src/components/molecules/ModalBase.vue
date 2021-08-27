@@ -4,27 +4,27 @@
         v-model="isOpenLocal" 
         name="welcome" 
         classes="flex justify-center md:pt-20 w-full"
-        content-class="md:w-5/12 "
+        :content-class="contentClass"
         :click-to-close="clickToClose"
         @closed="$emit('closed')"
     >
-        <div class="w-full bg-white md:rounded-md modal__content relative">
-            <div class="modal__header-container py-2 px-2">
+        <div class="relative w-full bg-white border dark:bg-gray-700 dark:border-gray-500 md:rounded-md modal__content">
+            <div class="px-2 py-2 modal__header-container dark:text-gray-300" v-if="showHeader">
                 <slot name="title">
-                    <div class="modal__header flex justify-between px-5 py-4">
+                    <div class="flex justify-between px-5 py-4 modal__header dark:text-gray-300">
                         <h3> {{ title }} </h3>
                         <button @click="isOpenLocal=false">
-                            <i class="fa fa-times"></i>
+                            <i class="fa fa-times "></i>
                         </button>
                     </div>
                 </slot>
             </div>
 
-            <div class="modal__body ic-scroller pb-20">
+            <div class="pb-20 modal__body ic-scroller">
                 <slot name="body"></slot>
             </div>
             
-            <div class="modal__footer px-5 py-2 text-right absolute bottom-0 w-full bg-white">
+            <div class="absolute bottom-0 w-full px-5 py-2 text-right bg-white modal__footer dark:bg-gray-700">
                 <slot name="footer"></slot>
             </div>
         </div>
@@ -33,16 +33,24 @@
 </template>
 
 <script setup>
-import { defineProps, ref, watch } from "vue"
+import { ref, watch } from "vue"
 
 const props = defineProps({
     isOpen: Boolean,
     taskData: Object,
+    showHeader: {
+        type: Boolean,
+        default: true
+    },
     title: String,
+    contentClass: {
+        type: String,
+        default: 'md:w-5/12',
+    },
     clickToClose: Boolean
 })
 
-const emit = defineEmit({
+const emit = defineEmits({
     "update:isOpen": Boolean
 })
 
