@@ -113,6 +113,15 @@ export const isAuthenticated = () => {
     return initFirebase;
 }
 
+export const registerEvent = (eventName, params) => {
+    firebase.analytics().logEvent(eventName, {...params, screen, user_id: firebaseState.uid }); 
+}
+
+export const setScreen = (screenName) => {
+    firebase.analytics().setCurrentScreen(screenName) 
+    console.log("navegating") 
+}
+
 export const functions = firebaseInstance.functions()
 if (import.meta.env.DEV) {
     functions.useEmulator("localhost", 5001);

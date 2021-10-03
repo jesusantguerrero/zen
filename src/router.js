@@ -14,7 +14,7 @@ import Privacy from "./views/Privacy.vue"
 import Terms from "./views/Terms.vue"
 import Notifications from "./views/Notifications.vue";
 import { createRouter, createWebHistory } from "vue-router";
-import { isAuthenticated } from "./utils/useFirebase";
+import { isAuthenticated, registerEvent, setScreen } from "./utils/useFirebase";
 
 // 2. Define some routes
 // Each route should map to a component.
@@ -153,5 +153,14 @@ myRouter.beforeEach(async (to, from, next) => {
     next();
   }
 });
+
+myRouter.afterEach((to,) => {
+  setScreen(to.name);
+  registerEvent('page_view', {
+      page_location: to.fullPath,
+      page_path: to.path,
+      page_title: to.name
+  })
+})
 
 export default myRouter;
