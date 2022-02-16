@@ -98,7 +98,7 @@ import DateSelect from "../atoms/DateSelect.vue"
 import TagsSelect from "../atoms/TagsSelect.vue"
 import PersonSelect from "../atoms/PersonSelect.vue"
 import ChecklistContainer from "../organisms/ListContainer.vue";
-import { ElNotification } from "element-plus";
+import { ElMessageBox, ElNotification } from "element-plus";
 
 const props = defineProps({
     mode: {
@@ -191,7 +191,26 @@ const clearForm = () => {
   task.tracks = [];
 }
 
-const save = () => {
+const confirmChecklist = async () => {
+  let canSave = true;
+  if (state.checklistTitle) {
+    canSave = await ElMessageBox.confirm(`There are an unsaved checklist item`, "Are you sure?", {
+      confirmButtonText: "Add item and save",
+      cancelButtonText: "Remove item and save"
+    }).then(() => true).catch(() => false)
+
+    if (canSave) {
+      task.checklist.push({ 
+        title: state.checklistTitle,
+        done: false
+      });
+    } 
+  }
+  
+  state.checklistTitle = "";
+}
+
+const save = async () => {
   if (!task.title) {
     ElNotification({
       title: "Missing title",
@@ -199,6 +218,7 @@ const save = () => {
     })
     return
   }
+  await confirmChecklist();
   const { formatDate } = useDateTime()
   const formData = { ...task }
   formData.due_date = formData.due_date ? formatDate(formData.due_date, "yyyy-MM-dd") : ""

@@ -292,6 +292,7 @@ const handleUpload = (res) => {
 
 const { updateTask } = useTaskFirestore()
 const { formatDate } = useDateTime()
+
 const confirmChecklist = async () => {
   let canSave = true;
   if (state.checklistTitle) {
