@@ -88,7 +88,6 @@
 
         <div class="divide-y-2 divide-gray-200 comming-up__list dark:divide-gray-600 dark:text-gray-300 divide-solid">
           <div class="mb-4 quick__add">
-            <h4 class="mb-2 font-bold">Quick Add</h4>
             <quick-add @saved="addTask" type="todo" :allow-edit="true" />
           </div>
           <div class="pt-4">
