@@ -1,31 +1,28 @@
 <script setup>
-import Wave from "./waves/wave.vue";
-import Curve from "./waves/curve.vue";
 import NormalWave from "./waves/normal-wave.vue";
     const footerSections = {
         general: {
             label: "General Resources",
             links: {
-                "Docs": "",
-                "Blog": "",
-                "Use Cases": ""
+                "Docs": "/docs",
+                "Blog": "/blog",
+                "Use Cases": "/use-cases"
             }
         },
         more: {
             label: "More",
             links: {
-                "Zenboard": "",
-                "Atmosphere": "",
-                "Lumiere": "",
-                "Insane Code": ""
+                // "Atmosphere": "https://github.com/jesusantguerrero/atmosphere",
+                "Atmosphere UI": "https://atmosphere-ui.netlify.app",
+                "Lumiere": "https://github.com/jesusantguerrero/lumiere",
+                "Insane Code Blog": "https://freesgen.hashnode.dev"
             }
         },
         about: {
-            label: "About Neatlancer",
+            label: "Zen channels",
             links: {
-                "Open Source Software": "",
-                "Github" : "",
-                "Twitter": ""
+                "Github" : "https://github.com/jesusantguerrero/zen",
+                "Twitter": "https://twitter.com/zenboard_app"
             }
         },
         legal: {

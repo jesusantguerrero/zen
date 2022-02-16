@@ -2,7 +2,7 @@
   <div>
     <hero-section></hero-section>
     <learn-more />
-    <features-section class="bg-secondary"></features-section>
+    <features-section class="bg-secondary" id="features"></features-section>
     <div class="flex flex-col items-center py-24 bg-white">
       <h2 class="text-4xl font-bold text-green-400">Try Zen for free.</h2>
       
@@ -56,5 +56,9 @@ import LearnMore from "./LearnMore.vue";
   &:hover {
     @apply bg-green-500;
   }
+}
+
+html {
+  scroll-behavior: smooth;
 }
 </style>

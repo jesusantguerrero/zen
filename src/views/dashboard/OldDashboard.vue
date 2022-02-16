@@ -24,8 +24,7 @@
             class="zen__reminder"
             title="Things bear in mind after the zen"
             placeholder="Add a reminder"
-          >
-          </quick-add>
+          />
 
           <task-view
             :task-data="currentTask"
@@ -89,7 +88,7 @@
 
         <div class="divide-y-2 divide-gray-200 comming-up__list dark:divide-gray-600 dark:text-gray-300 divide-solid">
           <div class="mb-4 quick__add">
-            <quick-add @saved="addTask" type="todo" :allow-edit="true"></quick-add>
+            <quick-add @saved="addTask" type="todo" :allow-edit="true" />
           </div>
           <div class="pt-4">
             <div class="flex tab-header "> 
@@ -193,7 +192,7 @@ import { useRouter } from "vue-router";
 import { ElMessageBox, ElNotification } from "element-plus";
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
 import { useTrackFirestore } from "../../utils/useTrackFirestore";
-import { firebaseState, updateSettings } from "../../utils/useFirebase";
+import { firebaseState, registerEvent, updateSettings } from "../../utils/useFirebase";
 import { useFuseSearch, useSearchOptions } from "../../utils/useFuseSearch";
 import { startFireworks } from "../../utils/useConfetti";
 import TagsSelect from "../../components/atoms/TagsSelect.vue"
@@ -358,9 +357,10 @@ const getNextIndex = (list) => {
   return index < 0 ? 0 : index;
 }
 
-const addTask = (task) => {
+const addTask = async (task) => {
   task.order = getNextIndex(state.todo);
-  saveTask(task);
+  await saveTask(task);
+  registerEvent('quick_task_added');
 };
 
 const destroyTask = async (task) => {
