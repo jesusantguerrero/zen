@@ -1,12 +1,12 @@
 <template>
-  <div class="pt-24 md:pt-28 pb-20 mx-5 md:mx-28">
+  <div class="pt-24 pb-20 mx-5 md:pt-28 md:mx-28">
     <div class="text-left md:flex">
       <div
         class="zen__view md:block md:w-8/12 md:mr-20"
         :class="[state.mobileMode == 'zen' ? 'block' : 'hidden']"
       >
         <header class="flex justify-between font-bold text-gray-400">
-          <h1 class="md:block text-2xl font-bold text-gray-400">
+          <h1 class="text-2xl font-bold text-gray-400 md:block">
             Hi, {{ "Jesus" }}<br>
           </h1>
           <small class="text-sm">See your day in a glance</small>
@@ -18,14 +18,14 @@
       >
         <header>
           <div class="flex justify-between mt-5">
-            <tab-header v-model="state.tabSelected" :tabs="state.tabs" class="rounded-md overflow-hidden"/>
+            <tab-header v-model="state.tabSelected" :tabs="state.tabs" class="overflow-hidden rounded-md"/>
 
-            <div class="flex itemx-center space-x-2">
-              <div class="md:flex items-center h-10">
+            <div class="flex space-x-2 itemx-center">
+              <div class="items-center h-10 md:flex">
                 <input
                   type="search"
                   v-model.trim="searchOptions.text"
-                  class="w-44 px-2 text-sm h-10 rounded-md focus:outline-none border-2 border-gray-200"
+                  class="h-10 px-2 text-sm border-2 border-gray-200 rounded-md w-44 focus:outline-none"
                   placeholder="Search task"
                 />
 
@@ -34,7 +34,7 @@
                   :multiple="true"
                   placeholder="Filter by tag"
                   :tags="tags"
-                  class="w-full h-full md:ml-2 bg-white px-2 py-2 rounded-md border-gray-200 border-2"
+                  class="w-full h-full px-2 py-2 bg-white border-2 border-gray-200 rounded-md md:ml-2"
                   :allow-add="false"
                 />
               </div>
@@ -61,8 +61,6 @@
             :search="searchOptions.text"
             :show-select="true"
             :show-controls="true"
-            :current-task="currentTask"
-            :current-timer="currentTimer"
             :is-item-as-handler="true"
             :tags="selectedTags"
             @toggle-timer="setCurrentTask"
@@ -107,9 +105,9 @@
 
             >
               <template #empty v-if="!state.overdues.length">
-              <div class="w-8/12 md:w-6/12 mx-auto mt-10 text-center">
-                <img src="../assets/undraw_following.svg" class="w-12/12 md:w-5/12 mx-auto"> 
-                <div class="mt-10 md:mt-5 text-gray-500 font-bold"> There's no tasks</div>
+              <div class="w-8/12 mx-auto mt-10 text-center md:w-6/12">
+                <img src="../assets/undraw_following.svg" class="mx-auto w-12/12 md:w-5/12"> 
+                <div class="mt-10 font-bold text-gray-500 md:mt-5"> There's no tasks</div>
               </div>
             </template>
           </task-group>
@@ -129,9 +127,9 @@
 
             >
               <template #empty v-if="!state.overdues.length">
-              <div class="w-8/12 md:w-6/12 mx-auto mt-10 text-center">
-                <img src="../assets/undraw_following.svg" class="w-12/12 md:w-5/12 mx-auto"> 
-                <div class="mt-10 md:mt-5 text-gray-500 font-bold"> There's no tasks</div>
+              <div class="w-8/12 mx-auto mt-10 text-center md:w-6/12">
+                <img src="../assets/undraw_following.svg" class="mx-auto w-12/12 md:w-5/12"> 
+                <div class="mt-10 font-bold text-gray-500 md:mt-5"> There's no tasks</div>
               </div>
             </template>
           </task-group>
@@ -143,37 +141,37 @@
         class="zen__comming-up lineup md:block md:mt-0 md:w-4/12"
         :class="[state.mobileMode == 'lineup' ? 'block' : 'hidden']"
       >
-        <header class="mb-2 md:flex justify-between text-gray-400 font-bold items-center overflow-hidden">
+        <header class="items-center justify-between mb-2 overflow-hidden font-bold text-gray-400 md:flex">
           <h1 class="text-2xl">Summary</h1><br>
           <small class="text-sm">See your day in a glance</small>
         </header>
 
-        <div class="comming-up__list divide-y divide-gray-200 divide-solid">
+        <div class="divide-y divide-gray-200 comming-up__list divide-solid">
           <!-- Matrix summary -->
-          <div class="quick__add py-4">
+          <div class="py-4 quick__add">
             <h4 class="font-bold text-gray-500"> Matrix summary</h4>
-            <div class="grid lg:grid-cols-2 gap-4 text-white font-bold">
-              <div class="h-20 flex justify-center items-center shadow-md rounded-md cursor-pointer ring ring-offset-2 ring-transparent" 
+            <div class="grid gap-4 font-bold text-white lg:grid-cols-2">
+              <div class="flex items-center justify-center h-20 rounded-md shadow-md cursor-pointer ring ring-offset-2 ring-transparent" 
                 v-for="(matrix, matrixName) in state.matrix"
                 :key="matrixName"
                 :class="matrix.classes">
-                  <span class="capitalize mr-2">{{ matrixName}}</span>
+                  <span class="mr-2 capitalize">{{ matrixName}}</span>
                  ({{ matrix.list.length }})
               </div>
             </div>
           </div>
 
           <!-- Shared -->
-           <div class="quick__add py-4" v-if="false">
-              <div class="font-bold text-gray-500 flex justify-between mb-5">
+           <div class="py-4 quick__add" v-if="false">
+              <div class="flex justify-between mb-5 font-bold text-gray-500">
                 <h4>
                   Shared with me
                 </h4> 
-                <div class="md:flex items-center h-10">
+                <div class="items-center h-10 md:flex">
                   <input
                     type="search"
                     v-model.trim="searchOptions.text"
-                    class="w-full px-2 text-sm h-10 rounded-md focus:outline-none border-2 border-gray-200"
+                    class="w-full h-10 px-2 text-sm border-2 border-gray-200 rounded-md focus:outline-none"
                     placeholder="Search contact"
                   />
                 </div>
@@ -186,13 +184,13 @@
           </div>
 
           <div class="py-4">
-              <div class="font-bold text-gray-500 flex justify-between mb-5">
+              <div class="flex justify-between mb-5 font-bold text-gray-500">
                 <h4>
                   Your yesterday's work
                 </h4> 
               </div>
               <background-icon-card
-                class="bg-blue-400 h-36 text-white"
+                class="text-white bg-blue-400 h-36"
                 icon="fas fa-clock"
                 value="Quick Standup"
               >
@@ -203,14 +201,14 @@
           </div>
           
           <div class="py-4">
-              <div class="font-bold text-gray-500 flex justify-between">
+              <div class="flex justify-between font-bold text-gray-500">
                 <h4>
                   What's comming today
                 </h4> 
               </div>
      
             <background-icon-card
-              class="bg-gray-700 h-36 text-white mt-5"
+              class="mt-5 text-white bg-gray-700 h-36"
               icon="fas fa-calendar"
               value="Schedule"
             >
@@ -258,8 +256,6 @@ import TaskModal from "../components/organisms/TaskModal.vue";
 import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
 
 const {
-  saveTask,
-  deleteTask,
   updateTask,
   getTaskByMatrix,
   updateTaskBatch,
@@ -424,9 +420,6 @@ const onTaskUpdated = (task) => {
     });
   });
 };
-
-// Timer
-const currentTimer = ref({});
 
 // Tasks manipulation
 const getMatrix = (matrix) => {
