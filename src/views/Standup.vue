@@ -2,16 +2,14 @@
 <div class="pt-24 mx-5 md:pt-28 md:mx-28">
   <div class="items-center justify-between mb-10 section-header md:flex">
       <h2 class="text-2xl font-bold text-left text-gray-400">
-         Standup
+         Standup <span class="text-lg text-green-500">{{ state.humanDate }}</span>
       </h2>
       <search-bar
         v-model="state.searchText"
         v-model:date="state.date"
         v-model:tags="state.tags"
         v-model:selectedTags="state.selectedTags"
-      >
-
-      </search-bar>
+      />
   </div> 
 
   <div class="md:flex">
@@ -44,19 +42,23 @@
 </template>
 
 <script setup>
-import { reactive, watch, ref, onUnmounted } from 'vue'
+import { reactive, watch, ref, onUnmounted, computed } from 'vue'
 import { useTaskFirestore } from '../utils/useTaskFirestore'
 import { useTrackFirestore } from '../utils/useTrackFirestore'
 import TaskGroup from "../components/organisms/TaskGroup.vue"
 import SearchBar from "../components/molecules/SearchBar.vue"
+import { format, startOfDay, subDays } from 'date-fns'
 // state and ui
 const state = reactive({
   committed: [],
   committedRef: null,
   searchText: "",
   tags: [],
-  date: new Date(),
-  selectedTags: []
+  date: subDays(startOfDay(new Date()), 1),
+  selectedTags: [],
+  humanDate: computed(() => {
+    return format(state.date, 'dd LLL, yyyy')
+  }),
 })
 
 // tasks manipulation
