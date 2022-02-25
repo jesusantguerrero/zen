@@ -3,7 +3,7 @@
     <div class="flex flex-col items-center pt-20 pb-8 mx-auto max-w-7xl sm:flex-row">
         <a href="/#home" class="text-xl font-black leading-none text-gray-100 select-none zen">Zen<span class="text-green-400">.</span></a>
         <p class="mt-4 text-sm text-gray-100 sm:ml-4 sm:pl-4 sm:border-l sm:border-gray-200 sm:mt-0">
-            © 2021 Zen - The Eisenhower Matrix App - Code and Design with <span class="text-green-400">❤</span> by <a href="https://jesusantguerrero.github.io" class="text-green-400 underline transition hover:text-green-300">Jesus Guerrero</a>
+            © 2021 Zen - The Eisenhower Matrix App - Code and Design with <span class="text-green-400">❤</span> by <a href="https://jesusantguerrero.com" class="text-green-400 underline transition hover:text-green-300">Jesus Guerrero</a>
         </p>
         <span class="inline-flex justify-center mt-4 space-x-5 sm:ml-auto sm:mt-0 sm:justify-start">
             <!-- World svg -->
