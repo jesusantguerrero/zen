@@ -65,6 +65,10 @@ const getProvider = (providerName) => {
         google: {
             method: new firebase.auth.GoogleAuthProvider,
             scopes: ['profile', 'email']
+        },
+        github: {
+            method: new firebase.auth.GithubAuthProvider,
+            scopes: ['repo', 'read:user', 'user:email']
         }
     }
     const providerData = providers[providerName]

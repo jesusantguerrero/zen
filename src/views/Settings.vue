@@ -37,6 +37,14 @@
                     <button @click.prevent class="px-2 py-2 text-white bg-blue-600 rounded-md focus:outline-none hover:bg-opacity-75"> Connect with Jira </button>
                   </a>
                 </div>
+                <div class="flex items-center mt-5 integrations">
+                  <a :href="connectGithub" class="inline-block w-48"> 
+                    <icon-github-logo class="text-4xl"/>
+                  </a>
+                  <a :href="connectGithub" class="inline-block w-48 ml-5"> 
+                    <button class="px-2 py-2 text-white bg-gray-600 rounded-md focus:outline-none hover:bg-opacity-75"> Connect with Github </button>
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -53,14 +61,16 @@ import SettingsProfile from "../components/templates/SettingsProfile.vue"
 import SettingsTags from "../components/templates/SettingsTags.vue"
 import SettingsNotification from "../components/templates/SettingsNotification.vue"
 import { firebaseState, functions } from "../utils/useFirebase"
+import IconGithubLogo from "../components/atoms/icons/IconGithubLogo.vue"
 
 export default {
   name: "Settings",
   components: {
     SettingsProfile,
     SettingsTags,
-    SettingsNotification
-  },
+    SettingsNotification,
+    IconGithubLogo
+},
   setup() {
     const state = reactive({
       menu: [
@@ -86,9 +96,16 @@ export default {
       return `https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=umMvvT2NxqxNEnjWMlQ6EnudUiK0jnym&scope=offline_access%20read%3Ajira-user%20read%3Ajira-work%20write%3Ajira-work&redirect_uri=https%3A%2F%2Fzenboards.web.app%2Foauth2%2Fconnect%2Fjira&state=${userbound}&response_type=code&prompt=consent`;
     })
 
+    const connectGithub = computed(() => {
+      const userbound = firebaseState.user.uid;
+      const redirectUri = encodeURIComponent(`${window.location.origin}/oauth2/connect/github`);
+      return `https://github.com/login/oauth/authorize?client_id=3c21758f1ac3d14ea284&redirect_uri=${redirectUri}&scope=user,repo&state=${userbound}`;
+    })
+
     return {
       ...toRefs(state),
       connectJira,
+      connectGithub
     }
   }
 }

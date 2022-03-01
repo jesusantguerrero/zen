@@ -38,10 +38,10 @@
                 <i class="fa fa-user"></i>
                 {{ profileName }}
               </el-dropdown-item>
-              <!-- <el-dropdown-item class="p-0" command="settings">
+              <el-dropdown-item class="p-0" command="settings">
                   <i class="cursor-pointer fa fa-cog"></i>
                   Settings
-              </el-dropdown-item>  -->
+              </el-dropdown-item> 
               <el-dropdown-item class="p-0" command="about">
                   <i class="cursor-pointer fa fa-question"></i>
                   About
