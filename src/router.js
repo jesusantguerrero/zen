@@ -60,6 +60,14 @@ export const routes = [
     name: "notifications" 
   },
   {
+    path: "/pricing",
+    component: () => import("./views/Pricing.vue"),
+    name: "pricing",
+    meta: {
+      requiresAuth: false,
+    },
+  },
+  {
     path: "/terms",
     component: Terms,
     name: "terms",

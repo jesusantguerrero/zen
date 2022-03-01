@@ -1,39 +1,46 @@
 <script setup>
 import NormalWave from "./waves/normal-wave.vue";
-    const footerSections = {
-        general: {
-            label: "General Resources",
-            links: {
-                "Docs": "/docs",
-                "Blog": "/blog",
-                "Use Cases": "/use-cases"
-            }
-        },
-        more: {
-            label: "More",
-            links: {
-                // "Atmosphere": "https://github.com/jesusantguerrero/atmosphere",
-                "Atmosphere UI": "https://atmosphere-ui.netlify.app",
-                "Lumiere": "https://github.com/jesusantguerrero/lumiere",
-                "Insane Code Blog": "https://freesgen.hashnode.dev"
-            }
-        },
-        about: {
-            label: "Zen channels",
-            links: {
-                "Github" : "https://github.com/jesusantguerrero/zen",
-                "Twitter": "https://twitter.com/zenboard_app"
-            }
-        },
-        legal: {
-            label: "Legal",
-            links: {
-                "Privacy Policy": "/privacy-policy",
-                "Terms of service": "/terms"
-            }
+const footerSections = {
+    general: {
+        label: "General Resources",
+        links: {
+            "Docs": "/docs",
+            "Blog": "/blog",
+            "Use Cases": "/use-cases"
+        }
+    },
+    more: {
+        label: "More",
+        links: {
+            // "Atmosphere": "https://github.com/jesusantguerrero/atmosphere",
+            "Atmosphere UI": "https://atmosphere-ui.netlify.app",
+            "Lumiere": "https://github.com/jesusantguerrero/lumiere",
+            "Insane Code Blog": "https://freesgen.hashnode.dev"
+        }
+    },
+    about: {
+        label: "Zen channels",
+        links: {
+            "Github" : "https://github.com/jesusantguerrero/zen",
+            "Twitter": "https://twitter.com/zenboard_app"
+        }
+    },
+    legal: {
+        label: "Legal",
+        links: {
+            "Privacy Policy": "/privacy-policy",
+            "Terms of service": "/terms"
         }
     }
+}
 
+const getRouterComponent = (link) => {
+    if (link.startsWith("http")) {
+        return "a"
+    } else {
+        return "router-link"
+    }
+}
 
 </script>
 
@@ -45,9 +52,9 @@ import NormalWave from "./waves/normal-wave.vue";
                 <h4 className="font-bold text-left"> {{ section.label }} </h4>
                 <ul className="mt-4 text-left">
                     <li v-for="(link, linkName) in section.links" class="text-white"> 
-                        <a :href="link">
+                        <component :href="link" :to="link" :is="getRouterComponent(link)">
                             {{ linkName }}
-                        </a>
+                        </component>
                     </li>
                 </ul>
             </div>
