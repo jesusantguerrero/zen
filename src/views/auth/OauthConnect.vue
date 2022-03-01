@@ -20,7 +20,6 @@ import { useRoute, useRouter } from "vue-router";
 import { functions } from "../../utils/useFirebase"
 import { onMounted, ref } from "vue";
 import IntegrationModal from "../../components/organisms/modals/IntegrationModal.vue"; 
-import { usePush } from "../../utils/usePush";
 
 const route = useRoute();
 const formData = ref({});
@@ -47,9 +46,16 @@ const redirectToHome = () => {
 }
 
 const registerConnection = () => {
-  const requestAccess = functions.httpsCallable('requestAccess');
-  requestAccess(formData.value).then(() => {
-    openConfiguration();
-  });
+  // const requestAccess = functions.httpsCallable('requestAccess');
+  // requestAccess(formData.value).then(() => {
+  //    if (route.params.service) {
+        openConfiguration();
+  //    } else {
+  //      push({ path: "/zenboard" });
+  //    }
+  // }).catch(error => {
+  //   console.log(error);
+  //   push({ path: "/zenboard" });
+  // });
 }
 </script>
