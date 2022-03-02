@@ -46,16 +46,16 @@ const redirectToHome = () => {
 }
 
 const registerConnection = () => {
-  // const requestAccess = functions.httpsCallable('requestAccess');
-  // requestAccess(formData.value).then(() => {
-  //    if (route.params.service) {
+  const requestAccess = functions.httpsCallable('requestAccess');
+  requestAccess(formData.value).then(() => {
+     if (route.params.service) {
         openConfiguration();
-  //    } else {
-  //      push({ path: "/zenboard" });
-  //    }
-  // }).catch(error => {
-  //   console.log(error);
-  //   push({ path: "/zenboard" });
-  // });
+     } else {
+       push({ path: "/zenboard" });
+     }
+  }).catch(error => {
+    console.log(error);
+    push({ path: "/zenboard" });
+  });
 }
 </script>
