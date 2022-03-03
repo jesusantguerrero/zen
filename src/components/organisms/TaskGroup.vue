@@ -39,6 +39,7 @@
                 :current-task="currentTask"
                 :current-timer="currentTimer"
                 :is-item-as-handler="isItemAsHandler"
+                :is-compact="isCompact"
                 :class="taskClass"
                 :allow-run="allowRun"
                 :allow-update="allowUpdate"
@@ -117,6 +118,7 @@ const props = defineProps({
       default: true,
     },
     allowRun: Boolean,
+    isCompact: Boolean,
     useExternalDone: Boolean
 })
 const isShareModalOpen = ref(false);
