@@ -44,16 +44,14 @@
 
 <script setup>
 import { reactive, watch, ref, onUnmounted, computed } from 'vue'
-import { useTaskFirestore } from '../../utils/useTaskFirestore'
 import { useTrackFirestore } from '../../utils/useTrackFirestore'
 import { useDateTime } from '../../utils/useDateTime'
 import { getMilliseconds } from '../../utils/useTracker'
 import ReportPomodoros from "../organisms/ReportPomodoros.vue"
-import ReportTasks from "../organisms/ReportTasks.vue"
 import { format } from 'date-fns'
 import { AtWeekPager } from 'atmosphere-ui';
 // state and ui
-const props = defineProps({
+defineProps({
   title: {
     type: String,
     default: 'Pomodoro Stats'
@@ -65,42 +63,16 @@ const props = defineProps({
 });
 
 const state = reactive({
-  committed: [],
   tracks: [],
   week: null,
   date: new Date(),
   search: "",
-  sections: ['Overview'], // 'Tasks', 'Time Traking'
+  sections: ['Overview', 'Tasks', 'Time Tracking'],
   selectedSection: 'Overview',
 })
 
-// tasks manipulation
-const  { getCommittedTasks } = useTaskFirestore()
-watch(() => state.date , () => {
-  getCommittedTasks(state.date).then(tasks => {
-    state.committed = tasks;
-  })
-}, { immediate: true })
-
-// Current task
-const  { getAllTracksOfTask, getTracksByDates } = useTrackFirestore()
-const currentTask = ref({});
-const setCurrentTask = (task) => {
-  currentTask.value = task
-}
-
-watch(currentTask, () => {
-  if (currentTask.value.uid) {
-    getAllTracksOfTask(currentTask.value.uid).then((tracks) => {
-      currentTask.value.tracks = tracks || []
-
-      currentTask.value.data = [
-        tracks.length,
-        tracks.filter( track => track.completed).length
-      ]
-    })
-  }
-})
+// tracks data
+const  { getTracksByDates } = useTrackFirestore()
 
 const trackRef = ref(null);
 
@@ -117,7 +89,7 @@ watch(() => state.week, (week) => {
 })
 
 
-const {  formatDurationFromMs } = useDateTime()
+const { formatDurationFromMs } = useDateTime()
 const formattedTime = computed(() => {
   return formatDurationFromMs(getMilliseconds(state.tracks)).toFormat('hh:mm:ss')
 })
@@ -193,31 +165,6 @@ const tasksWorked = computed(() => {
   }, [])
 
   return Array.from(new Set(tasks));
-})
-
-const durationByTasks = computed(() => {
-  const tasks = {} 
-
-    state.tracks.forEach((track) => {
-       if(!tasks[track.task_uid]) {
-         tasks[track.task_uid] = {
-            id: `group-${track.uid}`,
-            description: track.description,
-            tracks: [track],
-            started: 1,
-            finished: Number(track.completed || 0),
-            duration_ms: Number(track.duration_ms || 0)
-        };
-      } else {
-        tasks[track.task_uid].tracks.push(track);
-        tasks[track.task_uid].description = track.description;
-        tasks[track.task_uid].started += 1
-        tasks[track.task_uid].finished += Number(track.completed)
-        tasks[track.task_uid].duration_ms += track.duration_ms
-      }
-  })
-
-  return Object.values(tasks)
 })
 
 const formattedWeek = computed(() => {
