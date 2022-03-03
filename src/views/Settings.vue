@@ -28,16 +28,7 @@
               <settings-profile v-if="selectedOption == 'profile'"/> 
               <settings-tags v-if="selectedOption == 'tags'"/> 
               <settings-notification v-if="selectedOption == 'Notification Preferences'"></settings-notification>
-              <div class="px-10 pb-20 text-left"  v-if="selectedOption == 'Integrations'">
-                <div class="flex items-center mt-5 integrations">
-                  <a :href="connectJira" class="inline-block w-48"> 
-                    <img src="../assets/jira-software-blue.svg" class="w-full h-full" />
-                  </a>
-                  <a :href="connectJira" class="inline-block w-48 ml-5"> 
-                    <button @click.prevent class="px-2 py-2 text-white bg-blue-600 rounded-md focus:outline-none hover:bg-opacity-75"> Connect with Jira </button>
-                  </a>
-                </div>
-              </div>
+              <settings-integrations v-if="selectedOption == 'Integrations'" />
             </div>
           </div>
         </div>
@@ -53,14 +44,18 @@ import SettingsProfile from "../components/templates/SettingsProfile.vue"
 import SettingsTags from "../components/templates/SettingsTags.vue"
 import SettingsNotification from "../components/templates/SettingsNotification.vue"
 import { firebaseState, functions } from "../utils/useFirebase"
+import IconGithubLogo from "../components/atoms/icons/IconGithubLogo.vue"
+import SettingsIntegrations from "../components/templates/SettingsIntegrations.vue"
 
 export default {
   name: "Settings",
   components: {
     SettingsProfile,
     SettingsTags,
-    SettingsNotification
-  },
+    SettingsNotification,
+    IconGithubLogo,
+    SettingsIntegrations
+},
   setup() {
     const state = reactive({
       menu: [
@@ -86,9 +81,16 @@ export default {
       return `https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=umMvvT2NxqxNEnjWMlQ6EnudUiK0jnym&scope=offline_access%20read%3Ajira-user%20read%3Ajira-work%20write%3Ajira-work&redirect_uri=https%3A%2F%2Fzenboards.web.app%2Foauth2%2Fconnect%2Fjira&state=${userbound}&response_type=code&prompt=consent`;
     })
 
+    const connectGithub = computed(() => {
+      const userbound = firebaseState.user.uid;
+      const redirectUri = encodeURIComponent(`${window.location.origin}/oauth2/connect/github`);
+      return `https://github.com/login/oauth/authorize?client_id=3c21758f1ac3d14ea284&redirect_uri=${redirectUri}&scope=user,repo&state=${userbound}`;
+    })
+
     return {
       ...toRefs(state),
       connectJira,
+      connectGithub
     }
   }
 }

@@ -157,22 +157,6 @@ onUnmounted(() => {
   connectionsRef()
 })
 
-const getIntegrations = functions.httpsCallable("getServiceResources");
-
-const fetchLists = async (integration) => {
-  const { data, error } = await getSites(integration);
-  if (!error) {
-    state.selectedIntegration = integration;
-    state.list = data;
-    return;
-  }
-  ElNotification({
-    title: "Error",
-    message: message,
-    type: "error",
-  });
-};
-
 const fetchProjects = async (cloud) => {
   const { data, error } = await getProjects(state.selectedIntegration, cloud);
   if (!error) {

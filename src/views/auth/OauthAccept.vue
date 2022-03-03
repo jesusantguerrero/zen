@@ -17,7 +17,6 @@
 import { useRoute } from "vue-router";
 import { useCollection } from "../../utils/useCollection";
 import { v4 as uuid } from "uuid";
-import { firebaseInstance } from "../../utils/useFirebase"
 import { onMounted, ref } from "vue";
 import { ElNotification } from "element-plus";
 

@@ -1,5 +1,5 @@
 import Landing from "./views/landing/index.vue";
-import Login from "./views/Login.vue";
+import Login from "./views/auth/Login.vue";
 import Home from "./views/Home.vue";
 import ZenBoard from "./views/ZenBoard.vue";
 import Matrix from "./views/Matrix.vue";
@@ -58,6 +58,14 @@ export const routes = [
     path: "/notifications", 
     component: Notifications, 
     name: "notifications" 
+  },
+  {
+    path: "/pricing",
+    component: () => import("./views/Pricing.vue"),
+    name: "pricing",
+    meta: {
+      requiresAuth: false,
+    },
   },
   {
     path: "/terms",

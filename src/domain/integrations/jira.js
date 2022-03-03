@@ -58,7 +58,7 @@ export const getProjects = async (integration, cloud) => {
     await getIntegrations({
         connectionUid: integration.uid,
         service: integration.service,
-        cloudId: cloud.id, 
+        cloudId: cloud.login || cloud.id, 
         type: 'projects'
     }).then((response) => {
         data = response.data.values;

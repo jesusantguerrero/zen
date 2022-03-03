@@ -21,14 +21,14 @@
           >
             <at-step name="Site" title="Sites" class="py-0 pt-10" :after-change="fetchProjects">
               <div class="flex flex-wrap justify-around" v-if="state.list.length">
-                <div v-for="site in state.list" :key="site.id" @click="state.selectedSite = site"
+                <div v-for="site in state.list" :key="getId(site)" @click="state.selectedSite = site"
                 >
                   <div 
                   class="p-1 border cursor-pointer"
                   :class="{'border-4 rounded-md border-green-400': state.selectedSite.id == site.id}">
-                    <img :src="site.avatarUrl" :alt="site.name" width="110">
+                    <img :src="site.avatarUrl || site.avatar_url" :alt="site.name || site.login" width="110">
                   </div>
-                  {{ site.name }}
+                  {{ site.name || site.login }}
                 </div>
 
               </div> 
@@ -99,6 +99,7 @@ const emit = defineEmits({
 
 const isOpenLocal = ref(false);
 
+const getId = (item) => item.login || item.id;
 watch(
   () => props.isOpen,
   (isOpen) => {

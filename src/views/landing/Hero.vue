@@ -1,5 +1,5 @@
 <template>
-    <!-- <div class="flex justify-start px-2 py-3 text-xs font-bold bg-white border-b md:px-10 md:justify-between md:flex">
+    <div class="flex justify-start px-2 py-3 text-xs font-bold bg-white border-b md:px-10 md:justify-between md:flex">
         <div class="px-2 text-xs text-gray-500 transition cursor-pointer md:text-sm md:px-14 max-w-7xl md:text-left hover:text-green-500">
             <span class="px-1 py-1 mr-3 text-white bg-green-400 rounded-md"> New </span>
             Introducing zenboard 2.0 - The Eisenhower Matrix revamped
@@ -8,7 +8,7 @@
         <div class="mt-4 space-x-4 md:mt-0">
           
         </div>
-    </div> -->
+    </div>
     <header class="relative w-full px-10 pb-16 antialiased bg-gray-900 select-none md:pb-0 md:px-0">
         <site-header />
 

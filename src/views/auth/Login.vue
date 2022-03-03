@@ -77,8 +77,20 @@
                 type="submit"
                 @click.prevent.stop="loginWithProvider('google')"
             >
-                <img src="./../assets/btn_google_light.svg" alt="">
+                <div class="mr-2 text-2xl">
+                    <IconGoogle />
+                </div>
                 {{ modeLabel }} With Google
+            </button>
+            <button
+                class="flex justify-center capitalize rounded-sm btn btn-action google-btn"
+                type="submit"
+                @click.prevent.stop="loginWithProvider('github')"
+            >   
+                <div class="mr-2 text-2xl">
+                    <IconGithub />
+                </div>
+                {{ modeLabel }} With Github
             </button>
 
             <div class="">
@@ -99,8 +111,10 @@
 <script setup>
 import { reactive, ref, computed, nextTick, toRefs } from "vue";
 import { useRouter } from "vue-router"
-import { register, login, loginWithProvider }  from "../utils/useFirebase";
+import { register, login, loginWithProvider }  from "../../utils/useFirebase";
 import { ElNotification } from "element-plus"
+import IconGithub from "../../components/atoms/icons/IconGithub.vue";
+import IconGoogle from "../../components/atoms/icons/IconGoogle.vue";
 
 // state and ui
 const props = defineProps({
