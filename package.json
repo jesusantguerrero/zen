@@ -1,6 +1,9 @@
 {
   "name": "zen",
   "version": "2.0.0",
+   "engines": {
+    "node": "14"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -27,7 +30,6 @@
     "luxon": "^1.25.0",
     "randomcolor": "^0.6.2",
     "vee-validate": "^4.4.7",
-    "vite-ssg": "^0.17.10",
     "vue": "^3.2.4",
     "vue-draggable-next": "^2.0.1",
     "vue-final-modal": "^1.8.5",
