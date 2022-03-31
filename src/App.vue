@@ -13,7 +13,9 @@ import IntegrationsBar from './components/templates/IntegrationsBar.vue'
 import { logout, setLoaded, functions, firebaseState, firebaseInstance } from "./utils/useFirebase"
 import { useCustomSelect } from "./utils/useCustomSelect"
 import { useCollection } from "./utils/useCollection"
+import { useIntegrations } from './utils/useIntegrations'
 
+const { closeConnections } = useIntegrations()
 const { getAllShared, getAll } = useCollection();
 const isLoaded = ref(false);
 const logoutUser = () => {
@@ -86,6 +88,7 @@ onUnmounted(() => {
   sharedRef.value && sharedRef.value()
   sharingRef.value && sharingRef.value()
   notificationsRef.value && notificationsRef.value()
+  closeConnections()
 })
 </script>
 
