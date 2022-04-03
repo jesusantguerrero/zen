@@ -102,13 +102,11 @@
 <script setup>
 import { onUnmounted, reactive } from "vue";
 import { useCollection } from "../../utils/useCollection";
-import { functions } from "../../utils/useFirebase";
 import { AtButton } from "atmosphere-ui";
 import TagsSelect from "../atoms/TagsSelect.vue";
 import {
-getIssues,
+ getIssues,
   getProjects,
-  getSites,
   parseJiraIssue,
 } from "../../domain/integrations/jira";
 import { ElNotification } from "element-plus";

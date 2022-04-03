@@ -13,6 +13,7 @@ import Settings from "./views/Settings.vue";
 import Privacy from "./views/Privacy.vue"
 import Terms from "./views/Terms.vue"
 import Notifications from "./views/Notifications.vue";
+import Collect from "./views/collect/index.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import { isAuthenticated, registerEvent, setScreen } from "./utils/useFirebase";
 
@@ -53,6 +54,11 @@ export const routes = [
     path: "/plan-ahead", 
     component: PlanAhead, 
     name: "planAhead" 
+  },
+  { 
+    path: "/collect", 
+    component: Collect, 
+    name: "collect" 
   },
   { 
     path: "/notifications", 

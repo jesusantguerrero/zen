@@ -76,10 +76,8 @@
 <script setup>
 import { ref, watch, reactive, inject } from "vue";
 import ModalBase from "../../molecules/ModalBase.vue";
-import { functions } from "../../../utils/useFirebase";
 import { ElNotification } from "element-plus";
 import { AtSteps, AtStep, AtButton } from "atmosphere-ui";
-import "atmosphere-ui/dist/style.css";
 import { getProjects, getSites } from "../../../domain/integrations/jira";
 import { useCollection } from "../../../utils/useCollection";
 

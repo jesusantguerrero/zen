@@ -1,9 +1,6 @@
 {
   "name": "zen",
-  "version": "2.0.0",
-   "engines": {
-    "node": "14"
-  },
+  "version": "2.1.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -30,11 +27,11 @@
     "luxon": "^1.25.0",
     "randomcolor": "^0.6.2",
     "vee-validate": "^4.4.7",
-    "vue": "^3.2.4",
+    "vue": "^3.2.31",
     "vue-draggable-next": "^2.0.1",
     "vue-final-modal": "^1.8.5",
     "vue-router": "^4.0.13",
-    "vue-temporal-components": "^0.1.5"
+    "vue-temporal-components": "^0.1.6"
   },
   "devDependencies": {
     "@babel/core": "^7.13.15",
@@ -44,9 +41,9 @@
     "@storybook/addon-postcss": "^2.0.0",
     "@storybook/jest": "^0.0.9",
     "@storybook/vue3": "^6.4.0-alpha.10",
-    "@tailwindcss/typography": "^0.4.0",
+    "@tailwindcss/typography": "^0.5.2",
     "@vitejs/plugin-vue": "^1.2.5",
-    "@vue/compiler-sfc": "^3.2.4",
+    "@vue/compiler-sfc": "^3.2.31",
     "@vueuse/head": "^0.7.5",
     "autoprefixer": "^10.2.3",
     "babel-loader": "^8.2.2",
@@ -59,10 +56,10 @@
     "sass-loader": "^10.1.1",
     "storybook-builder-vite": "0.0.10",
     "style-loader": "^2.0.0",
-    "tailwindcss": "^2.0.2",
+    "tailwindcss": "^3.0.23",
     "typescript": "^4.2.4",
     "uuid": "^8.3.2",
-    "vite": "^2.4.2",
+    "vite": "^2.9.0",
     "vite-plugin-md": "^0.11.0",
     "vite-plugin-pages": "^0.17.3",
     "vite-plugin-vue-layouts": "^0.3.1",
@@ -76,7 +73,7 @@
   },
   "keywords": [
     "Productivity",
-    "Promodoro",
+    "Pomodoro",
     "Tasks",
     "Eisenhower",
     "Matrix"

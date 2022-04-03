@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import "vue-temporal-components/dist/vue-temporal-components.css";
+import "vue-temporal-components/dist/style.css";
 import "./assets/scss/main.scss";
 import ElementPlus from 'element-plus'
 import 'element-plus/lib/theme-chalk/index.css'
