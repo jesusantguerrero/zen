@@ -33,7 +33,7 @@
             :time-data="formattedWeek"
           >
           <div class="ml-2 text-left">
-              <at-week-pager next-mode="week" v-model="state.date" v-model:week="state.week" />
+              <at-date-pager next-mode="week" v-model="state.date" v-model:dateSpan="state.week" />
           </div>
           </report-pomodoros>
       </div>

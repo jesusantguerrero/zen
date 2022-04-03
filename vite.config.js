@@ -1,8 +1,11 @@
 import vue from '@vitejs/plugin-vue'
 import markdown from 'vite-plugin-md';
-import Layouts from "vite-plugin-vue-layouts";
-import { resolve } from "path";
+import { dirname, join } from "path";
+import { fileURLToPath } from 'url';
 
+const _dirname = typeof __dirname !== 'undefined'
+  ? __dirname
+  : dirname(fileURLToPath(import.meta.url))
 /**
  * @type {import('vite').UserConfig}
  */
@@ -12,7 +15,6 @@ export default {
       include: [/\.vue$/,/\.md$/]
     }),
     markdown(),
-    Layouts()
   ],
   optimizeDeps: {
     include:[ 'firebase/app', 'firebase/analytics', 'firebase/messaging', 'firebase/auth'],
@@ -22,10 +24,10 @@ export default {
   build: {
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'index.html'),
-        nested: resolve(__dirname, 'pages/user-satisfaction.html'),
-        terms: resolve(__dirname, 'pages/terms.html'),
-        privacyPolicy: resolve(__dirname, 'pages/privacy-policy.html')
+        main: join(_dirname, 'index.html'),
+        nested: join(_dirname, 'pages/user-satisfaction.html'),
+        terms: join(_dirname, 'pages/terms.html'),
+        privacyPolicy: join(_dirname, 'pages/privacy-policy.html')
       }
     }
   },

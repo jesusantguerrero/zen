@@ -132,6 +132,16 @@ export function useTaskFirestore() {
         return matrixRef
     }
 
+    const getTaskByType = async (type) => {
+        const tasks = db.collection(collectionName)
+            .where("user_uid", "==", firebaseState.user.uid)
+            .where("type", "==", type)
+            .withConverter(taskConverter)
+            .orderBy("order")
+            
+        return tasks
+    }
+
     const taskConverter = {
         fromFirestore( snapshot, options) {
             const data = snapshot.data(options);

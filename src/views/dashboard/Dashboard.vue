@@ -50,12 +50,12 @@
         </header>
 
         <div class="mt-5">
-          <quick-add
+          <QuickAdd
             @saved="addTask"
             type="todo"
             :allow-edit="true"
           />
-          <task-group
+          <TaskGroup
             v-if="state.tabSelected == 'todo'"
             :show-title="false"
             title="Todo"
@@ -77,10 +77,9 @@
             @deleted="destroyTask"
             @edited="setTaskToEdit"
             @down="moveTo($event, 'schedule')"
-          >
-          </task-group>
+          />
 
-          <task-group
+          <TaskGroup
             v-if="state.tabSelected == 'schedule'"
             :show-title="false"
             title="Schedule"
@@ -97,8 +96,7 @@
             @edited="setTaskToEdit"
             @up="moveTo($event, 'todo')"
             @change="handleDragChanges"
-          >
-          </task-group>
+          />
         </div>
       </div>
 

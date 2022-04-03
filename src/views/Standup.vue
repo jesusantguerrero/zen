@@ -1,8 +1,10 @@
 <template>
 <div class="pt-24 mx-5 md:pt-28 md:mx-28">
   <div class="items-center justify-between mb-10 section-header md:flex">
-      <h2 class="text-2xl font-bold text-left text-gray-400">
-         Standup <span class="text-lg text-green-500">{{ state.humanDate }}</span>
+      <h2 class="text-2xl font-bold text-left text-gray-400 flex">
+         Standup 
+         <span class="text-lg text-green-500">{{ state.humanDate }}</span>
+         <integration-projects />
       </h2>
       <search-bar
         v-model="state.searchText"
@@ -83,6 +85,7 @@ import SearchBar from "../components/molecules/SearchBar.vue"
 import { format, formatRelative, startOfDay, subDays } from 'date-fns'
 import { enUS } from 'date-fns/locale'
 import TaskItem from '../components/molecules/TaskItem.vue'
+import IntegrationProjects from '../components/organisms/IntegrationProjects.vue'
 
 // state and ui
 const state = reactive({
@@ -148,7 +151,15 @@ const fetchTracked = (date) => {
           list.push({ ...track, uid: doc.id })
         }
       })
-      state.tracked = list
+      state.tracked = list.reduce((acc, cur) => {
+        const index = acc.findIndex(item => item.description === cur.description)
+        if (index === -1) {
+          acc.push(cur)
+        } else {
+          acc[index].duration += cur.duration
+        }
+        return acc
+      }, [])
     })
   })
 }
