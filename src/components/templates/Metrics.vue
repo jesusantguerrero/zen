@@ -28,14 +28,14 @@
 
       <!-- pomodoro stats -->
       <div class="w-9/12">
-          <report-pomodoros
+          <report-pomodoro
             :stats-by-day="statsByDay"
             :time-data="formattedWeek"
           >
           <div class="ml-2 text-left">
               <at-date-pager next-mode="week" v-model="state.date" v-model:dateSpan="state.week" />
           </div>
-          </report-pomodoros>
+          </report-pomodoro>
       </div>
     <!-- pomodoro stats --> 
   </div>
@@ -47,9 +47,9 @@ import { reactive, watch, ref, onUnmounted, computed } from 'vue'
 import { useTrackFirestore } from '../../utils/useTrackFirestore'
 import { useDateTime } from '../../utils/useDateTime'
 import { getMilliseconds } from '../../utils/useTracker'
-import ReportPomodoros from "../organisms/ReportPomodoros.vue"
+import ReportPomodoro from "../organisms/ReportPomodoro.vue"
 import { format } from 'date-fns'
-import { AtWeekPager } from 'atmosphere-ui';
+import { AtDatePager } from 'atmosphere-ui';
 // state and ui
 defineProps({
   title: {

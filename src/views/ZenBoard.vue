@@ -1,7 +1,7 @@
 <template>
   <div>
     <component 
-      :is="state.defaultDashboard" 
+      :is="Dashboard" 
       @update="updateDashboard" 
     />
   </div>
