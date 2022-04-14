@@ -5,7 +5,7 @@
             Pomodoro Stats
         </div>
 
-        <div class="flex">
+        <div class="flex flex-wrap justify-end ">
             <button 
                 class="w-24 px-2 py-2 ml-2 text-sm text-white bg-gray-400 rounded-3xl focus:outline-none hover:bg-gray-500" 
                 :class="{'bg-gray-600': state.selectedMode == key}"
@@ -14,15 +14,15 @@
                 @click="state.selectedMode = key">
                  {{ mode }}
             </button>
-            <slot />
+            <slot class="mt-2 -md:mt-0" />
         </div>
     </div>
     <div class="py-3 bg-white rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300" style="height: 400px" v-if="state.selectedMode == 'session'">
-        <report-chart data-class="graphics chart" id="chart-pomo-sessions" :data="completedPromodoros" :labels="timeData" :config="state.chartConfig.pomodoros"></report-chart>
+        <report-chart data-class="graphics chart" id="chart-pomo-sessions" :data="completedPomodoros" :labels="timeData" :config="state.chartConfig.pomodoros"></report-chart>
     </div>
 
     <div class="py-3 bg-white rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300" style="height: 400px" v-if="state.selectedMode== 'time'">
-        <report-chart data-class="graphics chart" id="chart-pomo-sessions" :data="durationPromodoros" :labels="timeData" :config="state.chartConfig.pomodoroDuration"></report-chart>
+        <report-chart data-class="graphics chart" id="chart-pomo-sessions" :data="durationPomodoros" :labels="timeData" :config="state.chartConfig.pomodoroDuration"></report-chart>
     </div>
 </div>
 </template>
@@ -74,7 +74,7 @@ const state = reactive({
 
 
 const {  formatDurationFromMs } = useDateTime()
-const completedPromodoros = computed(() => {
+const completedPomodoros = computed(() => {
   return statsByDay.value && statsByDay.value.map((stat) => {
     return stat ? [stat.pomodoro.started, stat.pomodoro.finished] : [0, 0]
   })
@@ -84,7 +84,7 @@ const durationConfig = computed({
     
 })
 
-const durationPromodoros = computed(() => {
+const durationPomodoros = computed(() => {
   return statsByDay.value && statsByDay.value.map((stat) => {
     return stat ? [stat.pomodoro.duration_ms] : [0]
   })

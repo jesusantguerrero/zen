@@ -1,7 +1,7 @@
 <template>
 <div>
-  <div class="flex pt-5 bg-white border border-gray-100 rounded-lg shadow-md dark:bg-gray-700 dark:border-gray-600">
-      <div class="w-3/12 px-5 pt-2 space-y-4 text-gray-400 bg-white dark:bg-gray-700 dark:border-gray-600">
+  <div class="md:flex pt-5 bg-white border border-gray-100 rounded-lg shadow-md dark:bg-gray-700 dark:border-gray-600">
+      <div class="md:w-3/12 px-5 pt-2 space-y-4 text-gray-400 bg-white dark:bg-gray-700 dark:border-gray-600">
         <div class="mb-10 font-bold text-left text-gray-500 dark:text-gray-300">
             General Stats
           </div>
@@ -27,7 +27,7 @@
       </div>
 
       <!-- pomodoro stats -->
-      <div class="w-9/12">
+      <div class="md:w-9/12 overflow-auto">
           <report-pomodoro
             :stats-by-day="statsByDay"
             :time-data="formattedWeek"
