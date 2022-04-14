@@ -15,13 +15,14 @@ import OldDashboard from "./dashboard/OldDashboard.vue"
 
 // state and ui
 const state = reactive({
-  isNewDashboard: true,
+  isNewDashboard: false,
   defaultDashboard: computed(() => state.isNewDashboard ? Dashboard : OldDashboard)
 });
     
 state.isNewDashboard = state.isNewDashboard || !firebaseState.settings || firebaseState.settings.is_new_dashboard;
     
 const updateDashboard = (isNew) => {
+  debugger
   updateSettings({
     is_new_dashboard: isNew,
   }).then(() => {
