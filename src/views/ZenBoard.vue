@@ -1,7 +1,7 @@
 <template>
   <div>
     <component 
-      :is="Dashboard" 
+      :is="state.defaultDashboard" 
       @update="updateDashboard" 
     />
   </div>
@@ -15,7 +15,7 @@ import OldDashboard from "./dashboard/OldDashboard.vue"
 
 // state and ui
 const state = reactive({
-  isNewDashboard: false,
+  isNewDashboard: true,
   defaultDashboard: computed(() => state.isNewDashboard ? Dashboard : OldDashboard)
 });
     

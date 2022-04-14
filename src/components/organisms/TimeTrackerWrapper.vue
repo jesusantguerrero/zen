@@ -16,7 +16,7 @@
 
     <el-dropdown trigger="click" @command="handleCommand" v-if="size == 'mini'">
         <button
-          class="text-sm px-2 rounded-md ml-4 text-gray-400 border-transparent cursor-pointer border-2 hover:border-gray-200 transition-colors hover:text-md hover:bg-gray-200 py-2  focus:outline-none"
+          class="px-2 py-2 ml-4 text-sm text-gray-400 transition-colors border-2 border-transparent rounded-md cursor-pointer hover:border-gray-200 hover:text-md hover:bg-gray-200 focus:outline-none"
         >
           <i class="fa fa-ellipsis-v"></i>
         </button>
@@ -54,14 +54,14 @@ export default {
   },
   props: {
       size: {
-    type: String
-  },
-  task: {
-    type: Object
-  },
-  timer: {
-    type: Object
-  }
+        type: String
+      },
+      task: {
+        type: Object
+      },
+      timer: {
+        type: Object
+      }
   },
   setup(props) {
     const { saveTrack, updateTrack } = useTrackFirestore();

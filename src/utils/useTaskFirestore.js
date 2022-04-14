@@ -137,7 +137,6 @@ export function useTaskFirestore() {
             .where("user_uid", "==", firebaseState.user.uid)
             .where("type", "==", type)
             .withConverter(taskConverter)
-            .orderBy("order")
             
         return tasks
     }
@@ -162,6 +161,7 @@ export function useTaskFirestore() {
         updateTaskBatch,
         deleteTask,
         getTaskByMatrix,
+        getTaskByType,
         getUncommittedTasks,
         getCommittedTasks,
         getAllFromUser,

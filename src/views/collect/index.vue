@@ -3,7 +3,12 @@
     <div class="pt-24 pb-20 max-w-7xl mx-auto">
       <h1>Thoughts</h1>
       <span>Your lonely cards</span>
-      <QuickAdd placeholder="Type anything to create a new note" mode="note" />
+      <QuickAdd 
+        placeholder="Type anything to create a new note" 
+        mode="note" 
+        :is-matrix="false"
+        @saved="addTask" 
+      />
        <TaskGroup
             :show-title="false"
             title="Notes"
@@ -11,11 +16,11 @@
             type="notes"
             placeholder="Click a task select"
             :allow-select="false"
-            :tasks="state.notes"
-            :search="searchOptions.text"
+            :tasks="notes"
             :show-select="true"
             :show-controls="true"
             :is-item-as-handler="true"
+            :search="searchText"
             :tags="selectedTags"
           />
     </div>
@@ -23,50 +28,25 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
 import QuickAdd from '../../components/molecules/QuickAdd.vue';
 import TaskGroup from '../../components/organisms/TaskGroup.vue';
-import { useTrackFirestore } from '../../utils/useTrackFirestore';
+import { getNextIndex } from '../../utils';
+import { registerEvent } from '../../utils/useFirebase';
+import { useSearchOptions } from '../../utils/useFuseSearch';
+import { useSnapshot } from '../../utils/useSnapshot';
+import { useTaskFirestore } from '../../utils/useTaskFirestore';
 
 const {
   saveTask,
-  getTasksByType,
+  getTaskByType,
 } = useTaskFirestore();
 
-const state = reactive({
-  notes: [],
-  notesRef: null,
-})
+const { list: notes } = useSnapshot(getTaskByType.bind(null, 'note'));
+const { searchText, selectedTags } = useSearchOptions() 
 
-const fetchNotes = (callback) => {
-  return  getTasksByType('notes').then(notesRef => {
-    const unsubscribe = notesRef.onSnapshot((snap) => {
-      const list = [];
-      snap.forEach((doc) => {
-        list.push({ ...doc.data(), uid: doc.id });
-      });
-      callback && callback(list);
-    });
-
-    return unsubscribe;
-  })
+const addTask = async (task) => {
+  task.order = getNextIndex(notes.value);
+  await saveTask(task);
+  registerEvent('quick_task_added');
 };
-
-onMounted(async() => {
-  state.notesRefs = await fetchNotes(notes => {
-    state.notes = notes;
-  });
-});
-
-// search
-const searchOptions = reactive({
-  text: "",
-  tags: [],
-});
-const selectedTags = computed(() => {
-  return searchOptions.tags.map((tag) => tag.uid);
-});
-
-const tags = inject("tags", []);
-
 </script>

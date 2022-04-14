@@ -50,6 +50,13 @@
         </header>
 
         <div class="mt-5">
+          <time-tracker-wrapper
+              ref="TimeTracker"
+              class="justify-center py-5 bg-white border rounded-md shadow-md dark:bg-gray-700 dark:border-gray-500" 
+              :task="currentTask" 
+              :toggle-size="true"
+              v-model:timer="currentTimer"
+            />
           <QuickAdd
             @saved="addTask"
             type="todo"
@@ -137,15 +144,14 @@
     <welcome-modal
       :is-open="state.isWelcomeOpen"
       @closed="closeWelcomeModal"
-    ></welcome-modal>
+    />
 
     <task-modal
       v-model:is-open="state.isTaskModalOpen"
       :task-data="taskToEdit"
       @saved="onEdittedTask"
       @closed="taskToEdit = null"
-    >
-    </task-modal>
+    />
   </div>
 </template>
 
