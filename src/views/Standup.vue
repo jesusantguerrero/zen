@@ -1,9 +1,9 @@
 <template>
 <div class="pt-24 mx-5 md:pt-28 md:mx-28">
   <div class="items-center justify-between mb-10 section-header md:flex">
-      <h2 class="text-2xl font-bold text-left text-gray-400 flex">
-         Standup 
-         <span class="text-lg text-green-500">{{ state.humanDate }}</span>
+      <h2 class="text-2xl font-bold text-left text-gray-400 flex items-center">
+         <span> Standup </span>
+         <span class="text-lg text-green-500 ml-2">{{ state.humanDate }}</span>
          <integration-projects />
       </h2>
       <search-bar

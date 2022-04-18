@@ -14,12 +14,7 @@
         </div>
       </div>
   
-        <mobile-menu>
-          <button class="mt-4 text-sm font-bold text-gray-400 cursor-pointer lg:text-lg hover:text-gray-600" @click.prevent="logout">
-            Logout
-          </button>
-        </mobile-menu>
-      <div class="hidden md:flex md:items-center" v-if="user">
+      <div class="flex items-center" v-if="user">
         <app-notification
             :notifications="unreadNotifications"
         />

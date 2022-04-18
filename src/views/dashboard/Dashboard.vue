@@ -50,6 +50,13 @@
         </header>
 
         <div class="mt-5">
+          <time-tracker-wrapper
+              ref="TimeTracker"
+              class="justify-center py-5 bg-white border rounded-md shadow-md dark:bg-gray-700 dark:border-gray-500" 
+              :task="currentTask" 
+              :toggle-size="true"
+              v-model:timer="currentTimer"
+            />
           <QuickAdd
             @saved="addTask"
             type="todo"
@@ -111,16 +118,6 @@
         </header>
 
         <div class="space-y-2 divide-gray-200 comming-up__list divide-solid">
-          <time-tracker-wrapper
-            ref="TimeTracker"
-            class="justify-center py-5 bg-white border rounded-md shadow-md dark:bg-gray-700 dark:border-gray-500" 
-            :task="currentTask" 
-            :toggle-size="true"
-            v-model:timer="currentTimer"
-            
-            >
-          </time-tracker-wrapper>
-
           <background-icon-card
             class="text-white bg-blue-400 dark:bg-blue-600 h-36"
             icon="fas fa-clock"
@@ -147,35 +144,14 @@
     <welcome-modal
       :is-open="state.isWelcomeOpen"
       @closed="closeWelcomeModal"
-    ></welcome-modal>
+    />
 
     <task-modal
       v-model:is-open="state.isTaskModalOpen"
       :task-data="taskToEdit"
       @saved="onEdittedTask"
       @closed="taskToEdit = null"
-    >
-    </task-modal>
-
-    <!-- mobile nav -->
-    <div
-      class="fixed bottom-0 left-0 flex w-full h-10 text-white bg-gray-600 md:hidden"
-    >
-      <div
-        class="flex items-center justify-center w-full h-full my-auto text-xl font-bold text-center"
-        :class="{ 'bg-gray-900': state.mobileMode == 'zen' }"
-        @click="state.mobileMode = 'zen'"
-      >
-        Zen
-      </div>
-      <div
-        class="flex items-center justify-center w-full h-full my-auto text-xl font-bold text-center"
-        :class="{ 'bg-gray-900': state.mobileMode == 'lineup' }"
-        @click="state.mobileMode = 'lineup'"
-      >
-        Lineup
-      </div>
-    </div>
+    />
   </div>
 </template>
 

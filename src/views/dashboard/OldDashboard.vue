@@ -203,6 +203,7 @@ import TaskView from "../../components/organisms/TaskView.vue";
 import TaskTrackView from "../../components/organisms/TaskTrackView.vue";
 import WelcomeModal from "../../components/organisms/modals/WelcomeModal.vue";
 import TaskModal from "../../components/organisms/modals/TaskModal.vue";
+import { getNextIndex } from "../../utils";
 
 const {
   saveTask,
@@ -351,11 +352,6 @@ onUnmounted(() => {
     todoRef.value();
   }
 });
-
-const getNextIndex = (list) => {
-  const index = Math.max(...list.map((item) => Number(item.order || 0))) + 1;
-  return index < 0 ? 0 : index;
-}
 
 const addTask = async (task) => {
   task.order = getNextIndex(state.todo);

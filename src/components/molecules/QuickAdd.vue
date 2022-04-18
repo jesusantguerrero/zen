@@ -92,7 +92,6 @@
 import { computed, reactive, onMounted, ref } from "vue"
 import { onClickOutside } from  "@vueuse/core"
 import { useDateTime } from "../../utils/useDateTime"
-import { useCollection } from "./../../utils/useCollection"
 import { useCustomSelect } from "./../../utils/useCustomSelect"
 import DateSelect from "../atoms/DateSelect.vue"
 import TagsSelect from "../atoms/TagsSelect.vue"
@@ -109,7 +108,11 @@ const props = defineProps({
       default: "Add quick task"
     },
     type: String,
-    allowEdit: Boolean
+    allowEdit: Boolean,
+    isMatrix: {
+      Type: Boolean,
+      default: true
+    }
 })
 const emit =  defineEmits({
   'saved': (task) => {}
@@ -120,6 +123,7 @@ const task = reactive({
   description: "",
   due_date: "",
   duration: "",
+  type: props.mode,
   tags: [],
   contacts: [],
   checklist: [],
@@ -128,7 +132,7 @@ const task = reactive({
   duration_ms: 0,
   done: false,
   commit_date: null,
-  matrix: props.type || "backlog",
+  matrix: props.isMatrix ? props.type || "backlog" : null,
 })
 
 // UI

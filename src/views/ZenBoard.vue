@@ -22,6 +22,7 @@ const state = reactive({
 state.isNewDashboard = state.isNewDashboard || !firebaseState.settings || firebaseState.settings.is_new_dashboard;
     
 const updateDashboard = (isNew) => {
+  debugger
   updateSettings({
     is_new_dashboard: isNew,
   }).then(() => {
