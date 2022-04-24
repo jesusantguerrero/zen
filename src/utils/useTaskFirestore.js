@@ -42,6 +42,7 @@ export function useTaskFirestore() {
             runRecurrence(task)
             return task.uid;
         })
+    
     }
 
     const saveTaskBatch = (tasks, uniqueKey = 'source_id') => {
@@ -150,8 +151,12 @@ export function useTaskFirestore() {
 
     const runRecurrence = (task) => {
         nextTick(() => {
-            const setReminder = functions.httpsCallable('setRecurrence');
-            setReminder(task);
+            try {
+                // const setReminder = functions.httpsCallable('setRecurrence');
+                // setReminder(task);
+            } catch (err) {
+                console.log(err, "HEre is the error")
+            }
         })
     }
 

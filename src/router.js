@@ -33,6 +33,7 @@ export const routes = [
 
   },
   { path: "/matrix", 
+    name: 'matrix',
     component: Matrix 
   },
   { 
@@ -53,7 +54,8 @@ export const routes = [
   { 
     path: "/plan-ahead", 
     component: PlanAhead, 
-    name: "planAhead" 
+    name: "planAhead",
+    redirect: { name: "matrix" },
   },
   { 
     path: "/collect", 

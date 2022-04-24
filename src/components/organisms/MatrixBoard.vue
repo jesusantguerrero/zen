@@ -79,11 +79,11 @@
             >
               <template #addForm v-if="!showHelp && allowAdd">
                 <div class="mb-4 quick__add">
-                  <quick-add 
+                  <QuickAdd 
                     @saved="addTask"
                     :allow-edit="true"
                     type="backlog"
-                  ></quick-add>
+                  />
                 </div>
               </template>
 
@@ -341,7 +341,7 @@ const getNextIndex = (list) => {
 };
 
 const addTask = (task) => {
-  task.order = getNextIndex(state.quadrants[task.matrix].tasks);
+  task.order = getNextIndex(state.quadrants[task.matrix || 'backlog'].tasks);
   const formattedTask = {...task}
   formattedTask.due_date = toISO(formattedTask.due_date)
   saveTask(formattedTask).then((uid) => {
