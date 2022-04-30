@@ -1,6 +1,6 @@
 <template>
   <div class="custom-container">
-    <div class="h-screen text-left md:flex grid-container">
+    <div class="h-screen text-left md:flex grid-container max-w-7xl mx-auto">
       <div
         class="pt-24 pb-20 md:block md:pl-28 md:pt-28"
         :class="[state.mobileMode == 'zen' ? 'block' : 'hidden']"
@@ -66,7 +66,7 @@
                       to="/plan-ahead"
                       class="hidden px-5 py-1 mr-2 text-center text-white bg-green-500 rounded-md shadow-sm lg:inline-block ring ring-green-400 dark:ring-green-600 ring-offset-0 dark:bg-green-700 hover:bg-green-400 dark:hover:bg-green-800"
                     >
-                      <i class="mr-2 fa fa-tasks"></i>
+                      <i class="mr-2 fa fa-tasks"/>
                       Plan Ahead
                     </router-link>
                   </div>
@@ -102,7 +102,7 @@
       </div>
 
       <summary-sider
-        class="absolute right-0 z-40 w-96 home-sider"
+        class="w-96 pt-24 pb-20 md:block md:pl-28 md:pt-28"
         :matrix="state.matrix"
         :standup="state.standup"
         :committed="state.committed"
@@ -497,9 +497,5 @@ export default {
 .grid-container {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 450px;
-}
-
-.home-sider {
-  top: 62.5px;
 }
 </style>
