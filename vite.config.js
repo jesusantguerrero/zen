@@ -38,6 +38,7 @@ export default {
     }
   },
   test: {
-    environment: 'happy-dom'
+    environment: 'happy-dom',
+    global: true
   }
 }
