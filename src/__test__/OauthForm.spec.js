@@ -16,6 +16,12 @@ describe("OauthForm", () => {
         await user.type(getByLabelText('Policy URL'), 'https://zenboard.app')
         await user.type(getByLabelText('Redirect URLs'), 'https://zenboard.app')
         await fireEvent.click(getByText('Save Application'))
-        expect(emitted().submit).toBeTruthy()
+        expect(emitted().submit[0]).toEqual([{ 
+            name: 'Neatlancer', 
+            description: 'Custom budget', 
+            website: 'https://zenboard.app', 
+            policy: 'https://zenboard.app', 
+            redirect: 'https://zenboard.app' 
+        }])
     })
 })

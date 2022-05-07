@@ -1,26 +1,25 @@
 <template>
 <div class="w-full">
-    <label :for="id">{{ label }}</label>
+    <label :for="id" class="text-sm font-bold text-gray-500">{{ label }}</label>
     <component
         :is="tag"
         ref="input"
         :id="id"
         :placeholder="label"
-        :value="value"
+        :value="modelValue"
         class="block w-full px-2 py-1 bg-transparent border-b border-gray-200 focus:outline-none focus:border-emerald-400"
-        @input="$emit('input', $event.target.value)"
+        @input="$emit('update:modelValue', $event.target.value)"
     />
     <small class="block text-red-400" v-if="errorMessage">{{ prettyError }}</small>
 </div>
 </template>
 
 <script>
-import { randomUUID } from "crypto";
 
 export default {
     name: "FormField",
     props: {
-        value: {
+        modelValue: {
             type: String,
             default: "",
         },
@@ -42,7 +41,7 @@ export default {
         },
     },
     watch: {
-        value(value) {
+        modelValue(value) {
             if (!value) {
                 this.$refs.input.value = "";
             }
@@ -50,7 +49,7 @@ export default {
     },
     data() {
         return {
-            id: randomUUID(),
+            id: Math.random().toString(16).slice(1),
         }
     },
     computed: {
