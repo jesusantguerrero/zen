@@ -1,4 +1,4 @@
-import DatePage from '@atoms/DatePage.vue';
+import DatePage from '~atoms/DatePage.vue';
 
 export default {
   title: 'Atoms/DatePage',

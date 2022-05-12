@@ -68,6 +68,14 @@ export const routes = [
     name: "notifications" 
   },
   {
+    path: "/timer",
+    component: () => import("./views/Timer.vue"),
+    name: "timer",
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
     path: "/pricing",
     component: () => import("./views/Pricing.vue"),
     name: "pricing",

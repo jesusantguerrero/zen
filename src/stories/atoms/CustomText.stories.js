@@ -1,4 +1,4 @@
-import CustomText from '@atoms/CustomText.vue';
+import CustomText from '~atoms/CustomText.vue';
 
 export default {
   title: 'Atoms/CustomText',

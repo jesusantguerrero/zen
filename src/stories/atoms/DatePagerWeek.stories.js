@@ -1,4 +1,4 @@
-import DatePagerWeek from '@atoms/DatePagerWeek.vue';
+import DatePagerWeek from '~atoms/DatePagerWeek.vue';
 
 export default {
   title: 'Atoms/DatePagerWeek',

@@ -1,4 +1,4 @@
-import TimeTrackerClock from '@molecules/TimeTrackerClock.vue';
+import TimeTrackerClock from '~molecules/TimeTrackerClock.vue';
 
 export default {
   title: 'Molecules/TimeTrackerClock',

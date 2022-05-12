@@ -17,9 +17,8 @@ export default {
     markdown(),
   ],
   optimizeDeps: {
-    include:[ 'firebase/app', 'firebase/analytics', 'firebase/messaging', 'firebase/auth'],
-    exclude: ["apexcharts", 'atmosphere-ui'],
-    link: ['atmosphere-ui']
+    include:[ 'firebase/app', 'atmosphere-ui', 'firebase/analytics', 'firebase/messaging', 'firebase/auth'],
+    exclude: ["apexcharts"],
   },
   build: {
     rollupOptions: {
@@ -36,5 +35,9 @@ export default {
       // Allow serving files from one level up to the project root
       allow: ['..']
     }
+  },
+  test: {
+    environment: 'happy-dom',
+    global: true
   }
 }

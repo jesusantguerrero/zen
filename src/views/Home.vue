@@ -1,9 +1,8 @@
 <template>
   <div class="custom-container">
-    <div class="h-screen text-left md:flex grid-container">
+    <div class="h-screen text-left md:flex grid-container mx-28">
       <div
-        class="pt-24 pb-20 md:block md:pl-28 md:pt-28"
-        :class="[state.mobileMode == 'zen' ? 'block' : 'hidden']"
+        class="block pt-24 pb-20 md:block md:pl-28 md:pt-28"
       >
         <div class="items-center justify-between mb-10 section-header md:flex">
           <h2
@@ -14,103 +13,49 @@
           </h2>
         </div>
 
-        <div class="flex space-x-10">
-          <div class="w-5/12">
-            <background-icon-card
-              class="overflow-auto text-left text-gray-400 bg-white border border-gray-100 h-46"
-              icon="fas fa-clock"
-              value="Quick Standup"
-            >
-              <template #content>
-                <div class="text-left">
-                  <h2 class="w-full mb-5 text-xl font-bold">Overdues</h2>
-                  <div class="h-40 space-y-2 overflow-auto ic-scroller">
-                    <p
-                      v-for="task in state.overdues"
-                      :key="`task-${task.id}`"
-                      class="flex items-start"
-                    >
-                      <MaterialIcon
-                        icon="check_circle"
-                        class="mr-2 text-green-400"
-                      />
-
-                      <span class="mr-2">
-                        {{ task.title }}
-                      </span>
-                      <span
-                        v-for="tag in task.tags"
-                        :class="tag.colors"
-                        class="px-2 text-white rounded-md"
-                      >
-                        {{ tag.name }}
-                      </span>
-                    </p>
-                  </div>
-                </div>
-              </template>
-            </background-icon-card>
-          </div>
-
-          <div class="w-7/12">
-            <background-icon-card
-              class="overflow-auto text-left text-gray-400 bg-white border h-46"
-              icon="fas fa-clock"
-              value="Quick Standup"
-            >
-              <template #content>
-                <div class="text-left">
-                  <div class="flex items-start justify-between mb-5">
-                    <h2 class="text-xl font-bold">Smart Standup</h2>
-                    <router-link
-                      to="/plan-ahead"
-                      class="hidden px-5 py-1 mr-2 text-center text-white bg-green-500 rounded-md shadow-sm lg:inline-block ring ring-green-400 dark:ring-green-600 ring-offset-0 dark:bg-green-700 hover:bg-green-400 dark:hover:bg-green-800"
-                    >
-                      <i class="mr-2 fa fa-tasks"></i>
-                      Plan Ahead
-                    </router-link>
-                  </div>
-                  <div class="h-40 space-y-2 overflow-auto ic-scroller">
-                    <p
-                      v-for="task in state.committed.list"
-                      :key="`task-${task.id}`"
-                      class="flex items-start"
-                    >
-                      <MaterialIcon
-                        icon="check_circle"
-                        class="mr-2 text-green-400"
-                      />
-
-                      <span class="mr-2">
-                        {{ task.title }}
-                      </span>
-                      <span
-                        v-for="tag in task.tags"
-                        :class="tag.colors"
-                        class="px-2 text-white rounded-md"
-                      >
-                        {{ tag.name }}
-                      </span>
-                    </p>
-                  </div>
-                </div>
-              </template>
-            </background-icon-card>
-          </div>
-        </div>
         <Metrics class="mt-10" />
       </div>
 
-      <summary-sider
-        class="absolute right-0 z-40 w-96 home-sider"
-        :matrix="state.matrix"
-        :standup="state.standup"
-        :committed="state.committed"
-        :is-loaded="state.tasksLoaded"
-      />
+      <aside class="w-full pt-24 pb-20 md:block md:pl-4 md:pt-28">
+        <summary-aside
+          :matrix="state.matrix"
+          :standup="state.standup"
+          :committed="state.committed"
+          :is-loaded="state.tasksLoaded"
+        />
+
+        <OverdueAside 
+          :committed="state.committed"
+          :overdue="state.overdue"
+        />
+      </aside>
     </div>
 
     <welcome-modal :is-open="state.isWelcomeOpen" @closed="closeWelcomeModal" />
+    <standup-modal
+        :is-open="!state.standup.length && state.matrix.todo.list.length"
+        @closed="completeDay()"
+      >
+          <template #content>
+            <div class="mx-10 text-left">
+                <p v-for="task in state.matrix.todo.list" :key="`task-${task.id}`">
+                    <label class="checkbox-label">
+                    <input
+                        type="checkbox"
+                        class="mr-5"
+                        name=""
+                        :id="task.id"
+                        v-model="task.done"
+                    />
+
+                    <span>
+                        {{ task.title }}
+                    </span>
+                    </label>
+                </p>
+            </div>
+        </template>
+    </standup-modal>
   </div>
 </template>
 
@@ -143,10 +88,11 @@ import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
 import { startOfYesterday } from "date-fns";
 import format from "date-fns/format";
 import subDays from "date-fns/subDays/index";
-import Metrics from "../components/templates/Metrics.vue";
-import SummarySider from "../components/templates/SummarySider.vue";
+import Metrics from "../components/templates/MetricsTemplate.vue";
+import SummaryAside from "../components/templates/SummarySider.vue";
 import MaterialIcon from "../components/atoms/MaterialIcon.vue";
 import Button from "../components/atoms/Button.vue";
+import OverdueAside from "../components/templates/OverdueAside.vue";
 
 export default {
   components: {
@@ -158,11 +104,12 @@ export default {
     TaskModal,
     QuickAdd,
     Metrics,
-    SummarySider,
+    SummaryAside,
     BackgroundIconCard,
     MaterialIcon,
     Button,
-  },
+    OverdueAside
+},
   setup() {
     const {
       saveTask,
@@ -181,25 +128,25 @@ export default {
         todo: {
           ref: null,
           list: [],
-          classes: "bg-green-50 ring-offset-green-200 text-green-400",
+          classes: "text-green-400",
           loaded: false,
         },
         schedule: {
           ref: null,
           list: [],
-          classes: "bg-blue-50 ring-offset-blue-200 text-blue-400",
+          classes: "text-blue-400",
           loaded: false,
         },
         delegate: {
           ref: null,
           list: [],
-          classes: "bg-yellow-50 ring-offset-yellow-200 text-yellow-400",
+          classes: "text-yellow-400",
           loaded: false,
         },
         delete: {
           ref: null,
           list: [],
-          classes: "bg-red-50 ring-offset-red-200 text-red-400",
+          classes: "text-red-400",
           loaded: false,
         },
       },
@@ -211,7 +158,6 @@ export default {
       isTaskModalOpen: false,
       isTimeTrackerModalOpen: true,
       track: null,
-      mobileMode: "zen",
       tabSelected: "todo",
       tabs: [
         {
@@ -266,17 +212,6 @@ export default {
       state.isWelcomeOpen ||
       !firebaseState.settings ||
       !firebaseState.settings.hide_welcome;
-
-    // search
-    const searchOptions = reactive({
-      text: "",
-      tags: [],
-    });
-    const selectedTags = computed(() => {
-      return searchOptions.tags.map((tag) => tag.uid);
-    });
-
-    const tags = inject("tags", []);
 
     // Edit task
     const taskToEdit = ref({});
@@ -472,13 +407,10 @@ export default {
       state,
       taskToEdit,
       setTaskToEdit,
-      selectedTags,
       onEdittedTask,
       onTaskUpdated,
       addTask,
       destroyTask,
-      tags,
-      searchOptions,
       closeWelcomeModal,
       completeDay,
       push,
@@ -496,10 +428,6 @@ export default {
 
 .grid-container {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 450px;
-}
-
-.home-sider {
-  top: 62.5px;
+  grid-template-columns: minmax(0, 1fr) 350px;
 }
 </style>

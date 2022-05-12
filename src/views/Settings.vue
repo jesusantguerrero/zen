@@ -9,26 +9,23 @@
           </h2>
           <ul class="w-full space-y-2">
             <li
-              v-for="item in menu" 
-              :key="item" 
+              v-for="(item, value) in state.menu" 
+              :key="value" 
               class="flex items-center h-10 px-5 font-bold capitalize transition-colors rounded-md cursor-pointer hover:bg-gray-200"
-              :class="{'bg-gray-200': selectedOption==item}"
-              @click="selectedOption=item">
-              {{ item }}
+              :class="{'bg-gray-200': state.selectedOption==value}"
+              @click="state.selectedOption=value">
+              {{ item.label }}
             </li>
           </ul>
         </div>
 
         <div class="w-9/12">
             <h2 class="mb-5 text-2xl font-bold text-left text-gray-400 capitalize">
-              {{ selectedOption }}
+              {{ state.selectedOption }}
             </h2>
           <div class="w-full bg-white border border-gray-200 rounded-md shadow-md">
             <div class="example-display__presenter">
-              <settings-profile v-if="selectedOption == 'profile'"/> 
-              <settings-tags v-if="selectedOption == 'tags'"/> 
-              <settings-notification v-if="selectedOption == 'Notification Preferences'"></settings-notification>
-              <settings-integrations v-if="selectedOption == 'Integrations'" />
+              <component :is="state.selectedComponent" />
             </div>
           </div>
         </div>
@@ -38,60 +35,41 @@
 </template>
 
 
-<script>
-import { computed, reactive, toRefs } from "vue"
+<script setup>
+import { computed, reactive } from "vue"
 import SettingsProfile from "../components/templates/SettingsProfile.vue"
 import SettingsTags from "../components/templates/SettingsTags.vue"
 import SettingsNotification from "../components/templates/SettingsNotification.vue"
-import { firebaseState, functions } from "../utils/useFirebase"
-import IconGithubLogo from "../components/atoms/icons/IconGithubLogo.vue"
 import SettingsIntegrations from "../components/templates/SettingsIntegrations.vue"
+import SettingsOauth from "../components/templates/SettingsOauth.vue"
 
-export default {
-  name: "Settings",
-  components: {
-    SettingsProfile,
-    SettingsTags,
-    SettingsNotification,
-    IconGithubLogo,
-    SettingsIntegrations
-},
-  setup() {
-    const state = reactive({
-      menu: [
-        // 'profile', 'tags', 
-      'Notification Preferences',
-      'Integrations'
-    ],
-      selectedOption: 'Notification Preferences',
-      proFeatures: [
-        'Dark Theme', 
-        'Month / Year Metrics', 
-        'Share Lists', 
-        'Allow Pictures',  
-        'Routines', 
-        'Comparison Metrics', 
-        'Voice',
-        'Weekly Planner'
-      ]
-    })
-
-    const connectJira = computed(() => {
-      const userbound = firebaseState.user.uid;
-      return `https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=umMvvT2NxqxNEnjWMlQ6EnudUiK0jnym&scope=offline_access%20read%3Ajira-user%20read%3Ajira-work%20write%3Ajira-work&redirect_uri=https%3A%2F%2Fzenboards.web.app%2Foauth2%2Fconnect%2Fjira&state=${userbound}&response_type=code&prompt=consent`;
-    })
-
-    const connectGithub = computed(() => {
-      const userbound = firebaseState.user.uid;
-      const redirectUri = encodeURIComponent(`${window.location.origin}/oauth2/connect/github`);
-      return `https://github.com/login/oauth/authorize?client_id=3c21758f1ac3d14ea284&redirect_uri=${redirectUri}&scope=user,repo&state=${userbound}`;
-    })
-
-    return {
-      ...toRefs(state),
-      connectJira,
-      connectGithub
+const state = reactive({
+  menu: {
+    profile: {
+      label: 'Profile',
+      component: SettingsProfile
+    }, 
+    tags: {
+      label: 'Tags',
+      component: SettingsTags
+    },
+    notifications: {
+      label: 'Notification Preferences',
+      component: SettingsNotification
+    },
+    integrations: {
+      label: 'Integrations',
+      component: SettingsIntegrations
+    },
+    oauth: {
+      label: 'Oauth',
+      component: SettingsOauth
     }
-  }
-}
+  },
+  selectedOption: 'notifications',
+  selectedComponent: computed(() => {
+    return state.menu[state.selectedOption].component
+  })
+})
+
 </script>

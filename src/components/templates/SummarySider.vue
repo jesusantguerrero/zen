@@ -1,91 +1,74 @@
 <template>
-<div class="px-8 pt-8 md:block md:mt-0">
-    <div class="space-y-5">
-    <!-- Plan ahead -->
-    <div class="py-4">
-        <div class="justify-between text-gray-500">
-            <h4 class="mb-0 font-bold"> Make a plan for today</h4>
-            <small class="text-gray-400">We suggest planning your daily work through plan ahead</small>
-        
-            <div class="flex space-x-2">
-            <router-link 
-                    to="/plan-ahead" 
-                    class="hidden w-full px-5 py-1 mt-5 mr-2 text-center text-white bg-gray-500 rounded-md shadow-sm lg:inline-block ring ring-gray-400 dark:ring-gray-600 ring-offset-0 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-800">
-                    <i class="mr-2 fa fa-tasks"></i>
-                    Start work
-              </router-link>
-
+<div class="px-8 pt-8 md:block md:mt-0 space-y-4">
+    <!-- Plan ahead card -->
+    <CardButton 
+        class="mt-4"
+        title="Plan ahead"
+        description="Prioritize your day"
+        @click="goTo('/plan-ahead')"
+    >
+        <template #icon>
+            <div class="rounded-full p-3 bg-gray-500 h-9 w-9 flex text-white items-center justify-center">
+                <i class="fa fa-tasks"/>
             </div>
-        </div>
-    </div>
-    <!-- Matrix summary -->
-    <div class="py-4 quick__add">
-        <h4 class="font-bold text-gray-500"> Matrix summary</h4>
-        <div class="grid gap-4 font-bold text-white lg:grid-cols-2">
-        <div class="flex items-center justify-center h-20 rounded-md shadow-md cursor-pointer ring ring-offset-2 ring-transparent" 
-            v-for="(matrix, matrixName) in matrix"
-            :key="matrixName"
-            :class="matrix.classes">
-            <span class="mr-2 capitalize">{{ matrixName}}</span>
-            ({{ matrix.list.length }})
-        </div>
-        </div>
-    </div>
+        </template>
+    </CardButton>
 
-    <!-- Shared -->
-        <div class="py-4 quick__add" v-if="false">
-            <div class="flex justify-between mb-5 font-bold text-gray-500">
-                <h4>
+    <!-- Matrix summary card-->
+    <article class="rounded-md border bg-white py-2 px-4">
+        <header>
+            <h4 class="font-bold text-gray-500 text-sm"> Matrix summary</h4>
+        </header>
+        <section class="flex mt-4">
+            <main class="flex items-center justify-center px-4">
+                <div class="rounded-full text-gray-500 border-4 h-24 w-24 text-center text-sm">
+                    <h5 class="">All</h5>
+                    <p class="text-4xl">
+                        {{ totalTasks }}
+                    </p>
+                </div>
+            </main>
+            <aside>
+                <p class="flex items-center justify-between cursor-pointer font-bold" 
+                    v-for="(matrix, matrixName) in matrix"
+                    :key="matrixName"
+                    :class="matrix.classes">
+                    <span class="mr-2 capitalize">{{ matrixName}}</span>
+                    {{ matrix.list.length }}
+                </p>
+            </aside>
+        </section>
+    </article>
+
+    <!-- Shared Card-->
+    <div class="rounded-md border bg-white py-2 px-4">
+        <div class="flex justify-between mb-5 font-bold text-gray-500">
+            <h4 class="text-sm">
                 Shared with me
-                </h4> 
-                <div class="items-center h-10 md:flex">
-                <input
-                    type="search"
-                    v-model.trim="searchOptions.text"
-                    class="w-full h-10 px-2 text-sm border-2 border-gray-200 rounded-md focus:outline-none"
-                    placeholder="Search contact"
-                />
-                </div>
-            </div>
-            <div class="flex space-x-2">
-                <div v-for="person in  shared" :key="person.uid" class="text-center cursor-pointer">
-                <el-avatar class="block"> {{ person.name }} </el-avatar>
-                </div>
+            </h4> 
+            <div class="items-center h-10 md:flex">
+            <input
+                type="search"
+                v-model.trim="searchText"
+                class="w-full h-10 px-2 text-sm border-2 border-gray-200 rounded-md focus:outline-none"
+                placeholder="Search contact"
+            />
             </div>
         </div>
-    <!-- End Shared -->
+        <div class="flex space-x-2">
+            <div v-for="person in  shared" :key="person.uid" class="text-center cursor-pointer">
+            <el-avatar class="block"> {{ person.name }} </el-avatar>
+            </div>
+        </div>
     </div>
-
-  <standup-modal
-    :is-open="!standup.length && matrix.todo.list.length"
-    @closed="completeDay()"
-  >
-      <template #content>
-        <div class="mx-10 text-left">
-            <p v-for="task in matrix.todo.list" :key="`task-${task.id}`">
-                <label class="checkbox-label">
-                <input
-                    type="checkbox"
-                    class="mr-5"
-                    name=""
-                    :id="task.id"
-                    v-model="task.done"
-                />
-
-                <span>
-                    {{ task.title }}
-                </span>
-                </label>
-            </p>
-        </div>
-    </template>
-  </standup-modal>
+    <!-- End Shared -->
 </div>
 </template>
 
 <script setup>
-    import BackgroundIconCard from "../molecules/BackgroundIconCard.vue";
-    import Button from "../atoms/Button.vue";
+    import { computed } from "vue";
+    import { useSearchOptions } from "../../utils/useFuseSearch";
+    import CardButton from "../molecules/CardButton.vue";
 
     const props = defineProps({
         matrix: {
@@ -100,10 +83,19 @@
             type: Array,
             required: true,
         },
-        isLoaded: {
-            type: Boolean,
-            default: false,
+        shared: {
+            type: Array,
+            default() {
+                return [];
+            },
         }
     })
 
+    const totalTasks = computed(() => {
+        return Object.values(props.matrix).reduce((acc, matrix) => {
+            return acc + matrix?.list?.length
+        }, 0)
+    })
+
+    const { searchText, selectedTags}  = useSearchOptions()  
 </script>
