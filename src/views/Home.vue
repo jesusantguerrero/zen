@@ -1,8 +1,8 @@
 <template>
   <div class="custom-container">
-    <div class="h-screen text-left md:flex grid-container max-w-7xl mx-auto">
+    <div class="h-screen text-left md:flex grid-container mx-28">
       <div
-        class="pt-24 pb-20 md:block md:pl-28 md:pt-28 block"
+        class="block pt-24 pb-20 md:block md:pl-28 md:pt-28"
       >
         <div class="items-center justify-between mb-10 section-header md:flex">
           <h2
@@ -88,7 +88,7 @@ import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
 import { startOfYesterday } from "date-fns";
 import format from "date-fns/format";
 import subDays from "date-fns/subDays/index";
-import Metrics from "../components/templates/Metrics.vue";
+import Metrics from "../components/templates/MetricsTemplate.vue";
 import SummaryAside from "../components/templates/SummarySider.vue";
 import MaterialIcon from "../components/atoms/MaterialIcon.vue";
 import Button from "../components/atoms/Button.vue";

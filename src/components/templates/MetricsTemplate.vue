@@ -1,7 +1,7 @@
 <template>
 <div>
-  <div class="md:flex pt-5 bg-white border border-gray-100 rounded-lg shadow-md dark:bg-gray-700 dark:border-gray-600">
-      <div class="md:w-3/12 px-5 pt-2 space-y-4 text-gray-400 bg-white dark:bg-gray-700 dark:border-gray-600">
+  <div class="pt-5 bg-white border border-gray-100 rounded-lg shadow-md md:flex dark:bg-gray-700 dark:border-gray-600">
+      <div class="px-5 pt-2 space-y-4 text-gray-400 bg-white md:w-3/12 dark:bg-gray-700 dark:border-gray-600">
         <div class="mb-10 font-bold text-left text-gray-500 dark:text-gray-300">
             General Stats
           </div>
@@ -27,13 +27,17 @@
       </div>
 
       <!-- pomodoro stats -->
-      <div class="md:w-9/12 overflow-auto">
+      <div class="overflow-auto md:w-9/12">
           <report-pomodoro
             :stats-by-day="statsByDay"
             :time-data="formattedWeek"
           >
           <div class="ml-2 text-left">
-              <at-date-pager next-mode="week" v-model="state.date" v-model:dateSpan="state.week" />
+              <at-date-pager 
+                next-mode="week" 
+                v-model="state.date" 
+                v-model:dateSpan="state.week" 
+              />
           </div>
           </report-pomodoro>
       </div>
@@ -75,19 +79,6 @@ const state = reactive({
 const  { getTracksByDates } = useTrackFirestore()
 
 const trackRef = ref(null);
-
-watch(() => state.week, (week) => {
-  getTracksByDates(week[0], week[6]).then(collectionRef => {
-      trackRef.value =  collectionRef.onSnapshot(snap => {
-      state.tracks = []
-      snap.forEach((doc) => {
-          state.tracks.push({...doc.data(), uid: doc.id });
-      });
-  })
-  return collectionRef;
-})
-})
-
 
 const { formatDurationFromMs } = useDateTime()
 const formattedTime = computed(() => {
@@ -173,10 +164,29 @@ const formattedWeek = computed(() => {
   })
 })
 
+const fetchTracks = (startDate, endDate) => {
+  return getTracksByDates(startDate, endDate).then(collectionRef => {
+        trackRef.value =  collectionRef.onSnapshot(snap => {
+        const tracks = []
+        snap.forEach((doc) => {
+          tracks.push({...doc.data(), uid: doc.id });
+        });
+        state.tracks = tracks;
+    })
+    return collectionRef;
+  })
+}
+
+watch(() => state.week , () => {
+  if (state.week) {
+    fetchTracks(state.week[0], state.week[6]);
+  }
+}, { immediate: true })
+
 onUnmounted(() => {
   if (trackRef.value) {
     trackRef.value()
-  }
+  } 
 });
 
 </script>

@@ -60,6 +60,7 @@
 import { computed, onBeforeUnmount, reactive, watch, ref} from "vue";
 import { Duration, Interval, DateTime } from "luxon";
 import { useTrackFirestore } from "./../../utils/useTrackFirestore";
+import { SESSION_MODES } from "./../../utils";
 import { usePromodoro } from "./../../utils/usePromodoro";
 import { useSlack } from "./../../utils/useSlack";
 import { firebaseState } from "./../../utils/useFirebase";
@@ -74,7 +75,17 @@ const props = defineProps({
   },
   currentTimer: {
     type: Object
-  }
+  },
+  trackableModes: {
+    type: Array,
+    default() {
+      return [
+        SESSION_MODES.WORK,
+        SESSION_MODES.REST,
+        SESSION_MODES.LONG_REST
+      ]
+    }
+  },
 })
 const emit = defineEmits({
   "update:currentTimer": (timer) =>  timer
@@ -87,6 +98,7 @@ const track = reactive({
   started_at: null,
   ended_at: null,
   type: "promodoro",
+  subtype: null,
   duration: null,
   target_time: null,
   completed: false
@@ -138,7 +150,6 @@ const state = reactive({
   durationTarget: null,
 });
 
-
 // UI
 const trackerIcon = computed(() => state.now ? 'far fa-stop-circle': 'far fa-play-circle' );
 const trackerMode = computed(() => state.modes[state.mode]);
@@ -155,8 +166,8 @@ const promodoroTotal = computed(() => {
 const currentStateColor = computed(() => {
   return state.modes[state.template[state.currentStep]].colorBg;
 });
-const isPromodoro = () => {
-  return state.mode == 'promodoro';
+const isTrackableMode = () => {
+  return props.trackableModes.includes(state.mode);
 }
 
 // Time manipulation
@@ -241,6 +252,7 @@ const createTrack = () => {
   track.task_uid = props.task.uid;
   track.description = props.task.title;
   track.target_time = state.durationTarget.toISO();
+  track.subtype = state.mode;
   const formData = { ...track }
   delete formData.currentTime
   saveTrack(formData)
@@ -251,7 +263,7 @@ const createTrack = () => {
 }
 
 const validatePlay = () => {
-  return isPromodoro() && props.task.title;
+  return isTrackableMode() && props.task.title;
 }
 
 const { setStatus } = useSlack();
@@ -262,7 +274,7 @@ const toggleTracker = () => {
 };
 
 const play = () => {
-  if (isPromodoro() && !validatePlay()) {
+  if (isTrackableMode() && !validatePlay()) {
     ElNotification({
       title: "Select a task",
         message: "Must select a task to start promodoro",
