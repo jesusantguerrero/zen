@@ -1,4 +1,4 @@
-import TabHeader from '@atoms/TabHeader.vue';
+import TabHeader from '~atoms/TabHeader.vue';
 
 export default {
   title: 'Atoms/TabHeader',

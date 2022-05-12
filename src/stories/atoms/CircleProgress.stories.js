@@ -1,4 +1,4 @@
-import CircleProgress from '@atoms/CircleProgress.vue';
+import CircleProgress from '~atoms/CircleProgress.vue';
 import { ref } from 'vue-demi';
 
 export default {

@@ -17,9 +17,8 @@ export default {
     markdown(),
   ],
   optimizeDeps: {
-    include:[ 'firebase/app', 'firebase/analytics', 'firebase/messaging', 'firebase/auth'],
-    exclude: ["apexcharts", 'atmosphere-ui'],
-    link: ['atmosphere-ui']
+    include:[ 'firebase/app', 'atmosphere-ui', 'firebase/analytics', 'firebase/messaging', 'firebase/auth'],
+    exclude: ["apexcharts"],
   },
   build: {
     rollupOptions: {

@@ -1,4 +1,4 @@
-import BadgeItem from '@atoms/BadgeItem.vue';
+import BadgeItem from '~atoms/BadgeItem.vue';
 
 export default {
   title: 'Atoms/BadgeItem',

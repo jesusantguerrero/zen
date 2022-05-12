@@ -1,4 +1,4 @@
-import TimeTrackerButton from '@atoms/tracker/TimeTrackerButton.vue';
+import TimeTrackerButton from '~atoms/tracker/TimeTrackerButton.vue';
 
 export default {
   title: 'Atoms/Tracker/TimeTrackerButton',

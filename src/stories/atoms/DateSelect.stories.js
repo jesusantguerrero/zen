@@ -1,4 +1,4 @@
-import DateSelect from '@atoms/DateSelect.vue';
+import DateSelect from '~atoms/DateSelect.vue';
 
 export default {
   title: 'Atoms/DateSelect',
