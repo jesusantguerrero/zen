@@ -14,3 +14,9 @@ export const handleSnapshot = (notesRef, callback) => {
 
     return unsubscribe;
 }
+
+export const SESSION_MODES = {
+  WORK: 'promodoro',
+  REST: 'rest',
+  LONG_REST: 'long'
+}
