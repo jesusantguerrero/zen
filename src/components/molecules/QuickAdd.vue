@@ -13,6 +13,7 @@
 
         <div class="w-full">
           <input 
+            ref="quickAddInput"
             type="text" 
             class="w-full px-2 focus:outline-none dark:bg-gray-700 dark:text-gray-300" 
             :placeholder="placeholder" 
@@ -229,6 +230,18 @@ const save = async () => {
   emit('saved', formData)
   clearForm()
 }
+
+const quickAddInput = ref(null)
+const focus = () => {
+  quickAddInput.value.click()
+  setTimeout(() => {
+    quickAddInput.value.focus()
+  }, 100)
+}
+
+defineExpose({
+  focus
+})
 
 const {list: tags, addToList: createTag, selectItem: addTag} = useCustomSelect(task, 'tags')
 const {list: contacts, addToList: createContact, selectItem: selectContact} = useCustomSelect(task, 'contacts')
