@@ -107,7 +107,7 @@
       >
         <template v-slot:description="{focusedTextClass, item: task, differenceInCalendarDays: days}">
            <div class="flex items-center h-full mx-2 text-left">
-            <span class="text-gray-400 capitalize" :class="state.quadrants[task.matrix].color">
+            <span class="text-gray-400 capitalize" :class="getMatrixColor(task.matrix)">
               {{ task.matrix}}:
             </span>
                {{ task.title }} 
@@ -263,13 +263,19 @@ const roadmapTasks = computed(() => {
     const filtered =  filteredList.value.map((task) => {
       task.start = task.created_at.toDate();
       task.end = new Date();
-      task.colorClass = state.quadrants[task.matrix].background
+      const matrix = task.matrix || 'backlog';
+      console.log(matrix)
+      task.colorClass = state.quadrants[matrix]?.background
       task.diff = differenceInCalendarDays(task.start, task.end)
       return task;
     })
 
     return orderBy(filtered, roadmapState.sortBy.name);
 })
+
+const getMatrixColor = (matrixName) => {
+  return state.quadrants[matrixName]?.color
+}
 
 // Tasks manipulation
 const { toISO } = useDateTime() 
