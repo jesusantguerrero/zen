@@ -17,7 +17,7 @@
           v-for="matrix in state.matrix" :key="matrix">
             <task-group
               v-if="!isLineUp || isLineUpMatrix(matrix)"
-              :title="matrix"
+              :title="getMatrixName(matrix)"
               :type="matrix"
               :search="search"
               :tasks="getMatrixTasks(matrix)"
@@ -157,6 +157,7 @@ import MatrixHelpView from "../molecules/MatrixHelpView.vue"
 import JetSelect from "../atoms/JetSelect.vue";
 import { orderBy } from "lodash-es"
 import { differenceInCalendarDays } from 'date-fns';
+import { firebaseState } from '../../utils/useFirebase';
 
 
 // state and ui
@@ -340,6 +341,11 @@ const getMatrixTasks = (matrix) => {
     })
 
     return search.value ? tasks : state.quadrants[matrix].tasks;
+}
+
+const getMatrixName = (matrix) => {
+  const label = firebaseState.settings[`matrix_${matrix}_name`]
+  return label || matrix
 }
 
 const getNextIndex = (list) => {
