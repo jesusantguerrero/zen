@@ -1,12 +1,6 @@
 <template>
-    <modal-base v-model:is-open="isOpenLocal">
-        <template #title>
-            <h1 class="px-5 py-2 text-xl font-bold text-left">
-                Pomodoro Configuration
-            </h1>
-        </template>
-
-        <template #body>
+    <section>
+        <article>
             <form action="" @submit.prevent="save" class="px-5 pt-5 mx-auto text-left">
                  <h4 class="font-bold">  Workflow Template </h4>
                  <div class="form-group">
@@ -50,7 +44,7 @@
                  </div>
 
                  <h4 class="font-bold">  Set Time (in minutes) </h4>
-                 <div class="flex">
+                 <div class="flex"  v-if="formData.modes">
                     <div class="form-group">
                         <label for="">
                             Session
@@ -85,39 +79,28 @@
                     </div>
                  </div>
             </form>
-        </template>
+        </article>
 
-        <template #footer>
+        <footer class="flex justify-end w-full px-5 py-3 ">
             <button  class="px-5 py-1 mr-2 text-white bg-gray-500 rounded-md focus:outline-none" @click="emit('cancel')">
                 Cancel
             </button>
             <button class="px-5 py-1 text-white bg-green-400 rounded-md focus:outline-none" @click="save()">
                 Save
             </button>
-        </template>
-    </modal-base>
+        </footer>
+    </section>
 </template>
 
 <script setup>
-import { reactive, ref, watch } from "vue";
 import { usePromodoro } from "./../../utils/usePromodoro";
-import ModalBase from "../molecules/ModalBase.vue";
-import { updateSettings } from "../../utils/useFirebase";
-import { usePush } from "../../utils/usePush"
-const { subscribeUserToPush } = usePush()
+import { firebaseState, updateSettings } from "../../utils/useFirebase";
+import { ElNotification } from "element-plus";
 
 // controls
-const { playSound, stopSound, promodoroState, requestNotification, showNotification } = usePromodoro()
+const { playSound, promodoroState, setSettings } = usePromodoro()
 
-const props = defineProps({
-    isOpen: {
-        type: Boolean
-    },
-    settings: {
-        type: Object,
-        required: true
-    }
-});
+setSettings(firebaseState.settings)
 
 const emit = defineEmits({
     saved: Object,
@@ -125,33 +108,7 @@ const emit = defineEmits({
     "update:isOpen": Boolean
 }) 
 
-const isOpenLocal = ref(false)
-
-watch(()=> props.isOpen, (isOpen) => {
-    isOpenLocal.value = isOpen;
-}, { immediate: true })
-
-watch(()=> isOpenLocal.value, (isOpen) => {
-    emit("update:isOpen", isOpen)
-})
-
-
-const formData = reactive({
-    template: [],
-    modes: {},
-    volume: 0,
-    pushSubscription: null
-})
-
-watch(()=> props.settings, (settings) => {
-    if (settings) {
-        formData.template = settings.template;
-        formData.modes = settings.modes;
-        formData.pushSubscription = settings.pushSubscription;
-        formData.volume = settings.volume || 100
-        promodoroState.volume = settings.volume || 100
-    }
-}, { immediate: true })
+const formData = promodoroState
 
 const save = () => {
         const settings = {};
@@ -165,6 +122,11 @@ const save = () => {
         settings.promodoro_alert_volume = promodoroState.volume;
         updateSettings(settings).then(() => {
             emit('saved', settings)
+            setSettings(settings)
+            ElNotification({
+                title: "Updated",
+                message: "Configuration Updated"
+            })
         })
 }
 

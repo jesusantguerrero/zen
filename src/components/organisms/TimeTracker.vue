@@ -28,31 +28,8 @@
             :key="stage.name"
           ></div>
         </div>
-      </div>
-
-      <el-dropdown trigger="click" @command="handleCommand">
-          <button
-            class="px-2 py-2 ml-4 text-sm text-gray-400 transition-colors border-2 border-transparent rounded-md cursor-pointer hover:border-gray-200 hover:text-md hover:bg-gray-200 focus:outline-none"
-          >
-            <i class="fa fa-ellipsis-v"></i>
-          </button>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item command="configuration" icon="el-icon-s-tools">Configuration</el-dropdown-item>
-            <el-dropdown-item command="nextmode" icon="el-icon-arrow-right">Next mode</el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-      
+      </div>     
     </div>
-
-    <time-tracker-modal
-      v-model:is-open="isModalOpen"
-      :settings="state"
-      @cancel="isModalOpen=false"
-      @saved="onSettingsSaved"
-    >
-    </time-tracker-modal>
   </div>
 </template>
 
@@ -66,7 +43,6 @@ import { useSlack } from "./../../utils/useSlack";
 import { firebaseState } from "./../../utils/useFirebase";
 import { ElMessageBox, ElNotification } from "element-plus";
 import { useTitle } from "@vueuse/core";
-import TimeTrackerModal from "./TimeTrackerModal.vue";
 
 const { saveTrack, updateTrack } = useTrackFirestore();
 const props = defineProps({
@@ -229,25 +205,6 @@ watch(() => promodoroState, (localState) => {
   setDurationTarget()
 }, { immediate: true })
 
-const onSettingsSaved = (settings) => {  
-  isModalOpen.value = false;
-  
-  if (state.now) {
-    ElNotification({
-      title: "Stop the timer",
-      message: "You must stop the timer before update configuration",
-      type: "info"
-    })
-    return
-  } 
-  
-  setSettings(settings)
-  ElNotification({
-    title: "Updated",
-    message: "Configuration Updated"
-  })
-  setDurationTarget()
-}
 const createTrack = () => {
   track.task_uid = props.task.uid;
   track.description = props.task.title;

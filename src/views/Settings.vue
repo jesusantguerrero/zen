@@ -42,6 +42,7 @@ import SettingsTags from "../components/templates/SettingsTags.vue"
 import SettingsNotification from "../components/templates/SettingsNotification.vue"
 import SettingsIntegrations from "../components/templates/SettingsIntegrations.vue"
 import SettingsOauth from "../components/templates/SettingsOauth.vue"
+import SettingsPomodoro from "../components/templates/SettingsPomodoro.vue"
 
 const state = reactive({
   menu: {
@@ -49,6 +50,10 @@ const state = reactive({
       label: 'Profile',
       component: SettingsProfile
     }, 
+    pomodoro: {
+      label: 'Pomodoro',
+      component: SettingsPomodoro
+    },
     tags: {
       label: 'Tags',
       component: SettingsTags

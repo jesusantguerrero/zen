@@ -13,6 +13,7 @@ export function useSettingsFirestore() {
     }
 
     const getUserSettings = async (uid) => {
+        debugger
         const settings = await db.collection(collectionName)
         .where('user_uid', '==', uid)
         .limit(1)
@@ -24,6 +25,7 @@ export function useSettingsFirestore() {
             })
             return docData;
         });
+        debugger
         return settings;
     }
 
