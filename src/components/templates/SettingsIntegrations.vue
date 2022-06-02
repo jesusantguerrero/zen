@@ -20,15 +20,27 @@
         }} </button>
       </a>
     </div>
+    <div class="flex items-center mt-5 integrations" @click.prevent="handleGoogleConnect">
+      <a href="javascript;;" class="inline-block w-48"> 
+        <icon-github-logo class="text-4xl"/>
+      </a>
+      <a href="javascript;;" class="inline-block w-48 ml-5"> 
+        <button class="px-2 py-2 text-white bg-gray-600 rounded-md focus:outline-none hover:bg-opacity-75"> {{
+          state.githubText
+        }} </button>
+      </a>
+    </div>
   </div>
 </template>
 
 
 <script setup>
 import { computed, onUnmounted, reactive } from "vue"
-import { firebaseState, } from "../../utils/useFirebase"
+import { firebaseState, functions, } from "../../utils/useFirebase"
 import IconGithubLogo from "../atoms/icons/IconGithubLogo.vue"
 import { useCollection } from "../../utils/useCollection"
+import { connectGoogle } from "../../domain/integrations/google";
+
 
 const state = reactive({
   integrations: [],
@@ -59,6 +71,15 @@ const connectGithub = computed(() => {
   return `https://github.com/login/oauth/authorize?client_id=3c21758f1ac3d14ea284&redirect_uri=${redirectUri}&scope=user,repo&state=${userbound}`;
 })
 
+const handleGoogleConnect = () => {
+  connectGoogle((credentials) => {
+    functions.httpsCallable('requestAccess')({
+      userId: firebaseState.user.uid,
+      ...credentials,
+      service: 'googleCalendar'
+    })
+  })
+}
 
 
 const { getAll } = useCollection();

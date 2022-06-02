@@ -4,5 +4,7 @@ export default {
     FIREBASE_APP_ID: import.meta.env.VITE_FIREBASE_APP_ID,
     FIREBASE_SENDER_ID: import.meta.env.VITE_FIREBASE_SENDER_ID,
     PUSH_PK: import.meta.env.VITE_PUSH_PK,
-    MEASUREMENT_ID: import.meta.env.VITE_MEASUREMENT_ID
+    MEASUREMENT_ID: import.meta.env.VITE_MEASUREMENT_ID,
+    GOOGLE_APP_KEY: import.meta.env.VITE_GOOGLE_APP_KEY,
+    GOOGLE_APP_CLIENT: import.meta.env.VITE_GOOGLE_CLIENT_ID,
 }
