@@ -145,7 +145,11 @@ export function useTaskFirestore() {
     const taskConverter = {
         fromFirestore( snapshot, options) {
             const data = snapshot.data(options);
-            return { ...data, due_date: !data.due_date ? null : data.due_date.toDate ? data.due_date.toDate() : data.due_date };
+            return { 
+                ...data, 
+                due_date: !data.due_date ? null : data.due_date.toDate ? data.due_date.toDate() : data.due_date,
+                projects: data.projects ? data.projects : [],
+            };
         }
     }
 

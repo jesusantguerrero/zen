@@ -108,8 +108,8 @@
         </div>
       </button>
 
-      <div class="flex justify-end w-full">
-          <tags-select
+      <div class="flex justify-end w-full space-x-2">
+          <TagsSelect
             v-model="task.tags"
             :tags="tags"
             :multiple="true" 
@@ -117,6 +117,18 @@
             @selected="addTag"
             @added="createTag"
           /> 
+          <ProjectSelect
+            v-model="task.projects"
+            :items="projects"
+            placeholder="project"
+            @update:modelValue="$emit('updated', {...task, tags: $event })" 
+            @selected="addProject"
+            @added="createProject"
+          >
+            <template #icon>
+              <i class="fa fa-folder-open"></i>
+            </template>
+          </ProjectSelect> 
       </div>
     </div>
 
@@ -130,7 +142,7 @@
           v-html="task.description"
         />
         <div class="mt-5 task-item__checklist">
-          <checklist-container :items="task.checklist" :task="task"  @updated="updateItems"></checklist-container>
+          <checklist-container :items="task.checklist" :task="task"  @updated="updateItems" />
         </div>
       </div>
     </el-collapse-transition>
@@ -139,26 +151,19 @@
 
 </template>
 
-<script>
+<script setup>
 import { toRefs, computed, reactive } from "vue"
 import { ElNotification } from "element-plus";
 import ChecklistContainer from "../organisms/ListContainer.vue"
 import PersonSelect from "../atoms/PersonSelect.vue"
+import ProjectSelect from "../atoms/ProjectSelect.vue"
 import TagsSelect from "../atoms/TagsSelect.vue"
 import DateSelect from "../atoms/DateSelect.vue"
 import TimeTrackerButton from "../atoms/tracker/TimeTrackerButton.vue";
 import { useDateTime } from "../../utils/useDateTime";
 import { useCustomSelect } from "../../utils/useCustomSelect";
 
-export default {
-  components: {
-    ChecklistContainer,
-    PersonSelect,
-    TagsSelect,
-    DateSelect,
-    TimeTrackerButton
-  },
-  props: {
+const props = defineProps({
     task: Object,
     type: String,
     currentTask: {
@@ -173,8 +178,9 @@ export default {
     isCompact: Boolean,
     allowRun: Boolean,
     allowUpdate: Boolean,
-  },
-  emits: {
+});
+
+const emit = defineEmits({
     deleted: Object,
     selected: Object,
     edited: Object,
@@ -185,128 +191,116 @@ export default {
     clone: Object,
     updated: Array,
     'toggle-timer': Object
-  },
-  setup(props, { emit }) {
-    const { task, currentTask, currentTimer} = toRefs(props)
-    const state = reactive({
-      timeTrackedLabel: computed(() => {
-        return task.value.duration_ms ||  "00:00:00"
-      }),
-      typeColor: computed(() => {
-        const colors = {
-          todo: `bg-green-100 dark:bg-gray-600 dark:border-gray-500 ${task.value.is_key ? 'text-gray-100 ' : 'text-green-500'}`,
-          schedule: 'bg-blue-100 dark:bg-gray-600 dark:border-gray-500 dark:text-blue-500 text-blue-500',
-          delegate: 'bg-yellow-100 dark:bg-gray-600 dark:border-gray-500 dark:text-yellow-400 text-yellow-500',
-          delete: 'bg-red-100 dark:bg-gray-600 dark:border-gray-500 text-red-400',
-          backlog: 'bg-gray-100 text-gray-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300'
-        }
+});
 
-        return colors[props.type] || colors['todo']
+const { task, currentTask, currentTimer} = toRefs(props)
+const state = reactive({
+  timeTrackedLabel: computed(() => {
+    return task.value.duration_ms ||  "00:00:00"
+  }),
+  typeColor: computed(() => {
+    const colors = {
+      todo: `bg-green-100 dark:bg-gray-600 dark:border-gray-500 ${task.value.is_key ? 'text-gray-100 ' : 'text-green-500'}`,
+      schedule: 'bg-blue-100 dark:bg-gray-600 dark:border-gray-500 dark:text-blue-500 text-blue-500',
+      delegate: 'bg-yellow-100 dark:bg-gray-600 dark:border-gray-500 dark:text-yellow-400 text-yellow-500',
+      delete: 'bg-red-100 dark:bg-gray-600 dark:border-gray-500 text-red-400',
+      backlog: 'bg-gray-100 text-gray-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300'
+    }
 
-      }),
-      keyStyles: computed(() => {
-        return task.value.is_key && props.type == 'todo' ? 'border-green-300 border-2 bg-green-500 text-white' : ''
-      }),
+    return colors[props.type] || colors['todo']
 
-      isDisabled: computed(() => {
-        return currentTimer.value && currentTimer.value.task_uid;
-      }),
+  }),
+  keyStyles: computed(() => {
+    return task.value.is_key && props.type == 'todo' ? 'border-green-300 border-2 bg-green-500 text-white' : ''
+  }),
 
-      isSelected: computed(( ) => {
-        return currentTask.value && currentTask.value.uid == task.value.uid
-      }),
+  isDisabled: computed(() => {
+    return currentTimer.value && currentTimer.value.task_uid;
+  }),
 
-      dateStates: computed(() => {
-        const { formatDate } = useDateTime()
-        const stateStyles = {
-          normal: {
-            color: 'text-gray-400',
-            title: 'due date'
-          },
-          due: {
-            color: 'text-blue-400',
-            title: 'due to today'
-          },
-          overdue: {
-            color: 'text-red-400',
-            title: 'Overdue'
-          }
-        }
+  isSelected: computed(( ) => {
+    return currentTask.value && currentTask.value.uid == task.value.uid
+  }),
 
-        let dateState = 'normal';
-        if (task.value.due_date == formatDate()) {
-          dateState = 'due' 
-        } else if (task.value.due_date && task.value.due_date < formatDate()) {
-          dateState = 'overdue'
-        }
-
-        return  stateStyles[dateState]
-      }),
-      isExpanded: false,
-      processing: false
-    })
-
-    task.value.contacts = task.value.contacts || [] 
-
-    const handleCommand = (commandName) => {
-      switch (commandName) {
-        case 'delete':
-          emit('deleted', task);
-          break;
-        case 'edit':
-          emit('edited', task)
-          break
-        case 'up':
-          emit('up', task)
-          break
-        case 'down':
-          emit('down', task)
-          break
-        case 'done':
-          emit('done', task)
-          break
-        case 'undo':
-          emit('undo', task)
-          break
-        case 'clone':
-          emit('clone', task)
-          break
-        case 'toggle-key':
-          emit('toggle-key', task)
-        default:
-          break;
+  dateStates: computed(() => {
+    const { formatDate } = useDateTime()
+    const stateStyles = {
+      normal: {
+        color: 'text-gray-400',
+        title: 'due date'
+      },
+      due: {
+        color: 'text-blue-400',
+        title: 'due to today'
+      },
+      overdue: {
+        color: 'text-red-400',
+        title: 'Overdue'
       }
     }
 
-    const toggleExpand = () => {
-      state.isExpanded = !state.isExpanded
+    let dateState = 'normal';
+    if (task.value.due_date == formatDate()) {
+      dateState = 'due' 
+    } else if (task.value.due_date && task.value.due_date < formatDate()) {
+      dateState = 'overdue'
     }
 
-    const updateItems = () => {
-      ElNotification({
-        title: 'changed'
-      })
-    }
+    return  stateStyles[dateState]
+  }),
+  isExpanded: false,
+  processing: false
+})
 
-    // Selects
-    const {list: tags, addToList: createTag, selectItem: addTag} = useCustomSelect(task, 'tags')
-    const {list: contacts, addToList: createContact, selectItem: selectContact} = useCustomSelect(task, 'contacts')
+task.value.contacts = task.value.contacts || [] 
 
-    return {
-      ...toRefs(state),
-      handleCommand,
-      toggleExpand,
-      updateItems,
-      tags,createTag, addTag,
-      contacts, createContact, selectContact
-    }
-
+const handleCommand = (commandName) => {
+  switch (commandName) {
+    case 'delete':
+      emit('deleted', task);
+      break;
+    case 'edit':
+      emit('edited', task)
+      break
+    case 'up':
+      emit('up', task)
+      break
+    case 'down':
+      emit('down', task)
+      break
+    case 'done':
+      emit('done', task)
+      break
+    case 'undo':
+      emit('undo', task)
+      break
+    case 'clone':
+      emit('clone', task)
+      break
+    case 'toggle-key':
+      emit('toggle-key', task)
+    default:
+      break;
   }
-
 }
 
+const toggleExpand = () => {
+  state.isExpanded = !state.isExpanded
+}
+
+const updateItems = () => {
+  ElNotification({
+    title: 'changed'
+  })
+}
+
+// Selects
+const {list: tags, addToList: createTag, selectItem: addTag} = useCustomSelect(task, 'tags')
+const {list: projects, addToList: createProject, selectItem: addProject} = useCustomSelect(task, 'projects')
+const {list: contacts, addToList: createContact, selectItem: selectContact} = useCustomSelect(task, 'contacts')
 
 
+const {dateStates} = toRefs(state)
 </script>
 
 

@@ -22,7 +22,6 @@ export const useIntegrations = () => {
                 connectionState.list = list;
                 connectionState.fetchedAt = Date.now();
                 connectionState.loading = false;
-                console.log('loaded');
             });
         }
     }
