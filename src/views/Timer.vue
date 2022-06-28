@@ -1,10 +1,8 @@
 <template>
 <div class="pt-24 mx-5 md:pt-28 md:mx-28">
   <div class="items-center justify-between mb-10 section-header md:flex">
-      <h2 class="text-2xl font-bold text-left text-gray-400 flex items-center">
-         <span> Timer </span>
-         <span class="text-lg text-green-500 ml-2">{{ state.humanDate }}</span>
-         <integration-projects />
+      <h2 class="flex items-center text-2xl font-bold text-left text-gray-400">
+         <span> Time Tracks </span>
       </h2>
       <search-bar
         v-model="state.searchText"
@@ -14,64 +12,18 @@
       />
   </div> 
 
-  <div class="">
-     <h4 class="block mb-2 font-bold text-left text-gray-500 capitalize md:text-xl">
-         {{ state.committedTitle }} ({{ state.committed.length }}) 
-    </h4>
-    <task-item 
-        v-for="(task, index) in state.committed"
-        :task="task"
-        :handle-mode="false"
-        :show-select="false"
-        :show-controls="false"
-        :is-item-as-handler="false"
-        :is-compact="true"
-        :class="''"
-        :allow-run="false"
-        :allow-update="false"
-        @undo="onUndo(task)"
-      />
-       
-    <div class="w-8/12 mx-auto mt-10 text-center md:w-6/12" v-if="!state.committed.length && state.isFirstLoaded">
-      <img src="../assets/undraw_following.svg" class="mx-auto w-12/12 md:w-5/12"> 
-      <div class="mt-10 font-bold text-gray-500 md:mt-5 dark:text-gray-300"> There's no tasks</div>
-    </div>
-    
-    <h5 class="block mt-5 mb-2 font-bold text-left text-gray-500 capitalize md:text-lg">
-        worked on ({{ state.tracked.length }}) 
-    </h5>
-    <div v-for="track in state.tracked">
-      <task-item
-        :task="parseTrack(track)" 
-        type="backlog"
-        :handle-mode="false"
-        :show-select="false"
-        :show-controls="false"
-        :is-item-as-handler="false"
-        :is-compact="true"
-        :class="''"
-        :allow-run="false"
-        :allow-update="false"
-      />
-    </div>
+  <div class="">     
+      <div v-for="(tracksByDate, trackDate) in groupedTracks" :key="trackDate" class="mb-12">
+          <div class="pl-16 py-4 bg-white w-full font-bold">
+              {{ formattedDate(trackDate) }}
+          </div>
 
-    <!-- <h5 class="block mt-5 mb-2 font-bold text-left text-green-500 capitalize md:text-lg">
-        Suggestions ({{ state.suggestions.length }}) 
-    </h5>
-    <div v-for="track in state.tracked">
-      <task-item
-        :task="parseTrack(track)" 
-        type="backlog"
-        :handle-mode="false"
-        :show-select="false"
-        :show-controls="false"
-        :is-item-as-handler="false"
-        :is-compact="true"
-        :class="''"
-        :allow-run="false"
-        :allow-update="false"
-      />
-    </div> -->
+          <TimeTrackerGroup
+              v-for="track in tracksByDate"
+              :time-entry="track"
+              :key="track.id"
+          />
+      </div>
   </div>
 </div>
 
@@ -82,10 +34,10 @@ import { reactive, watch, onUnmounted, computed } from 'vue'
 import { useTaskFirestore } from '../utils/useTaskFirestore'
 import { useTrackFirestore } from '../utils/useTrackFirestore'
 import SearchBar from "../components/molecules/SearchBar.vue"
-import { format, formatRelative, startOfDay, subDays } from 'date-fns'
+import { format, formatRelative, isToday, parse, startOfDay, subDays } from 'date-fns'
 import { enUS } from 'date-fns/locale'
-import TaskItem from '../components/molecules/TaskItem.vue'
-import IntegrationProjects from '../components/organisms/IntegrationProjects.vue'
+import TimeTrackerGroup from '../components/organisms/TimeTrackerGroup.vue'
+
 
 // state and ui
 const state = reactive({
@@ -98,7 +50,7 @@ const state = reactive({
   suggestionsRef: null,
   searchText: "",
   tags: [],
-  date: subDays(startOfDay(new Date()), 1),
+  date:startOfDay(new Date()),
   selectedTags: [],
   committedTitle: computed(() => { 
     const relativeLocale = {
@@ -122,84 +74,60 @@ const state = reactive({
   }),
 })
 
-// tasks manipulation
-const  { getCommittedTasks, updateTask, getTaskByMatrix } = useTaskFirestore()
-const fetchCommitted = (date) => {
-  return getCommittedTasks(date).then(committedRef => {
-    state.committedRef = committedRef.onSnapshot( snap => {
-      const list = []
-      snap.forEach(doc => {
-        list.push({ ...doc.data(), uid: doc.id })
-      })
-      state.isFirstLoaded = true;
-      state.committed = list;
-    })
-  })
-}
-
 // tracked tasks
 const  { getTracksByDates } = useTrackFirestore()
 const fetchTracked = (date) => {
-  const doneTasks = state.committed.map(task => task.title)
-  console.log(doneTasks)
   return getTracksByDates(date).then(trackedRef => {
     state.trackedRef = trackedRef.onSnapshot( snap => {
       const list = []
       snap.forEach(doc => {
         const track = doc.data()
-        if (!doneTasks.includes(track.description)) {
           list.push({ ...track, uid: doc.id })
-        }
       })
-      state.tracked = list.reduce((acc, cur) => {
-        const index = acc.findIndex(item => item.description === cur.description)
-        if (index === -1) {
-          acc.push(cur)
-        } else {
-          acc[index].duration += cur.duration
-        }
-        return acc
-      }, [])
-    })
-  })
-}
-
-// suggestions [todo + schedule]
-const fetchSuggestions = (date) => {
-  const doneTasks = state.committed.map(task => task.title)
-  console.log(doneTasks)
-  return getTracksByDates(date).then(trackedRef => {
-    state.trackedRef = trackedRef.onSnapshot( snap => {
-      const list = []
-      snap.forEach(doc => {
-        const track = doc.data()
-        if (!doneTasks.includes(track.description)) {
-          list.push({ ...track, uid: doc.id })
-        }
-      })
-      state.tracked = list
+      state.tracked = list;
     })
   })
 }
 
 watch(() => state.date , async () => {
- await fetchCommitted(state.date);
-}, { immediate: true })
-
-watch(() => state.committed , async () => {
  await fetchTracked(state.date)
 }, { immediate: true })
 
-const onUndo = (task) => {
-  task.tracks = [];
-  task.commit_date = null;
-  task.done = false;
-  delete task.duration_ms;
+const groupedTracks = computed(() => {
+    const trackGroup = {};
 
-  updateTask(task).then(() => {
-    state.committed = state.committed.filter(localTask => task.uid != localTask.uid);
-  })
-};
+    state.tracked.forEach(track => {
+        const date = format(track.started_at.toDate(), "yyyy-MM-dd");
+        if (!track.ended_at) return
+
+        if (!trackGroup[date]) {
+            trackGroup[date] = {
+                [track.description]: {
+                    id: `group-${track.id}`,
+                    description: track.description,
+                    tracks: [track]
+                }
+            };
+        } else {
+            if (!trackGroup[date][track.description]) {
+                trackGroup[date][track.description] = {
+                        id: `group-${track.id}`,
+                        description: track.description,
+                        tracks: [track]
+                };
+            } else {
+                trackGroup[date][track.description].tracks.push(track);
+            }
+        }
+    });
+    return trackGroup;
+});
+
+
+const formattedDate = (date) => {
+    const dateT = parse(date, 'yyyy-MM-dd', new Date());
+    return isToday(dateT) ? 'Today' : format(dateT, 'E, dd LLL yyyy')
+}
 
 const parseTrack = (track) => {
   return {

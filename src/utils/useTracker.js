@@ -1,4 +1,5 @@
 import { computed, ref, watch} from "vue";
+import { format } from "date-fns"
 import { useDateTime } from "./useDateTime"
 
 const { formatDurationFromMs } = useDateTime()
@@ -42,3 +43,22 @@ export function useTracker(taskRef, currentTimerRef) {
 }
 
 export const getMilliseconds = timeReducer
+
+export const formatDateToTime = (firebaseDate) => {
+    if (!firebaseDate) return "--"
+    return format(firebaseDate.toDate(), "HH:mm:ss");
+}
+
+export const durationFromMs = (ms) => {
+    const date = new Date(ms);
+    return date
+        .toISOString()
+        .slice(11, -2)
+        .split(":")
+        .map(unit => {
+            return Math.round(unit)
+                .toString()
+                .padStart(2, "0");
+        })
+        .join(":");
+}

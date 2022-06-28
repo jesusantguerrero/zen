@@ -9,11 +9,11 @@
           </h2>
           <ul class="w-full space-y-2">
             <li
-              v-for="(item, value) in state.menu" 
-              :key="value" 
+              v-for="(item) in settingsMenu" 
+              :key="item.name" 
               class="flex items-center h-10 px-5 font-bold capitalize transition-colors rounded-md cursor-pointer hover:bg-gray-200"
-              :class="{'bg-gray-200': state.selectedOption==value}"
-              @click="state.selectedOption=value">
+              :class="{'bg-gray-200': state.selectedOption==item.name}"
+              @click="state.selectedOption=item.name">
               {{ item.label }}
             </li>
           </ul>
@@ -42,13 +42,25 @@ import SettingsTags from "../components/templates/SettingsTags.vue"
 import SettingsNotification from "../components/templates/SettingsNotification.vue"
 import SettingsIntegrations from "../components/templates/SettingsIntegrations.vue"
 import SettingsOauth from "../components/templates/SettingsOauth.vue"
+import SettingsPomodoro from "../components/templates/SettingsPomodoro.vue"
+import SettingsMatrixVue from "../components/templates/SettingsMatrix.vue"
 
 const state = reactive({
   menu: {
     profile: {
       label: 'Profile',
-      component: SettingsProfile
+      component: SettingsProfile,
     }, 
+    pomodoro: {
+      label: 'Pomodoro',
+      component: SettingsPomodoro,
+      active: true
+    },
+    matrix: {
+      label: 'Matrix',
+      component: SettingsMatrixVue,
+      active: true
+    },
     tags: {
       label: 'Tags',
       component: SettingsTags
@@ -59,17 +71,32 @@ const state = reactive({
     },
     integrations: {
       label: 'Integrations',
-      component: SettingsIntegrations
+      component: SettingsIntegrations,
+      active: true
     },
     oauth: {
       label: 'Oauth',
       component: SettingsOauth
     }
   },
-  selectedOption: 'notifications',
+  selectedOption: '',
   selectedComponent: computed(() => {
     return state.menu[state.selectedOption].component
   })
 })
+
+const settingsMenu = computed(() => {
+  return Object.entries(state.menu)
+    .filter(([_name, item]) => item.active)
+    .map(([name, item]) => {
+      return {
+        ...item,
+        name
+      }
+    })
+})
+
+
+state.selectedOption = settingsMenu.value[0].name
 
 </script>

@@ -88,7 +88,12 @@
 
         <div class="divide-y-2 divide-gray-200 comming-up__list dark:divide-gray-600 dark:text-gray-300 divide-solid">
           <div class="mb-4 quick__add">
-            <quick-add @saved="addTask" type="todo" :allow-edit="true" />
+            <QuickAdd 
+              @saved="addTask" 
+              type="todo" 
+              :allow-edit="true"
+              ref="quickAdd" 
+            />
           </div>
           <div class="pt-4">
             <div class="flex tab-header "> 
@@ -161,7 +166,7 @@
     <task-modal
       v-model:is-open="state.isTaskModalOpen"
       :task-data="taskToEdit"
-      @saved="onEdittedTask"
+      @saved="onEditedTask"
       @closed="taskToEdit = null"
     >
     </task-modal>
@@ -187,7 +192,7 @@
 </template>
 
 <script setup>
-import { inject, nextTick, onUnmounted, reactive, ref, watch, toRefs } from "vue";
+import { inject, nextTick, onUnmounted, reactive, ref, watch, toRefs, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessageBox, ElNotification } from "element-plus";
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
@@ -204,6 +209,7 @@ import TaskTrackView from "../../components/organisms/TaskTrackView.vue";
 import WelcomeModal from "../../components/organisms/modals/WelcomeModal.vue";
 import TaskModal from "../../components/organisms/modals/TaskModal.vue";
 import { getNextIndex } from "../../utils";
+import { useMagicKeys } from "@vueuse/core";
 
 const {
   saveTask,
@@ -222,17 +228,12 @@ const state = reactive({
   showReminder: false,
   isWelcomeOpen: false,
   isTaskModalOpen: false,
-  isTimeTrackerModalOpen: true,
   track: null,
   mobileMode: "zen",
   tabSelected: 'todo'
 });
 
 state.isWelcomeOpen = state.isWelcomeOpen || !firebaseState.settings || !firebaseState.settings.hide_welcome;
-
-const toggleReminder = () => {
-  state.showReminder = !state.showReminder;
-};
 
 // search
 const tags = inject("tags", []);
@@ -261,20 +262,11 @@ const setTaskToEdit = (task) => {
   state.isTaskModalOpen = true;
 };
 
-const onEdittedTask = (task) => {
+const onEditedTask = (task) => {
   const index = state[task.matrix].findIndex((localTask) => localTask.uid == task.uid);
   state[task.matrix][index] = { ...task };
   taskToEdit.value = null;
 };
-
-const setLastUsedTask = () => {
-  if (firebaseState.settings && firebaseState.settings.last_task_uid) {
-    const lastTask = state.todo.find((task) => task.uid == firebaseState.settings.last_task_uid);
-    if (lastTask) {
-      setCurrentTask(lastTask);
-    }
-  }
-}
 
 watch(currentTask, () => {
   if (currentTask.value.uid) {
@@ -340,7 +332,6 @@ const getMatrix = (matrix) => {
 
 const scheduleRef = ref(null);
 const todoRef = ref(null);
-const committed = ref(null);
 
 todoRef.value = getMatrix("todo");
 scheduleRef.value = getMatrix("schedule");
@@ -428,6 +419,14 @@ const handleDragChanges = (e, matrix) => {
     );
   }
 };
+
+//  magic keys
+const { Shift_k} = useMagicKeys();
+const quickAdd = ref(null)
+watch(Shift_k, () => {
+    quickAdd.value.focus();
+})
+
 </script>
 
 <style scoped>

@@ -156,7 +156,6 @@ export default {
       showSummary: true,
       isWelcomeOpen: false,
       isTaskModalOpen: false,
-      isTimeTrackerModalOpen: true,
       track: null,
       tabSelected: "todo",
       tabs: [

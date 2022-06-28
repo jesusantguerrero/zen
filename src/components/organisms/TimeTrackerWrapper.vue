@@ -45,12 +45,10 @@ import { usePromodoro } from "./../../utils/usePromodoro";
 import { firebaseState } from "./../../utils/useFirebase";
 import { ElNotification } from "element-plus";
 import TimeTrackerClock from "../molecules/TimeTrackerClock.vue";
-import TimeTrackerModal from "./TimeTrackerModal.vue";
 
 export default {
   components: {
     TimeTrackerClock,
-    TimeTrackerModal
   },
   props: {
       size: {
