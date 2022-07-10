@@ -50,7 +50,7 @@
         </header>
 
         <div class="mt-5">
-          <time-tracker-wrapper
+          <TimeTrackerWrapper
               ref="TimeTracker"
               class="justify-center py-5 bg-white border rounded-md shadow-md dark:bg-gray-700 dark:border-gray-500" 
               :task="currentTask" 
@@ -235,16 +235,6 @@ const selectedTags = computed(() => {
 
 const tags = inject("tags", []);
 
-// Current task
-const currentTask = ref({});
-const TimeTracker = ref(null)
-const setCurrentTask = (task) => {
-  currentTask.value = task;
-  nextTick(() => {
-    TimeTracker.value.togglePlay()
-  })
-};
-
 // Edit task
 const taskToEdit = ref({});
 const setTaskToEdit = (task) => {
@@ -315,7 +305,8 @@ const onTaskUpdated = (task) => {
 };
 
 // Timer
-const currentTimer = ref({});
+const currentTimer = inject('currentTimer')
+const currentTask = inject('currentTask')
 
 // Tasks manipulation
 const getMatrix = (matrix) => {

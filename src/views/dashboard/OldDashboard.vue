@@ -9,11 +9,6 @@
           <h1 class="text-2xl font-bold text-gray-400 md:block dark:text-gray-300">
             Main task
           </h1>
-
-          <time-tracker 
-            :task="currentTask" 
-            v-model:currentTimer="currentTimer"
-          />
         </header>
 
         <div class="mt-5">
@@ -210,6 +205,7 @@ import WelcomeModal from "../../components/organisms/modals/WelcomeModal.vue";
 import TaskModal from "../../components/organisms/modals/TaskModal.vue";
 import { getNextIndex } from "../../utils";
 import { useMagicKeys } from "@vueuse/core";
+import { useGlobalTracker } from "../../utils/useGlobalTracker";
 
 const {
   saveTask,
@@ -244,10 +240,7 @@ const { filteredList: filteredSchedule } = useFuseSearch(searchText, schedule, s
 const { filteredList: filteredTodos } = useFuseSearch(searchText, todo, selectedTags);
 
 // Current task
-const currentTask = ref({});
-const setCurrentTask = (task) => {
-  currentTask.value = task;
-};
+const { currentTask, currentTimer, setCurrentTask } = useGlobalTracker()
 
 const onClone = (task) => {
   const data = state.todo.sort( (a, b) => a.created_at.toDate() < b.created_at.toDate() ? 1 : -1);
@@ -312,9 +305,6 @@ const onTaskUpdated = (task) => {
     });
   });
 };
-
-// Timer
-const currentTimer = ref({});
 
 // Tasks manipulation
 const getMatrix = (matrix) => {

@@ -1,10 +1,12 @@
 <template>
-  <div class="text-center">
-      <app-header :user="firebaseState.user" class="z-50" @logout="logoutUser" v-if="firebaseState.user"/>
-      <router-view> </router-view>
-      <integrations-bar v-if="firebaseState.user" />
-      <mobile-menu-bar />
-  </div>
+  <TrackerProvider :user="firebaseState.user">
+    <div class="text-center">
+        <app-header :user="firebaseState.user" class="z-50" @logout="logoutUser" v-if="firebaseState.user"/>
+        <router-view> </router-view>
+        <integrations-bar v-if="firebaseState.user" />
+        <mobile-menu-bar />
+    </div>
+  </TrackerProvider>
 </template>
 
 <script setup>
@@ -16,6 +18,7 @@ import { useCustomSelect } from "./utils/useCustomSelect"
 import { useCollection } from "./utils/useCollection"
 import { useIntegrations } from './utils/useIntegrations'
 import MobileMenuBar from './components/organisms/mobile/MobileMenuBar.vue'
+import TrackerProvider from './components/TrackerProvider.vue'
 
 const { closeConnections } = useIntegrations()
 const { getAllShared, getAll } = useCollection();
@@ -44,7 +47,6 @@ const sharedRef = ref(null)
 const shared = ref([])
 const sharingRef = ref(null)
 const sharing = ref([])
-
 
 const getShared = (name, queryRef, queryRefValue) => {
   queryRef.value = getAllShared(name).onSnapshot(snap => {

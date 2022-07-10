@@ -16,6 +16,11 @@
       </div>
   
       <div class="flex items-center" v-if="user">
+        <time-tracker
+            :show-label="false"
+            :task="currentTask" 
+            v-model:currentTimer="currentTimer"
+        />
         <app-notification
             :notifications="unreadNotifications"
         />
@@ -60,6 +65,9 @@ import MenuItem from "../molecules/MenuItem.vue";
 import MobileMenu from "./MobileMenu.vue";
 import AppNotification from "../organisms/AppNotification.vue";
 import { useRouter } from "vue-router";
+import { useGlobalTracker } from "../../utils/useGlobalTracker";
+import TimeTracker from "./TimeTracker.vue";
+
 
 const props = defineProps({
   user: {
@@ -77,6 +85,8 @@ const initHeadway = () => {
   window.Headway && Headway.init(HW_config)
 }
 
+
+const { currentTimer, currentTask } = useGlobalTracker()
 watch(() => user.value, (userData) => {
   if (userData) {
     initHeadway()

@@ -3,7 +3,7 @@
     class="text-center"
   >
     <div class="flex items-center justify-between text-2xl font-bold">
-      <div class="mr-2 text-sm"   :class="`${trackerMode.color} ${trackerMode.colorBorder}`" >
+      <div class="mr-2 text-sm"  v-if="showLabel" :class="`${trackerMode.color} ${trackerMode.colorBorder}`" >
             {{ trackerMode.text }}
       </div>
       <div 
@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, reactive, watch, ref} from "vue";
+import { computed, onBeforeUnmount, reactive, watch, ref, onUnmounted} from "vue";
 import { Duration, Interval, DateTime } from "luxon";
 import { useTrackFirestore } from "./../../utils/useTrackFirestore";
 import { SESSION_MODES } from "./../../utils";
@@ -62,6 +62,10 @@ const props = defineProps({
       ]
     }
   },
+  showLabel: {
+    type: Boolean,
+    default: true
+  }
 })
 const emit = defineEmits({
   "update:currentTimer": (timer) =>  timer
@@ -205,6 +209,7 @@ watch(() => promodoroState, (localState) => {
   setDurationTarget()
 }, { immediate: true })
 
+
 const createTrack = () => {
   track.task_uid = props.task.uid;
   track.description = props.task.title;
@@ -220,7 +225,7 @@ const createTrack = () => {
 }
 
 const validatePlay = () => {
-  return isTrackableMode() && props.task.title;
+  return isTrackableMode() && (props.task.title || track.description);
 }
 
 const { setStatus } = useSlack();
@@ -236,7 +241,7 @@ const play = () => {
       title: "Select a task",
         message: "Must select a task to start promodoro",
         type: "info"
-      })
+    })
     return  
   }
   
@@ -253,6 +258,28 @@ const play = () => {
     state.now = new Date();
   }, 100);
 };
+
+const resume = () => {
+    track.uid = props.currentTimer.uid;
+    track.started_at = props.currentTimer.started_at;
+    track.task_uid = props.currentTimer.task_uid;
+    track.description = props.currentTimer.description;
+    track.target_time = props.currentTimer.target_time;
+    track.subtype = props.currentTimer.subtype;
+    track.completed = false
+    state.durationTarget = Duration.fromISO(props.currentTimer.target_time)
+    state.timer = setInterval(() => {
+      state.now = new Date();
+    }, 100);
+}
+
+watch(() => props.currentTimer, (timer) => {
+  timer.started_at && resume()
+}, { immediate : true })
+
+onUnmounted(() => {
+  clearInterval(state.timer)
+})
 
 const stop = (shouldCallNextMode = true, silent) => {
   track.ended_at = new Date();
