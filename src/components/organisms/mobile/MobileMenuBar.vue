@@ -1,5 +1,5 @@
 <template>
-<div class="flex w-full fixed bottom-0 h-14 bg-gray-900 rounded-t-2xl pt-2 lg:hidden">
+<div class="fixed bottom-0 flex w-full pt-2 bg-gray-900 h-14 rounded-t-2xl lg:hidden">
     <div v-for="item in menuItems" class="w-full">
     <div>
         <router-link :to="item.link" v-if="item.link">
@@ -35,7 +35,7 @@ const menuItems = [
         name: 'board',
         label: 'Zen',
         icon: IconAccessTime,
-        link: '/zenboard'
+        link: '/lineup'
     },
     {
         name: 'standup',

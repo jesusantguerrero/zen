@@ -2,61 +2,7 @@
   <div class="pt-24 pb-20 mx-5 md:pt-28 md:mx-28">
     <div class="text-left md:flex">
       <div
-        class="zen__view md:block md:w-8/12 md:mr-20"
-        :class="[state.mobileMode == 'zen' ? 'block' : 'hidden']"
-      >
-        <header class="flex justify-between">
-          <h1 class="text-2xl font-bold text-gray-400 md:block dark:text-gray-300">
-            Main task
-          </h1>
-        </header>
-
-        <div class="mt-5">
-          <quick-add
-            v-if="state.showReminder"
-            mode="reminder"
-            type="reminder"
-            class="zen__reminder"
-            title="Things bear in mind after the zen"
-            placeholder="Add a reminder"
-          />
-
-          <task-view
-            :task-data="currentTask"
-            :current-timer="currentTimer"
-            @done="onDone"
-            @removed="onRemoved"
-            @updated="onTaskUpdated"
-          >
-            <template #empty v-if="!currentTask.title">
-              <div class="w-8/12 mx-auto mt-10 text-center md:w-6/12">
-                <img
-                  src="../../assets/undraw_following.svg"
-                  class="mx-auto w-12/12 md:w-7/12"
-                />
-                <div class="mt-10 font-bold text-gray-500 md:mt-5 dark:text-gray-300">
-                  Go to
-                  
-                  <router-link to="/plan-ahead" class="mr-1 text-green-400 transition-colors border-dashed cursor-pointer font-bolder dark:text-green-500 dark:hover:text-green-400 hover:text-green-500"
-                    >
-                    <i class="fa fa-tasks"></i>
-                    Plan Ahead
-                    </router-link> or select item from 
-                    <span class="text-gray-400 border-gray-400 font-bolder dark:text-white"
-                    >Todo
-                    <i class="fa fa-arrow-right"></i>
-                  </span>
-                </div>
-              </div>
-            </template>
-          </task-view>
-          <task-track-view :task="currentTask" :current-timer="currentTimer">
-          </task-track-view>
-        </div>
-      </div>
-
-      <div
-        class="zen__comming-up lineup md:block md:mt-0 md:w-4/12"
+        class="zen__comming-up lineup md:block md:mt-0 md:w-8/12"
         :class="[state.mobileMode == 'lineup' ? 'block' : 'hidden']"
       >
         <header class="items-center justify-between mb-2 overflow-hidden font-bold text-gray-400 md:flex">
@@ -187,25 +133,24 @@
 </template>
 
 <script setup>
-import { inject, nextTick, onUnmounted, reactive, ref, watch, toRefs, watchEffect } from "vue";
+import { inject, nextTick, onUnmounted, reactive, ref, watch, toRefs } from "vue";
 import { useRouter } from "vue-router";
-import { ElMessageBox, ElNotification } from "element-plus";
-import { useTaskFirestore } from "../../utils/useTaskFirestore";
-import { useTrackFirestore } from "../../utils/useTrackFirestore";
-import { firebaseState, registerEvent, updateSettings } from "../../utils/useFirebase";
-import { useFuseSearch, useSearchOptions } from "../../utils/useFuseSearch";
-import { startFireworks } from "../../utils/useConfetti";
-import TagsSelect from "../../components/atoms/TagsSelect.vue"
-import TaskGroup from "../../components/organisms/TaskGroup.vue";
-import QuickAdd from "../../components/molecules/QuickAdd.vue";
-import TimeTracker from "../../components/organisms/TimeTracker.vue";
-import TaskView from "../../components/organisms/TaskView.vue";
-import TaskTrackView from "../../components/organisms/TaskTrackView.vue";
-import WelcomeModal from "../../components/organisms/modals/WelcomeModal.vue";
-import TaskModal from "../../components/organisms/modals/TaskModal.vue";
-import { getNextIndex } from "../../utils";
 import { useMagicKeys } from "@vueuse/core";
-import { useGlobalTracker } from "../../utils/useGlobalTracker";
+import { ElMessageBox, ElNotification } from "element-plus";
+import { useTaskFirestore } from "../utils/useTaskFirestore";
+import { useTrackFirestore } from "../utils/useTrackFirestore";
+import { firebaseState, registerEvent, updateSettings } from "../utils/useFirebase";
+import { useFuseSearch, useSearchOptions } from "../utils/useFuseSearch";
+import { startFireworks } from "../utils/useConfetti";
+import TagsSelect from "../components/atoms/TagsSelect.vue"
+import TaskGroup from "../components/organisms/TaskGroup.vue";
+import QuickAdd from "../components/molecules/QuickAdd.vue";
+import TaskView from "../components/organisms/TaskView.vue";
+import TaskTrackView from "../components/organisms/TaskTrackView.vue";
+import WelcomeModal from "../components/organisms/modals/WelcomeModal.vue";
+import TaskModal from "../components/organisms/modals/TaskModal.vue";
+import { getNextIndex } from "../utils";
+import { useGlobalTracker } from "../utils/useGlobalTracker";
 
 const {
   saveTask,

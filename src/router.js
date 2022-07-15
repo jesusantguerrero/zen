@@ -1,7 +1,7 @@
 import Landing from "./views/landing/index.vue";
 import Login from "./views/auth/Login.vue";
 import Home from "./views/Home.vue";
-import ZenBoard from "./views/ZenBoard.vue";
+import Lineup from "./views/Lineup.vue";
 import Matrix from "./views/Matrix.vue";
 import Standup from "./views/Standup.vue";
 import Metrics from "./views/Metrics.vue";
@@ -27,9 +27,9 @@ export const routes = [
     component: Home,
   },
   { 
-    path: "/zenboard", 
-    name: "zenboard",
-    component: ZenBoard,
+    path: "/lineup", 
+    name: "lineup",
+    component: Lineup,
 
   },
   { path: "/matrix", 

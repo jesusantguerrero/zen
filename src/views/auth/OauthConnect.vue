@@ -42,7 +42,7 @@ const openConfiguration = () => {
 
 const { push } = useRouter();
 const redirectToHome = () => {
-  push({ path: "/zenboard" });
+  push({ path: "/lineup" });
 }
 
 const registerConnection = () => {
@@ -51,11 +51,11 @@ const registerConnection = () => {
      if (route.params.service) {
         openConfiguration();
      } else {
-       push({ path: "/zenboard" });
+       push({ path: "/lineup" });
      }
   }).catch(error => {
     console.log(error);
-    push({ path: "/zenboard" });
+    push({ path: "/lineup" });
   });
 }
 </script>

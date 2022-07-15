@@ -7,15 +7,14 @@
         <router-link class="text-2xl font-bold dark:text-gray-300 dark:hover:text-white zen" to="/"> Zen.</router-link>
         <div class="hidden md:flex md:items-center md:ml-4" v-if="user">
           <!-- <menu-item class="pl-2 mx-2" to="/home" icon="dashboard"> Home </menu-item> -->
-          <menu-item class="pl-2 mx-2" to="/zenboard" icon="schedule">Zenboard </menu-item>
-          <menu-item class="px-2 ml-2" to="/standup" icon="history">Stand Up</menu-item>
-          <menu-item class="px-2 mx-2" to="/matrix" icon="grid_view">Matrix</menu-item>
-          <menu-item class="px-2 mx-2" to="/metrics" icon="grid_view">Metrics</menu-item>
-          <menu-item class="px-2 mx-2" to="/timer" icon="grid_view">Timer</menu-item>
+          <menu-item class="pl-2 mx-2" :to="item.to" icon="schedule" v-for="item in menu">
+            {{ item.label }}
+          </menu-item>
         </div>
       </div>
   
       <div class="flex items-center" v-if="user">
+        <at-field-check label="Big Picture" :value="isMenuMode('bigPicture')" @update:modelValue="toggleMenuMode()" />
         <time-tracker
             :show-label="false"
             :task="currentTask" 
@@ -62,12 +61,12 @@
 <script setup>
 import { computed, toRefs, onMounted, watch, inject } from "vue";
 import MenuItem from "../molecules/MenuItem.vue";
-import MobileMenu from "./MobileMenu.vue";
 import AppNotification from "../organisms/AppNotification.vue";
 import { useRouter } from "vue-router";
 import { useGlobalTracker } from "../../utils/useGlobalTracker";
+import { useMenu } from "../../domain/app/menus";
 import TimeTracker from "./TimeTracker.vue";
-
+import { AtFieldCheck } from "atmosphere-ui"
 
 const props = defineProps({
   user: {
@@ -84,7 +83,6 @@ const emit = defineEmits({
 const initHeadway = () => {
   window.Headway && Headway.init(HW_config)
 }
-
 
 const { currentTimer, currentTask } = useGlobalTracker()
 watch(() => user.value, (userData) => {
@@ -130,6 +128,9 @@ const notifications = inject('notifications', [])
 const unreadNotifications = computed(() => {
   return notifications.value.filter(not => !not.read_at)
 })
+
+//  Menu 
+const { menu, toggleMenuMode, isMenuMode } = useMenu()
 
 // logout
 const logout = () => {

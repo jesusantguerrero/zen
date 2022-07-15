@@ -149,7 +149,7 @@
     <task-modal
       v-model:is-open="state.isTaskModalOpen"
       :task-data="taskToEdit"
-      @saved="onEdittedTask"
+      @saved="onEditedTask"
       @closed="taskToEdit = null"
     />
   </div>
@@ -180,6 +180,7 @@ import BackgroundIconCard from "../../components/molecules/BackgroundIconCard.vu
 import TimeTrackerWrapper from "../../components/organisms/TimeTrackerWrapper.vue";
 import WelcomeModal from "../../components/organisms/modals/WelcomeModal.vue";
 import TaskModal from "../../components/organisms/modals/TaskModal.vue";
+import { useGlobalTracker } from "../../utils/useGlobalTracker";
 
 const {
   saveTask,
@@ -243,13 +244,16 @@ const setTaskToEdit = (task) => {
   state.isTaskModalOpen = true;
 };
 
-const onEdittedTask = (task) => {
+const onEditedTask = (task) => {
   const index = state[task.matrix].findIndex(
     (localTask) => localTask.uid == task.uid
   );
   state[task.matrix][index] = { ...task };
   taskToEdit.value = null;
 };
+
+// Current task
+const { currentTask, currentTimer, setCurrentTask } = useGlobalTracker()
 
 const setLastUsedTask = () => {
   if (firebaseState.settings && firebaseState.settings.last_task_uid) {
@@ -304,9 +308,6 @@ const onTaskUpdated = (task) => {
   });
 };
 
-// Timer
-const currentTimer = inject('currentTimer')
-const currentTask = inject('currentTask')
 
 // Tasks manipulation
 const getMatrix = (matrix) => {
