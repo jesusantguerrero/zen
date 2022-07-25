@@ -76,7 +76,8 @@ const state = reactive({
     },
     oauth: {
       label: 'Oauth',
-      component: SettingsOauth
+      component: SettingsOauth,
+      active: true
     }
   },
   selectedOption: '',

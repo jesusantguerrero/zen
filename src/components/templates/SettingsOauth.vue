@@ -20,6 +20,7 @@ import { onUnmounted, reactive } from "vue"
 import { useCollection } from "../../utils/useCollection"
 import OauthForm from '../molecules/OauthForm.vue'
 import { AtButton } from "atmosphere-ui"
+import { functions } from "../../utils/useFirebase";
 
 const state = reactive({
   applications: [],
@@ -39,8 +40,9 @@ const generateOauth = () => {
 const { getAll, save } = useCollection();
 
 const submit = (formData) => {
-  save('applications', formData).then(() => {
+  functions.httpsCallable('createApplication')(formData).then((res) => {
     state.isCreating = false;
+    console.log(res)
   })
 }
 

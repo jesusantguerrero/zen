@@ -9,7 +9,6 @@ import "firebase/performance"
 import "firebase/storage"
 import CONFIG from "../config/";
 import { useSettingsFirestore } from "./useSettingsFirestore"
-import { add } from "date-fns";
 
 const { getUserSettings, updateUserSettings } = useSettingsFirestore()
 const firebaseConfig = {

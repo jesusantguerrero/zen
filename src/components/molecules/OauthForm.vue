@@ -1,6 +1,6 @@
 <template>
-    <form @submit.prevent="onSubmit">
-        <h1>Oauth Form</h1>
+    <form @submit.prevent="onSubmit" class="py-4">
+        <h4 class="mb-4 font-bold">Create an Application</h4>
         <template v-for="(formRow, rowName) in schema">
             <div v-if="formRow.section" class="flex">
                 <FormField 
@@ -20,9 +20,9 @@
                 v-model="formData[rowName]" 
             />
         </template>
-        <div class="flex justify-between mt-5">
+        <div class="flex justify-between mt-4">
             <AtButton type="secondary" rounded @click.prevent="$emit('cancel')" attr-type="button"> Back</AtButton>
-            <AtButton type="success" @click="onSubmit()" rounded >Save Application</AtButton>
+            <AtButton type="success" rounded >Save Application</AtButton>
         </div>
     </form>
 </template>
