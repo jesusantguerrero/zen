@@ -199,7 +199,6 @@ const state = reactive({
   showReminder: false,
   isWelcomeOpen: false,
   isTaskModalOpen: false,
-  track: null,
   mobileMode: "zen",
   tabSelected: "todo",
   tabs: [

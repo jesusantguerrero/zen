@@ -13,7 +13,7 @@ const props = defineProps({
 })
 const { getRunningTrack } = useTrackFirestore()
 // Todo use pinia for this
-const currentTimer = ref({})
+const currentTimer = ref(null)
 const currentTask = ref({});
 
 const setCurrentTask = (task) => {
