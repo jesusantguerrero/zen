@@ -15,11 +15,12 @@
   
       <div class="flex items-center" v-if="user">
         <at-field-check label="Big Picture" :value="isMenuMode('bigPicture')" @update:modelValue="toggleMenuMode()" />
-        <time-tracker
+        <TimeTracker
             :show-label="false"
             :task="currentTask" 
-            v-model:currentTimer="currentTimer"
-        />
+        >
+          <AtTimer :task="currentTask" :show-label="false" :timer="currentTimer" @stopped="updateTrack" @started="createTrack" @tick="updateTitle" />
+        </TimeTracker>
         <app-notification
             :notifications="unreadNotifications"
         />
@@ -67,6 +68,7 @@ import { useGlobalTracker } from "../../utils/useGlobalTracker";
 import { useMenu } from "../../domain/app/menus";
 import TimeTracker from "./TimeTracker.vue";
 import { AtFieldCheck } from "atmosphere-ui"
+import { Timer as AtTimer } from "vue-temporal-components"
 
 const props = defineProps({
   user: {
