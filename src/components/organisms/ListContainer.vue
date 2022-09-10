@@ -58,7 +58,7 @@
 <script setup>
 import { onClickOutside } from "@vueuse/core";
 import { ElNotification } from "element-plus";
-import { useTaskFirestore } from "../../utils/useTaskFirestore"
+import { useTaskFirestore } from "../../_features/tasks"
 import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { VueDraggableNext as Draggable } from "vue-draggable-next"
 

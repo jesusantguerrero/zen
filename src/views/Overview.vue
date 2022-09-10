@@ -240,10 +240,10 @@
 import { inject, nextTick, onUnmounted, reactive, ref, watch, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { ElNotification } from "element-plus";
-import { useTaskFirestore } from "../utils/useTaskFirestore";
-import { useDateTime } from "../utils/useDateTime";
-import { useTrackFirestore } from "../utils/useTrackFirestore";
-import { firebaseState, updateSettings } from "../utils/useFirebase";
+import { useTaskFirestore } from "../_features/tasks";
+import { useDateTime } from "../composables/useDateTime";
+import { useTrackFirestore } from "../_features/tracks";
+import { firebaseState, updateSettings } from "../_features/app/useFirebase";
 import { startFireworks } from "../utils/useConfetti";
 import BadgeItem from "../components/atoms/BadgeItem.vue";
 import Button from "../components/atoms/Button.vue";

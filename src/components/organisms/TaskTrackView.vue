@@ -25,9 +25,9 @@
 
 <script setup>
 import { computed, toRefs, watch } from "vue";
-import { useTracker } from "../../utils/useTracker";
-import { useDateTime } from "../../utils/useDateTime";
-import { useTaskFirestore } from "../../utils/useTaskFirestore";
+import { useTracker } from "../../composables/useTracker";
+import { useDateTime } from "../../composables/useDateTime";
+import { useTaskFirestore } from "../../_features/tasks";
 import { ElNotification } from "element-plus";
 
 const { updateTask } = useTaskFirestore()

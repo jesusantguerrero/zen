@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ref} from "vue";
-import { updateSettings, firebaseInstance, firebaseState } from "./useFirebase"
+import { firebaseState } from "../app/useFirebase"
 
 export function useSlack() {
    

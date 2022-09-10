@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { db, firebaseState, functions } from "./useFirebase";
+import { db, firebaseState, functions } from "../app/useFirebase";
 import { nextTick } from "vue";
 const collectionName = "tasks";
 

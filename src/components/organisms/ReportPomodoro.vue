@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { useDateTime } from "../../utils/useDateTime";
+import { useDateTime } from "../../composables/useDateTime";
 import { reactive, toRefs, computed } from "vue";
 import ReportChart from "./ReportChart.vue"
 

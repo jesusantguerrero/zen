@@ -1,4 +1,4 @@
-import { functions } from "../../utils/useFirebase";
+import { functions } from "../app/useFirebase";
 const getIntegrations = functions.httpsCallable("getServiceResources");
 
 

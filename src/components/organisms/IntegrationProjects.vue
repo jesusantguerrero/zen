@@ -11,10 +11,10 @@
 </template>
 
 <script setup>
-import { useIntegrations } from '../../utils/useIntegrations'
+import { useIntegrations } from '../../_features/integrations/useIntegrations'
 import IconGithub from '../../components/atoms/icons/IconGithub.vue'
 import { computed, onMounted, reactive } from 'vue';
-import { getIssues } from '../../domain/integrations/github';
+import { getIssues } from '../../_features/integrations/github';
 
 
 const { getList } = useIntegrations()

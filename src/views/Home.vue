@@ -71,11 +71,12 @@ import {
 } from "vue";
 import { useRouter } from "vue-router";
 import { ElNotification, ElMessageBox } from "element-plus";
-import { useTaskFirestore } from "../utils/useTaskFirestore";
-import { useDateTime } from "../utils/useDateTime";
-import { useCollection } from "../utils/useCollection";
-import { firebaseState, updateSettings } from "../utils/useFirebase";
-import { startFireworks } from "../utils/useConfetti";
+import { useTaskFirestore } from "../_features/tasks";
+
+import { useDateTime } from "../composables/useDateTime";
+import { startFireworks } from "../composables/useConfetti";
+import { useCollection, firebaseState, updateSettings } from "../_features/app";
+
 import TagsSelect from "../components/atoms/TagsSelect.vue";
 import TabHeader from "../components/atoms/TabHeader.vue";
 import TaskGroup from "../components/organisms/TaskGroup.vue";

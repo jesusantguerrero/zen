@@ -93,8 +93,8 @@
 <script setup>
 import { computed, defineProps, reactive, watch, ref } from 'vue'
 import { ElMessageBox, ElNotification } from 'element-plus'
-import { useTaskFirestore } from "../../utils/useTaskFirestore"
-import { useDateTime } from "../../utils/useDateTime"
+import { useTaskFirestore } from "../../_features/tasks"
+import { useDateTime } from "../../composables/useDateTime"
 import TaskGroup from "../organisms/TaskGroup.vue"
 import QuickAdd from "../molecules/QuickAdd.vue"
 import TaskModal from "./TaskModal.vue"

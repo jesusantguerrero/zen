@@ -141,14 +141,14 @@
 </template>
 
 <script setup>
-import { inject, nextTick, onUnmounted, reactive, ref, watch, toRefs, watchEffect } from "vue";
+import { inject, nextTick, onUnmounted, reactive, ref, watch, toRefs } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessageBox, ElNotification } from "element-plus";
-import { useTaskFirestore } from "../utils/useTaskFirestore";
-import { useTrackFirestore } from "../utils/useTrackFirestore";
-import { firebaseState, registerEvent, updateSettings } from "../utils/useFirebase";
-import { useFuseSearch, useSearchOptions } from "../utils/useFuseSearch";
-import { startFireworks } from "../utils/useConfetti";
+import { useTaskFirestore } from "../_features/tasks";
+import { useTrackFirestore } from "../_features/tracks";
+import { firebaseState, registerEvent, updateSettings } from "../_features/app/useFirebase";
+import { useFuseSearch, useSearchOptions } from "../composables/useFuseSearch";
+import { startFireworks } from "../composables/useConfetti";
 import TagsSelect from "../components/atoms/TagsSelect.vue"
 import TaskGroup from "../components/organisms/TaskGroup.vue";
 import QuickAdd from "../components/molecules/QuickAdd.vue";

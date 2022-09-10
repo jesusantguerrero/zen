@@ -1,5 +1,5 @@
 import { reactive, onMounted, onUnmounted, toRefs } from "vue"
-import { handleSnapshot } from "."
+import { handleSnapshot } from "../../utils"
 
 
 export const useSnapshot = (handler) => {

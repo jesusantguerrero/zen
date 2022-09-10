@@ -36,10 +36,10 @@
 
 <script setup>
 import { computed, onUnmounted, reactive } from "vue"
-import { firebaseState, functions, } from "../../utils/useFirebase"
+import { firebaseState, functions, } from "../../_features/app/useFirebase"
 import IconGithubLogo from "../atoms/icons/IconGithubLogo.vue"
-import { useCollection } from "../../utils/useCollection"
-import { connectGoogle } from "../../domain/integrations/google";
+import { useCollection } from "../../_features/app/useCollection"
+import { connectGoogle } from "../../_features/integrations/google";
 
 
 const state = reactive({

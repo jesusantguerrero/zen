@@ -67,7 +67,7 @@
 
 <script setup>
     import { computed } from "vue";
-    import { useSearchOptions } from "../../utils/useFuseSearch";
+    import { useSearchOptions } from "../../composables/useFuseSearch";
     import CardButton from "../molecules/CardButton.vue";
 
     const props = defineProps({

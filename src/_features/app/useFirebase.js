@@ -7,7 +7,7 @@ import "firebase/messaging";
 import "firebase/functions"
 import "firebase/performance"
 import "firebase/storage"
-import CONFIG from "../config/";
+import CONFIG from "../../config";
 import { useSettingsFirestore } from "./useSettingsFirestore"
 import { add } from "date-fns";
 

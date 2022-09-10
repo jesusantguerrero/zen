@@ -15,8 +15,8 @@
 
 <script>
 import { computed, reactive, toRefs } from "vue";
-import { useTracker } from "../../../utils/useTracker";
-import { useDateTime } from "../../../utils/useDateTime";
+import { useTracker } from "../../../composables/useTracker";
+import { useDateTime } from "../../../composables/useDateTime";
 
 export default {
   name: "TimeTrackerButton",

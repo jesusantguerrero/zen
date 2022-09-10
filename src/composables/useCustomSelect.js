@@ -1,5 +1,5 @@
 import { inject, nextTick, provide, ref, watch } from "vue";
-import { useCollection } from "./useCollection"
+import { useCollection } from "../_features/app/useCollection"
 
 const { save, getAll } = useCollection()
 

@@ -31,10 +31,10 @@
 import QuickAdd from '../../components/molecules/QuickAdd.vue';
 import TaskGroup from '../../components/organisms/TaskGroup.vue';
 import { getNextIndex } from '../../utils';
-import { registerEvent } from '../../utils/useFirebase';
-import { useSearchOptions } from '../../utils/useFuseSearch';
-import { useSnapshot } from '../../utils/useSnapshot';
-import { useTaskFirestore } from '../../utils/useTaskFirestore';
+import { registerEvent } from '../../_features/app/useFirebase';
+import { useSearchOptions } from '../../composables/useFuseSearch';
+import { useSnapshot } from '../../_features/app/useSnapshot';
+import { useTaskFirestore } from '../../_features/tasks';
 
 const {
   saveTask,

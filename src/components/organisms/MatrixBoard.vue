@@ -147,9 +147,9 @@
 import { computed, reactive, watch, ref, onUnmounted, toRefs } from 'vue'
 import { ElMessageBox, ElNotification } from 'element-plus';
 import { RoadmapView } from "vue-temporal-components";
-import { useTaskFirestore } from "../../utils/useTaskFirestore"
-import { useDateTime } from "../../utils/useDateTime"
-import { useFuseSearch } from "../../utils/useFuseSearch"
+import { useTaskFirestore } from "../../_features/tasks"
+import { useDateTime } from "../../composables/useDateTime"
+import { useFuseSearch } from "../../composables/useFuseSearch"
 import TaskGroup from "../organisms/TaskGroup.vue"
 import QuickAdd from "../molecules/QuickAdd.vue"
 import TaskModal from "./modals/TaskModal.vue"
@@ -157,7 +157,7 @@ import MatrixHelpView from "../molecules/MatrixHelpView.vue"
 import JetSelect from "../atoms/JetSelect.vue";
 import { orderBy } from "lodash-es"
 import { differenceInCalendarDays } from 'date-fns';
-import { firebaseState } from '../../utils/useFirebase';
+import { firebaseState } from '../../_features/app/useFirebase';
 
 
 // state and ui

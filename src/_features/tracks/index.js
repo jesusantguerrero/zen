@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { db, firebaseState } from "./useFirebase";
+import { db, firebaseState } from "../app/useFirebase";
 
 export function useTrackFirestore() {
     const saveTrack = (track) => {

@@ -75,11 +75,11 @@
 
 <script setup>
 import { ref, watch, reactive, inject } from "vue";
-import ModalBase from "../../molecules/ModalBase.vue";
-import { ElNotification } from "element-plus";
 import { AtSteps, AtStep, AtButton } from "atmosphere-ui";
-import { getProjects, getSites } from "../../../domain/integrations/jira";
-import { useCollection } from "../../../utils/useCollection";
+import { ElNotification } from "element-plus";
+import ModalBase from "../../molecules/ModalBase.vue";
+import { getProjects, getSites } from "../../../_features/integrations/jira";
+import { useCollection } from "../../../_features/app/useCollection";
 
 const props = defineProps({
   isOpen: Boolean,

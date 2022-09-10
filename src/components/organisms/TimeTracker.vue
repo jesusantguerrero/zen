@@ -36,13 +36,14 @@
 <script setup>
 import { computed, onBeforeUnmount, reactive, watch, ref} from "vue";
 import { Duration, Interval, DateTime } from "luxon";
-import { useTrackFirestore } from "./../../utils/useTrackFirestore";
-import { SESSION_MODES } from "./../../utils";
-import { usePromodoro } from "./../../utils/usePromodoro";
-import { useSlack } from "./../../utils/useSlack";
-import { firebaseState } from "./../../utils/useFirebase";
 import { ElMessageBox, ElNotification } from "element-plus";
 import { useTitle } from "@vueuse/core";
+
+import { useTrackFirestore } from "../../_features/tracks";
+import { SESSION_MODES } from "../../utils";
+import { usePromodoro } from "../../composables/usePromodoro";
+import { useSlack } from "../../_features/integrations/useSlack";
+import { firebaseState } from "../../_features/app/useFirebase";
 
 const { saveTrack, updateTrack } = useTrackFirestore();
 const props = defineProps({

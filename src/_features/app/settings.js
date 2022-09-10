@@ -1,8 +1,9 @@
 import { computed, ref } from "vue"
-import { useSettingsFirestore } from "../utils/useSettingsFirestore"
-const { getUserSettings, updateUserSettings } = useSettingsFirestore()
+import { useSettingsFirestore } from "./useSettingsFirestore"
 import { defineStore } from 'pinia'
-import { firebaseState } from "../utils/useFirebase"
+import { firebaseState } from "./useFirebase"
+const { getUserSettings, updateUserSettings } = useSettingsFirestore()
+
 export const useApplicationStore = defineStore('application', () => {
     const settings = ref(firebaseState.settings)
 

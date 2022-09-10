@@ -171,11 +171,11 @@ import TagsSelect from "../atoms/TagsSelect.vue";
 import DateSelect from "../atoms/DateSelect.vue";
 import TimeTrackerButton from "../atoms/tracker/TimeTrackerButton.vue";
 import TaskTrackView from "../organisms/TaskTrackView.vue";
-
-import { useDateTime } from "../../utils/useDateTime";
-import { getTaskColorClass, TaskMatrix, TaskTypeColors } from "../../utils/constants";
-import { useCustomSelect } from "../../utils/useCustomSelect";
 import ZenDropdown from "./ZenDropdown.vue";
+
+import { useDateTime } from "../../composables/useDateTime";
+import { useCustomSelect } from "../../composables/useCustomSelect";
+import { getTaskColorClass, TaskMatrix, TaskTypeColors } from "../../utils/constants";
 
 export default {
   components: {

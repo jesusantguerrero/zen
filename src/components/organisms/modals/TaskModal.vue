@@ -133,15 +133,15 @@
 
 <script setup>
 import { ref, watch, computed, reactive, toRefs } from "vue"
-import { useTaskFirestore } from "../../../utils/useTaskFirestore"
-import { useDateTime } from "../../../utils/useDateTime"
-import { useCustomSelect } from "../../../utils/useCustomSelect"
+import { useTaskFirestore } from "../../../_features/tasks"
+import { useDateTime } from "../../../composables/useDateTime"
+import { useCustomSelect } from "../../../composables/useCustomSelect"
 import TagsSelect from "../../atoms/TagsSelect.vue"
 import PersonSelect from "../../atoms/PersonSelect.vue"
 import ModalBase from "../../molecules/ModalBase.vue";
 import ChecklistContainer from "../ListContainer.vue";
 import { ElMessageBox, ElNotification } from "element-plus"
-import { firebaseInstance, firebaseState } from "../../../utils/useFirebase"
+import { firebaseInstance, firebaseState } from "../../../_features/app/useFirebase"
 import DateSelect from "../../atoms/DateSelect.vue"
 
 const props = defineProps({

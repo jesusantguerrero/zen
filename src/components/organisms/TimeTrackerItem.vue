@@ -97,7 +97,7 @@
 import { format } from "date-fns";
 import Duration from "duration";
 import { computed, reactive } from "vue";
-import { durationFromMs, formatDateToTime } from "../../utils/useTracker"
+import { durationFromMs, formatDateToTime } from "../../composables/useTracker"
 
 const props = defineProps({
     timeEntry: {

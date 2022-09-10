@@ -93,8 +93,8 @@
 </template>
 
 <script setup>
-import { usePromodoro } from "./../../utils/usePromodoro";
-import { firebaseState, updateSettings } from "../../utils/useFirebase";
+import { usePromodoro } from "./../../composables/usePromodoro";
+import { firebaseState, updateSettings } from "../../_features/app/useFirebase";
 import { ElNotification } from "element-plus";
 
 // controls

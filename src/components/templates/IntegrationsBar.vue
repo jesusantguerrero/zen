@@ -7,7 +7,7 @@
       <div class="integration__screen" v-if="state.selectedIntegration">
         <div class="font-bold">Jira Integration</div>
         <div class="flex justify-center px-5 pt-5 space-x-2">
-          <div v-for="item in state.list">
+          <div v-for="item in state.list" :key="item.id">
             <el-avatar
               :src="item.avatarUrl"
               :size="36"
@@ -101,18 +101,20 @@
 
 <script setup>
 import { onUnmounted, reactive } from "vue";
-import { useCollection } from "../../utils/useCollection";
-import { AtButton } from "atmosphere-ui";
-import TagsSelect from "../atoms/TagsSelect.vue";
-import {
- getIssues,
-  getProjects,
-  parseJiraIssue,
-} from "../../domain/integrations/jira";
 import { ElNotification } from "element-plus";
-import { useTaskFirestore } from "../../utils/useTaskFirestore";
+import { AtButton } from "atmosphere-ui";
+
+import TagsSelect from "../atoms/TagsSelect.vue";
+import { useTaskFirestore } from "../../_features/tasks";
 import IconJira from "../atoms/integrations/IconJira.vue";
 import ButtonCircle from "../atoms/ButtonCircle.vue";
+
+import { useCollection } from "../../_features/app/useCollection";
+import {
+  getIssues,
+  getProjects,
+  parseJiraIssue,
+} from "../../_features/integrations/jira";
 
 const state = reactive({
   list: [],

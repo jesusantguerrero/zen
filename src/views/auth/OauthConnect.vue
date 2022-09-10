@@ -17,7 +17,7 @@
 
 <script setup>
 import { useRoute, useRouter } from "vue-router";
-import { functions } from "../../utils/useFirebase"
+import { functions } from "../../_features/app/useFirebase"
 import { onMounted, ref } from "vue";
 import IntegrationModal from "../../components/organisms/modals/IntegrationModal.vue"; 
 

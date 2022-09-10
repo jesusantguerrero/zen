@@ -62,7 +62,7 @@ import ShareBoard from "../components/organisms/ShareBoard.vue"
 import JetSelect from "../components/atoms/JetSelect.vue";
 import MatrixTeammates from "../components/organisms/MatrixTeammates.vue";
 import { useRoute, useRouter } from "vue-router"
-import { firebaseState } from "../utils/useFirebase";
+import { firebaseState } from "../_features/app/useFirebase";
 
 const state = reactive({
    showHelp:  false,

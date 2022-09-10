@@ -1,5 +1,5 @@
 import { toRef, reactive, toRefs } from "vue";
-import { useCollection } from "./useCollection";
+import { useCollection } from "../app/useCollection";
 
 const { getAll } = useCollection();
 
