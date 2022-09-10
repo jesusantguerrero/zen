@@ -27,7 +27,7 @@
               @move="emitMove"
               @change="emitChange($event, type)"
             >
-              <task-item 
+              <TaskItem 
                 v-for="task in tasks" 
                 :key="task" 
                 :task="task" 

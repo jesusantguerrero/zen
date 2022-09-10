@@ -13,9 +13,9 @@ exports.default = {
     sendgridKey: env.sendgrid_key,
     integrations: {
         jira: {
-            clientId: env.jira_client_id,
-            clientSecret: env.jira_client_secret,
-            redirectURI: env.jira_redirect_uri
+            clientId: env.jira.client_id,
+            clientSecret: env.jira.client_secret,
+            redirectURI: env.jira.redirect_uri
         }
     }
 }
