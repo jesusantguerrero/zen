@@ -90,9 +90,9 @@ import { startOfYesterday } from "date-fns";
 import format from "date-fns/format";
 import subDays from "date-fns/subDays/index";
 import Metrics from "../components/templates/MetricsTemplate.vue";
-import SummaryAside from "../components/templates/SummarySider.vue";
 import MaterialIcon from "../components/atoms/MaterialIcon.vue";
 import Button from "../components/atoms/Button.vue";
+import SummaryAside from "../components/templates/SummarySider.vue";
 import OverdueAside from "../components/templates/OverdueAside.vue";
 
 export default {

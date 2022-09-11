@@ -62,13 +62,29 @@ export function useTrackFirestore() {
         return trackRef
     }
 
+    const getRunningTrack = async () => {
+        const myDate = new Date(2022, 6, 10)
+        const ref =  await db.collection('tracks')
+        .where('ended_at', '==', null)
+        .where("user_uid", "==", firebaseState.user.uid)
+        .where('started_at', ">=", myDate)
+        .limitToLast(1)
+        .orderBy('started_at')
+        .get()
+        .then(q => {
+            return q.size ? {...q.docs.at(0).data(), started_at: q.docs.at(0).data().started_at.toDate(), uid: q.docs.at(0).id } : {};
+        })
+        return ref
+    }
+
     return {
         saveTrack,
         deleteTrack,
         updateTrack,
         getAllTracks,
         getAllTracksOfTask,
-        getTracksByDates
+        getTracksByDates,
+        getRunningTrack
     }
 
 }

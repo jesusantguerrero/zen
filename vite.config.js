@@ -18,7 +18,7 @@ export default {
   ],
   optimizeDeps: {
     include:[ 'firebase/app', 'atmosphere-ui', 'firebase/analytics', 'firebase/messaging', 'firebase/auth'],
-    exclude: ["apexcharts"],
+    exclude: ["apexcharts", "vue-temporal-components"],
   },
   build: {
     rollupOptions: {

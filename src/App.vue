@@ -7,6 +7,7 @@
   import { useCollection } from "./_features/app/useCollection"
   import { useIntegrations } from './_features/integrations/useIntegrations'
   import MobileMenuBar from './components/organisms/mobile/MobileMenuBar.vue'
+  import TrackerProvider from './components/TrackerProvider.vue'
   
   const { closeConnections } = useIntegrations()
   const { getAllShared, getAll } = useCollection();
@@ -86,12 +87,14 @@
 </script>
 
 <template>
-  <div class="text-center">
-      <app-header :user="firebaseState.user" class="z-50" @logout="logoutUser" v-if="firebaseState.user"/>
-      <router-view> </router-view>
-      <integrations-bar v-if="firebaseState.user" />
-      <mobile-menu-bar />
-  </div>
+  <TrackerProvider :user="firebaseState.user">
+    <div class="text-center">
+        <app-header :user="firebaseState.user" class="z-50" @logout="logoutUser" v-if="firebaseState.user"/>
+        <router-view> </router-view>
+        <integrations-bar v-if="firebaseState.user" />
+        <mobile-menu-bar />
+    </div>
+  </TrackerProvider>
 </template>
 
 

@@ -26,6 +26,7 @@
               v-for="project in state.projects"
               class="py-2 text-sm text-left cursor-pointer"
               @click="fetchIssues(project)"
+              :key="project.id"
             >
               {{ project.name }}
             </div>
@@ -58,6 +59,7 @@
           <template v-else>
             <div
               v-for="issue in state.issues"
+              :key="issue.id"
               class="px-5 py-2 text-sm text-left border rounded-md cursor-pointer"
               :class="{ 'border border-green-500': isIssueSelected(issue) }"
               @click="toggleSelectedIssue(issue)"
@@ -73,6 +75,7 @@
           :content="integration.service"
           placement="left"
           v-for="integration in state.integrations"
+          :key="integration.id"
         >
           <div
             :title="integration.service"

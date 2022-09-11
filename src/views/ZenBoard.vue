@@ -103,22 +103,27 @@
         class="zen__coming-up lineup md:block md:mt-0 md:w-4/12"
         :class="[state.mobileMode == 'lineup' ? 'block' : 'hidden']"
       >
-        
+        <SummarySider
+          :matrix="matrixStore.matrix"
+          :standup="[]"
+          :committed="[]"
+          :is-loaded="matrixStore.tasksLoaded"
+        />
       </div>
     </div>
 
-    <welcome-modal
+    <WelcomeModal
       :is-open="state.isWelcomeOpen"
       @closed="closeWelcomeModal"
-    ></welcome-modal>
+    />
 
-    <task-modal
+    <TaskModal
       v-model:is-open="state.isTaskModalOpen"
       :task-data="taskToEdit"
       @saved="onEditedTask"
       @closed="taskToEdit = null"
-    >
-    </task-modal>
+    />
+    
 
     <!-- mobile nav -->
     <div class="fixed bottom-0 left-0 flex w-full h-10 text-white bg-gray-600 md:hidden">
@@ -147,8 +152,11 @@ import { ElMessageBox, ElNotification } from "element-plus";
 import { useTaskFirestore } from "../_features/tasks";
 import { useTrackFirestore } from "../_features/tracks";
 import { firebaseState, registerEvent, updateSettings } from "../_features/app/useFirebase";
+import { useMatrixStore } from "../_features/tasks/matrix";
 import { useFuseSearch, useSearchOptions } from "../composables/useFuseSearch";
 import { startFireworks } from "../composables/useConfetti";
+import { useMagicKeys } from "@vueuse/core";
+
 import TagsSelect from "../components/atoms/TagsSelect.vue"
 import TaskGroup from "../components/organisms/TaskGroup.vue";
 import QuickAdd from "../components/molecules/QuickAdd.vue";
@@ -157,8 +165,12 @@ import TaskView from "../components/organisms/TaskView.vue";
 import TaskTrackView from "../components/organisms/TaskTrackView.vue";
 import WelcomeModal from "../components/organisms/modals/WelcomeModal.vue";
 import TaskModal from "../components/organisms/modals/TaskModal.vue";
+
 import { getNextIndex } from "../utils";
-import { useMagicKeys } from "@vueuse/core";
+import { useGlobalTracker } from "../composables/useGlobalTracker";
+import SummarySider from "../components/templates/SummarySider.vue";
+
+const matrixStore = useMatrixStore()
 
 const {
   saveTask,
@@ -193,10 +205,7 @@ const { filteredList: filteredSchedule } = useFuseSearch(searchText, schedule, s
 const { filteredList: filteredTodos } = useFuseSearch(searchText, todo, selectedTags);
 
 // Current task
-const currentTask = ref({});
-const setCurrentTask = (task) => {
-  currentTask.value = task;
-};
+const { currentTask, currentTimer, setCurrentTask } = useGlobalTracker()
 
 const onClone = (task) => {
   const data = state.todo.sort( (a, b) => a.created_at.toDate() < b.created_at.toDate() ? 1 : -1);
@@ -262,8 +271,6 @@ const onTaskUpdated = (task) => {
   });
 };
 
-// Timer
-const currentTimer = ref({});
 
 // Tasks manipulation
 const getMatrix = (matrix) => {

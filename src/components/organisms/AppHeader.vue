@@ -15,12 +15,34 @@
         </div>
       </div>
   
-      <div class="flex items-center" v-if="user">
-        <app-notification
-            :notifications="unreadNotifications"
+      <div class="flex items-center space-x-2" v-if="user">
+        {{ currentTask && currentTask.title }}
+        <TimeTracker
+          class="mr-4"
+          :class="{'opacity-75': !canStartTimer}"
+          :task="currentTask"
+          v-model:currentTimer="currentTimer"
+          v-model:subType="timerSubtype"  
+          v-slot="{updateTrack, createTrack, updateTitle, canStartTimer}"
+        >
+          <AtTimer 
+            size="mini" 
+            v-model:pomodoro-mode="timerSubtype"
+            v-model:timer="currentTimer" 
+            page-title="Zen."
+            :disabled="!canStartTimer"
+            :show-label="false" 
+            :task="currentTask" 
+            @stopped="updateTrack" 
+            @started="createTrack" 
+            @tick="updateTitle" 
+          />
+        </TimeTracker>
+        <AppNotification
+          :notifications="unreadNotifications"
         />
     
-        <div class="relative flex p-2 mx-2 text-sm font-bold text-gray-400 rounded-md cursor-pointer lg:text-lg changelog hover:bg-green-100 dark:hover:bg-gray-600 dark:hover:text-white">
+        <div class="relative flex p-2 text-sm font-bold text-gray-400 rounded-md cursor-pointer lg:text-lg changelog hover:bg-green-100 dark:hover:bg-gray-600 dark:hover:text-white">
             <i class="fa fa-bullhorn"></i>
         </div>
   
@@ -56,10 +78,17 @@
 
 <script setup>
 import { computed, toRefs, onMounted, watch, inject } from "vue";
+import { useRouter } from "vue-router";
+import { Timer as AtTimer } from "vue-temporal-components"
+
 import MenuItem from "../molecules/MenuItem.vue";
 import MobileMenu from "./MobileMenu.vue";
 import AppNotification from "../organisms/AppNotification.vue";
-import { useRouter } from "vue-router";
+import TimeTracker from "./TimeTracker.vue";
+
+import { useGlobalTracker } from "../../composables/useGlobalTracker";
+
+const { currentTimer, currentTask, timerSubtype } = useGlobalTracker()
 
 const props = defineProps({
   user: {

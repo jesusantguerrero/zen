@@ -26,13 +26,13 @@
     "luxon": "^1.25.0",
     "pinia": "^2.0.14",
     "randomcolor": "^0.6.2",
+    "uuid": "^8.3.2",
     "vee-validate": "^4.4.7",
     "vue": "^3.2.39",
     "vue-draggable-next": "^2.0.1",
     "vue-final-modal": "^1.8.5",
     "vue-router": "^4.1.4",
-    "vue-temporal-components": "^0.2.2",
-    "uuid": "^8.3.2"
+    "vue-temporal-components": "^0.2.10"
   },
   "devDependencies": {
     "@rollup/pluginutils": "^4.2.1",
