@@ -1,14 +1,13 @@
 <template>
-<div class="px-8 pt-8 md:block md:mt-0 space-y-4">
+<div class="px-8 md:block space-y-4">
     <!-- Plan ahead card -->
     <CardButton 
-        class="mt-4"
         title="Plan ahead"
         description="Prioritize your day"
         @click="goTo('/plan-ahead')"
     >
         <template #icon>
-            <div class="rounded-full p-3 bg-gray-500 h-9 w-9 flex text-white items-center justify-center">
+            <div class="rounded-full p-3  h-9 w-9 flex text-white items-center justify-center">
                 <i class="fa fa-tasks"/>
             </div>
         </template>

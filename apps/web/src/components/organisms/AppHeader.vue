@@ -16,7 +16,6 @@
       </div>
   
       <div class="flex items-center space-x-2" v-if="user">
-        {{ currentTask && currentTask.title }}
         <TimeTracker
           class="mr-4"
           :class="{'opacity-75': !canStartTimer}"

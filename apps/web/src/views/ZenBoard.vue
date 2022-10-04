@@ -28,7 +28,7 @@
             </div>
           </header>
   
-          <div class="divide-y-2 divide-gray-200 coming-up__list dark:divide-gray-600 dark:text-gray-300 divide-solid">
+          <div class="coming-up__list dark:divide-gray-600 dark:text-gray-300 divide-solid">
             <div class="mb-4 quick__add">
               <QuickAdd 
                 @saved="addTask" 

@@ -8,6 +8,9 @@
   import { useIntegrations } from './_features/integrations/useIntegrations'
   import MobileMenuBar from './components/organisms/mobile/MobileMenuBar.vue'
   import TrackerProvider from './components/TrackerProvider.vue'
+  import { LumiereProvider } from 'lumiere-utils'
+  import { useFirebase } from 'lumiere-utils/useFirebase'
+  import config from './config'
   
   const { closeConnections } = useIntegrations()
   const { getAllShared, getAll } = useCollection();
@@ -87,14 +90,16 @@
 </script>
 
 <template>
-  <TrackerProvider :user="firebaseState.user">
-    <div class="text-center">
-        <app-header :user="firebaseState.user" class="z-50" @logout="logoutUser" v-if="firebaseState.user"/>
-        <router-view> </router-view>
-        <integrations-bar v-if="firebaseState.user" />
-        <mobile-menu-bar />
-    </div>
-  </TrackerProvider>
+  <LumiereProvider :provider="useFirebase" :config="config">
+    <TrackerProvider :user="firebaseState.user">
+      <div class="text-center">
+          <app-header :user="firebaseState.user" class="z-50" @logout="logoutUser" v-if="firebaseState.user"/>
+          <router-view> </router-view>
+          <integrations-bar v-if="firebaseState.user" />
+          <mobile-menu-bar />
+      </div>
+    </TrackerProvider>
+  </LumiereProvider>
 </template>
 
 

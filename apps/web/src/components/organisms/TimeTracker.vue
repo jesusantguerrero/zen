@@ -59,7 +59,7 @@ const createTrack = (trackFormData) => {
   saveTrack(trackFormData)
     .then(uid => {
       trackFormData.uid = uid;
-      emit("update:currentTimer", trackFormData)
+      // emit("update:currentTimer", trackFormData)
     })
     .catch(() => {
       ElNotification({
@@ -75,10 +75,9 @@ const updateData = (trackFormData) => {
   trackFormData.subtype = trackFormData.subType || props.subType
 
   updateTrack(trackFormData).then(() => {
-    emit("update:currentTimer", {})
     props.task.tracks.push(trackFormData);
     ElNotification({
-      title: "Pomodoro Saved",
+      title: "Pomodoro time successfully saved",
       message: "Pomodoro saved",
       type: "success"
     })
@@ -92,6 +91,6 @@ const updateData = (trackFormData) => {
 };
 
 const updateTitle = (track) => {
-  emit("update:currentTimer", track)
+  // emit("update:currentTimer", track)
 }
 </script>

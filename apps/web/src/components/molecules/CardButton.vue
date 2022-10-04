@@ -1,5 +1,5 @@
 <template>
- <div role="button" class="flex rounded-md border py-2 px-4 bg-gray-50 hover:bg-white">
+ <div role="button" class="flex rounded-md border py-2 px-4  hover:shadow-md bg-white">
     <div v-if="$slots.icon" class="mr-2 flex items-center">
         <slot name="icon"></slot>
     </div>
