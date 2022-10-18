@@ -18,13 +18,13 @@
     "@headlessui/vue": "^1.3.0",
     "@vee-validate/rules": "^4.4.7",
     "@vueuse/components": "^9.2.0",
-    "axios": "^0.21.1",
+    "axios": "^0.27.2",
     "canvas-confetti": "^1.3.3",
     "chart.js": "^2.9.4",
     "date-fns": "^2.29.2",
     "duration": "^0.2.2",
     "element-plus": "^1.0.2-beta.55",
-    "firebase": "^8.10.1",
+    "firebase": "^9.12.1",
     "fuse.js": "^6.4.6",
     "lodash-es": "^4.17.21",
     "lumiere-utils": "^0.4.4",
@@ -37,7 +37,7 @@
     "vue-draggable-next": "^2.0.1",
     "vue-final-modal": "^1.8.5",
     "vue-router": "^4.1.4",
-    "vue-temporal-components": "^0.2.10"
+    "vue-temporal-components": "^0.3.0"
   },
   "devDependencies": {
     "@rollup/pluginutils": "^4.2.1",

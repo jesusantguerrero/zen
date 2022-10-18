@@ -1,12 +1,12 @@
 import { ref, reactive } from "vue";
-import firebase from "firebase/app";
-import "firebase/auth";
-import "firebase/firestore";
-import "firebase/analytics";
-import "firebase/messaging";
-import "firebase/functions"
-import "firebase/performance"
-import "firebase/storage"
+import firebase from "firebase/compat/app";
+import "firebase/compat/auth";
+import "firebase/compat/firestore";
+import "firebase/compat/analytics";
+import "firebase/compat/messaging";
+import "firebase/compat/functions"
+import "firebase/compat/performance"
+import "firebase/compat/storage"
 import CONFIG from "../../config";
 import { useSettingsFirestore } from "./useSettingsFirestore"
 import { add } from "date-fns";
