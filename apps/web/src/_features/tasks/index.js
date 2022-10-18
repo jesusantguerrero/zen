@@ -101,6 +101,25 @@ export function useTaskFirestore() {
         return tasks;
     }
 
+    const getById = async (id) => {
+        let tasks = {};
+        await db.collection(collectionName)
+        .where("user_uid", "==", firebaseState.user.uid)
+        .where("uid", "==", id)
+        .limit(1)
+        .withConverter(taskConverter)
+        .get()
+        .then(querySnapshot => {
+            querySnapshot.forEach((doc) => {
+                tasks = {...doc.data(), uid: doc.id };
+            });
+        }).catch(err => {
+            console.log(err)
+        })
+
+        return tasks;
+    }
+
     const getCommittedTasks = async (date = new Date()) => {
         const commitDate = DateTime.fromJSDate(date).toFormat('yyyy-MM-dd')
         const committedRef = await db.collection(collectionName)
@@ -170,6 +189,7 @@ export function useTaskFirestore() {
         getUncommittedTasks,
         getCommittedTasks,
         getAllFromUser,
-        saveTaskBatch
+        saveTaskBatch,
+        getById
     }
 }

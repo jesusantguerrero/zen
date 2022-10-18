@@ -75,8 +75,7 @@
                 @selected="setCurrentTask"
                 @done="onDone"
                 @down="moveTo($event, 'schedule')"
-              >
-              </TaskGroup>
+              />
   
               <TaskGroup
                 v-if="state.tabSelected=='schedule'"
@@ -226,16 +225,16 @@ const onEditedTask = (task) => {
   taskToEdit.value = null;
 };
 
-watch(currentTask, () => {
-  if (currentTask.value.uid) {
-    getAllTracksOfTask(currentTask.value.uid).then((tracks) => {
+watch(currentTask, (task) => {
+  if (task.uid) {
+    getAllTracksOfTask(task.uid).then((tracks) => {
       currentTask.value.tracks = tracks.map(track => {
         track.date_f = track.created_at.toDate()
         return track;
       }) || [];
     });
   }
-});
+}, { immediate: true });
 
 const onDone = (task) => {
   task.tracks = [];

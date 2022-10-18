@@ -23,7 +23,7 @@ export function useTracker(taskRef, currentTimerRef) {
     const getActiveTimer = () => {
         const duration = currentTimer && currentTimer.value && currentTimer.value.currentTime
         if (duration) {
-        return duration.as("milliseconds");
+            return duration.as("milliseconds");
         }
         return 0;
     }

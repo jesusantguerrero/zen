@@ -4,6 +4,7 @@
 
 <script setup>
 import { provide, ref, watch } from 'vue';
+import { useTaskFirestore } from '../_features/tasks';
 import { useTrackFirestore } from '../_features/tracks';
 const props = defineProps({
   user: {
@@ -11,6 +12,7 @@ const props = defineProps({
   }
 })
 const { getRunningTrack } = useTrackFirestore()
+const { getById: getTaskById } = useTaskFirestore()
 // Todo use pinia for this
 const currentTimer = ref(null)
 const timerSubtype = ref(null)
@@ -22,11 +24,17 @@ watch(() => props.user, async (user) => {
   if (user) {
     try {
       currentTimer.value = await getRunningTrack() || {}
+      if (currentTimer.value.task_uid) {
+        const task = await getTaskById(currentTimer.value.task_uid)
+        setCurrentTask(task)
+
+      }
     } catch(err) {
       console.log(err)
     }
   }
 }, { immediate: true, deep: true })
+
 provide('currentTimer', currentTimer)
 provide('currentTask', currentTask)
 provide('timerSubtype', timerSubtype)

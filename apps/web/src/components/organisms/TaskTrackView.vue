@@ -28,7 +28,6 @@ import { computed, toRefs, watch } from "vue";
 import { useTracker } from "../../composables/useTracker";
 import { useDateTime } from "../../composables/useDateTime";
 import { useTaskFirestore } from "../../_features/tasks";
-import { ElNotification } from "element-plus";
 
 const { updateTask } = useTaskFirestore()
 
@@ -67,6 +66,6 @@ watch(() => currentTimer.value, () => {
       })
     }
   }
-})
+}, { immediate: true })
 
 </script>

@@ -63,11 +63,11 @@ export function useTrackFirestore() {
     }
 
     const getRunningTrack = async () => {
-        const myDate = new Date(2022, 6, 10)
+        const featureLaunchDate = new Date(2022, 6, 10)
         const ref =  await db.collection('tracks')
         .where('ended_at', '==', null)
         .where("user_uid", "==", firebaseState.user.uid)
-        .where('started_at', ">=", myDate)
+        .where('started_at', ">=", featureLaunchDate)
         .limitToLast(1)
         .orderBy('started_at')
         .get()
