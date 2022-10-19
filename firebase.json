@@ -13,7 +13,7 @@
     "template": "remoteconfig.template.json"
   },
   "hosting": {
-    "public": "public",
+    "public": "dist",
     "ignore": [
       "firebase.json",
       "**/.*",
