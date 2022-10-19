@@ -1,18 +1,27 @@
 {
-  "name": "matrixzen",
-  "private": true,
-  "version": "2.0.0",
-  "description": "Zen",
-  "main": "index.js",
+  "name": "web",
+  "version": "2.1.0",
   "scripts": {
-    "build": "turbo run build",
-    "test": "turbo run test",
-    "lint": "turbo run lint",
-    "dev": "turbo run dev"
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "deploy:google": "npm run build && firebase deploy --only hosting",
+    "test": "vitest",
+    "coverage": "vitest run --coverage",
+    "build:tailwind": "postcss src/assets/scss/base.scss -o src/assets/scss/tailwind.scss"
   },
-  "workspaces": [
-    "packages/*",
-    "apps/*"
+  "description": "Keep yourself in the zone and focus in the moment.",
+  "main": "postcss.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jesusantguerrero/zen.git"
+  },
+  "keywords": [
+    "Productivity",
+    "Pomodoro",
+    "Tasks",
+    "Eisenhower",
+    "Matrix"
   ],
   "dependencies": {
     "@headlessui/vue": "^1.3.0",
@@ -54,15 +63,10 @@
     "postcss": "^8.2.4",
     "sass": "^1.32.5",
     "tailwindcss": "^3.0.23",
-    "turbo": "^1.5.5",
     "typescript": "^4.2.4",
     "vite": "^3.1.0",
     "vite-plugin-md": "^0.20.4",
     "vitest": "^0.23.2"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jesusantguerrero/zen.git"
   },
   "author": "Jesus Guerrero",
   "license": "MIT",

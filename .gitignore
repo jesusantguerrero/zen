@@ -1,2 +1,10 @@
+node_modules
+.DS_Store
+dist
+dist-ssr
+functions/.**
+*.local
+.vercel
+firebase-messaging-sw.js
 .turbo
 **/node_modules
