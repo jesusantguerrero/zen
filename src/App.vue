@@ -73,7 +73,7 @@
     getNotifications()
     getInitialContacts()
     const dailyNotifications = functions.httpsCallable('dailyNotifications');
-    dailyNotifications();
+    // dailyNotifications();s
   })
   
   onUnmounted(() => {
