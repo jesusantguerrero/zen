@@ -231,7 +231,7 @@ export default {
       }),
 
       isDisabled: computed(() => {
-        return currentTimer.value && currentTimer.value.task_uid;
+        return Boolean(currentTimer.value && currentTimer.value.task_uid);
       }),
 
       isSelected: computed(() => {

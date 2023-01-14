@@ -1,5 +1,5 @@
 <template>
-<el-dropdown trigger="click" @command="$emit('command', $event)" :disabled="disabled" @click.stop="">
+<el-dropdown trigger="click" @command="$emit('command', $event)" :disabled="isDisabled" @click.stop="">
     <slot>
         <div class="px-2 py-1 text-sm text-gray-400 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-50 focus:outline-none hover:text-gray-600" :title="isDisabled? 'Can updates tasks when timer is running' : ''" @click.stop="">
               <i class="fa fa-ellipsis-v"></i>
@@ -21,6 +21,9 @@
         options: {
             type: Object,
             required: true
+        },
+        isDisabled: {
+            type: Boolean
         }
     })
 </script>

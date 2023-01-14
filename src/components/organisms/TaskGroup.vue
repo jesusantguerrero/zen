@@ -29,7 +29,7 @@
             >
               <TaskItem 
                 v-for="task in tasks" 
-                :key="task" 
+                :key="task.uid" 
                 :task="task" 
                 :type="type"
                 :handle-mode="displayHandle"

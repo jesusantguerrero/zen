@@ -84,7 +84,6 @@ import { useRouter } from "vue-router";
 import { Timer as AtTimer } from "vue-temporal-components"
 
 import MenuItem from "../molecules/MenuItem.vue";
-import MobileMenu from "./MobileMenu.vue";
 import AppNotification from "../organisms/AppNotification.vue";
 import TimeTracker from "./TimeTracker.vue";
 

@@ -1,0 +1,15 @@
+<mjml>
+    <mj-body>
+        <mj-section>
+            <mj-column>
+                <mj-text> Zen Labs Inc. </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section>
+            <mj-column>
+                <mj-text> Hello { userName }, you have got viewer permission to the { ownerName }({ ownerEmail }) matrix </mj-text>
+                <mj-text> You can check it out here: ({ url }) </mj-text>
+            </mj-column>
+        </mj-section>
+    </mj-body>
+</mjml>
