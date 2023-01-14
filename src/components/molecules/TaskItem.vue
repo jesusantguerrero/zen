@@ -1,11 +1,11 @@
 <template>
   <div
-    class="items-center  px-4 mb-2 transition-all bg-white border-2 border-gray-200 rounded-md cursor-pointer task-item dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 hover:border-green-200"
-    :class="{
-      'border-green-400': isSelected,
-      'py-3 hover:shadow-md ': !isCompact,
-      'py-2': isCompact,
-    }"
+    class="items-center px-4 mb-2 transition-all bg-white border-2 rounded-md cursor-pointer task-item dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 hover:border-green-200"
+    :class="[
+      isSelected ? 'border-green-400': 'border-gray-200',
+      !isCompact && 'py-3 hover:shadow-md ',
+      isCompact && 'py-2',
+    ]"
     @click="$emit('selected', task)"
     @dblclick.prevent="$emit('edited', task)"
   >
@@ -152,11 +152,11 @@
         </div>
       </div>
     </ElCollapseTransition>
-    <TaskTrackView
+    <!-- <TaskTrackView
       v-if="isSelected"
       :task="currentTask"
       :current-timer="currentTimer"
-    />
+    /> -->
     <!-- /item body -->
   </div>
 </template>
@@ -374,6 +374,7 @@ export default {
       contacts,
       createContact,
       selectContact,
+      commandOptions,
     };
   },
 };

@@ -1,5 +1,6 @@
 <template>
   <div class="text-center">
+    
     <slot 
       :createTrack="createTrack" 
       :updateTrack="updateData" 

@@ -1,12 +1,12 @@
 <template>
   <div
-    class="task-item__tracked ml-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 md:text-md text-sm md:text-base flex items-center"
+    class="flex items-center ml-2 text-sm text-gray-400 task-item__tracked hover:text-gray-600 dark:hover:text-gray-200 md:text-md md:text-base"
     title="Time tracked"
     :class="[allowRun ? 'cursor-pointer' : 'cursor-default']"
     @click="$emit('toggle-timer', isCurrent)"
   >
     <i
-      class="fa fa-clock mr-1"
+      class="mr-1 fa fa-clock"
       :class="allowRun ? trackerIcon : 'fa-clock'"
     ></i>
     <span> {{ isCurrent && currentTimer.currentTime ? timeTracked : defaultValue }}</span>
@@ -55,7 +55,7 @@ export default {
     const { formatDurationFromMs } = useDateTime();
 
     const state = reactive({
-      completedPromodoros: computed(() => {
+      completedPomodoros: computed(() => {
         return task.value.tracks
           ? task.value.tracks.filter((track) => track.completed).length
           : 0;

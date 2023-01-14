@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import { provide, ref, watch } from 'vue';
+import { provide, ref, watch, nextTick } from 'vue';
 import { useTaskFirestore } from '../_features/tasks';
 import { useTrackFirestore } from '../_features/tracks';
 const props = defineProps({
@@ -17,14 +17,18 @@ const { getById: getTaskById } = useTaskFirestore()
 const currentTimer = ref(null)
 const timerSubtype = ref(null)
 const currentTask = ref({});
-const setCurrentTask = (task) => {
+const setCurrentTask = (task, shouldAutoPlay) => {
   currentTask.value = task;
+  if (shouldAutoPlay) {
+    nextTick(() => {
+      document.querySelector('[data-testid=btn-play]')?.click()
+    })
+  }
 };
 watch(() => props.user, async (user) => {
   if (user) {
     try {
       currentTimer.value = await getRunningTrack() || {}
-      console.log(currentTimer.value)
       if (currentTimer.value.task_uid) {
         const task = await getTaskById(currentTimer.value.task_uid)
         setCurrentTask(task)

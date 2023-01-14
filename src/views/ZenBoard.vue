@@ -68,11 +68,13 @@
                 :current-timer="currentTimer"
                 :is-item-as-handler="true"
                 :use-external-done="true"
-                @change="handleDragChanges"
+                :allow-run="true"
+                @move="handleDragChanges($event, 'todo')"
                 @clone="onClone"
                 @deleted="destroyTask"
                 @edited="setTaskToEdit"
                 @selected="setCurrentTask"
+                @toggle-timer="setCurrentTask($event, true)"
                 @done="onDone"
                 @down="moveTo($event, 'schedule')"
               />
@@ -91,7 +93,7 @@
                 @deleted="destroyTask"
                 @edited="setTaskToEdit"
                 @up="moveTo($event, 'todo')"
-                @change="handleDragChanges"
+                @move="handleDragChanges($event, 'schedule')"
               />
             </div>
           </div>
@@ -274,7 +276,7 @@ const onTaskUpdated = (task) => {
 // Tasks manipulation
 const getMatrix = (matrix) => {
   getTaskByMatrix(matrix).then((collectionRef) => {
-    const unsubscribe = collectionRef.onSnapshot((snap) => {
+    const unsubscribe = collectionRef.get().then((snap) => {
       state[matrix] = [];
       snap.forEach((doc) => {
         state[matrix].push({ ...doc.data(), uid: doc.id });
@@ -355,24 +357,22 @@ const closeWelcomeModal = () => {
 };
 
 // Drags
-const handleDragChanges = (e, matrix) => {
-  if (e.added) {
-    e.added.element.matrix = matrix;
-    updateTask(e.added.element).then(() => {
-      ElNotification({
-        message: `Moved to ${matrix}`,
-      });
-    });
-  }
-
-  if (e.moved) {
-    updateTaskBatch(
-      state[e.moved.element.matrix].map((task, index) => {
-        task.order = index;
-        return task;
-      })
-    );
-  }
+const handleDragChanges = async (e, matrix) => {
+  // if (e.added) {
+  //   e.added.element.matrix = matrix;
+  //   updateTask(e.added.element).then(() => {
+  //     ElNotification({
+  //       message: `Moved to ${matrix}`,
+  //     });
+  //   });
+  // }
+  const ordered = state[matrix].map((task, index) => {
+      task.order = index;
+      return task;
+  })
+  console.clear()
+  console.log(ordered.map(item => item.title));
+  updateTaskBatch(ordered);
 };
 
 //  magic keys
@@ -381,7 +381,6 @@ const quickAdd = ref(null)
 watch(Shift_k, () => {
     quickAdd.value.focus();
 })
-
 </script>
 
 <style scoped>

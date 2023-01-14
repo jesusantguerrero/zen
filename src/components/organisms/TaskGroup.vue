@@ -23,13 +23,11 @@
               :class="{empty: !tasks.length,  [type]: true , [dragClass]: true}" 
               :list="tasks" 
               :handle="handleClass"
-              :group="{name: type, pull: true, put: true }"
-              @move="emitMove"
-              @change="emitChange($event, type)"
+              @end="emitMove"
             >
               <TaskItem 
                 v-for="task in tasks" 
-                :key="task.uid" 
+                :key="`${task.uid}-${task.title}`" 
                 :task="task" 
                 :type="type"
                 :handle-mode="displayHandle"
@@ -202,7 +200,9 @@ const onChange = ({ added, removed }, matrix) => {
 }
 
 const emitMove = (evt, originalEvent) => {
-  emit('move', evt, originalEvent)
+  nextTick(() => {
+    emit('move', evt, originalEvent)
+  })
 }
 
 const emitChange = ( evt, matrix ) => {
