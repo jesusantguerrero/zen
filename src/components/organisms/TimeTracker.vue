@@ -19,6 +19,7 @@ import { SESSION_MODES } from "../../utils";
 import { usePromodoro } from "../../composables/usePromodoro";
 import { firebaseState } from "../../_features/app";
 import { useTitle } from "@vueuse/core";
+import { cloneDeep } from "lodash";
 
 const { saveTrack, updateTrack } = useTrackFirestore();
 const props = defineProps({
@@ -59,9 +60,10 @@ const createTrack = (trackFormData) => {
     trackFormData.subtype = props.subType
     trackFormData.task_uid = trackFormData.task_uid || props.task.uid;
     trackFormData.description = props.task.title
-    delete trackFormData.currentTime;
+    const data = cloneDeep(trackFormData)
+    delete data.currentTime;
     
-    saveTrack(trackFormData)
+    saveTrack(data)
       .then(uid => {
         trackFormData.uid = uid;
         currentTrackId.value = uid;

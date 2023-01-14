@@ -10,6 +10,11 @@ const _dirname = typeof __dirname !== 'undefined'
  * @type {import('vite').UserConfig}
  */
 export default {
+  resolve: {
+    alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    }
+  },
   plugins: [
     vue({
       include: [/\.vue$/,/\.md$/]

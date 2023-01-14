@@ -7,6 +7,11 @@ import 'element-plus/dist/index.css'
 import VueFinalModal from "vue-final-modal"
 import router from "./router"
 import { createPinia } from 'pinia'
+import mitt from "mitt";
+
+const eventBus = mitt()
+window.EventBus = eventBus
+
 
 createApp(App)
 .use(createPinia())

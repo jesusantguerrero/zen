@@ -26,6 +26,7 @@
         >
           <AtTimer 
             size="mini" 
+            ref="timerRef"
             v-model:pomodoro-mode="timerSubtype"
             v-model:timer="currentTimer" 
             :disabled="!currentTask.title"
@@ -78,7 +79,7 @@
 </template>
 
 <script setup>
-import { computed, toRefs, onMounted, watch, inject } from "vue";
+import { computed, toRefs, onMounted, watch, inject, ref } from "vue";
 import { useRouter } from "vue-router";
 import { Timer as AtTimer } from "vue-temporal-components"
 
@@ -87,8 +88,8 @@ import AppNotification from "../organisms/AppNotification.vue";
 import TimeTracker from "./TimeTracker.vue";
 
 import { useGlobalTracker } from "../../composables/useGlobalTracker";
+import { GlobalEmitter } from "@/utils/emitter";
 
-const { currentTimer, currentTask, timerSubtype } = useGlobalTracker()
 
 const props = defineProps({
   user: {
@@ -129,7 +130,6 @@ const profileImage = computed(() => {
 })
 
 const initials = computed(() => {
-  const provider = user.value.providerData[0];
   return profileName.value.split(' ').map( name => name[0]).join('');
 })
 
@@ -154,6 +154,15 @@ const unreadNotifications = computed(() => {
 const logout = () => {
   emit("logout");
 };
+
+
+// Tracker
+const { currentTimer, currentTask, timerSubtype } = useGlobalTracker()
+const timerRef = ref(null);
+
+EventBus.on('track::play', () => {
+  timerRef.value.play();
+})
 
 </script>
 

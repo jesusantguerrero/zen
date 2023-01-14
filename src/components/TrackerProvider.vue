@@ -6,6 +6,8 @@
 import { provide, ref, watch, nextTick } from 'vue';
 import { useTaskFirestore } from '../_features/tasks';
 import { useTrackFirestore } from '../_features/tracks';
+import { GlobalEmitter } from "@/utils/emitter";
+
 const props = defineProps({
   user: {
     type: [Object, null]
@@ -21,7 +23,7 @@ const setCurrentTask = (task, shouldAutoPlay) => {
   currentTask.value = task;
   if (shouldAutoPlay) {
     nextTick(() => {
-      document.querySelector('[data-testid=btn-play]')?.click()
+      EventBus.emit('track::play')
     })
   }
 };
