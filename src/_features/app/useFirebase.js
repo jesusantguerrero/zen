@@ -9,7 +9,6 @@ import "firebase/compat/performance"
 import "firebase/compat/storage"
 import CONFIG from "../../config";
 import { useSettingsFirestore } from "./useSettingsFirestore"
-import { add } from "date-fns";
 
 const { getUserSettings, updateUserSettings } = useSettingsFirestore()
 const firebaseConfig = {
@@ -99,16 +98,20 @@ export const updateSettings = (settings) => {
 
 }
 
-const initFirebase = new Promise(resolve => {
-    firebase.auth().onAuthStateChanged(async (user) => {
-        if (user) {
-            const settings = await getUserSettings(user.uid)
-            firebaseState.settings = settings;
-            firebaseState.user = user;
-            onLoaded.value && onLoaded.value()
-        }
-        resolve(user);
-    })
+const initFirebase = new Promise((resolve, reject) => {
+    try {
+        firebase.auth().onAuthStateChanged(async (user) => {
+            if (user) {
+                const settings = await getUserSettings(user.uid)
+                firebaseState.settings = settings;
+                firebaseState.user = user;
+                onLoaded.value && onLoaded.value()
+            }
+            resolve(user);
+        })
+    } catch (err) {
+        reject(err)
+    }
 })
 
 export const firebaseInstance = firebase;

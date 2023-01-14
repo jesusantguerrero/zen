@@ -7,11 +7,11 @@
         <router-link class="text-2xl font-bold dark:text-gray-300 dark:hover:text-white zen" to="/"> Zen.</router-link>
         <div class="hidden md:flex md:items-center md:ml-4" v-if="user">
           <!-- <menu-item class="pl-2 mx-2" to="/home" icon="dashboard"> Home </menu-item> -->
-          <menu-item class="pl-2 mx-2" to="/zenboard" icon="schedule">Zenboard </menu-item>
-          <menu-item class="px-2 ml-2" to="/standup" icon="history">Stand Up</menu-item>
-          <menu-item class="px-2 mx-2" to="/matrix" icon="grid_view">Matrix</menu-item>
-          <menu-item class="px-2 mx-2" to="/metrics" icon="grid_view">Metrics</menu-item>
-          <menu-item class="px-2 mx-2" to="/timer" icon="grid_view">Timer</menu-item>
+          <MenuItem class="pl-2 mx-2" to="/zenboard" icon="schedule">Zenboard </MenuItem>
+          <MenuItem class="px-2 ml-2" to="/standup" icon="history">Stand Up</MenuItem>
+          <MenuItem class="px-2 mx-2" to="/matrix" icon="grid_view">Matrix</MenuItem>
+          <MenuItem class="px-2 mx-2" to="/metrics" icon="grid_view">Metrics</MenuItem>
+          <MenuItem class="px-2 mx-2" to="/timer" icon="grid_view">Timer</MenuItem>
         </div>
       </div>
   
@@ -19,7 +19,6 @@
         <TimeTracker
           class="mr-4"
           :title="currentTask.title"
-          :class="{'opacity-75': !canStartTimer}"
           :task="currentTask"
           v-model:currentTimer="currentTimer"
           v-model:subType="timerSubtype"  
@@ -29,7 +28,7 @@
             size="mini" 
             v-model:pomodoro-mode="timerSubtype"
             v-model:timer="currentTimer" 
-            :disabled="!canStartTimer"
+            :disabled="!currentTask.title"
             :show-label="false" 
             :task="currentTask" 
             :template="config.template"
@@ -155,6 +154,7 @@ const unreadNotifications = computed(() => {
 const logout = () => {
   emit("logout");
 };
+
 </script>
 
 <style lang="scss">

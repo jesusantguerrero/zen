@@ -15,7 +15,13 @@ export function useTrackFirestore() {
 
     const updateTrack = (track) => {
         const trackRef = db.collection("tracks").doc(track.uid)
-        return trackRef.set(track, { merge: true })
+        const trackData = Object.keys(track).reduce((data, field) => {
+            if (track[field] !== undefined) {
+                data[field] = track[field]
+            }
+            return data;
+        }, {})
+        return trackRef.set(trackData, { merge: true })
         .then(() => {
             return track.uid;
         })
@@ -63,7 +69,7 @@ export function useTrackFirestore() {
     }
 
     const getRunningTrack = async () => {
-        const featureLaunchDate = new Date(2022, 6, 10)
+        const featureLaunchDate = new Date(2023, 0, 10)
         const ref =  await db.collection('tracks')
         .where('ended_at', '==', null)
         .where("user_uid", "==", firebaseState.user.uid)

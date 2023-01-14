@@ -17,6 +17,7 @@ import { useTrackFirestore } from "../../_features/tracks";
 import { SESSION_MODES } from "../../utils";
 import { usePromodoro } from "../../composables/usePromodoro";
 import { firebaseState } from "../../_features/app";
+import { useTitle } from "@vueuse/core";
 
 const { saveTrack, updateTrack } = useTrackFirestore();
 const props = defineProps({
@@ -42,12 +43,10 @@ const props = defineProps({
   }
 })
 
+const currentTrackId = ref(null);
+
 const emit = defineEmits({
   "update:currentTimer": (timer) =>  timer
-})
-
-const isTrackableMode = computed(() => {
-  return props.trackableModes.includes(props.subType);
 })
 
 const canStartTimer = computed(() => {
@@ -55,49 +54,51 @@ const canStartTimer = computed(() => {
 })
 
 const createTrack = (trackFormData) => {
-  trackFormData.subtype = props.subType
-  trackFormData.task_uid = trackFormData.task_uid || props.task.uid;
-  trackFormData.description = props.task.title
-  delete trackFormData.currentTime;
-  
-  saveTrack(trackFormData)
-    .then(uid => {
-      trackFormData.uid = uid;
-      // emit("update:currentTimer", trackFormData)
-    })
-    .catch(() => {
-      ElNotification({
-        title: "Track could not be started",
-        message: "Error",
-        type: "error"
+  if (trackFormData) {
+    trackFormData.subtype = props.subType
+    trackFormData.task_uid = trackFormData.task_uid || props.task.uid;
+    trackFormData.description = props.task.title
+    delete trackFormData.currentTime;
+    
+    saveTrack(trackFormData)
+      .then(uid => {
+        trackFormData.uid = uid;
+        currentTrackId.value = uid;
+        emit("update:currentTimer", trackFormData)
       })
-    })
+      .catch(() => {
+        ElNotification({
+          title: "Track could not be started",
+          message: "Error",
+          type: "error"
+        })
+      })
+  }
 }
 
 const updateData = (trackFormData) => {
-  if (Object.keys(trackFormData).length) {
+  if (trackFormData && Object.keys(trackFormData).length) {
     trackFormData.task_uid = trackFormData.task_uid || props.task.uid;
     trackFormData.subtype = trackFormData.subType || props.subType
     delete trackFormData.currentTime;
     updateTrack(trackFormData).then(() => {
+      emit("update:currentTimer", {})
       props.task.tracks.push(trackFormData);
-      ElNotification({
+      ElNotification.success({
         title: "Pomodoro time successfully saved",
-        message: "Pomodoro saved",
-        type: "success"
+        message: "Pomodoro saved"
       })
-    }).catch(() => {
-      ElNotification({
+    }).catch((err) => {
+      ElNotification.error({
         title: "Track could not be saved",
         message: "Error",
-        type: "error"
       })
     })
   }
 };
 
 const updateTitle = (track) => {
-  emit("update:currentTimer", track)
+  useTitle('Zen', track.currentTime)
 }
 
 // Settings
