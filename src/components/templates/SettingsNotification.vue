@@ -24,7 +24,7 @@
 <script>
 import { ElNotification } from "element-plus";
 import { onMounted, reactive, toRefs} from "vue";
-import { firebaseState, updateSettings } from "../../utils/useFirebase";
+import { firebaseState, updateSettings } from "../../_features/app/useFirebase";
 import Button from "../atoms/Button.vue";
 
 export default {

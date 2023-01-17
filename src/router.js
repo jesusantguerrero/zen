@@ -1,3 +1,6 @@
+import { createRouter, createWebHistory } from "vue-router";
+import { isAuthenticated, registerEvent, setScreen } from "./_features/app/useFirebase";
+
 import Landing from "./views/landing/index.vue";
 import Login from "./views/auth/Login.vue";
 import Home from "./views/Home.vue";
@@ -14,8 +17,6 @@ import Privacy from "./views/Privacy.vue"
 import Terms from "./views/Terms.vue"
 import Notifications from "./views/Notifications.vue";
 import Collect from "./views/collect/index.vue";
-import { createRouter, createWebHistory } from "vue-router";
-import { isAuthenticated, registerEvent, setScreen } from "./utils/useFirebase";
 
 // 2. Define some routes
 // Each route should map to a component.

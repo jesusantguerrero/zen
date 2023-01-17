@@ -60,7 +60,7 @@
 <script setup>
 import { defineProps, ref, watch, computed, reactive, defineEmit} from "vue"
 import ModalBase from "../molecules/ModalBase.vue";
-import { firebaseInstance } from "../../utils/useFirebase";
+import { firebaseInstance } from "../../_features/app/useFirebase";
 
 const props = defineProps({
     isOpen: Boolean,

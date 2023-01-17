@@ -80,7 +80,7 @@
 </template>
 
 <script setup>
-import { firebaseState, updateSettings } from "../../utils/useFirebase";
+import { firebaseState, updateSettings } from "../../_features/app/useFirebase";
 import { ElNotification } from "element-plus";
 import { reactive } from "vue";
 

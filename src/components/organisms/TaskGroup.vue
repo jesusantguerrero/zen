@@ -13,6 +13,7 @@
         </div>
       </div>
     </div>
+    {{  currentTimer.currentTime }}
 
       <slot name="addForm"></slot>
       <slot name="content">
@@ -23,13 +24,11 @@
               :class="{empty: !tasks.length,  [type]: true , [dragClass]: true}" 
               :list="tasks" 
               :handle="handleClass"
-              :group="{name: type, pull: true, put: true }"
-              @move="emitMove"
-              @change="emitChange($event, type)"
+              @end="emitMove"
             >
-              <task-item 
+              <TaskItem 
                 v-for="task in tasks" 
-                :key="task" 
+                :key="`${task.uid}-${task.title}`" 
                 :task="task" 
                 :type="type"
                 :handle-mode="displayHandle"
@@ -66,14 +65,16 @@
 <script setup>
 import { computed, onMounted, ref, toRefs } from "vue"
 import { VueDraggableNext as Draggable } from "vue-draggable-next"
-import { useTaskFirestore } from "../../utils/useTaskFirestore"
-import { useDateTime } from "../../utils/useDateTime"
 import { ElNotification, ElMessageBox } from "element-plus"
 import { useMediaQuery, useWindowSize } from "@vueuse/core"
+
 import TaskItem from "../molecules/TaskItem.vue"
 import IconExpand from "../atoms/IconExpand.vue"
 import IconCollapse from "../atoms/IconCollapse.vue"
 import ShareModal from "./modals/ShareModal.vue";
+
+import { useTaskFirestore } from "../../_features/tasks"
+import { useDateTime } from "../../composables/useDateTime"
 
 const props = defineProps({
     tasks: {
@@ -200,7 +201,9 @@ const onChange = ({ added, removed }, matrix) => {
 }
 
 const emitMove = (evt, originalEvent) => {
-  emit('move', evt, originalEvent)
+  nextTick(() => {
+    emit('move', evt, originalEvent)
+  })
 }
 
 const emitChange = ( evt, matrix ) => {

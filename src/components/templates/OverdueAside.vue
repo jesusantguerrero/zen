@@ -75,7 +75,7 @@
 </template>
 
 <script setup>
-import { useSearchOptions } from '../../utils/useFuseSearch';
+import { useSearchOptions } from '../../composables/useFuseSearch';
 
 defineProps({
     committed: {

@@ -18,9 +18,10 @@
      <h4 class="block mb-2 font-bold text-left text-gray-500 capitalize md:text-xl">
          {{ state.committedTitle }} ({{ state.committed.length }}) 
     </h4>
-    <task-item 
-        v-for="(task, index) in state.committed"
+    <TaskItem 
+        v-for="task in state.committed"
         :task="task"
+        :key="task.id"
         :handle-mode="false"
         :show-select="false"
         :show-controls="false"
@@ -40,8 +41,8 @@
     <h5 class="block mt-5 mb-2 font-bold text-left text-gray-500 capitalize md:text-lg">
         worked on ({{ state.tracked.length }}) 
     </h5>
-    <div v-for="track in state.tracked">
-      <task-item
+    <div v-for="track in state.tracked" :key="track.id">
+      <TaskItem
         :task="parseTrack(track)" 
         type="backlog"
         :handle-mode="false"
@@ -79,14 +80,14 @@
 
 <script setup>
 import { reactive, watch, onUnmounted, computed } from 'vue'
-import { useTaskFirestore } from '../utils/useTaskFirestore'
-import { useTrackFirestore } from '../utils/useTrackFirestore'
 import SearchBar from "../components/molecules/SearchBar.vue"
 import { format, formatRelative, startOfDay, subDays } from 'date-fns'
 import { enUS } from 'date-fns/locale'
 import TaskItem from '../components/molecules/TaskItem.vue'
 import IntegrationProjects from '../components/organisms/IntegrationProjects.vue'
 
+import { useTaskFirestore } from '../_features/tasks'
+import { useTrackFirestore } from '../_features/tracks'
 // state and ui
 const state = reactive({
   isFirstLoaded: false,

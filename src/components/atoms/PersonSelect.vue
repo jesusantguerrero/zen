@@ -93,7 +93,7 @@
 
 <script setup>
 import { computed, reactive, watch, ref, toRefs } from "vue";
-import { useFuseSearch } from "../../utils/useFuseSearch"
+import { useFuseSearch } from "../../composables/useFuseSearch"
 import randomcolor from "randomcolor";
 
 const props = defineProps({

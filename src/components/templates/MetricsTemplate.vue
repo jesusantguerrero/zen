@@ -48,9 +48,9 @@
 
 <script setup>
 import { reactive, watch, ref, onUnmounted, computed } from 'vue'
-import { useTrackFirestore } from '../../utils/useTrackFirestore'
-import { useDateTime } from '../../utils/useDateTime'
-import { getMilliseconds } from '../../utils/useTracker'
+import { useTrackFirestore } from '../../_features/tracks'
+import { useDateTime } from '../../composables/useDateTime'
+import { getMilliseconds } from '../../composables/useTracker'
 import ReportPomodoro from "../organisms/ReportPomodoro.vue"
 import { format } from 'date-fns'
 import { AtDatePager } from 'atmosphere-ui';

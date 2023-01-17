@@ -7,20 +7,44 @@
         <router-link class="text-2xl font-bold dark:text-gray-300 dark:hover:text-white zen" to="/"> Zen.</router-link>
         <div class="hidden md:flex md:items-center md:ml-4" v-if="user">
           <!-- <menu-item class="pl-2 mx-2" to="/home" icon="dashboard"> Home </menu-item> -->
-          <menu-item class="pl-2 mx-2" to="/zenboard" icon="schedule">Zenboard </menu-item>
-          <menu-item class="px-2 ml-2" to="/standup" icon="history">Stand Up</menu-item>
-          <menu-item class="px-2 mx-2" to="/matrix" icon="grid_view">Matrix</menu-item>
-          <menu-item class="px-2 mx-2" to="/metrics" icon="grid_view">Metrics</menu-item>
-          <menu-item class="px-2 mx-2" to="/timer" icon="grid_view">Timer</menu-item>
+          <MenuItem class="pl-2 mx-2" to="/zenboard" icon="schedule">Zenboard </MenuItem>
+          <MenuItem class="px-2 ml-2" to="/standup" icon="history">Stand Up</MenuItem>
+          <MenuItem class="px-2 mx-2" to="/matrix" icon="grid_view">Matrix</MenuItem>
+          <MenuItem class="px-2 mx-2" to="/metrics" icon="grid_view">Metrics</MenuItem>
+          <MenuItem class="px-2 mx-2" to="/timer" icon="grid_view">Timer</MenuItem>
         </div>
       </div>
   
-      <div class="flex items-center" v-if="user">
-        <app-notification
-            :notifications="unreadNotifications"
+      <div class="flex items-center space-x-2" v-if="user">
+        <TimeTracker
+          class="mr-4"
+          :title="currentTask.title"
+          :task="currentTask"
+          v-model:currentTimer="currentTimer"
+          v-model:subType="timerSubtype"  
+          v-slot="{updateTrack, createTrack, updateTitle, canStartTimer, config}"
+        >
+          <AtTimer 
+            size="mini" 
+            ref="timerRef"
+            v-model:pomodoro-mode="timerSubtype"
+            v-model:timer="currentTimer" 
+            :disabled="!currentTask.title"
+            :show-label="false" 
+            :task="currentTask" 
+            :template="config.template"
+            :volume="config.volume"
+            :modes="config.modes"
+            @stopped="updateTrack" 
+            @started="createTrack" 
+            @tick="updateTitle" 
+          />
+        </TimeTracker>
+        <AppNotification
+          :notifications="unreadNotifications"
         />
     
-        <div class="relative flex p-2 mx-2 text-sm font-bold text-gray-400 rounded-md cursor-pointer lg:text-lg changelog hover:bg-green-100 dark:hover:bg-gray-600 dark:hover:text-white">
+        <div class="relative flex p-2 text-sm font-bold text-gray-400 rounded-md cursor-pointer lg:text-lg changelog hover:bg-green-100 dark:hover:bg-gray-600 dark:hover:text-white">
             <i class="fa fa-bullhorn"></i>
         </div>
   
@@ -55,11 +79,17 @@
 </template>
 
 <script setup>
-import { computed, toRefs, onMounted, watch, inject } from "vue";
-import MenuItem from "../molecules/MenuItem.vue";
-import MobileMenu from "./MobileMenu.vue";
-import AppNotification from "../organisms/AppNotification.vue";
+import { computed, toRefs, onMounted, watch, inject, ref } from "vue";
 import { useRouter } from "vue-router";
+import { Timer as AtTimer } from "vue-temporal-components"
+
+import MenuItem from "../molecules/MenuItem.vue";
+import AppNotification from "../organisms/AppNotification.vue";
+import TimeTracker from "./TimeTracker.vue";
+
+import { useGlobalTracker } from "../../composables/useGlobalTracker";
+import { GlobalEmitter } from "@/utils/emitter";
+
 
 const props = defineProps({
   user: {
@@ -100,7 +130,6 @@ const profileImage = computed(() => {
 })
 
 const initials = computed(() => {
-  const provider = user.value.providerData[0];
   return profileName.value.split(' ').map( name => name[0]).join('');
 })
 
@@ -125,6 +154,16 @@ const unreadNotifications = computed(() => {
 const logout = () => {
   emit("logout");
 };
+
+
+// Tracker
+const { currentTimer, currentTask, timerSubtype } = useGlobalTracker()
+const timerRef = ref(null);
+
+EventBus.on('track::play', () => {
+  timerRef.value.play();
+})
+
 </script>
 
 <style lang="scss">

@@ -6,3 +6,5 @@ functions/.**
 *.local
 .vercel
 firebase-messaging-sw.js
+.turbo
+**/node_modules

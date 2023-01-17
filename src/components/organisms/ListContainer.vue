@@ -3,7 +3,7 @@
     <h4 class="font-bold text-gray-500 dark:text-gray-300">
         Checklist ({{ doneItems }} / {{ items ? items.length : 0 }})
     </h4>
-   <draggable v-model="items" handle=".handle">
+   <draggable v-bind="items" handle=".handle">
         <div
             v-for="(check, index) in items"
             :key="check.id"
@@ -58,7 +58,7 @@
 <script setup>
 import { onClickOutside } from "@vueuse/core";
 import { ElNotification } from "element-plus";
-import { useTaskFirestore } from "../../utils/useTaskFirestore"
+import { useTaskFirestore } from "../../_features/tasks"
 import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { VueDraggableNext as Draggable } from "vue-draggable-next"
 

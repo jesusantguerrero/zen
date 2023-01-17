@@ -31,8 +31,8 @@
 
 <script setup>
 import { reactive, watch, onUnmounted, computed } from 'vue'
-import { useTaskFirestore } from '../utils/useTaskFirestore'
-import { useTrackFirestore } from '../utils/useTrackFirestore'
+import { useTaskFirestore } from '../_features/tasks'
+import { useTrackFirestore } from '../_features/tracks'
 import SearchBar from "../components/molecules/SearchBar.vue"
 import { format, formatRelative, isToday, parse, startOfDay, subDays } from 'date-fns'
 import { enUS } from 'date-fns/locale'

@@ -10,7 +10,7 @@
 
 <script>
 import { useRouter } from "vue-router"
-import { useCollection } from '../../utils/useCollection';
+import { useCollection } from '../../_features/app/useCollection';
 
 export default {
     props: {

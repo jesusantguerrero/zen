@@ -67,7 +67,7 @@
 <script setup>
 import { ref, watch, reactive, inject } from "vue"
 import ModalBase from "../../molecules/ModalBase.vue";
-import { functions } from "../../../utils/useFirebase";
+import { functions } from "../../../_features/app/useFirebase";
 import { useField} from 'vee-validate';
 import { email, required } from "@vee-validate/rules"
 import { ElNotification } from "element-plus";

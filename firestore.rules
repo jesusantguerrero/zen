@@ -17,12 +17,59 @@ service cloud.firestore {
     	match /tasks/{taskId} {
         allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
         allow delete, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
-    		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid; 
+    		allow read: if (request.auth != null && resource.data.user_uid == request.auth.uid) || (exists(/databases/$(database)/documents/shared/$(request.auth.uid)/accounts/$(resource.data.user_uid))); 
       }
       match /tracks/{trackId} {
     		allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
         allow delete, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
     		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid;  
     	}
+      match /tags/{tagId} {
+        allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
+        allow delete, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
+    		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid; 
+      }
+      match /contacts/{contactId} {
+        allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
+        allow delete, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
+    		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid; 
+      }
+      match /projects/{projectId} {
+        allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
+        allow delete, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
+    		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid; 
+      }
+      match /shared/{sharedId}/accounts/{accountId} {
+    		allow read: if request.auth != null && sharedId == request.auth.uid; 
+      }
+      match /sharing/{sharedId}/accounts/{accountId} {
+    		allow read: if request.auth != null && sharedId == request.auth.uid;
+        allow delete: if sharedId == request.auth.uid;
+      }
+      match /connections/{connectionId} {
+        allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
+        allow delete, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
+    		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid; 
+        match /refreshToken {
+        	allow read: if false;
+        }
+      }
+      match /applications/{applicationId} {
+        allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
+        allow delete, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
+    		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid; 
+        match /client_secret {
+        	allow read: if false;
+        }
+      }
+      match /onetimecode/{onetimecodeId} {
+        allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
+    		allow read: if true; 
+      }
+      match /notifications/{notificationId} {
+        allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
+        allow delete, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
+    		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid; 
+      }
   }
 }

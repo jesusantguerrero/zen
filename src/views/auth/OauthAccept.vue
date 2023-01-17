@@ -15,7 +15,7 @@
 
 <script setup>
 import { useRoute } from "vue-router";
-import { useCollection } from "../../utils/useCollection";
+import { useCollection } from "../../_features/app/useCollection";
 import { v4 as uuid } from "uuid";
 import { onMounted, ref } from "vue";
 import { ElNotification } from "element-plus";

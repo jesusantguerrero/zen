@@ -10,6 +10,11 @@ const _dirname = typeof __dirname !== 'undefined'
  * @type {import('vite').UserConfig}
  */
 export default {
+  resolve: {
+    alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    }
+  },
   plugins: [
     vue({
       include: [/\.vue$/,/\.md$/]
@@ -18,7 +23,7 @@ export default {
   ],
   optimizeDeps: {
     include:[ 'firebase/app', 'atmosphere-ui', 'firebase/analytics', 'firebase/messaging', 'firebase/auth'],
-    exclude: ["apexcharts"],
+    exclude: ["apexcharts", "vue-temporal-components"],
   },
   build: {
     rollupOptions: {
