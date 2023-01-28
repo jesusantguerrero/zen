@@ -74,7 +74,7 @@
                 @deleted="destroyTask"
                 @edited="setTaskToEdit"
                 @selected="setCurrentTask"
-                @toggle-timer="setCurrentTask($event, true)"
+                @toggle-timer="onToggledTimed($event, true)"
                 @done="onDone"
                 @down="moveTo($event, 'schedule')"
               />
@@ -180,7 +180,6 @@ const {
   getTaskByMatrix,
   updateTaskBatch,
 } = useTaskFirestore();
-const { getAllTracksOfTask } = useTrackFirestore();
 
 nextTick(() => {});
 // state and ui
@@ -227,17 +226,6 @@ const onEditedTask = (task) => {
   taskToEdit.value = null;
 };
 
-watch(currentTask, (task) => {
-  if (task.uid) {
-    getAllTracksOfTask(task.uid).then((tracks) => {
-      currentTask.value.tracks = tracks.map(track => {
-        track.date_f = track.created_at.toDate()
-        return track;
-      }) || [];
-    });
-  }
-}, { immediate: true });
-
 const onDone = (task) => {
   task.tracks = [];
   delete task.duration_ms;
@@ -276,7 +264,7 @@ const onTaskUpdated = (task) => {
 // Tasks manipulation
 const getMatrix = (matrix) => {
   getTaskByMatrix(matrix).then((collectionRef) => {
-    const unsubscribe = collectionRef.get().then((snap) => {
+    const unsubscribe = collectionRef.onSnapshot(snap => {
       state[matrix] = [];
       snap.forEach((doc) => {
         state[matrix].push({ ...doc.data(), uid: doc.id });
@@ -381,6 +369,10 @@ const quickAdd = ref(null)
 watch(Shift_k, () => {
     quickAdd.value.focus();
 })
+
+const onToggledTimed = (task) => {
+  EventBus.emit('track::play', task);
+}
 </script>
 
 <style scoped>

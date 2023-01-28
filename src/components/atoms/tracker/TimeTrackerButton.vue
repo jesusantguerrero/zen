@@ -9,6 +9,7 @@
       class="mr-1 fa fa-clock"
       :class="allowRun ? trackerIcon : 'fa-clock'"
     ></i>
+    {{  currentTimer?.currentTime }}
     <span> {{ isCurrent && currentTimer.currentTime ? timeTracked : defaultValue }}</span>
   </div>
 </template>

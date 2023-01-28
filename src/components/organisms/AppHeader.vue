@@ -18,28 +18,10 @@
       <div class="flex items-center space-x-2" v-if="user">
         <TimeTracker
           class="mr-4"
-          :title="currentTask.title"
           :task="currentTask"
           v-model:currentTimer="currentTimer"
-          v-model:subType="timerSubtype"  
-          v-slot="{updateTrack, createTrack, updateTitle, canStartTimer, config}"
-        >
-          <AtTimer 
-            size="mini" 
-            ref="timerRef"
-            v-model:pomodoro-mode="timerSubtype"
-            v-model:timer="currentTimer" 
-            :disabled="!currentTask.title"
-            :show-label="false" 
-            :task="currentTask" 
-            :template="config.template"
-            :volume="config.volume"
-            :modes="config.modes"
-            @stopped="updateTrack" 
-            @started="createTrack" 
-            @tick="updateTitle" 
-          />
-        </TimeTracker>
+          v-model:subType="timerSubtype"
+        />
         <AppNotification
           :notifications="unreadNotifications"
         />
@@ -81,15 +63,10 @@
 <script setup>
 import { computed, toRefs, onMounted, watch, inject, ref } from "vue";
 import { useRouter } from "vue-router";
-import { Timer as AtTimer } from "vue-temporal-components"
 
 import MenuItem from "../molecules/MenuItem.vue";
 import AppNotification from "../organisms/AppNotification.vue";
 import TimeTracker from "./TimeTracker.vue";
-
-import { useGlobalTracker } from "../../composables/useGlobalTracker";
-import { GlobalEmitter } from "@/utils/emitter";
-
 
 const props = defineProps({
   user: {
@@ -154,15 +131,6 @@ const unreadNotifications = computed(() => {
 const logout = () => {
   emit("logout");
 };
-
-
-// Tracker
-const { currentTimer, currentTask, timerSubtype } = useGlobalTracker()
-const timerRef = ref(null);
-
-EventBus.on('track::play', () => {
-  timerRef.value.play();
-})
 
 </script>
 

@@ -13,20 +13,16 @@ const props = defineProps({
     type: [Object, null]
   }
 })
-const { getRunningTrack } = useTrackFirestore()
+const { getRunningTrack, getAllTracksOfTask } = useTrackFirestore()
 const { getById: getTaskById } = useTaskFirestore()
 // Todo use pinia for this
 const currentTimer = ref(null)
 const timerSubtype = ref(null)
 const currentTask = ref({});
-const setCurrentTask = (task, shouldAutoPlay) => {
+const setCurrentTask = (task) => {
   currentTask.value = task;
-  if (shouldAutoPlay) {
-    nextTick(() => {
-      EventBus.emit('track::play')
-    })
-  }
 };
+
 watch(() => props.user, async (user) => {
   if (user) {
     try {
@@ -40,6 +36,17 @@ watch(() => props.user, async (user) => {
     }
   }
 }, { immediate: true, deep: true })
+
+watch(() => currentTask.value, (task) => {
+  if (task.uid) {
+    getAllTracksOfTask(task.uid).then((tracks) => {
+      currentTask.value.tracks = tracks.map(track => {
+        track.date_f = track.created_at.toDate()
+        return track;
+      }) || [];
+    });
+  }
+}, { immediate: true });
 
 provide('currentTimer', currentTimer)
 provide('currentTask', currentTask)

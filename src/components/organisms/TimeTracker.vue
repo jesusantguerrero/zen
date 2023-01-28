@@ -7,12 +7,28 @@
       :canStartTimer="canStartTimer" 
       :updateTitle="updateTitle"
       :config="config"
-    />
+    >
+      <AtTimer 
+        size="mini" 
+        ref="timerRef"
+        v-model:pomodoro-mode="timerSubtype"
+        v-model:timer="currentTimer" 
+        :disabled="!currentTask.title"
+        :show-label="false" 
+        :task="currentTask" 
+        :template="config.template"
+        :volume="config.volume"
+        :modes="config.modes"
+        @stopped="updateData" 
+        @started="createTrack"
+        @tick="updateTitle" 
+      />
+    </slot>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, onMounted, nextTick } from "vue";
 import { ElNotification } from "element-plus";
 import { useTrackFirestore } from "../../_features/tracks";
 import { SESSION_MODES } from "../../utils";
@@ -20,15 +36,11 @@ import { usePromodoro } from "../../composables/usePromodoro";
 import { firebaseState } from "../../_features/app";
 import { useTitle } from "@vueuse/core";
 import { cloneDeep } from "lodash";
+import { useGlobalTracker } from "../../composables/useGlobalTracker";
+import  AtTimer from "vue-temporal-components/src/components/Timer/index.vue"
 
 const { saveTrack, updateTrack } = useTrackFirestore();
 const props = defineProps({
-  task: {
-    type: Object
-  },
-  currentTimer: {
-    type: Object
-  },
   trackableModes: {
     type: Array,
     default() {
@@ -51,25 +63,42 @@ const emit = defineEmits({
   "update:currentTimer": (timer) =>  timer
 })
 
+// Tracker
+const { currentTimer, currentTask, timerSubtype, setCurrentTask } = useGlobalTracker()
+const timerRef = ref(null);
+onMounted(() => {
+  EventBus.on('track::play', (task) => {
+    if (!task || currentTask?.uid !== task.uid) {
+        timerRef.value.reset();
+    }
+    setCurrentTask(task)
+    nextTick(() => {
+      timerRef.value.play();
+    })
+  })
+})
+
 const canStartTimer = computed(() => {
-  return props.task.title
+  return props.task?.title
 })
 
 const createTrack = (trackFormData) => {
   if (trackFormData) {
     trackFormData.subtype = props.subType
-    trackFormData.task_uid = trackFormData.task_uid || props.task.uid;
-    trackFormData.description = props.task.title
+    trackFormData.task_uid = trackFormData.task_uid || currentTask.value?.uid;
+    trackFormData.description = trackFormData.title || currentTask.value?.title
+    
     const data = cloneDeep(trackFormData)
     delete data.currentTime;
     
     saveTrack(data)
       .then(uid => {
+        console.log(trackFormData);
         trackFormData.uid = uid;
         currentTrackId.value = uid;
         emit("update:currentTimer", trackFormData)
       })
-      .catch(() => {
+      .catch((e) => {
         ElNotification({
           title: "Track could not be started",
           message: "Error",
@@ -80,18 +109,20 @@ const createTrack = (trackFormData) => {
 }
 
 const updateData = (trackFormData) => {
-  if (trackFormData && Object.keys(trackFormData).length) {
-    trackFormData.task_uid = trackFormData.task_uid || props.task.uid;
-    trackFormData.subtype = trackFormData.subType || props.subType
+  if (trackFormData && (currentTrackId.value || trackFormData.uid)) {
+    trackFormData.task_uid = trackFormData.task_uid || currentTask.value.uid;
+    trackFormData.subtype = trackFormData.subType || props.subType;
+    trackFormData.uid = trackFormData.uid ?? currentTrackId.value;
     delete trackFormData.currentTime;
     updateTrack(trackFormData).then(() => {
       emit("update:currentTimer", {})
-      props.task.tracks.push(trackFormData);
+      currentTask.value.tracks?.push(trackFormData);
       ElNotification.success({
         title: "Pomodoro time successfully saved",
         message: "Pomodoro saved"
       })
     }).catch((err) => {
+      console.log(err)
       ElNotification.error({
         title: "Track could not be saved",
         message: "Error",
@@ -101,7 +132,7 @@ const updateData = (trackFormData) => {
 };
 
 const updateTitle = (track) => {
-  useTitle('Zen', track.currentTime)
+  useTitle('Zen')
 }
 
 // Settings
@@ -115,4 +146,6 @@ watch(() => promodoroState, (localState) => {
   config.modes = localState.modes;
   config.volume = localState.volume
 }, { immediate: true })
+
+
 </script>

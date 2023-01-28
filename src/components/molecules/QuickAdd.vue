@@ -151,11 +151,11 @@ const taskForm = ref(null)
 onMounted(() => {
   
   onClickOutside(taskForm, (e) => {
-    const isTagSelect = e.path.filter(el => {
+    const isTagSelect = e.path?.filter(el => {
       return el.classList && Array.from(el.classList).includes('tag-select')
     })
 
-    if (isTagSelect.length) {
+    if (isTagSelect?.length) {
       return
     }
     state.isExpanded = false;

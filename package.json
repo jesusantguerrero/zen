@@ -35,11 +35,12 @@
     "element-plus": "^2.2.28",
     "firebase": "^9.15.0",
     "fuse.js": "^6.6.2",
+    "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
     "lumiere-utils": "^0.4.4",
     "luxon": "^3.2.1",
     "mitt": "^3.0.0",
-    "pinia": "^2.0.28",
+    "pinia": "^2.0.29",
     "randomcolor": "^0.6.2",
     "uuid": "^9.0.0",
     "vee-validate": "^4.7.3",
@@ -47,7 +48,7 @@
     "vue-draggable-next": "^2.1.1",
     "vue-final-modal": "^3.4.11",
     "vue-router": "^4.1.6",
-    "vue-temporal-components": "^0.4.2"
+    "vue-temporal-components": "^0.4.5"
   },
   "devDependencies": {
     "@rollup/pluginutils": "^5.0.2",
