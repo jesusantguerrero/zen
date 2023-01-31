@@ -9,7 +9,7 @@
       </h2>  
       <div class="flex space-x-2">
          <div class="w-32">
-            <jet-select
+            <JetSelect
                v-model:selected="state.viewMode"
                :options="state.modes"
                label="name"
@@ -31,8 +31,8 @@
 
    <div class="flex justify-between w-full text-right" v-if="false">
       <div class="flex">
-         <share-board /> 
-         <matrix-teammates v-model:selected="state.selectedUser" />           
+         <ShareBoard /> 
+         <MatrixTeammates v-model:selected="state.selectedUser" />           
       </div>
       
       <button class="px-5 py-1 font-bold border rounded-md focus:outline-none"

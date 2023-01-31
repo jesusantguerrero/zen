@@ -21,6 +21,7 @@ export const getTaskColorClass = (task) => {
 
 export const GLOBAL_EVENTS = {
     track: {
-        play: 'track::play'
+        play: 'track::play',
+        resume: 'track::resume'
     }
 }

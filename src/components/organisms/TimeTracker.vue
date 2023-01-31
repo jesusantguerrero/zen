@@ -78,6 +78,11 @@ onMounted(() => {
       timerRef.value.toggleTracker();
     })
   })
+  EventBus.on(GLOBAL_EVENTS.track.resume, (task) => {
+    nextTick(() => {
+      timerRef.value.resume(currentTimer.value);
+    })
+  })
 })
 
 const canStartTimer = computed(() => {

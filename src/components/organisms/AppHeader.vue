@@ -11,7 +11,7 @@
           <MenuItem class="px-2 ml-2" to="/standup" icon="history">Stand Up</MenuItem>
           <MenuItem class="px-2 mx-2" to="/matrix" icon="grid_view">Matrix</MenuItem>
           <MenuItem class="px-2 mx-2" to="/metrics" icon="grid_view">Metrics</MenuItem>
-          <MenuItem class="px-2 mx-2" to="/timer" icon="grid_view">Timer</MenuItem>
+          <!-- <MenuItem class="px-2 mx-2" to="/timer" icon="grid_view">Timer</MenuItem> -->
         </div>
       </div>
   

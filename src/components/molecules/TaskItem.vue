@@ -136,21 +136,7 @@
 
     <!-- Item body -->
     <ElCollapseTransition>
-      <div class="task-item__body" v-show="isExpanded">
-        <div
-          class="pt-2 text-left whitespace-pre-line task-item__description"
-          placeholder="Add a short description"
-          :class="{ 'text-gray-400 text-sm': !task.description }"
-          v-html="task.description"
-        />
-        <div class="mt-5 task-item__checklist">
-          <ChecklistContainer
-            :items="task.checklist"
-            :task="task"
-            @updated="updateItems"
-          />
-        </div>
-      </div>
+        <TaskItemDescription :task="task" v-show="isExpanded" />        
     </ElCollapseTransition>
   </div>
 </template>
@@ -170,6 +156,7 @@ import ZenDropdown from "./ZenDropdown.vue";
 import { useDateTime } from "../../composables/useDateTime";
 import { useCustomSelect } from "../../composables/useCustomSelect";
 import { getTaskColorClass, TaskMatrix, TaskTypeColors } from "../../utils/constants";
+import TaskItemDescription from "./TaskItemDescription.vue";
 
 export default {
   components: {
@@ -180,7 +167,8 @@ export default {
     TimeTrackerButton,
     TaskTrackView,
     ZenDropdown,
-  },
+    TaskItemDescription
+},
   props: {
     task: Object,
     type: String,
