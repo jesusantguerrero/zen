@@ -170,6 +170,7 @@ import TaskModal from "../components/organisms/modals/TaskModal.vue";
 import { getNextIndex } from "../utils";
 import { useGlobalTracker } from "../composables/useGlobalTracker";
 import SummarySider from "../components/templates/SummarySider.vue";
+import { GLOBAL_EVENTS } from "../utils/constants";
 
 const matrixStore = useMatrixStore()
 
@@ -371,7 +372,7 @@ watch(Shift_k, () => {
 })
 
 const onToggledTimed = (task) => {
-  EventBus.emit('track::play', task);
+  EventBus.emit(GLOBAL_EVENTS.track.play, task);
 }
 </script>
 

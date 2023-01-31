@@ -13,7 +13,6 @@
         </div>
       </div>
     </div>
-    {{  currentTimer?.currentTime }}
 
       <slot name="addForm"></slot>
       <slot name="content">

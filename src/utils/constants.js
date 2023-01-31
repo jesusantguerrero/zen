@@ -18,3 +18,9 @@ export const getTaskColorClass = (task) => {
     const keyClass = task.is_key ? 'text-gray-100 ' : 'text-green-500'
     return colorClass + ' ' + keyClass
 }
+
+export const GLOBAL_EVENTS = {
+    track: {
+        play: 'track::play'
+    }
+}

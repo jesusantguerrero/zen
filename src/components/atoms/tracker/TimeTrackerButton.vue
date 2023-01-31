@@ -1,16 +1,15 @@
 <template>
   <div
-    class="flex items-center ml-2 text-sm text-gray-400 task-item__tracked hover:text-gray-600 dark:hover:text-gray-200 md:text-md md:text-base"
+    class="flex items-center group ml-2 text-sm text-gray-400 task-item__tracked hover:text-gray-600 dark:hover:text-gray-200 md:text-md md:text-base"
     title="Time tracked"
     :class="[allowRun ? 'cursor-pointer' : 'cursor-default']"
     @click="$emit('toggle-timer', isCurrent)"
   >
     <i
       class="mr-1 fa fa-clock"
-      :class="allowRun ? trackerIcon : 'fa-clock'"
+      :class="allowRun ? [trackerIcon, isRunning ? 'group-hover:text-red-500': 'group-hover:text-green-500'] : 'fa-clock'"
     ></i>
-    {{  currentTimer?.currentTime }}
-    <span> {{ isCurrent && currentTimer.currentTime ? timeTracked : defaultValue }}</span>
+    <span> {{ isRunning ? timeTracked : defaultValue }}</span>
   </div>
 </template>
 
@@ -64,6 +63,9 @@ export default {
       trackerIcon: computed(() =>
         props.isCurrent && props.currentTimer.currentTime ? "fas fa-stop" : "fas fa-play"
       ),
+      isRunning: computed(() => {
+        return props.isCurrent && props.currentTimer.uid
+      })
     });
 
     return {

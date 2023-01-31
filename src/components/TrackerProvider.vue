@@ -3,10 +3,9 @@
 </template>
 
 <script setup>
-import { provide, ref, watch, nextTick } from 'vue';
+import { provide, ref, watch } from 'vue';
 import { useTaskFirestore } from '../_features/tasks';
 import { useTrackFirestore } from '../_features/tracks';
-import { GlobalEmitter } from "@/utils/emitter";
 
 const props = defineProps({
   user: {
@@ -17,7 +16,12 @@ const { getRunningTrack, getAllTracksOfTask } = useTrackFirestore()
 const { getById: getTaskById } = useTaskFirestore()
 // Todo use pinia for this
 const currentTimer = ref(null)
+const setCurrentTimer = (timer) => {
+  currentTimer.value = {...timer};
+};
+
 const timerSubtype = ref(null)
+
 const currentTask = ref({});
 const setCurrentTask = (task) => {
   currentTask.value = task;
@@ -52,4 +56,5 @@ provide('currentTimer', currentTimer)
 provide('currentTask', currentTask)
 provide('timerSubtype', timerSubtype)
 provide('setCurrentTask', setCurrentTask)
+provide('setCurrentTimer', setCurrentTimer)
 </script>

@@ -152,12 +152,6 @@
         </div>
       </div>
     </ElCollapseTransition>
-    <!-- <TaskTrackView
-      v-if="isSelected"
-      :task="currentTask"
-      :current-timer="currentTimer"
-    /> -->
-    <!-- /item body -->
   </div>
 </template>
 

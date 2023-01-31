@@ -39,6 +39,7 @@
     "lodash-es": "^4.17.21",
     "lumiere-utils": "^0.4.4",
     "luxon": "^3.2.1",
+    "marked": "^4.2.12",
     "mitt": "^3.0.0",
     "pinia": "^2.0.29",
     "randomcolor": "^0.6.2",
@@ -48,7 +49,7 @@
     "vue-draggable-next": "^2.1.1",
     "vue-final-modal": "^3.4.11",
     "vue-router": "^4.1.6",
-    "vue-temporal-components": "^0.4.5"
+    "vue-temporal-components": "^0.4.6"
   },
   "devDependencies": {
     "@rollup/pluginutils": "^5.0.2",

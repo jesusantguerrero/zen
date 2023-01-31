@@ -19,6 +19,7 @@
         :template="config.template"
         :volume="config.volume"
         :modes="config.modes"
+        :move-on-stop="true"
         @stopped="updateData" 
         @started="createTrack"
         @tick="updateTitle" 
@@ -38,6 +39,7 @@ import { useTitle } from "@vueuse/core";
 import { cloneDeep } from "lodash";
 import { useGlobalTracker } from "../../composables/useGlobalTracker";
 import  AtTimer from "vue-temporal-components/src/components/Timer/index.vue"
+import { GLOBAL_EVENTS } from "../../utils/constants";
 
 const { saveTrack, updateTrack } = useTrackFirestore();
 const props = defineProps({
@@ -64,16 +66,16 @@ const emit = defineEmits({
 })
 
 // Tracker
-const { currentTimer, currentTask, timerSubtype, setCurrentTask } = useGlobalTracker()
+const { currentTimer, currentTask, timerSubtype, setCurrentTask, setCurrentTimer } = useGlobalTracker()
 const timerRef = ref(null);
 onMounted(() => {
-  EventBus.on('track::play', (task) => {
-    if (!task || currentTask?.uid !== task.uid) {
+  EventBus.on(GLOBAL_EVENTS.track.play, (task) => {
+    if (!currentTask.value || currentTask.value?.uid !== task.uid) {
         timerRef.value.reset();
+        setCurrentTask(task)
     }
-    setCurrentTask(task)
     nextTick(() => {
-      timerRef.value.play();
+      timerRef.value.toggleTracker();
     })
   })
 })
@@ -93,10 +95,11 @@ const createTrack = (trackFormData) => {
     
     saveTrack(data)
       .then(uid => {
-        console.log(trackFormData);
         trackFormData.uid = uid;
         currentTrackId.value = uid;
-        emit("update:currentTimer", trackFormData)
+        nextTick(() => {
+          setCurrentTimer(trackFormData);
+        })
       })
       .catch((e) => {
         ElNotification({
@@ -115,7 +118,8 @@ const updateData = (trackFormData) => {
     trackFormData.uid = trackFormData.uid ?? currentTrackId.value;
     delete trackFormData.currentTime;
     updateTrack(trackFormData).then(() => {
-      emit("update:currentTimer", {})
+      currentTrackId.value = null;
+      setCurrentTimer({});
       currentTask.value.tracks?.push(trackFormData);
       ElNotification.success({
         title: "Pomodoro time successfully saved",
@@ -131,7 +135,11 @@ const updateData = (trackFormData) => {
   }
 };
 
-const updateTitle = (track) => {
+const updateTitle = (trackFormData) => {
+  trackFormData.task_uid = trackFormData.task_uid || currentTask.value.uid;
+  trackFormData.subtype = trackFormData.subType || props.subType;
+  trackFormData.uid = trackFormData.uid ?? currentTrackId.value;
+  currentTrackId.value && setCurrentTimer(trackFormData);
   useTitle('Zen')
 }
 
@@ -146,6 +154,4 @@ watch(() => promodoroState, (localState) => {
   config.modes = localState.modes;
   config.volume = localState.volume
 }, { immediate: true })
-
-
 </script>
