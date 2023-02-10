@@ -61,14 +61,13 @@
                   </textarea>
                   
                   <div class="flex pt-5 text-left task-item__checklist">
-                    <checklist-container 
+                    <ChecklistContainer 
                       v-model="state.checklistTitle"
-                      :items="task.checklist" 
+                      v-model:items="task.checklist" 
                       :task="task" 
                       :allow-edit="true" 
                       class="w-10/12"
-                    >
-                    </checklist-container>
+                    />
                     <div class="w-2/12 px-2 text-sm" v-if="task.matrix == 'delegate'">
                       <h4 class="text-sm font-bold text-gray-500"> Delegated to: </h4>
                       <person-select

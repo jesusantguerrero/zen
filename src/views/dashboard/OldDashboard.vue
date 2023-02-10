@@ -10,14 +10,14 @@
             Main task
           </h1>
 
-          <time-tracker 
+          <TimeTracker 
             :task="currentTask" 
             v-model:currentTimer="currentTimer"
           />
         </header>
 
         <div class="mt-5">
-          <quick-add
+          <QuickAdd
             v-if="state.showReminder"
             mode="reminder"
             type="reminder"
@@ -26,7 +26,7 @@
             placeholder="Add a reminder"
           />
 
-          <task-view
+          <TaskView
             :task-data="currentTask"
             :current-timer="currentTimer"
             @done="onDone"
@@ -54,9 +54,8 @@
                 </div>
               </div>
             </template>
-          </task-view>
-          <task-track-view :task="currentTask" :current-timer="currentTimer">
-          </task-track-view>
+          </TaskView>
+          <TaskTrackView :task="currentTask" :current-timer="currentTimer" />
         </div>
       </div>
 
@@ -65,25 +64,14 @@
         :class="[state.mobileMode == 'lineup' ? 'block' : 'hidden']"
       >
         <header class="items-center justify-between mb-2 overflow-hidden font-bold text-gray-400 md:flex">
-          <h1 class="text-2xl">Lineup</h1>
-
-          <div class="items-center h-10 md:flex">
-            <input
-              type="search"
-              v-model.trim="searchText"
-              class="h-10 px-2 text-sm border-2 border-gray-200 rounded-md w-44 focus:outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-300"
-              placeholder="Search task"
-            />
-
-            <tags-select
-              v-model="searchTags"
+          <SearchBox
+              v-model="searchText"
+              v-model:selectedTags="searchTags"
+              placeholder="Search task..."
               :multiple="true"
-              placeholder="Filter by tag"
               :tags="tags" 
-              class="w-full h-full px-2 py-2 bg-white border-2 border-gray-200 rounded-md md:ml-2 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-300"
               :allow-add="false"
-            /> 
-          </div>
+          />
         </header>
 
         <div class="divide-y-2 divide-gray-200 comming-up__list dark:divide-gray-600 dark:text-gray-300 divide-solid">
@@ -158,18 +146,17 @@
       </div>
     </div>
 
-    <welcome-modal
+    <WelcomeModal
       :is-open="state.isWelcomeOpen"
       @closed="closeWelcomeModal"
-    ></welcome-modal>
+    />
 
-    <task-modal
+    <TaskModal
       v-model:is-open="state.isTaskModalOpen"
       :task-data="taskToEdit"
       @saved="onEditedTask"
       @closed="taskToEdit = null"
-    >
-    </task-modal>
+    />
 
     <!-- mobile nav -->
     <div class="fixed bottom-0 left-0 flex w-full h-10 text-white bg-gray-600 md:hidden">
@@ -191,7 +178,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { inject, nextTick, onUnmounted, reactive, ref, watch, toRefs, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessageBox, ElNotification } from "element-plus";
@@ -200,15 +187,18 @@ import { useTrackFirestore } from "../../utils/useTrackFirestore";
 import { firebaseState, registerEvent, updateSettings } from "../../utils/useFirebase";
 import { useFuseSearch, useSearchOptions } from "../../utils/useFuseSearch";
 import { startFireworks } from "../../utils/useConfetti";
-import TagsSelect from "../../components/atoms/TagsSelect.vue"
-import TaskGroup from "../../components/organisms/TaskGroup.vue";
-import QuickAdd from "../../components/molecules/QuickAdd.vue";
-import TimeTracker from "../../components/organisms/TimeTracker.vue";
-import TaskView from "../../components/organisms/TaskView.vue";
-import TaskTrackView from "../../components/organisms/TaskTrackView.vue";
-import WelcomeModal from "../../components/organisms/modals/WelcomeModal.vue";
-import TaskModal from "../../components/organisms/modals/TaskModal.vue";
-import { getNextIndex } from "../../utils";
+
+import TagsSelect from "@/components/atoms/TagsSelect.vue"
+import TaskGroup from "@/components/organisms/TaskGroup.vue";
+import QuickAdd from "@/components/molecules/QuickAdd.vue";
+import TimeTracker from "@/components/organisms/TimeTracker.vue";
+import TaskView from "@/components/organisms/TaskView.vue";
+import TaskTrackView from "@/components/organisms/TaskTrackView.vue";
+import WelcomeModal from "@/components/organisms/modals/WelcomeModal.vue";
+import TaskModal from "@/components/organisms/modals/TaskModal.vue";
+import SearchBox from "./SearchBox.vue";
+
+import { getNextIndex } from "@/utils";
 import { useMagicKeys } from "@vueuse/core";
 
 const {
