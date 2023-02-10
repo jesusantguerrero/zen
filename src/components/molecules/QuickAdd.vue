@@ -26,7 +26,7 @@
 
       <div class="flex items-center task-item__controls" v-if="!isReminder">
         <div class="mx-2 text-gray-400 hover:text-gray-600">
-          <person-select
+          <PersonSelect
             v-if="type=='delegate'"
             v-model="task.contacts"
             :items="contacts"
@@ -34,7 +34,7 @@
             @selected="addContact"
             @added="createContact"
           /> 
-          <date-select 
+          <DateSelect 
             v-else
             v-model="task.due_date" 
           />    
@@ -46,7 +46,7 @@
       </div>
     </div>
     
-    <el-collapse-transition>
+    <ElCollapseTransition>
       <div class="w-full p-3 task-item__body" v-if="state.isExpanded">
         <textarea 
           v-model="task.description"
@@ -85,7 +85,7 @@
             ProTip! save with ctrl + enter
           </div>
         </div>
-    </el-collapse-transition>
+    </ElCollapseTransition>
   </form>
 </template>
 
@@ -116,7 +116,8 @@ const props = defineProps({
     }
 })
 const emit =  defineEmits({
-  'saved': (task) => {}
+  'saved': (task) => {},
+  'close': () => {}
 })
 
 const task = reactive({
@@ -149,14 +150,15 @@ const taskForm = ref(null)
 onMounted(() => {
   
   onClickOutside(taskForm, (e) => {
-    const isTagSelect = e.path.filter(el => {
+    const isTagSelect = e.path?.filter(el => {
       return el.classList && Array.from(el.classList).includes('tag-select')
     })
 
-    if (isTagSelect.length) {
+    if (isTagSelect?.length) {
       return
     }
     state.isExpanded = false;
+    emit('close');
   })
 })
 
@@ -194,6 +196,7 @@ const clearForm = () => {
   task.duration_ms = 0
   task.checklist = [];
   task.tracks = [];
+  emit('close')
 }
 
 const confirmChecklist = async () => {
