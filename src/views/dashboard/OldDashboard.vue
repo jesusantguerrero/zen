@@ -72,10 +72,11 @@
               :tags="tags" 
               :allow-add="false"
           />
-          <AtButton type="success" class="h-full" rounded @click="state.showAdd=true">
-            Add
+          <AtButton type="success" class="h-full" rounded @click="toggleQuickAdd">
+            New
           </AtButton>
         </header>
+        <small class="text-gray-500 text-center w-full inline-block"> You can press shift+k to add a new task</small>
 
         <div class="divide-y-2 divide-gray-200 comming-up__list dark:divide-gray-600 dark:text-gray-300 divide-solid">
           <div v-show="state.showAdd"  class="mb-4 quick__add">
@@ -417,11 +418,16 @@ const handleDragChanges = (e, matrix) => {
 
 //  magic keys
 const { Shift_k} = useMagicKeys();
-const quickAdd = ref(null)
+const quickAdd = ref()
 watch(Shift_k, () => {
-    quickAdd.value.focus();
+  toggleQuickAdd();
 })
-
+const toggleQuickAdd = () => {
+  state.showAdd = true;
+  nextTick(() => {
+    quickAdd.value.focus();
+  })
+}
 </script>
 
 <style scoped>
