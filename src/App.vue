@@ -3,7 +3,7 @@
       <app-header :user="firebaseState.user" class="z-50" @logout="logoutUser" v-if="firebaseState.user"/>
       <router-view> </router-view>
       <integrations-bar v-if="firebaseState.user" />
-      <mobile-menu-bar />
+      <mobile-menu-bar v-if="firebaseState.user" />
   </div>
 </template>
 
