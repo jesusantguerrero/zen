@@ -1,6 +1,6 @@
 import vue from '@vitejs/plugin-vue'
 import markdown from 'vite-plugin-md';
-import { dirname, join } from "path";
+import { dirname, join, resolve } from "path";
 import { fileURLToPath } from 'url';
 
 const _dirname = typeof __dirname !== 'undefined'
@@ -19,6 +19,11 @@ export default {
   optimizeDeps: {
     include:[ 'firebase/app', 'atmosphere-ui', 'firebase/analytics', 'firebase/messaging', 'firebase/auth'],
     exclude: ["apexcharts"],
+  },
+  resolve: {
+    alias: {
+      '@': resolve('./src/'),
+    },
   },
   build: {
     rollupOptions: {
