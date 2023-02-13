@@ -7,12 +7,13 @@
         </div>
         <input
           type="text"
-          class="time-tracker__description"
-          placeholder="Add description"
+          class="time-tracker__description disabled:bg-white"
+          placeholder="Add descriptio"
+          disabled
           v-model="timeEntry.description"
         />
         <div class="time-tracker__billable-status custom-check-container">
-          <label
+          <!-- <label
             for="time-tracker-billable"
             class="custom-check"
             :class="{ selected: timeEntry.billable }"
@@ -25,13 +26,13 @@
               :id="`time-tracker-billable-${timeEntry.id}`"
               v-model="timeEntry.billable"
             />
-          </label>
+          </label> -->
         </div>
       </div>
 
       <div class="w--1/5 flex m-auto">
         <div class="time-tracker__relations flex">
-          <div class="time-tracker__billable-status custom-check-container">
+          <!-- <div class="time-tracker__billable-status custom-check-container">
             <label
               for="time-tracker-billable"
               class="custom-check"
@@ -46,9 +47,9 @@
                 v-model="timeEntry.billable"
               />
             </label>
-          </div>
+          </div> -->
 
-          <div class="time-tracker__billable-status custom-check-container">
+          <!-- <div class="time-tracker__billable-status custom-check-container">
             <label
               for="time-tracker-billable"
               class="custom-check"
@@ -63,7 +64,7 @@
                 v-model="timeEntry.billable"
               />
             </label>
-          </div>
+          </div> -->
         </div>
       </div>
       <div class="w-2/5 flex ml-auto">
@@ -94,7 +95,6 @@
 </template>
 
 <script setup>
-import { format } from "date-fns";
 import Duration from "duration";
 import { computed, reactive } from "vue";
 import { durationFromMs, formatDateToTime } from "../../utils/useTracker"

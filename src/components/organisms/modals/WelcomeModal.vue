@@ -1,6 +1,5 @@
 <template>
-<div>
-    <vue-final-modal 
+    <VueFinalModal 
         v-model="isOpenLocal" 
         name="welcome" 
         classes="flex justify-center md:pt-20 w-full"
@@ -11,8 +10,7 @@
             <about-form v-if="section=='about'" @closed="section='help'"></about-form>
             <help-view v-if="section=='help'" @closed="emit('closed')"></help-view>
         </div>
-    </vue-final-modal>
-</div>
+    </VueFinalModal>
 </template>
 
 <script setup>
@@ -20,6 +18,7 @@ import { ref, watch } from "vue"
 import WelcomeForm from "../../molecules/WelcomeForm.vue"
 import AboutForm from "../../molecules/AboutForm.vue"
 import HelpView from "../../molecules/HelpView.vue"
+import { VueFinalModal } from "vue-final-modal";
 
 const props = defineProps({
     isOpen: Boolean

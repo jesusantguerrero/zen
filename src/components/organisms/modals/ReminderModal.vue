@@ -1,6 +1,5 @@
 <template>
-<div>
-    <vue-final-modal 
+    <VueFinalModal 
         v-model="isOpenLocal" 
         name="welcome" 
         classes="flex justify-center md:pt-20 w-full"
@@ -11,13 +10,13 @@
             
             />
         </div>
-    </vue-final-modal>
-</div>
+    </VueFinalModal>
 </template>
 
 <script setup>
 import { ref, watch } from "vue"
 import RecurrenceForm from "../RecurrenceForm.vue"
+import { VueFinalModal } from "vue-final-modal";
 
 
 const props = defineProps({

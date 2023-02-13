@@ -10,9 +10,9 @@
                         <input type="checkbox" v-model="selected" @change="toggleSelection" />
                     </div>
 
-                    <div class="flex">
+                    <div class="flex items-center">
                         <div
-                            class="time-tracker-item__count"
+                            class="time-tracker-item__count border-2 text-green-400 border-green-500"
                             @click.stop="toggleExpand()"
                         >
                             {{ timeEntry.tracks.length }}
@@ -58,7 +58,7 @@
         <!-- Child tracks -->
         <transition-group>
             <template v-if="timeEntry.tracks.length <= 1 || state.isExpanded">
-                <time-entry-item
+                <TimeEntryItem
                     v-for="track in timeEntry.tracks"
                     :time-entry="track"
                     :key="track.id"
@@ -145,7 +145,6 @@ const duration = computed(() => {
     }
 
     &__count {
-        border: 2px solid var(--primary-color);
         width: 30px;
         height: 30px;
         min-width: 30px;
@@ -156,7 +155,6 @@ const duration = computed(() => {
         margin-right: 10px;
         cursor: pointer;
         font-weight: bolder;
-        color: var(--primary-color);
     }
 }
 

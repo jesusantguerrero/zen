@@ -1,6 +1,6 @@
 <template>
 <div>
-    <vue-final-modal 
+    <VueFinalModal 
         v-model="isOpenLocal" 
         name="standup" 
         classes="flex justify-center md:pt-20 w-full"
@@ -16,13 +16,14 @@
                 </template>
             </standup-form>
         </div>
-    </vue-final-modal>
+    </VueFinalModal>
 </div>
 </template>
 
 <script setup>
 import { ref, watch } from "vue"
 import StandupForm from "../../molecules/StandupForm.vue"
+import { VueFinalModal } from "vue-final-modal";
 
 const props = defineProps({
     isOpen: Boolean

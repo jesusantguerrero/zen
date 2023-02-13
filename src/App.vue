@@ -1,14 +1,16 @@
 <template>
   <div class="text-center">
-      <app-header :user="firebaseState.user" class="z-50" @logout="logoutUser" v-if="firebaseState.user"/>
-      <router-view> </router-view>
-      <integrations-bar v-if="firebaseState.user" />
-      <mobile-menu-bar v-if="firebaseState.user" />
+      <AppHeader :user="firebaseState.user" class="z-50" @logout="logoutUser" v-if="firebaseState.user"/>
+      <RouterView />
+      <IntegrationsBar v-if="firebaseState.user" />
+      <MobileMenuBar v-if="firebaseState.user" />
+      <ModalsContainer />
   </div>
 </template>
 
 <script setup>
 import { nextTick, ref, provide, onUnmounted, watch } from 'vue'
+import { ModalsContainer } from 'vue-final-modal'
 import AppHeader from './components/organisms/AppHeader.vue'
 import IntegrationsBar from './components/templates/IntegrationsBar.vue'
 import { logout, setLoaded, functions, firebaseState, firebaseInstance } from "./utils/useFirebase"

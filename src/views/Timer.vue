@@ -4,7 +4,7 @@
       <h2 class="flex items-center text-2xl font-bold text-left text-gray-400">
          <span> Time Tracks </span>
       </h2>
-      <search-bar
+      <SearchBar
         v-model="state.searchText"
         v-model:date="state.date"
         v-model:tags="state.tags"
@@ -31,12 +31,13 @@
 
 <script setup>
 import { reactive, watch, onUnmounted, computed } from 'vue'
-import { useTaskFirestore } from '../utils/useTaskFirestore'
-import { useTrackFirestore } from '../utils/useTrackFirestore'
-import SearchBar from "../components/molecules/SearchBar.vue"
-import { format, formatRelative, isToday, parse, startOfDay, subDays } from 'date-fns'
 import { enUS } from 'date-fns/locale'
-import TimeTrackerGroup from '../components/organisms/TimeTrackerGroup.vue'
+
+import SearchBar from "@/components/molecules/SearchBar.vue"
+import TimeTrackerGroup from '@/components/organisms/TimeTrackerGroup.vue'
+
+import { useTrackFirestore } from '@/utils/useTrackFirestore'
+import { format, formatRelative, isToday, parse, startOfDay, subDays } from 'date-fns'
 
 
 // state and ui
