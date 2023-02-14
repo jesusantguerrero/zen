@@ -13,7 +13,7 @@ export function useTaskFirestore() {
         if (task.due_date) {
             task.due_date = getDate(task)
         }
-        return db.collection(taskConverter.toFirestore(collectionName))
+        return db.collection(collectionName, taskConverter.toFirestore(task))
         .add({
             ...task,
             user_uid: firebaseState.user.uid,
@@ -163,8 +163,8 @@ export function useTaskFirestore() {
         toFirestore(data) {
             return {
                 ...data,
-                checklist: data.checklist.map((item) => ({
-                    ...item,
+                checklist: data.checklist?.map((item) => ({
+                    ...item ?? [],
                     created_at: item.created_at ?? new Date(),
                     updated_at: item.updated_at ?? new Date()
                 }))
