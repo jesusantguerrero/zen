@@ -76,13 +76,14 @@
             New
           </AtButton>
         </header>
-        <small class="text-gray-500 text-center w-full inline-block"> You can press shift+k to add a new task</small>
+        <small v-show="state.showAdd"  class="text-gray-500 text-center w-full inline-block"> You can press shift+k to add a new task</small>
 
         <div class="divide-y-2 divide-gray-200 comming-up__list dark:divide-gray-600 dark:text-gray-300 divide-solid">
           <div v-show="state.showAdd"  class="mb-4 quick__add">
             <QuickAdd 
               type="todo" 
               ref="quickAdd" 
+              :initial-text="searchText"
               @saved="addTask" 
               @close="state.showAdd=false"
               :allow-edit="true"

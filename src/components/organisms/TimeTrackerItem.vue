@@ -1,17 +1,25 @@
 <template>
-  <div class="w-full time-tracker-item flex items-center bg-white px-8">
+  <div class="w-full time-tracker-item flex items-center bg-white px-8 group">
     <div class="flex w-full">
       <div class="w-2/5 flex items-center">
-       <div class="">
-            <input type="checkbox" v-model="timeEntry.selected" :value="timeEntry.id" />
-        </div>
         <input
-          type="text"
-          class="time-tracker__description"
-          placeholder="Add description"
-          v-model="timeEntry.description"
-        />
-        <div class="time-tracker__billable-status custom-check-container">
+          type="checkbox"
+          class="mr-4 form-control-check checkbox-done" 
+          v-model="timeEntry.selected" :value="timeEntry.id" 
+          />
+        <div class="flex items-center" :class="[isChild? 'ml-11' : 'ml-4']">
+          <div v-if="isChild"
+                class="rounded-full bg-green-100 h-4 w-4 border-green-500 border text-green-500"
+          />
+          <input
+            type="text"
+            class="time-tracker__description px-8"
+            placeholder="Add description"
+            :class="[isChild? '' : 'font-bold']"
+            v-model="timeEntry.description"
+          />
+        </div>
+        <div class="time-tracker__billable-status custom-check-container opacity-0">
           <label
             for="time-tracker-billable"
             class="custom-check"
@@ -29,7 +37,7 @@
         </div>
       </div>
 
-      <div class="w--1/5 flex m-auto">
+      <div class="w--1/5 flex m-auto opacity-0">
         <div class="time-tracker__relations flex">
           <div class="time-tracker__billable-status custom-check-container">
             <label
@@ -81,10 +89,10 @@
             class="time-duration-display"
           />
 
-          <button @click="initTimer()" class="play-button">
+          <button @click="initTimer()" class="play-button opacity-0 group-hover:opacity-100">
             <i :class="`fa fa-${timerButtonIcon}`" />
           </button>
-          <button @click="deleteItem()" class="play-button">
+          <button @click="deleteItem()" class="play-button opacity-0 group-hover:opacity-100">
             <i class="fa fa-trash" />
           </button>
         </div>
@@ -94,7 +102,6 @@
 </template>
 
 <script setup>
-import { format } from "date-fns";
 import Duration from "duration";
 import { computed, reactive } from "vue";
 import { durationFromMs, formatDateToTime } from "../../utils/useTracker"
@@ -111,6 +118,9 @@ const props = defineProps({
           duration: null
         };
       }
+    },
+    isChild: {
+      type: Boolean,
     }
 });
 
@@ -254,7 +264,6 @@ const toggleTimer = () => {
   border: none;
   height: 100%;
   width: 100%;
-  padding-left: 40px;
 
   &:focus {
     outline: none;
