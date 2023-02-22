@@ -149,7 +149,7 @@ export default defineComponent({
         })
 
         const closeModal = (e) => {
-            const hasPopover = e.path?.find(el => el.classList && el.classList.contains('el-popper'));
+            const hasPopover = e.path.find(el => el.classList && el.classList.contains('el-popper'));
             if (!hasPopover) { 
                 state.isOpen = false;
                 isRecurrenceOpen.value = false;

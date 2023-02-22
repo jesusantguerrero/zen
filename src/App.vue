@@ -1,9 +1,9 @@
 <template>
   <div class="text-center">
-      <AppHeader :user="firebaseState.user" class="z-50" @logout="logoutUser" v-if="firebaseState.user"/>
-      <RouterView />
-      <IntegrationsBar v-if="firebaseState.user" />
-      <MobileMenuBar v-if="firebaseState.user" />
+      <app-header :user="firebaseState.user" class="z-50" @logout="logoutUser" v-if="firebaseState.user"/>
+      <router-view> </router-view>
+      <integrations-bar v-if="firebaseState.user" />
+      <mobile-menu-bar />
   </div>
 </template>
 

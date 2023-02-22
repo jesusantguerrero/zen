@@ -113,7 +113,7 @@
                 @focus.prevent="focusButton"
             >
                 <i class="cursor-pointer fa fa-tags"></i>
-                    <span v-if="!selectedTags.length" class="min-w-max"> {{ placeholder }} </span>
+                    <span v-if="!selectedTags.length"> {{ placeholder }} </span>
                     <span 
                         v-for="tag in selectedTags.slice(0, limit)" 
                         :key="tag.name" 

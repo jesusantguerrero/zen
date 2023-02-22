@@ -72,7 +72,7 @@ const state = reactive({
     integrations: {
       label: 'Integrations',
       component: SettingsIntegrations,
-      active: true
+      active: false
     },
     oauth: {
       label: 'Oauth',

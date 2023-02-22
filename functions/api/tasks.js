@@ -73,8 +73,8 @@ app.post('/tasks', async (req, res) => {
             commit_date: null,
             matrix:"backlog",
             created_at: admin.firestore.Timestamp.now()
-          },
-          task
+            },
+            task
         )
     });
  

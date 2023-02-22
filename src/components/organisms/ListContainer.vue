@@ -3,11 +3,11 @@
     <h4 class="font-bold text-gray-500 dark:text-gray-300">
         Checklist ({{ doneItems }} / {{ items ? items.length : 0 }})
     </h4>
-   <draggable :model-value="items" @update:model-value="$emit('update:items', $event)" handle=".handle">
+   <draggable v-model="items" handle=".handle">
         <div
             v-for="(check, index) in items"
             :key="check.id"
-            class="flex items-center group justify-between h-8 px-2 my-2 bg-white rounded-sm cursor-default checklist__item dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-50"
+            class="flex items-center justify-between h-8 px-2 my-2 bg-white rounded-sm cursor-default checklist__item dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-50"
         >   
             <div class="flex items-center w-full">
                 <i class="mr-2 opacity-0 fa fa-arrows-alt checklist-item__move handle"  v-if="allowEdit"></i>
@@ -23,10 +23,6 @@
                     :disabled="!allowEdit"
                     v-model="check.title"
                 />
-                <span class="hidden group-hover:inline min-w-max">
-                    {{  format(check.created_at ?? new Date(), 'dd, MMM') }} 
-                    {{  format(check.updated_at ?? new Date(), 'dd, MMM') }}
-                </span>
             </div>
             
             <button class="w-5">
@@ -60,12 +56,11 @@
 </template>
 
 <script setup>
-import { formatDate, onClickOutside } from "@vueuse/core";
+import { onClickOutside } from "@vueuse/core";
 import { ElNotification } from "element-plus";
 import { useTaskFirestore } from "../../utils/useTaskFirestore"
 import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { VueDraggableNext as Draggable } from "vue-draggable-next"
-import { format } from "date-fns";
 
 const props = defineProps({
     modelValue: String,
@@ -128,11 +123,7 @@ const updateItems = () => {
     if (hasChanges.value && props.task && props.task.uid) {
         updateTask({
             uid: props.task.uid,
-            checklist: [...props.items.map((item) => ({
-                ...item,
-                created_at: item.created_at ?? new Date(),
-                updated_at: item.updated_at ?? new Date()
-            }))]
+            checklist: [...props.items]
         })
         hasChanges.value = false
     }

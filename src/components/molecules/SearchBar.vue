@@ -1,20 +1,24 @@
 <template>
   <div class="text-left md:space-x-2 md:flex">
     <!-- search -->
-    <SearchBox
-        v-model="searchOptions.text"
-        v-model:selectedTags="searchOptions.tags"
-        placeholder="Search task..."
-        :multiple="true"
-        :tags="tags" 
-        :allow-add="false"
-    />
+    <search-input v-model="searchOptions.text"> </search-input>
     <!-- /search -->
 
     <div class="flex justify-between mt-2 md:mt-0">
         <!-- date-pager -->
-        <DatePager v-model="searchOptions.date" />
+        <date-pager v-model="searchOptions.date"></date-pager>
         <!-- /date-pager -->
+
+        <!-- tags-select -->
+        <tags-select
+            v-model="searchOptions.tags"
+            :multiple="true"
+            :tags="tags"
+            placeholder="Filter by tag"
+            class="px-2 py-2 ml-2 bg-white border-2 border-gray-200 rounded-md dark:bg-gray-900 dark:border-gray-700 dark:text-gray-300"
+            :allow-add="false"
+        ></tags-select>
+        <!-- tags-select -->
     </div>
   </div>
 </template>
@@ -26,10 +30,9 @@ import {
   computed,
   inject
 } from "vue";
-import TagsSelect from "@/components/atoms/TagsSelect.vue";
-import SearchInput from "@/components/atoms/Search.vue";
-import DatePager from "@/components/atoms/DatePage.vue";
-import SearchBox from "@/views/dashboard/SearchBox.vue";
+import TagsSelect from "../atoms/TagsSelect.vue";
+import SearchInput from "../atoms/Search.vue";
+import DatePager from "../atoms/DatePage.vue";
 
 const props = defineProps({
   modelValue: String,

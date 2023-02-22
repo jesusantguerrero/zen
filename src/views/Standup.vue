@@ -6,7 +6,7 @@
          <span class="text-lg text-green-500 ml-2">{{ state.humanDate }}</span>
          <integration-projects />
       </h2>
-      <SearchBar
+      <search-bar
         v-model="state.searchText"
         v-model:date="state.date"
         v-model:tags="state.tags"
@@ -18,7 +18,7 @@
      <h4 class="block mb-2 font-bold text-left text-gray-500 capitalize md:text-xl">
          {{ state.committedTitle }} ({{ state.committed.length }}) 
     </h4>
-    <TaskItem 
+    <task-item 
         v-for="(task, index) in state.committed"
         :task="task"
         :handle-mode="false"
@@ -41,7 +41,7 @@
         worked on ({{ state.tracked.length }}) 
     </h5>
     <div v-for="track in state.tracked">
-      <TaskItem
+      <task-item
         :task="parseTrack(track)" 
         type="backlog"
         :handle-mode="false"
@@ -54,6 +54,24 @@
         :allow-update="false"
       />
     </div>
+
+    <!-- <h5 class="block mt-5 mb-2 font-bold text-left text-green-500 capitalize md:text-lg">
+        Suggestions ({{ state.suggestions.length }}) 
+    </h5>
+    <div v-for="track in state.tracked">
+      <task-item
+        :task="parseTrack(track)" 
+        type="backlog"
+        :handle-mode="false"
+        :show-select="false"
+        :show-controls="false"
+        :is-item-as-handler="false"
+        :is-compact="true"
+        :class="''"
+        :allow-run="false"
+        :allow-update="false"
+      />
+    </div> -->
   </div>
 </div>
 
@@ -149,6 +167,7 @@ const fetchTracked = (date) => {
 // suggestions [todo + schedule]
 const fetchSuggestions = (date) => {
   const doneTasks = state.committed.map(task => task.title)
+  console.log(doneTasks)
   return getTracksByDates(date).then(trackedRef => {
     state.trackedRef = trackedRef.onSnapshot( snap => {
       const list = []
@@ -158,7 +177,7 @@ const fetchSuggestions = (date) => {
           list.push({ ...track, uid: doc.id })
         }
       })
-      state.suggestions = list
+      state.tracked = list
     })
   })
 }
@@ -169,7 +188,6 @@ watch(() => state.date , async () => {
 
 watch(() => state.committed , async () => {
  await fetchTracked(state.date)
- await fetchSuggestions(state.date)
 }, { immediate: true })
 
 const onUndo = (task) => {

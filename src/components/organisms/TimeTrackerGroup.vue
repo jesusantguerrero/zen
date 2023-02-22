@@ -2,18 +2,17 @@
     <div>
         <div
             v-if="timeEntry.tracks.length > 1"
-            class="flex items-center w-full px-8 bg-white time-tracker-item group"
+            class="flex items-center w-full px-8 bg-white time-tracker-item"
         >
             <div class="flex w-full">
                 <div class="flex items-center w-2/5">
-                    <input
-                        type="checkbox"
-                        class="inline-block form-control-check checkbox-done" 
-                        v-model="state.selected" @change="toggleSelection" />
+                    <div class="mr-9">
+                        <input type="checkbox" v-model="selected" @change="toggleSelection" />
+                    </div>
 
-                    <div class="flex items-center ml-9">
+                    <div class="flex">
                         <div
-                            class="time-tracker-item__count border-green-500 border-2 text-green-500"
+                            class="time-tracker-item__count"
                             @click.stop="toggleExpand()"
                         >
                             {{ timeEntry.tracks.length }}
@@ -21,7 +20,7 @@
 
                         <span
                             type="text"
-                            class="mr-2 time-tracker__description font-bold"
+                            class="mr-2 time-tracker__description"
                         >
                             {{ timeEntry.description }}
                         </span>
@@ -34,7 +33,7 @@
                     <div class="flex time-tracker__controls">
                         <span disabled class="flex items-center start-dates">
                             {{ formatDateToTime(timeEntry.tracks[0].started_at) }} -
-                            {{ formatDateToTime(timeEntry.tracks.at(-1).ended_at) }}
+                            {{ formatDateToTime(timeEntry.tracks[0].ended_at) }}
                         </span>
                         <input
                             type="text"
@@ -44,11 +43,11 @@
                             class="time-duration-display"
                         />
 
-                        <button @click="initTimer()" class="play-button opacity-0 group-hover:opacity-100">
+                        <button @click="initTimer()" class="play-button">
                             <i class="fa fa-play" />
                         </button>
 
-                        <button @click="toggleExpand" class="play-button opacity-0 group-hover:opacity-100">
+                        <button @click="toggleExpand" class="play-button">
                             <i class="fa fa-th-list" />
                         </button>
                     </div>
@@ -57,23 +56,22 @@
         </div>
 
         <!-- Child tracks -->
-        <TransitionGroup>
+        <transition-group>
             <template v-if="timeEntry.tracks.length <= 1 || state.isExpanded">
-                <TimeEntryItem
+                <time-entry-item
                     v-for="track in timeEntry.tracks"
-                    :is-child="timeEntry.tracks.length > 1"
                     :time-entry="track"
                     :key="track.id"
                 />
             </template>
-        </TransitionGroup>
+        </transition-group>
         <!-- end of child tracks -->
     </div>
 </template>
 
 <script setup>
 import { format } from "date-fns";
-import { reactive, computed, nextTick } from "vue";
+import { reactive, computed } from "vue";
 import TimeEntryItem from "./TimeTrackerItem.vue";
 
 const props = defineProps({
@@ -90,8 +88,6 @@ const props = defineProps({
         }
     }
 });
-
-const emit = defineEmits(['toggle-select']);
 
 const state = reactive({
     now: new Date(),
@@ -122,9 +118,11 @@ const toggleExpand = () => {
 }
 
 const toggleSelection = () => {
-    nextTick(() => {
-        emit('toggle-select', state.selected)
-    })
+    state.selected
+    state.timeEntry.tracks.forEach(
+        track =>
+        this.$set(track, 'selected',this.selected)
+    );
 }
 
 const duration = computed(() => {
@@ -147,6 +145,7 @@ const duration = computed(() => {
     }
 
     &__count {
+        border: 2px solid var(--primary-color);
         width: 30px;
         height: 30px;
         min-width: 30px;
@@ -157,6 +156,7 @@ const duration = computed(() => {
         margin-right: 10px;
         cursor: pointer;
         font-weight: bolder;
+        color: var(--primary-color);
     }
 }
 

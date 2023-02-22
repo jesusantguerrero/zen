@@ -29,7 +29,7 @@
                   placeholder="Search task"
                 />
 
-                <TagsSelect
+                <tags-select
                   v-model="searchOptions.tags"
                   :multiple="true"
                   placeholder="Filter by tag"

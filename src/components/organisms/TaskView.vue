@@ -59,11 +59,11 @@
     </div>
 
     <div class="mb-10 task__checlikst" v-if="showChecklist">
-      <ChecklistContainer 
+      <checklist-container 
         v-model="state.checklistTitle"
-        v-model:items="task.checklist" 
-        :task="task" :allow-edit="isEditMode" 
-      />
+        :items="task.checklist" 
+        :task="task" :allow-edit="isEditMode">
+      </checklist-container>
     </div>
 
     <div class="absolute w-full pr-10 text-right bottom-2 left-5">
