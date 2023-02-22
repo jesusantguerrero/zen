@@ -13,7 +13,8 @@ export function useTaskFirestore() {
         if (task.due_date) {
             task.due_date = getDate(task)
         }
-        return db.collection(collectionName).add({
+        return db.collection(collectionName, taskConverter.toFirestore(task))
+        .add({
             ...task,
             user_uid: firebaseState.user.uid,
             created_at: new Date()
@@ -37,7 +38,8 @@ export function useTaskFirestore() {
         if (!task.order || task.order < 0) {
             task.order = 0
         }
-        return trackRef.update(task, { merge: true })
+        return trackRef
+        .update(taskConverter.toFirestore(task), { merge: true })
         .then(() => {
             runRecurrence(task)
             return task.uid;
@@ -67,7 +69,9 @@ export function useTaskFirestore() {
     const updateTaskBatch = (tasks) => {
         const batch = db.batch()
         tasks.forEach((task) => {
-            const trackRef = db.collection(collectionName).doc(task.uid)
+            const trackRef = db.collection(collectionName)
+            withConverter(taskConverter)
+            .doc(task.uid)
             trackRef.update({
                 order: task.order
             }, { merge: true })
@@ -145,7 +149,26 @@ export function useTaskFirestore() {
     const taskConverter = {
         fromFirestore( snapshot, options) {
             const data = snapshot.data(options);
-            return { ...data, due_date: !data.due_date ? null : data.due_date.toDate ? data.due_date.toDate() : data.due_date };
+            return { 
+                ...data, 
+                due_date: !data.due_date ? null : 
+                data.due_date.toDate ? data.due_date.toDate() : data.due_date, 
+                checklist: data.checklist.map(item => ({
+                    ...item,
+                    created_at: item.created_at?.toDate(), 
+                    updated_at: item.update_at?.toDate() 
+                }))
+            };
+        },
+        toFirestore(data) {
+            return {
+                ...data,
+                checklist: data.checklist?.map((item) => ({
+                    ...item ?? [],
+                    created_at: item.created_at ?? new Date(),
+                    updated_at: item.updated_at ?? new Date()
+                }))
+            }
         }
     }
 
