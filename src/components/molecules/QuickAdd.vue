@@ -90,7 +90,7 @@
 </template>
 
 <script setup>
-import { computed, reactive, onMounted, ref } from "vue"
+import { computed, reactive, onMounted, ref, watch } from "vue"
 import { onClickOutside } from  "@vueuse/core"
 import { useDateTime } from "../../utils/useDateTime"
 import { useCustomSelect } from "./../../utils/useCustomSelect"
@@ -113,6 +113,10 @@ const props = defineProps({
     isMatrix: {
       Type: Boolean,
       default: true
+    },
+    initialText: {
+      type: String,
+      default: ""
     }
 })
 const emit =  defineEmits({
@@ -121,7 +125,7 @@ const emit =  defineEmits({
 })
 
 const task = reactive({
-  title: "",
+  title: props.initialText,
   description: "",
   due_date: "",
   duration: "",
@@ -136,6 +140,11 @@ const task = reactive({
   commit_date: null,
   matrix: props.isMatrix ? props.type || "backlog" : null,
 })
+
+watch(() => props.initialText, 
+() => {
+  task.title = props.initialText
+}, { immediate: true })
 
 // UI
 const state = reactive({
