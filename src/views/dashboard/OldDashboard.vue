@@ -117,7 +117,7 @@
                 class="mt-4"
                 title="Plan ahead"
                 description="Prioritize your day"
-                @click="goTo('/plan-ahead')"
+                @click="push('/plan-ahead')"
             >
                 <template #icon>
                     <div class="rounded-full p-3 bg-gray-500 h-9 w-9 flex text-white items-center justify-center">
@@ -215,25 +215,25 @@ const state = reactive({
     todo: {
           ref: null,
           list: [],
-          classes: "text-green-400",
+          classes: "bg-green-400 text-white",
           loaded: false,
         },
         schedule: {
           ref: null,
           list: [],
-          classes: "text-blue-400",
+          classes: "bg-blue-400 text-white",
           loaded: false,
         },
         delegate: {
           ref: null,
           list: [],
-          classes: "text-yellow-400",
+          classes: "bg-yellow-400 text-white",
           loaded: false,
         },
         delete: {
           ref: null,
           list: [],
-          classes: "text-red-400",
+          classes: "bg-red-400 text-white",
           loaded: false,
         },
   },

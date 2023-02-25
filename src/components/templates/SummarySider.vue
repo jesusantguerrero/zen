@@ -1,33 +1,20 @@
 <template>
 <div class="md:block md:mt-0 space-y-4">
     <!-- Matrix summary card-->
-    <article class="rounded-md border bg-white py-2 px-4">
-        <header>
-            <h4 class="font-bold text-gray-500 text-sm"> Matrix summary</h4>
-        </header>
-        <section class="flex mt-4">
-            <main class="flex items-center justify-center px-4">
-                <div class="rounded-full text-gray-500 border-4 h-24 w-24 text-center text-sm">
-                    <h5 class="">All</h5>
-                    <p class="text-4xl">
-                        {{ totalTasks }}
-                    </p>
-                </div>
-            </main>
-            <aside>
-                <p class="flex items-center justify-between cursor-pointer font-bold" 
-                    v-for="(matrix, matrixName) in matrix"
-                    :key="matrixName"
-                    :class="matrix.classes">
-                    <span class="mr-2 capitalize">{{ matrixName}}</span>
-                    {{ matrix.list.length }}
-                </p>
-            </aside>
-        </section>
-    </article>
+    <section class="rounded-md border grid grid-cols-2 bg-white">
+            <article class="flex h-24 px-4 relative items-center justify-between cursor-pointer font-bold" 
+                v-for="(matrix, matrixName) in matrix"
+                :key="matrixName"
+                :class="matrix.classes"
+            >
+                <div class="absolute w-6/12 bg-gradient-to-r from-transparent via-transparent to-white h-full right-0 opacity-20" />
+                <span class="mr-2 capitalize">{{ matrixName}}</span>
+                {{ matrix.list.length }}
+            </article>
+    </section>
 
     <!-- Shared Card-->
-    <div class="rounded-md border bg-white py-2 px-4">
+    <!-- <div class="rounded-md border bg-white py-2 px-4">
         <div class="flex justify-between mb-5 font-bold text-gray-500">
             <h4 class="text-sm">
                 Shared with me
@@ -46,7 +33,7 @@
             <ElAvatar class="block"> {{ person.name }} </ElAvatar>
             </div>
         </div>
-    </div>
+    </div> -->
     <!-- End Shared -->
 </div>
 </template>
