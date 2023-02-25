@@ -1,19 +1,5 @@
 <template>
-<div class="px-8 pt-8 md:block md:mt-0 space-y-4">
-    <!-- Plan ahead card -->
-    <CardButton 
-        class="mt-4"
-        title="Plan ahead"
-        description="Prioritize your day"
-        @click="goTo('/plan-ahead')"
-    >
-        <template #icon>
-            <div class="rounded-full p-3 bg-gray-500 h-9 w-9 flex text-white items-center justify-center">
-                <i class="fa fa-tasks"/>
-            </div>
-        </template>
-    </CardButton>
-
+<div class="md:block md:mt-0 space-y-4">
     <!-- Matrix summary card-->
     <article class="rounded-md border bg-white py-2 px-4">
         <header>
@@ -57,7 +43,7 @@
         </div>
         <div class="flex space-x-2">
             <div v-for="person in  shared" :key="person.uid" class="text-center cursor-pointer">
-            <el-avatar class="block"> {{ person.name }} </el-avatar>
+            <ElAvatar class="block"> {{ person.name }} </ElAvatar>
             </div>
         </div>
     </div>
@@ -68,7 +54,6 @@
 <script setup>
     import { computed } from "vue";
     import { useSearchOptions } from "../../utils/useFuseSearch";
-    import CardButton from "../molecules/CardButton.vue";
 
     const props = defineProps({
         matrix: {
@@ -97,5 +82,5 @@
         }, 0)
     })
 
-    const { searchText, selectedTags}  = useSearchOptions()  
+    const { searchText }  = useSearchOptions()  
 </script>

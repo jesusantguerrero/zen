@@ -230,6 +230,7 @@ const toggleTracker = () => {
   track.started_at ? stop(null, true) : play();
 };
 
+
 const play = () => {
   if (isTrackableMode() && !validatePlay()) {
     ElNotification({
@@ -279,6 +280,13 @@ const stop = (shouldCallNextMode = true, silent) => {
   
 };
 
+const reset = () => {
+  stop();
+  state.mode = "promodoro";
+  state.currentStep = 0
+  setDurationTarget();
+}
+
 const nextMode = () => {
   if (state.now) {
     stop(false);
@@ -299,19 +307,6 @@ const clearTrack = () => {
   track.target_time = null;
   track.completed = false
 };
-
-const handleCommand = (command) => {
-  switch (command) {
-    case 'configuration':
-      isModalOpen.value = true;
-      break;
-    case 'nextmode':
-      nextMode()
-      break;
-    default:
-      break;
-  }
-} 
 
 // checks to stop
 onBeforeUnmount(() => {
@@ -334,7 +329,7 @@ const updateTrackFromLocal = (track) => {
   delete formData.currentTime;
   updateTrack(formData).then(() => {
     emit("update:currentTimer", {})
-    props.task.tracks.push(formData);
+    emit('track-added', props.task.uid, formData)
     ElNotification({
       title: "Pomodoro Saved",
       message: "Pomodoro saved",
@@ -342,4 +337,17 @@ const updateTrackFromLocal = (track) => {
     })
   })
 };
+
+const togglePlay = () => {
+    if (!props.currentTimer || props.task.uid != props.currentTimer.task_uid) {
+      reset();
+      console.log("Reset")
+    }
+    toggleTracker()
+}
+
+defineExpose({
+  toggleTracker,
+  togglePlay
+})
 </script>

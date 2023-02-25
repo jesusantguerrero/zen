@@ -16,7 +16,7 @@ import OldDashboard from "./dashboard/OldDashboard.vue"
 // state and ui
 const state = reactive({
   isNewDashboard: false,
-  defaultDashboard: computed(() => state.isNewDashboard ? Dashboard : OldDashboard)
+  defaultDashboard: computed(() => !state.isNewDashboard ? Dashboard : OldDashboard)
 });
     
 state.isNewDashboard = state.isNewDashboard || !firebaseState.settings || firebaseState.settings.is_new_dashboard;
@@ -30,9 +30,3 @@ const updateDashboard = (isNew) => {
   });
 };
 </script>
-
-<style scoped>
-  .zen__datails {
-    min-height: 400px;
-  }
-</style>

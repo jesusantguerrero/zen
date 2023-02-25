@@ -17,7 +17,7 @@
       </div>
 
       <aside class="w-full pt-24 pb-20 md:block md:pl-4 md:pt-28">
-        <summary-aside
+        <SummaryAside
           :matrix="state.matrix"
           :standup="state.standup"
           :committed="state.committed"
@@ -31,8 +31,8 @@
       </aside>
     </div>
 
-    <welcome-modal :is-open="state.isWelcomeOpen" @closed="closeWelcomeModal" />
-    <standup-modal
+    <WelcomeModal :is-open="state.isWelcomeOpen" @closed="closeWelcomeModal" />
+    <StandupModal
         :is-open="!state.standup.length && state.matrix.todo.list.length"
         @closed="completeDay()"
       >
@@ -55,7 +55,7 @@
                 </p>
             </div>
         </template>
-    </standup-modal>
+    </StandupModal>
   </div>
 </template>
 
