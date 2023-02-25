@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+
 export const getNextIndex = (list) => {
   const index = Math.max(...list.map((item) => Number(item.order || 0))) + 1;
   return index < 0 ? 0 : index;
@@ -19,4 +21,12 @@ export const SESSION_MODES = {
   WORK: 'promodoro',
   REST: 'rest',
   LONG_REST: 'long'
+}
+
+export const formatDate = (date) => {
+  try {
+    return format(date,  'MMM dd yyyy')
+  } catch (err) {
+    return date;
+  }
 }
