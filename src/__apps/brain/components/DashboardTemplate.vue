@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import CycleTemplate from './CycleTemplate.vue';
+import EventsTemplate from './EventsTemplate.vue';
 
 defineProps<{
   labels: []

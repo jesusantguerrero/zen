@@ -280,9 +280,9 @@ export default {
     });
 
     // Daily Standup
-    const { getAll, save } = useCollection();
+    const { getAll: fetchStandups, save: saveStandups } = useCollection('standups');
     const fetchStandup = async () => {
-      const standups = await getAll("standups")
+      const standups = await fetchStandups()
         .where("date", "==", format(new Date(), "yyyy-MM-dd"))
         .get();
       state.standup = [];
@@ -296,7 +296,7 @@ export default {
     });
 
     const updateStandup = (date) => {
-      save("standups", {
+      saveStandups({
         date: date,
       });
     };

@@ -88,11 +88,12 @@ export const routes = [
   },
   {
     path: "/shapeup",
-    component: () => import("./views/Timer.vue"),
-    name: "timer",
+    name: "shapeup",
+    component: BrainView,
     meta: {
       requiresAuth: true,
     },
+    children: BrainRoutes
   },
   {
     path: "/pricing",

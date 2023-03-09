@@ -16,6 +16,11 @@ exports.default = {
             clientId: env.jira_client_id,
             clientSecret: env.jira_client_secret,
             redirectURI: env.jira_redirect_uri
+        },
+        google: {
+            clientId: env.google_client_id,
+            clientSecret: env.google_client_secret,
+            redirectURI: env.google_redirect_uri
         }
     }
 }

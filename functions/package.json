@@ -21,6 +21,8 @@
     "es6-promise-pool": "^2.5.0",
     "firebase-admin": "^9.8.0",
     "firebase-functions": "^3.14.1",
+    "google-auth-library": "^8.7.0",
+    "googleapis": "^112.0.0",
     "luxon": "^1.26.0",
     "mjml": "^4.10.2",
     "mjml-utils": "^2.2.1",

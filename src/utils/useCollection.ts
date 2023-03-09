@@ -2,7 +2,7 @@ import { db, firebaseState } from "./useFirebase";
 
 export function useCollection(tableName?: string, relationshipTable?: string, relationshipFields?: string[]) {
 
-    const save = (item, collectionName = tableName) => {
+    const save = (item: any, collectionName = tableName) => {
         return db.collection(collectionName).add({
             ...item,
             user_uid: firebaseState.user.uid,
@@ -12,12 +12,12 @@ export function useCollection(tableName?: string, relationshipTable?: string, re
         })
     }
 
-    const update = (item, collectionName = tableName) => {
+    const update = (item: any, collectionName = tableName) => {
         const collectionRef = db.collection(collectionName).doc(item.uid)
         return collectionRef.update(item, { merge: true })
     }
 
-    const updateBatch = (items, collectionName = tableName) => {
+    const updateBatch = (items: any[], collectionName = tableName) => {
         const batch = db.batch()
         items.forEach((item) => {
             const collectionRef = db.collection(collectionName).doc(item.uid)
@@ -29,14 +29,14 @@ export function useCollection(tableName?: string, relationshipTable?: string, re
         return batch.commit()
     }
 
-    const destroy = (task, collectionName = tableName) => {
+    const destroy = (task: any, collectionName = tableName) => {
         return db.collection(collectionName).doc(task.uid).delete()
         .catch(function(error) {
             console.error("Error adding document: ", error);
         });
     }
 
-    const getOne = (uid, collectionName = tableName,) => {
+    const getOne = (uid: string, collectionName = tableName,) => {
         const matrixRef = db.collection(collectionName).doc(uid)
             .where("user_uid", "==", firebaseState.user.uid)
             
