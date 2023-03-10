@@ -2,7 +2,7 @@
   <div
     class="flex items-center px-5"
   >
-    <time-tracker-clock
+    <TimeTrackerClock
       ref="Tracker"
       :task="task"
       :current-timer="timer"
@@ -14,27 +14,26 @@
       @update:timer="$emit('update:timer', $event)"
     />
 
-    <el-dropdown trigger="click" @command="handleCommand" v-if="size == 'mini'">
+    <ElDropdown trigger="click" @command="handleCommand" v-if="size == 'mini'">
         <button
           class="px-2 py-2 ml-4 text-sm text-gray-400 transition-colors border-2 border-transparent rounded-md cursor-pointer hover:border-gray-200 hover:text-md hover:bg-gray-200 focus:outline-none"
         >
           <i class="fa fa-ellipsis-v"></i>
         </button>
       <template #dropdown>
-        <el-dropdown-menu>
-          <el-dropdown-item command="configuration" icon="el-icon-s-tools">Configuration</el-dropdown-item>
-          <el-dropdown-item command="nextmode" icon="el-icon-arrow-right">Next mode</el-dropdown-item>
-        </el-dropdown-menu>
+        <ElDropdownMenu>
+          <ElDropdownItem command="configuration" icon="el-icon-s-tools">Configuration</ElDropdownItem>
+          <ElDropdownItem command="nextmode" icon="el-icon-arrow-right">Next mode</ElDropdownItem>
+        </ElDropdownMenu>
       </template>
-    </el-dropdown>
+    </ElDropdown>
 
-    <time-tracker-modal
+    <TimeTrackerModal
       v-model:is-open="isModalOpen"
       :settings="state"
       @cancel="isModalOpen=false"
       @saved="onSettingsSaved"
-    >
-    </time-tracker-modal>
+    />
   </div>
 </template>
 

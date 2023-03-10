@@ -2,6 +2,9 @@ import { format, isToday, isTomorrow, formatRelative, isThisWeek, isThisYear, is
 import { DateTime, Duration } from "luxon";
 import { computed, ref} from "vue";
 
+export const formatDurationFromMs = (ms) => {
+    return Duration.fromMillis(ms)
+}
 export function useDateTime(dateRef) {
     const date = dateRef || ref(null)
     
@@ -35,10 +38,6 @@ export function useDateTime(dateRef) {
 
     const toISO = (date) => {
        return date ? DateTime.fromJSDate(date).toISODate() :  ""
-    }
-
-    const formatDurationFromMs = (ms) => {
-        return Duration.fromMillis(ms)
     }
 
     const getDateFromString = (dateValue) => {

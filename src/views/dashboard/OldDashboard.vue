@@ -6,17 +6,50 @@
         :class="[state.mobileMode == 'zen' ? 'block' : 'hidden']"
       >
         <header class="flex justify-between">
-          <h1 class="text-2xl font-bold text-gray-400 md:block dark:text-gray-300">
-            Main task
-          </h1>
+          <div class="flex items-center text-2xl font-bold text-gray-400 md:block dark:text-gray-300">
+            <h1 class="inline-block"> Dashboard </h1>
+          </div>
 
           <TimeTracker 
             :task="currentTask" 
+            ref="timeTrackerRef"
             v-model:currentTimer="currentTimer"
+            @track-added="onTrackAdded"
           />
         </header>
+        <section class="flex justify-between mt-5">
+          <div v-if="!state.showAdd" class="h-10">
+            <TabHeader v-model="state.tabSelected" :tabs="state.tabs" class="overflow-hidden h-full rounded-md"/>
+          </div>
 
-        <div class="mt-5">
+          <section class="flex space-x-2 items-center" :class="{'w-full flex-col': state.showAdd}">
+              <header  v-if="!state.showAdd" class="items-center flex space-x-2 justify-between mb-2 overflow-hidden font-bold text-gray-400 md:flex">
+                <SearchBox
+                    v-model="searchText"
+                    v-model:selectedTags="searchTags"
+                    placeholder="Search task..."
+                    :multiple="true"
+                    :tags="tags" 
+                    :allow-add="false"
+                />
+                <AtButton type="success" class="h-full" rounded @click="toggleQuickAdd">
+                  New
+                </AtButton>      
+              </header>
+            <div v-show="state.showAdd"  class="mb-4 quick__add w-full">
+              <QuickAdd 
+                type="todo" 
+                ref="quickAdd" 
+                :initial-text="searchText"
+                @saved="addTask" 
+                @close="state.showAdd=false"
+                :allow-edit="true"
+              />
+            </div>
+          </section>
+        </section>
+
+        <div>
           <QuickAdd
             v-if="state.showReminder"
             mode="reminder"
@@ -26,91 +59,15 @@
             placeholder="Add a reminder"
           />
 
-          <TaskView
-            :task-data="currentTask"
-            :current-timer="currentTimer"
-            @done="onDone"
-            @removed="onRemoved"
-            @updated="onTaskUpdated"
-          >
-            <template #empty v-if="!currentTask.title">
-              <div class="w-8/12 mx-auto mt-10 text-center md:w-6/12">
-                <img
-                  src="../../assets/undraw_following.svg"
-                  class="mx-auto w-12/12 md:w-7/12"
-                />
-                <div class="mt-10 font-bold text-gray-500 md:mt-5 dark:text-gray-300">
-                  Go to
-                  
-                  <router-link to="/plan-ahead" class="mr-1 text-green-400 transition-colors border-dashed cursor-pointer font-bolder dark:text-green-500 dark:hover:text-green-400 hover:text-green-500"
-                    >
-                    <i class="fa fa-tasks"></i>
-                    Plan Ahead
-                    </router-link> or select item from 
-                    <span class="text-gray-400 border-gray-400 font-bolder dark:text-white"
-                    >Todo
-                    <i class="fa fa-arrow-right"></i>
-                  </span>
-                </div>
-              </div>
-            </template>
-          </TaskView>
-          <TaskTrackView :task="currentTask" :current-timer="currentTimer" />
-        </div>
-      </div>
-
-      <div
-        class="zen__comming-up lineup md:block md:mt-0 md:w-4/12"
-        :class="[state.mobileMode == 'lineup' ? 'block' : 'hidden']"
-      >
-        <header  v-if="!state.showAdd" class="items-center flex space-x-2 justify-between mb-2 overflow-hidden font-bold text-gray-400 md:flex">
-          <SearchBox
-              v-model="searchText"
-              v-model:selectedTags="searchTags"
-              placeholder="Search task..."
-              :multiple="true"
-              :tags="tags" 
-              :allow-add="false"
-          />
-          <AtButton type="success" class="h-full" rounded @click="toggleQuickAdd">
-            New
-          </AtButton>
-        </header>
-        <small v-show="state.showAdd"  class="text-gray-500 text-center w-full inline-block"> You can press shift+k to add a new task</small>
-
-        <div class="divide-y-2 divide-gray-200 comming-up__list dark:divide-gray-600 dark:text-gray-300 divide-solid">
-          <div v-show="state.showAdd"  class="mb-4 quick__add">
-            <QuickAdd 
-              type="todo" 
-              ref="quickAdd" 
-              :initial-text="searchText"
-              @saved="addTask" 
-              @close="state.showAdd=false"
-              :allow-edit="true"
-            />
-          </div>
-          <div class="pt-4">
-            <div class="flex tab-header "> 
-              <button 
-                class="px-2 py-1 font-bold text-gray-500 transition-all dark:bg-transparent dark:hover:bg-gray-700 dark:hover:text-gray-300 hover:bg-gray-200 focus:outline-none" 
-                :class="[state.tabSelected=='todo' ? 'text-green-500 bg-gray-100' : 'dark:text-gray-300']"
-                @click="state.tabSelected='todo'"
-                > 
-                  Todo ({{ state.todo.length }})
-              </button>
-              <button 
-                class="px-2 py-1 font-bold text-gray-500 transition-all dark:bg-transparent dark:hover:bg-gray-700 dark:hover:text-gray-300 hover:bg-gray-200 focus:outline-none"
-                :class="[state.tabSelected=='schedule' ? 'text-blue-500 bg-gray-100': 'dark:text-gray-300'] "
-                @click="state.tabSelected='schedule'"
-                > 
-                Schedule ({{ state.schedule.length }})
-              </button>
-            </div>
-            <task-group
+          <section>
+            <TaskGroup
               v-if="state.tabSelected=='todo'"
               :show-title="false"
               title="Todo"
               class="py-3"
+              type="todo"
+              allow-run
+              placeholder="Click a task select"
               :tasks="filteredTodos"
               :show-select="true"
               :show-controls="true"
@@ -118,8 +75,7 @@
               :current-timer="currentTimer"
               :is-item-as-handler="true"
               :use-external-done="true"
-              type="todo"
-              placeholder="Click a task select"
+              @toggle-timer="setCurrentTask($event, true)"
               @change="handleDragChanges"
               @clone="onClone"
               @deleted="destroyTask"
@@ -127,10 +83,9 @@
               @selected="setCurrentTask"
               @done="onDone"
               @down="moveTo($event, 'schedule')"
-            >
-            </task-group>
+            />
 
-            <task-group
+            <TaskGroup
               v-if="state.tabSelected=='schedule'"
               :show-title="false"
               title="Schedule"
@@ -145,8 +100,39 @@
               @edited="setTaskToEdit"
               @up="moveTo($event, 'todo')"
               @change="handleDragChanges"
+            />
+          </section>
+        </div>
+      </div>
+
+      <div
+        class="zen__comming-up lineup md:block md:mt-0 md:w-4/12"
+        :class="[state.mobileMode == 'lineup' ? 'block' : 'hidden']"
+      >
+        
+        <div class="divide-y-2 divide-gray-200 comming-up__list dark:divide-gray-600 dark:text-gray-300 divide-solid">
+         
+          <div class="pt-4 space-y-4">
+            <CardButton 
+                class="mt-4"
+                title="Plan ahead"
+                description="Prioritize your day"
+                @click="push('/plan-ahead')"
             >
-            </task-group>
+                <template #icon>
+                    <div class="rounded-full p-3 bg-gray-500 h-9 w-9 flex text-white items-center justify-center">
+                        <i class="fa fa-tasks"/>
+                    </div>
+                </template>
+            </CardButton>
+           
+            <TaskTrackView :task="currentTask" :current-timer="currentTimer" />
+            <SummarySider 
+              :matrix="state.matrix"
+              :standup="state.standup"
+              :committed="state.committed"
+              :is-loaded="state.tasksLoaded"
+            />
           </div>
         </div>
       </div>
@@ -193,14 +179,18 @@ import { AtButton } from "atmosphere-ui";
 import TaskGroup from "@/components/organisms/TaskGroup.vue";
 import QuickAdd from "@/components/molecules/QuickAdd.vue";
 import TimeTracker from "@/components/organisms/TimeTracker.vue";
-import TaskView from "@/components/organisms/TaskView.vue";
 import TaskTrackView from "@/components/organisms/TaskTrackView.vue";
 import WelcomeModal from "@/components/organisms/modals/WelcomeModal.vue";
 import TaskModal from "@/components/organisms/modals/TaskModal.vue";
 import SearchBox from "./SearchBox.vue";
+import TabHeader from "@/components/atoms/TabHeader.vue";
+import CardButton from "@/components/molecules/CardButton.vue";
+import SummarySider from "@/components/templates/SummarySider.vue";
 
 import { useTaskFirestore } from "@/utils/useTaskFirestore";
 import { useTrackFirestore } from "@/utils/useTrackFirestore";
+import { timeReducer} from "@/utils/useTracker";
+import { formatDurationFromMs } from "@/utils/useDateTime";
 import { firebaseState, registerEvent, updateSettings } from "@/utils/useFirebase";
 import { useFuseSearch, useSearchOptions } from "@/utils/useFuseSearch";
 import { startFireworks } from "@/utils/useConfetti";
@@ -221,13 +211,56 @@ nextTick(() => {});
 const state = reactive({
   todo: [],
   schedule: [],
+  matrix: {
+    todo: {
+          ref: null,
+          list: [],
+          classes: "bg-green-400 text-white",
+          loaded: false,
+        },
+        schedule: {
+          ref: null,
+          list: [],
+          classes: "bg-blue-400 text-white",
+          loaded: false,
+        },
+        delegate: {
+          ref: null,
+          list: [],
+          classes: "bg-yellow-400 text-white",
+          loaded: false,
+        },
+        delete: {
+          ref: null,
+          list: [],
+          classes: "bg-red-400 text-white",
+          loaded: false,
+        },
+  },
   showReminder: false,
   isWelcomeOpen: false,
   isTaskModalOpen: false,
   track: null,
   mobileMode: "zen",
   tabSelected: 'todo',
-  showAdd: false
+  showAdd: false,
+  tabs: [
+    {
+      label: "Todo",
+      name: "todo",
+      focusClass: "text-green-400",
+    },
+    {
+      label: "Schedule",
+      name: "schedule",
+      focusClass: "text-green-400",
+    },
+    {
+      label: "Routine",
+      name: "routine",
+      focusClass: "text-blue-400",
+    },
+  ],
 });
 
 state.isWelcomeOpen = state.isWelcomeOpen || !firebaseState.settings || !firebaseState.settings.hide_welcome;
@@ -242,10 +275,15 @@ const { filteredList: filteredTodos } = useFuseSearch(searchText, todo, selected
 
 // Current task
 const currentTask = ref({});
-const setCurrentTask = (task) => {
+const timeTrackerRef = ref();
+const setCurrentTask = (task: any, autoplay = false) => {
   currentTask.value = task;
+  if (autoplay) {
+    nextTick(() => {
+      timeTrackerRef.value?.togglePlay()
+    })
+  }
 };
-
 const onClone = (task) => {
   const data = state.todo.sort( (a, b) => a.created_at.toDate() < b.created_at.toDate() ? 1 : -1);
   setCurrentTask(data[0]);
@@ -276,6 +314,20 @@ watch(currentTask, () => {
   }
 });
 
+const onTrackAdded = (taskUid: string, newTrack: any) => {
+  currentTask.value.tracks.push(newTrack);
+  const savedTime = timeReducer(currentTask.value.tracks);
+  if (savedTime) {
+    const timeFormatted = formatDurationFromMs(savedTime);
+    nextTick(() => {
+      updateTask({
+        uid: taskUid,
+        duration_ms: timeFormatted.toFormat("hh:mm:ss"),
+        duration: savedTime
+      })
+    })
+  }
+}
 const onDone = (task) => {
   task.tracks = [];
   delete task.duration_ms;
@@ -397,7 +449,7 @@ const closeWelcomeModal = () => {
 };
 
 // Drags
-const handleDragChanges = (e, matrix) => {
+const handleDragChanges = (e: any, matrix: string) => {
   if (e.added) {
     e.added.element.matrix = matrix;
     updateTask(e.added.element).then(() => {

@@ -3,10 +3,10 @@ import { format } from "date-fns"
 import { useDateTime } from "./useDateTime"
 
 const { formatDurationFromMs } = useDateTime()
-const timeReducer = (tracks) => {
+export const timeReducer = (tracks) => {
     if (!tracks) return 0
-    return tracks.reduce((milliseconds, task)=> {
-        return milliseconds + Number(task.duration_ms || 0);
+    return tracks.reduce((milliseconds, track)=> {
+        return milliseconds + Number(track.duration_ms || 0);
     }, 0)
 }
 

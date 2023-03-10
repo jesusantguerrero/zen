@@ -3,6 +3,7 @@
     "volar.tsPlugin": false,
     "cSpell.words": [
         "Firestore",
-        "Pomodoro"
+        "Pomodoro",
+        "Todos"
     ]
 }

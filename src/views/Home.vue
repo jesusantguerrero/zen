@@ -17,7 +17,7 @@
       </div>
 
       <aside class="w-full pt-24 pb-20 md:block md:pl-4 md:pt-28">
-        <summary-aside
+        <SummaryAside
           :matrix="state.matrix"
           :standup="state.standup"
           :committed="state.committed"
@@ -31,8 +31,8 @@
       </aside>
     </div>
 
-    <welcome-modal :is-open="state.isWelcomeOpen" @closed="closeWelcomeModal" />
-    <standup-modal
+    <WelcomeModal :is-open="state.isWelcomeOpen" @closed="closeWelcomeModal" />
+    <StandupModal
         :is-open="!state.standup.length && state.matrix.todo.list.length"
         @closed="completeDay()"
       >
@@ -55,7 +55,7 @@
                 </p>
             </div>
         </template>
-    </standup-modal>
+    </StandupModal>
   </div>
 </template>
 
@@ -280,9 +280,9 @@ export default {
     });
 
     // Daily Standup
-    const { getAll, save } = useCollection();
+    const { getAll: fetchStandups, save: saveStandups } = useCollection('standups');
     const fetchStandup = async () => {
-      const standups = await getAll("standups")
+      const standups = await fetchStandups()
         .where("date", "==", format(new Date(), "yyyy-MM-dd"))
         .get();
       state.standup = [];
@@ -296,7 +296,7 @@ export default {
     });
 
     const updateStandup = (date) => {
-      save("standups", {
+      saveStandups({
         date: date,
       });
     };

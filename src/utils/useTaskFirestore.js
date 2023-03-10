@@ -167,7 +167,7 @@ export function useTaskFirestore() {
                     ...item ?? [],
                     created_at: item.created_at ?? new Date(),
                     updated_at: item.updated_at ?? new Date()
-                }))
+                })) ?? [],
             }
         }
     }

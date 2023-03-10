@@ -1,15 +1,17 @@
 <template>
-<div class="w-full">
+<div class="w-full text-left">
     <label :for="id" class="text-sm font-bold text-gray-500">{{ label }}</label>
-    <component
-        :is="tag"
-        ref="input"
-        :id="id"
-        :placeholder="label"
-        :value="modelValue"
-        class="block w-full px-2 py-1 bg-transparent border-b border-gray-200 focus:outline-none focus:border-emerald-400"
-        @input="$emit('update:modelValue', $event.target.value)"
-    />
+    <slot>
+        <component
+            :is="tag"
+            ref="input"
+            :id="id"
+            :placeholder="label"
+            :value="modelValue"
+            class="block w-full px-2 py-1 bg-transparent border-b border-gray-200 focus:outline-none focus:border-emerald-400"
+            @input="$emit('update:modelValue', $event.target.value)"
+        />
+    </slot>
     <small class="block text-red-400" v-if="errorMessage">{{ prettyError }}</small>
 </div>
 </template>

@@ -17,6 +17,8 @@ import Collect from "./views/collect/index.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import { isAuthenticated, registerEvent, setScreen } from "./utils/useFirebase";
 
+
+import BrainRoutes, { BrainView } from "@/__apps/brain/router";
 // 2. Define some routes
 // Each route should map to a component.
 // We'll talk about nested routes later.
@@ -74,6 +76,24 @@ export const routes = [
     meta: {
       requiresAuth: true,
     },
+  },
+  {
+    path: "/brain",
+    name: "brain",
+    component: BrainView,
+    meta: {
+      requiresAuth: true,
+    },
+    children: BrainRoutes
+  },
+  {
+    path: "/shapeup",
+    name: "shapeup",
+    component: BrainView,
+    meta: {
+      requiresAuth: true,
+    },
+    children: BrainRoutes
   },
   {
     path: "/pricing",

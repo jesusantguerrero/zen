@@ -3,7 +3,7 @@
   <div class="flex">
       <div class="flex items-center justify-center w-16 h-16 font-extrabold text-gray-400 border-4 border-gray-400 rounded-full task__target">
         <span class="text-xl">
-          {{ completedPromodoros }}
+          {{ completedPomodoros}}
         </span>
         <i class="ml-1 fas fa-stopwatch" /> 
       </div>
@@ -24,11 +24,10 @@
 </template>
 
 <script setup>
-import { computed, toRefs, watch } from "vue";
+import { computed, toRefs, watch, nextTick } from "vue";
 import { useTracker } from "../../utils/useTracker";
 import { useDateTime } from "../../utils/useDateTime";
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
-import { ElNotification } from "element-plus";
 
 const { updateTask } = useTaskFirestore()
 
@@ -49,24 +48,10 @@ const props = defineProps({
 
 const { task, currentTimer } = toRefs(props)
 
-const completedPromodoros = computed(() => {
+const completedPomodoros= computed(() => {
   return task.value.tracks ? task.value.tracks.filter(track => track.completed).length : 0
 })
-const { timeTracked, savedTime } = useTracker(task, currentTimer)
-const { formatDurationFromMs } = useDateTime()
+const { timeTracked } = useTracker(task, currentTimer)
 
-watch(() => currentTimer.value, () => {
-  if (savedTime) {
-    const timeFormatted = formatDurationFromMs(savedTime.value);
-    
-    if (task.value.uid && task.value.duration_ms != timeFormatted) {
-      updateTask({
-        uid: task.value.uid,
-        duration_ms: timeFormatted.toFormat("hh:mm:ss"),
-        duration: savedTime.value
-      })
-    }
-  }
-})
 
 </script>

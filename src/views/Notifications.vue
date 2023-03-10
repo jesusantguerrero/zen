@@ -37,9 +37,9 @@
     import { firebaseInstance } from "../utils/useFirebase";
 
     const notifications = inject('notifications', []);
-    const { update } = useCollection()
+    const { update } = useCollection('notifications')
     const markAsRead = (notification) => {
-        update('notifications', {
+        update({
             ...notification,
             read_at: firebaseInstance.firestore.Timestamp.now()
         }).then(() => {

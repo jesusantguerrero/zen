@@ -21,8 +21,8 @@
 </template>
 
 <script>
-import { format } from "date-fns";
-import { useWeekPager } from "../../utils/useWeekPager";
+import { useWeekPager } from "@/utils/useWeekPager";
+import { formatDate } from "@/utils";
 import { watch, toRefs, computed } from "vue";
 
 export default {
@@ -67,9 +67,6 @@ export default {
       return date.toISOString ? date.toISOString().slice(0, 10) : "";
     };
 
-    const formatDate = (date) => {
-      return format(date,  'MMM dd yyyy')
-    }
 
     return {
       selectedWeek,

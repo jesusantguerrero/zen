@@ -8,20 +8,12 @@
         <header>
           <div class="flex items-center text-2xl font-bold text-gray-400 md:block dark:text-gray-300">
             <h1 class="inline-block"> Dashboard </h1>
-        
-            <button 
-              class="p-2 ml-5 text-sm font-bold bg-white border rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white hover:shadow-md focus:outline-none"
-              @click="$emit('update', false)"
-            >
-                <i class="fa fa-chevron-left"></i>
-              Legacy Home Screen
-            </button>
           </div>
 
           <div class="flex justify-between mt-5">
-            <tab-header v-model="state.tabSelected" :tabs="state.tabs" class="overflow-hidden rounded-md"/>
+            <TabHeader v-model="state.tabSelected" :tabs="state.tabs" class="overflow-hidden rounded-md"/>
 
-            <div class="flex space-x-2 itemx-center">
+            <div class="flex space-x-2 items-center">
               <div class="items-center h-10 md:flex">
                 <input
                   type="search"
@@ -50,7 +42,7 @@
         </header>
 
         <div class="mt-5">
-          <time-tracker-wrapper
+          <TimeTrackerWrapper
               ref="TimeTracker"
               class="justify-center py-5 bg-white border rounded-md shadow-md dark:bg-gray-700 dark:border-gray-500" 
               :task="currentTask" 
@@ -118,7 +110,7 @@
         </header>
 
         <div class="space-y-2 divide-gray-200 comming-up__list divide-solid">
-          <background-icon-card
+          <BackgroundIconCard
             class="text-white bg-blue-400 dark:bg-blue-600 h-36"
             icon="fas fa-clock"
             value="Quick Standup"
@@ -126,9 +118,9 @@
             <template #action>
               <Button class="bg-blue-500 dak:bg-blue-700"> Go to standup </Button>
             </template>
-          </background-icon-card>
+          </BackgroundIconCard>
 
-          <background-icon-card
+          <BackgroundIconCard
             class="text-white bg-gray-700 h-36"
             icon="fas fa-border-all"
             value="Overview"
@@ -136,20 +128,20 @@
             <template #action>
               <Button class="bg-gray-800" @click="$router.push({name: 'overview'})"> Go to overview </Button>
             </template>
-          </background-icon-card>
+          </BackgroundIconCard>
         </div>
       </div>
     </div>
 
-    <welcome-modal
+    <WelcomeModal
       :is-open="state.isWelcomeOpen"
       @closed="closeWelcomeModal"
     />
 
-    <task-modal
+    <TaskModal
       v-model:is-open="state.isTaskModalOpen"
       :task-data="taskToEdit"
-      @saved="onEdittedTask"
+      @saved="onEditedTask"
       @closed="taskToEdit = null"
     />
   </div>
@@ -253,7 +245,7 @@ const setTaskToEdit = (task) => {
   state.isTaskModalOpen = true;
 };
 
-const onEdittedTask = (task) => {
+const onEditedTask = (task) => {
   const index = state[task.matrix].findIndex(
     (localTask) => localTask.uid == task.uid
   );
