@@ -36,7 +36,6 @@ exports.userApplication = functions.https.onCall(async (data, context) => {
         const userApp =  await admin.firestore().collection('applications')
         .where('appKey', '==', data.appKey)
         .where('user_uid', '==', context.auth.uid)
-        .where('type', '==', 'personal')
         .get()
         .then(snap => snap.data());
 
@@ -45,12 +44,12 @@ exports.userApplication = functions.https.onCall(async (data, context) => {
                 ...(data.params ?? {})
             },
             headers: {
-                ...( data.type == 'apiToken' ? {
+                ...( userApp.type == 'apiToken' ? {
                     Authorization: `Bearer ${userApp.uuid}`
                   } : {}
                 )
             },
-            ...(data.type == 'personal' ? { auth: {
+            ...(userApp.type == 'personal' ? { auth: {
                 username: userApp.user,
                 password: userApp.uuid
             }} : {})
