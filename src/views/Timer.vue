@@ -11,7 +11,7 @@
           v-model:tags="state.tags"
           v-model:selectedTags="state.selectedTags"
         />
-        <AtButton class="bg-green-500 text-white" rounded @click="syncTempoLogs()">
+        <AtButton class="text-white bg-green-500" rounded @click="syncTempoLogs()">
           Sync Tempo
         </AtButton>
       </section>
@@ -19,11 +19,11 @@
 
   <div class="">     
       <div v-for="(tracksByDate, trackDate) in groupedTracks" :key="trackDate" class="mb-12">
-          <div class="pl-16 py-4 bg-white w-full font-bold flex items-center space-x-2">
+          <div class="flex items-center w-full py-4 pl-16 space-x-2 font-bold bg-white">
             <span>
               {{ formattedDate(trackDate) }}
             </span>  
-              <section v-if="selectedItems.length" class="text-gray-400 flex items-center">
+              <section v-if="selectedItems.length" class="flex items-center text-gray-400">
                 <span> 
                   {{selectedItems.length }} of {{ state.tracked.length }}
                 </span>
@@ -236,11 +236,11 @@ const groupedTracks = computed(() => {
 });
 
 const events = computed(() => {
-  const appEvents = state.tracked.map(event => ({
+  const appEvents = state.tracked.filter(item => item.ended_at).map(event => ({
         ...event,
         uid: event.uid,
         start: event.started_at.toDate(),
-        end: event.ended_at.toDate(),
+        end: event.ended_at?.toDate(),
         title: event.description,
         class: 'zen-event'
   }))
