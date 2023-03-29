@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import { db, firebaseState } from "./useFirebase";
+import { addSeconds, parseISO } from "date-fns";
 
 export function useTrackFirestore() {
     const saveTrack = (track) => {
@@ -62,13 +63,46 @@ export function useTrackFirestore() {
         return trackRef
     }
 
+    const getTempoTracksByDates = async (startDate = new Date(), endDate) => {
+        const start = new Date(DateTime.fromJSDate(startDate).startOf('day'))
+        const end = new Date(DateTime.fromJSDate(endDate || startDate).endOf('day'))
+        
+        const trackRef = db.collection('tempo')
+        .where("user_uid", "==", firebaseState.user.uid)
+        .where('started_at', ">=", start)
+        .where('started_at', "<=", end)
+        return trackRef
+    }
+
+    const syncTempoTracks = async (workLogs) => {
+        const batch = db.batch()
+        workLogs.forEach((workLog) => {
+            const startedAt = parseISO(`${workLog.startDate}T${workLog.startTime}`);
+            const key = firebaseState.user.uid + '-' + workLog.tempoWorklogId
+
+            const formData = {
+                ...workLog,
+                started_at: startedAt,
+                ended_at: addSeconds(startedAt, workLog.timeSpentSeconds),
+                user_uid: firebaseState.user.uid,
+                created_at: new Date()
+            }
+            db.collection('tempo').doc(key).set(formData, { merge: true })
+        })
+        return batch.commit().then(() => {
+            return
+        })
+    }
+
     return {
         saveTrack,
         deleteTrack,
         updateTrack,
         getAllTracks,
         getAllTracksOfTask,
-        getTracksByDates
+        getTracksByDates,
+        syncTempoTracks,
+        getTempoTracksByDates,
     }
 
 }

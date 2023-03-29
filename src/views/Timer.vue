@@ -4,12 +4,17 @@
       <h2 class="flex items-center text-2xl font-bold text-left text-gray-400">
          <span> Time Tracks </span>
       </h2>
-      <SearchBar
-        v-model="state.searchText"
-        v-model:date="state.date"
-        v-model:tags="state.tags"
-        v-model:selectedTags="state.selectedTags"
-      />
+      <section class="flex space-x-2">
+        <SearchBar
+          v-model="state.searchText"
+          v-model:date="state.date"
+          v-model:tags="state.tags"
+          v-model:selectedTags="state.selectedTags"
+        />
+        <AtButton class="bg-green-500 text-white" rounded @click="syncTempoLogs()">
+          Sync Tempo
+        </AtButton>
+      </section>
   </div> 
 
   <div class="">     
@@ -34,6 +39,18 @@
               :key="track.id"
               @toggle-select="toggleGroup(track, $event)"
           />
+          {{ tracked  }}
+          <VueCal 
+            style="height: 500px"
+            :events="events"
+            :disable-views="['years', 'year', 'month']"
+            hide-weekends
+            :on-event-click="onEventClick"
+          >
+            <template v-slot:weekday-heading="{ heading : { label, date } }">
+              {{  label }}
+            </template>
+          </VueCal>
       </div>
   </div>
 </div>
@@ -43,17 +60,21 @@
 import { reactive, watch, onUnmounted, computed } from 'vue'
 import { useTrackFirestore } from '../utils/useTrackFirestore'
 import SearchBar from "../components/molecules/SearchBar.vue"
-import { format, formatRelative, isToday, parse, startOfDay } from 'date-fns'
+import { AtButton } from "atmosphere-ui";
+import { endOfWeek, format, formatRelative, isToday, parse, startOfDay, startOfWeek } from 'date-fns'
 import { enUS } from 'date-fns/locale'
 import TimeTrackerGroup from '../components/organisms/TimeTrackerGroup.vue'
 import { ElNotification } from 'element-plus'
-
-
+import VueCal from "vue-cal";
+import 'vue-cal/dist/vuecal.css'
+import { functions } from '@/utils/useFirebase'
+import { useCollection } from "@/utils/useCollection"
 // state and ui
 const state = reactive({
   tracked: [],
-  trackedRef: null,
+  firebaseRefs: {},
   searchText: "",
+  tempoEvents: [],
   tags: [],
   date:startOfDay(new Date()),
   selectedTags: [],
@@ -80,10 +101,10 @@ const state = reactive({
 })
 
 // tracked tasks
-const  { getTracksByDates } = useTrackFirestore()
+const  { getTracksByDates, syncTempoTracks, getTempoTracksByDates } = useTrackFirestore()
 const fetchTracked = (date) => {
   return getTracksByDates(date).then(trackedRef => {
-    state.trackedRef = trackedRef.onSnapshot( snap => {
+    state.firebaseRefs['tracked'] = trackedRef.onSnapshot( snap => {
       const list = []
       snap.forEach(doc => {
         const track = doc.data()
@@ -94,8 +115,89 @@ const fetchTracked = (date) => {
   })
 }
 
+const syncTempoLogs = () => {
+  const from = startOfWeek(state.date)
+  const to = endOfWeek(state.date)
+
+  const tempoWorkLogs = functions.httpsCallable('tempoWorklogs');
+  tempoWorkLogs({
+      from: format(from, 'yyyy-MM-dd'),
+      to: format(to, 'yyyy-MM-dd')
+  }).then(({ data }) => {
+    syncTempoTracks(data.results).then(() => {
+      ElNotification({
+        type: 'success',
+        message: 'Tempo tracks synced correctly'
+      })
+    })
+  }).catch((err) => {
+    console.log(err)
+  })
+}
+
+const onEventClick = (event) => {
+  if (!event.class.includes('tempo')) {
+    console.log(event);
+    syncTempoUpdate(event)
+  }
+}
+
+const syncTempoUpdate = async (event) => {
+  const from = startOfWeek(state.date)
+  const to = endOfWeek(state.date)
+
+  const issue = await functions.httpsCallable('userApplication')({
+    appKey: 'jira',
+    endpoint: `/issue/${event.title.slice(0, event.title.indexOf("-")).trim()}` 
+  });
+
+  if (issue) {
+    console.log(issue);
+    return 
+  }
+
+  const tempoWorkLogs = functions.httpsCallable('tempoWorklogs');
+  tempoWorkLogs({
+     authorAccountId: state.tempoEvents[0].authorAccountId,
+     timeSpentSeconds: event.duration_ms / 1000,
+     billableSeconds: event.duration_ms / 1000,
+     description: event.description,
+     issueId: issues[0].id,
+     startDate: format(event.start, 'yyyy-MM-dd'),
+     startTime: format(event.start, 'HH:mm:ss')
+  }).then(({ data }) => {
+    syncTempoTracks(data.results).then(() => {
+      ElNotification({
+        type: 'success',
+        message: 'Tempo tracks synced correctly'
+      })
+    })
+  }).catch((err) => {
+    console.log(err)
+  })
+}
+
+
+
+const fetchTempo = async (date) => {
+  const from = startOfWeek(date)
+  const to = endOfWeek(date)
+
+  const tempoRef = await getTempoTracksByDates(from, to);
+  state.firebaseRefs['tempoRef'] = tempoRef.onSnapshot(snap => {
+    const list = [];
+    snap.forEach(doc => {
+      const track = doc.data();
+      console.log(track)
+      list.push({ ...track, uid: doc.id });
+    });
+    state.tempoEvents = list;
+  });
+}
+
 watch(() => state.date , async () => {
  await fetchTracked(state.date)
+ await fetchTempo(state.date)
 }, { immediate: true })
 
 const groupedTracks = computed(() => {
@@ -127,6 +229,22 @@ const groupedTracks = computed(() => {
     });
     return trackGroup;
 });
+
+const events = computed(() => {
+  const appEvents = state.tracked.map(event => ({
+        start: event.started_at.toDate(),
+        end: event.ended_at.toDate(),
+        title: event.description,
+        class: 'zen-event'
+  }))
+
+  return [...appEvents, ...state.tempoEvents.map((event) => ({
+    start: event.started_at.toDate(),
+        end: event.ended_at.toDate(),
+        title: event.description,
+        class: 'tempo-event'
+  }))]
+})
 
 const toggleGroup = (timeEntry, isSelected) => {
     timeEntry.tracks.forEach(
@@ -164,8 +282,37 @@ const copyTasksTitles = () => {
 }
 
 onUnmounted(() => {
-  if (state.trackedRef) {
-    state.trackedRef()
-  }
+  Object.values(state.firebaseRefs).forEach((firebaseRef) => {
+    if (firebaseRef) firebaseRef()
+  })
 });
 </script>
+
+
+<style lang="scss">
+.tempo-event, .zen-event {
+  position: relative;
+    height: 102.667px;
+    width: 168px;
+    min-height: 20px;
+    border: 1px solid rgb(188, 216, 224);
+    border-radius: 4px;
+    box-shadow: rgba(0, 0, 0, 0.08) 0px 1px 3px 0px;
+    font-size: 14px;
+    flex-direction: column;
+    display: flex;
+    transition: min-height 0.3s ease 0s, box-shadow 0.3s ease-in-out 0s;
+    text-decoration: none;
+    background: rgb(238, 243, 248);
+    line-height: 1.42857;
+    touch-action: none;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    padding: 8px;
+    opacity: 1;
+    cursor: grab;
+    margin-bottom: 0px;
+    color: rgba(0, 28, 61, 0.72);
+    user-select: none;
+}
+</style>

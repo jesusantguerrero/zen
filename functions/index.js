@@ -11,6 +11,7 @@ const { getUserSettings, setUserSettings, workers, getTaskDuration } = require('
 const {  createRemindersForTask, createRecurrenceForTask } = require('./utils/tasks');
 const { runDailyNotifications, execReminders } = require("./utils/notifications");
 const { parseRequestData } = require("./services/integrations/jira");
+const { default: axios } = require("axios");
 
 // Task related functions
 exports.setReminder = functions.runWith({ memory: "2GB" }).firestore.document('tasks/{taskId}').onWrite((async (change) => {
@@ -155,6 +156,57 @@ exports.requestAccess = functions.https.onCall(async (data, context) => {
         connectionId: connection.id,
         service: data.service,
     };
+})
+
+
+const tempoApi ="https://api.tempo.io/4"
+const tempoToken = "yWBJVcaKCHhc17Pf1pT9zgCFF2VU73"
+exports.tempoWorklogs = functions.https.onCall(async (data, context) => {
+    try {
+        const res = await axios.get(`${tempoApi}/worklogs`, {
+            params: {
+              from: data.from,
+              to: data.to, 
+            }, 
+            headers: {
+              Authorization: `Bearer ${tempoToken}`
+            }
+        })
+        return res.data;
+    } catch(err)  {
+        return {
+            status: 400,
+            error: err
+        }
+    }
+})
+
+
+exports.userApplication = functions.https.onCall(async (data, context) => {
+    try {
+        const userApp =  await admin.firestore().collection('applications')
+        .where('appKey', '==', data.appKey)
+        .where('user_uid', '==', context.auth.uid)
+        .where('type', '==', 'personal')
+        .get()
+        .then(snap => snap.data());
+
+        console.log(userApp, "Hola mundo");
+
+
+        const res = await axios.get(`${userApp.endpoint}/${data.path}`, { 
+            auth: {
+                username: userApp.user,
+                password: userApp.uuid
+            }
+        })
+        return res.data;
+    } catch(err)  {
+        return {
+            status: 400,
+            error: err
+        }
+    }
 })
 
 exports.getServiceResources = serviceIntegrations.integrations;

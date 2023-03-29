@@ -3525,6 +3525,11 @@ vitest@^0.10.5:
     tinyspy "^0.3.2"
     vite "^2.9.7"
 
+vue-cal@^4.8.1:
+  version "4.8.1"
+  resolved "https://registry.yarnpkg.com/vue-cal/-/vue-cal-4.8.1.tgz#409dea906ee32af875c6b8670b64b8d494d18d3f"
+  integrity sha512-qe0jSDmbzdKF3/MSTPcHSJMOovav4MwmXtgs1n7jkI345zAtfErQVv4uFEVXg1rD62sBi1qWflYRUKy1mzQapg==
+
 vue-demi@*:
   version "0.13.11"
   resolved "https://registry.yarnpkg.com/vue-demi/-/vue-demi-0.13.11.tgz#7d90369bdae8974d87b1973564ad390182410d99"
