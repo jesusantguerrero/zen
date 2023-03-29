@@ -115,14 +115,18 @@ const fetchTracked = (date) => {
   })
 }
 
+const userApplication = functions.httpsCallable('userApplication');
 const syncTempoLogs = () => {
   const from = startOfWeek(state.date)
   const to = endOfWeek(state.date)
 
-  const tempoWorkLogs = functions.httpsCallable('tempoWorklogs');
-  tempoWorkLogs({
-      from: format(from, 'yyyy-MM-dd'),
-      to: format(to, 'yyyy-MM-dd')
+  userApplication({
+      appKey: 'tempo',
+      params: {
+        from: format(from, 'yyyy-MM-dd'),
+        to: format(to, 'yyyy-MM-dd')
+      },
+      path: '/worklogs'
   }).then(({ data }) => {
     syncTempoTracks(data.results).then(() => {
       ElNotification({
@@ -143,28 +147,29 @@ const onEventClick = (event) => {
 }
 
 const syncTempoUpdate = async (event) => {
-  const from = startOfWeek(state.date)
-  const to = endOfWeek(state.date)
-
-  const issue = await functions.httpsCallable('userApplication')({
+  const {data: issue } = await userApplication({
     appKey: 'jira',
-    endpoint: `/issue/${event.title.slice(0, event.title.indexOf("-")).trim()}` 
+    path: `issue/${event.title.slice(0, event.title.indexOf(" ")).trim()}` 
   });
-
-  if (issue) {
-    console.log(issue);
-    return 
+  const tempoData = {
+        attributes: [{
+            "key": "_Account_",
+            "value": "DEV"
+        }],
+        authorAccountId: state.tempoEvents[0].author.accountId,
+        timeSpentSeconds: event.duration_ms / 1000,
+        billableSeconds: event.duration_ms / 1000,
+        description: event.description,
+        issueId: issue.id,
+        startDate: format(event.start, 'yyyy-MM-dd'),
+        startTime: format(event.start, 'HH:mm:ss')
   }
-
-  const tempoWorkLogs = functions.httpsCallable('tempoWorklogs');
-  tempoWorkLogs({
-     authorAccountId: state.tempoEvents[0].authorAccountId,
-     timeSpentSeconds: event.duration_ms / 1000,
-     billableSeconds: event.duration_ms / 1000,
-     description: event.description,
-     issueId: issues[0].id,
-     startDate: format(event.start, 'yyyy-MM-dd'),
-     startTime: format(event.start, 'HH:mm:ss')
+  
+  userApplication({
+      method: 'post',
+      appKey: 'tempo',
+      path: '/worklogs',
+      data: tempoData,
   }).then(({ data }) => {
     syncTempoTracks(data.results).then(() => {
       ElNotification({
@@ -232,6 +237,8 @@ const groupedTracks = computed(() => {
 
 const events = computed(() => {
   const appEvents = state.tracked.map(event => ({
+        ...event,
+        uid: event.uid,
         start: event.started_at.toDate(),
         end: event.ended_at.toDate(),
         title: event.description,
@@ -239,10 +246,10 @@ const events = computed(() => {
   }))
 
   return [...appEvents, ...state.tempoEvents.map((event) => ({
-    start: event.started_at.toDate(),
-        end: event.ended_at.toDate(),
-        title: event.description,
-        class: 'tempo-event'
+      start: event.started_at.toDate(),
+      end: event.ended_at.toDate(),
+      title: event.description,
+      class: 'tempo-event'
   }))]
 })
 
