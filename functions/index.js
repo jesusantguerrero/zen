@@ -1,163 +1,90 @@
-const functions = require("firebase-functions");
 const admin = require('firebase-admin');
-const tasks = require('./services/api/tasks');
-const serviceMatrix = require('./services/matrix');
-const serviceIntegrations = require('./services/integrations');
-
-const { firestore } = require("firebase-admin");
-const { format } = require("date-fns");
+const axios = require('axios').default;
+const functions = require('firebase-functions');
 admin.initializeApp();
-const { getUserSettings, setUserSettings, workers, getTaskDuration } = require('./utils');
-const {  createRemindersForTask, createRecurrenceForTask } = require('./utils/tasks');
-const { runDailyNotifications, execReminders } = require("./utils/notifications");
-const { parseRequestData } = require("./services/integrations/jira");
+
+// const { default: BaseApi } = require("./src/services/api");
+// const matrixService = require('./src/services/matrix');
+// const subscriptionService = require('./src/services/subscription');
+// const integrationService = require('./src/services/integrations');
+// const notificationService = require("./src/services/notifications");
+// const taskService = require("./src/services/tasks");
 
 // Task related functions
-exports.setReminder = functions.runWith({ memory: "2GB" }).firestore.document('tasks/{taskId}').onWrite((async (change) => {
-    if (change.after.isEqual(change.before)) return;
-    if (change.before.data().user_uid == "zEc2lvJCgbdjxb5pt2Icruo4AN82") {
-        await createRemindersForTask(change.before.data(), change.after.data(), change.after.id);
-        return
-    }
-    return
-}));
+// exports.setReminder = functions.runWith({ memory: "2GB" }).firestore.document('tasks/{taskId}').onWrite(taskService.setTaskReminder)
+// exports.setRecurrence = functions.https.onCall(taskService.setTaskRecurrence)
+// exports.calcTaskTime = functions.firestore.document('tracks/{trackId}').onUpdate(taskService.calcTaskTime)
 
-exports.setRecurrence = functions.https.onCall(async (data, context) => {
-    if (data.user_uid == "zEc2lvJCgbdjxb5pt2Icruo4AN82") {
-        const taskRef = firestore().collection('tasks').doc(data.uid)
-        return await createRecurrenceForTask(taskRef) 
-    }
-})
+// // notifications related functions
+// exports.dailyNotifications = notificationService.dailyNotifications
+// exports.taskReminder = notificationService.taskReminderNotifications
+// exports.sendPush = notificationService.sendPushNotifications
 
-exports.calcTaskTime = functions.firestore.document('tracks/{trackId}').onUpdate((async (change) => {
+// // Matrix related functions
+// exports.shareMatrix = matrixService.shareMatrix;
+
+// // integrations related functions
+// exports.oauthAccess = integrationService.oauthAccess
+// exports.requestAccess = integrationService.requestAccess
+// exports.getServiceResources = integrationService.integrations;
+
+// // API related functions
+// exports.api = BaseApi;
+// exports.subscription = subscriptionService.default;
+
+exports.userApplication = functions.runWith({
+    enforceAppCheck: true,
+}).https.onCall(async (data, context) => {
+    if (context.app == undefined) {
+        throw new functions.https.HttpsError(
+            'failed-precondition',
+            'The function must be called from an App Check verified app.'
+        )
+    }
     try {
-        const taskUid = change.after.data().task_uid;
-        const tracksData = await firestore().collection('tracks')
-        .where('task_uid', '==', taskUid)
-        .where('uid', '!=', change.after.data().uid)
+        if (!context.auth) return
+        const userApp =  await admin.firestore().collection('applications')
+        .where('appKey', '==', data.appKey)
+        .where('user_uid', '==', context.auth.uid)
+        .limit(1)
         .get()
-        const tracks = [];
-
-        tracksData.forEach(doc => {
-            tracks.push({...doc.data(), uid: doc.id})
+        .then( results =>  {
+            let data;
+            results.forEach(snap => {
+               data = snap.data()
+            });
+            return data;
         })
 
-        if (tracks.length) {
-            const timeTracked = getTaskDuration(tracks, change.after.data().duration_ms || 0);
-        
-            firestore().collection('tasks').doc(taskUid).set({
-                duration_ms: timeTracked,
-                duration: savedTime
-            }, { merge: true })
+        const method = data.method ?? 'get';
+        const config = { 
+            params: {
+                ...(data.params ?? {})
+            },
+            headers: {
+                ...( userApp.type == 'apiToken' ? {
+                    Authorization: `Bearer ${userApp.uuid}`
+                  } : {}
+                )
+            },
+            ...(userApp.type == 'personal' ? { auth: {
+                username: userApp.user,
+                password: userApp.uuid
+            }} : {}),
+            ...(data.data ? { data: data.data } : {}) 
         }
-    } catch (e) {
-        console.log(e)
-    }
-}))
-
-// notifications related functions
-exports.dailyNotifications = functions.https.onCall(async(data, context) => {
-    const user = await getUserSettings(context.auth.uid);
-    const now = admin.firestore.Timestamp.now().toDate();
-    if (!user.daily_notification_date || format(user.daily_notification_date.toDate(), 'yyyy-MM-dd') != format(now, 'yyyy-MM-dd')) {
-        await runDailyNotifications(context.auth.uid);
-        await setUserSettings(context.auth.uid, {
-            daily_notification_date: admin.firestore.Timestamp.now()
-        })
-        return;
-    }
-    return 'done';
-})
-
-exports.taskReminder = functions.runWith({ memory: "2GB" }).pubsub.schedule("* * * * *").onRun(async () => {
-    return execReminders().catch((err) => {
-        console.log((JSON.stringify({
-            error: {
-            id: 'unable-to-send-messages',
-            message: `We were unable to send messages to all subscriptions : '${err.message}`
-            }
-        })))
-    });
-})
-   
-exports.sendpush = functions.https.onRequest(async (req, res) => {
-    if (req.method == 'post') {
-        const user = await getUserSettings(req.auth.uid);
-        if (user.pushSubscription) {
-            workers.sendMessage({ message: req.body.message , pushSubscription: user.pushSubscription })
-            .then(() => {
-                res.setHeader('Content-Type', 'application/json');
-                  res.send(JSON.stringify({ data: { success: true } }));
-              })
-              .catch(function(err) {
-                res.status(500);
-                res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify({
-                  error: {
-                    id: 'unable-to-send-messages',
-                    message: `We were unable to send messages to all subscriptions : '${err.message}`
-                  }
-                }));
-              });
+        let res;
+        if (method == 'post') {
+            res = await axios[method](`${userApp.endpoint}/${data.path}`, data.data, config )
         } else {
-            res.status(404).send('bad')
+            res = await axios[method](`${userApp.endpoint}/${data.path}`, config)
+        }
+        return res.data;
+    } catch(err)  {
+        console.log(err)
+        return {
+            status: 404,
+            error: err,
         }
     }
 })
-
-// Matrix related functions
-exports.shareMatrix = serviceMatrix.shareMatrix;
-
-// integrations related functions
-exports.oauthaccess = functions.https.onRequest(async (request, response) => {
-    try {
-        const results = await admin.firestore().collection('connections').where('code', '==', request.body.code).limit(1).get()
-        let codeData = {}
-
-        results.forEach(snap => {
-            codeData = { uid: snap.id, ...snap.data()}
-        })
-
-        if (request.body.client_secret && codeData.uid, codeData.code) {
-            // Verify client secret or redirect_uri or both but electron wouldn't work
-            const token = await admin.auth().createCustomToken(codeData.user_uid);
-            await admin.firestore().collection('connections').doc(codeData.uid).set({
-                code: false,
-                refreshToken: token,
-                created_at: admin.firestore.Timestamp.now()
-            }, { merge: true });
-            return response.json({access_token: token})
-        }
-        return response.json({
-            "response_type": "ephemeral",
-            text: `This email it is not in our app`
-        });
-    } catch (e) {
-        return response.json({
-            "response_type": "ephemeral",
-            text: `This email it is not in our app ${e}`
-        });
-    }
-})
-
-exports.requestAccess = functions.https.onCall(async (data, context) => {
-    const service =  await admin.firestore().collection('services').doc(data.service).get()
-    .then(snap => snap.data());
-    const formData = parseRequestData(data);
-    const {data: accessData, error } = await serviceIntegrations.requestAccess(service.token_url, formData);
-    if (error) {
-        return  error.response.data;
-    }
-
-    const connection = await serviceIntegrations.saveConnection(context.auth.uid, data.service, accessData);
-
-    return {
-        connectionId: connection.id,
-        service: data.service,
-    };
-})
-
-exports.getServiceResources = serviceIntegrations.integrations;
-
-// API related functions
-exports.api = tasks.api;

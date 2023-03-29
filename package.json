@@ -31,6 +31,7 @@
     "randomcolor": "^0.6.2",
     "vee-validate": "^4.7.4",
     "vue": "^3.2.47",
+    "vue-cal": "^4.8.1",
     "vue-draggable-next": "^2.1.1",
     "vue-final-modal": "^1.8.8",
     "vue-router": "^4.1.6",

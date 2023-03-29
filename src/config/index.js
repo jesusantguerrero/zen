@@ -7,4 +7,6 @@ export default {
     MEASUREMENT_ID: import.meta.env.VITE_MEASUREMENT_ID,
     GOOGLE_APP_KEY: import.meta.env.VITE_GOOGLE_APP_KEY,
     GOOGLE_APP_CLIENT: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+    TEMPO_API: import.meta.env.VITE_TEMPO_API,
+    TEMPO_TOKEN: import.meta.env.VITE_TEMPO_TOKEN
 }

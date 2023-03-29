@@ -1,4 +1,4 @@
-const { workers } = require("../../utils")
+const { notificationWorkers: workers } = require("../../utils/notificationWorkers")
 
 exports.send = function(authUser, notificationInstance) {
     notificationInstance.getVia().forEach(via => {

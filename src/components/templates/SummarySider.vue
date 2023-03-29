@@ -1,8 +1,8 @@
 <template>
 <div class="md:block md:mt-0 space-y-4">
     <!-- Matrix summary card-->
-    <section class="rounded-md border grid grid-cols-2 bg-white">
-            <article class="flex h-24 px-4 relative items-center justify-between cursor-pointer font-bold" 
+    <section class="rounded-md overflow-hidden border grid grid-cols-2 bg-white">
+            <article class="flex flex-col transition items-center justify-center h-24 px-4 relative cursor-pointer font-bold" 
                 v-for="(matrix, matrixName) in matrix"
                 :key="matrixName"
                 :class="matrix.classes"

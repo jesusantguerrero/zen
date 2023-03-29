@@ -1,7 +1,7 @@
 import Index from "./pages/index.vue"
 import Cycles from "./pages/Cycles.vue"
 
-export default [
+export const BrainRoutes = [
     {
         path: '/',
         component: Cycles

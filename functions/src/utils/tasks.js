@@ -76,7 +76,6 @@ exports.createRecurrenceForTask = async(documentRef) => {
         delete nextScheduledTask.uid;
 
         const batch = firestore().batch();
-        batch
 
         await documentRef.update({
             done: true,
@@ -114,7 +113,7 @@ exports.filterStaleTasks = (tasks, date ,days = STALE_DAYS) => {
     })
 }
 
-// Firestore helper functions
+// // Firestore helper functions
 exports.getUncommittedTasks = async (userUid) => {
     return admin.firestore().collection('tasks')
     .where("user_uid", "==", userUid)

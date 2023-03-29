@@ -72,8 +72,11 @@
                 <i v-if="isLoading" class="ml-2 fa fa-spinner fa-pulse"></i>
             </button>
 
-            <button
-                class="flex justify-center capitalize rounded-sm btn btn-action google-btn"
+            <button 
+                data-sitekey="reCAPTCHA_site_key" 
+                data-callback='onSubmit' 
+                data-action='submit'
+                class="g-recaptcha flex justify-center capitalize rounded-sm btn btn-action google-btn"
                 type="submit"
                 @click.prevent.stop="loginWithProvider('google')"
             >
