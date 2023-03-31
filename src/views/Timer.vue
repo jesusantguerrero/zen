@@ -48,9 +48,17 @@
             :time-cell-height="110"
           >
             <template v-slot:weekday-heading="{ heading : { label, date } }">
-              {{  label }}
+              <article>
+                <h4 class="text-xs">
+                  {{  label }}
+                </h4>
+                <section>
+                  {{ getTotalTimeByDate(date) }}
+                </section>
+              </article>
+
             </template>
-            <template #event="{ event, view }"> 
+            <template #event="{ event }"> 
               <article class="relative">
                 <ElPopover
                   placement="bottom-end"
@@ -115,7 +123,7 @@ import { ElNotification } from 'element-plus'
 import VueCal from "vue-cal";
 import 'vue-cal/dist/vuecal.css'
 import { functions } from '@/utils/useFirebase'
-import { useCollection } from "@/utils/useCollection"
+import { formatDurationFromMs } from '@/utils/useDateTime';
 // state and ui
 const state = reactive({
   tracked: [],
@@ -259,7 +267,7 @@ const fetchTempo = async (date) => {
     const list = [];
     snap.forEach(doc => {
       const track = doc.data();
-      console.log(track)
+
       list.push({ ...track, uid: doc.id });
     });
     state.tempoEvents = list;
@@ -277,7 +285,6 @@ const groupedTracks = computed(() => {
     state.tracked.forEach(track => {
         const date = format(track.started_at.toDate(), "yyyy-MM-dd");
         if (!track.ended_at) return
-
         if (!trackGroup[date]) {
             trackGroup[date] = {
                 [track.description]: {
@@ -300,6 +307,17 @@ const groupedTracks = computed(() => {
     });
     return trackGroup;
 });
+
+const getTotalTimeByDate = (date) => {
+  const milliseconds = state.tracked.reduce((total, track) => {
+    if (format(date, 'yyyy-MM-dd') == format(track.started_at.toDate(), "yyyy-MM-dd") && track.ended_at) {
+      return total + track.duration_ms
+    }
+    return total;
+  }, 0) ?? 0
+
+  return formatDurationFromMs(milliseconds).toFormat('hh:mm:ss')
+}
 
 const events = computed(() => {
   const appEvents = state.tracked.filter(item => item.ended_at).map(event => ({

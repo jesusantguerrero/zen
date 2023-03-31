@@ -73,15 +73,10 @@ const state = reactive({
 
 
 
-const {  formatDurationFromMs } = useDateTime()
 const completedPomodoros = computed(() => {
   return statsByDay.value && statsByDay.value.map((stat) => {
     return stat ? [stat.pomodoro.started, stat.pomodoro.finished] : [0, 0]
   })
-})
-
-const durationConfig = computed({
-    
 })
 
 const durationPomodoros = computed(() => {
@@ -89,5 +84,4 @@ const durationPomodoros = computed(() => {
     return stat ? [stat.pomodoro.duration_ms] : [0]
   })
 })
-
 </script>
