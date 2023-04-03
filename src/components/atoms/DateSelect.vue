@@ -1,6 +1,6 @@
 <template>
-    <on-click-outside class="date-select" @trigger="closeModal">
-        <el-popover
+    <OnClickOutside class="date-select" @trigger="closeModal">
+        <ElPopover
             v-model:visible="isOpen"
             placement="bottom-end"
             popper-class='tag-select dark:bg-gray-900 dark:text-gray-300'
@@ -56,8 +56,8 @@
                     </at-date-action>
                 </div>
             </div>
-        </el-popover>
-    </on-click-outside>
+        </ElPopover>
+    </OnClickOutside>
 
 </template>
 

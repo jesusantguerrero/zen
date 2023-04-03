@@ -1,25 +1,27 @@
 <template>
-  <div class="w-full time-tracker-item flex items-center bg-white px-8 group">
+  <div class="flex items-center w-full px-8 bg-white time-tracker-item group">
     <div class="flex w-full">
-      <div class="w-2/5 flex items-center">
+      <div class="flex items-center w-2/5">
         <input
           type="checkbox"
-          class="mr-4 form-control-check checkbox-done" 
+          class="w-full mr-4 form-control-check checkbox-done" 
           v-model="timeEntry.selected" :value="timeEntry.id" 
-          />
-        <div class="flex items-center" :class="[isChild? 'ml-11' : 'ml-4']">
-          <div v-if="isChild"
-                class="rounded-full bg-green-100 h-4 w-4 border-green-500 border text-green-500"
+        />
+        <div class="flex items-center w-full" :class="[isChild? 'ml-11' : 'ml-4']">
+          <div 
+            v-if="isChild"
+            class="w-4 h-4 text-green-500 bg-green-100 border border-green-500 rounded-full"
           />
           <input
             type="text"
-            class="time-tracker__description px-8"
+            class="w-full px-8 time-tracker__description"
             placeholder="Add description"
             :class="[isChild? '' : 'font-bold']"
-            v-model="timeEntry.description"
+            v-model.lazy="timeEntry.description"
+            @update:model-value="$emit('updated', timeEntry)"
           />
         </div>
-        <div class="time-tracker__billable-status custom-check-container opacity-0">
+        <div class="opacity-0 time-tracker__billable-status custom-check-container">
           <label
             for="time-tracker-billable"
             class="custom-check"
@@ -37,8 +39,8 @@
         </div>
       </div>
 
-      <div class="w--1/5 flex m-auto opacity-0">
-        <div class="time-tracker__relations flex">
+      <div class="flex m-auto opacity-0 w--1/5">
+        <div class="flex time-tracker__relations">
           <div class="time-tracker__billable-status custom-check-container">
             <label
               for="time-tracker-billable"
@@ -74,8 +76,8 @@
           </div>
         </div>
       </div>
-      <div class="w-2/5 flex ml-auto">
-        <div class="time-tracker__controls flex">
+      <div class="flex w-2/5 ml-auto">
+        <div class="flex time-tracker__controls">
           <span disabled class="flex items-center start-dates">
             {{ formatDateToTime(timeEntry.started_at) }} -
             {{ formatDateToTime(timeEntry.ended_at) }}
@@ -89,10 +91,10 @@
             class="time-duration-display"
           />
 
-          <button @click="initTimer()" class="play-button opacity-0 group-hover:opacity-100">
+          <button @click="initTimer()" class="opacity-0 play-button group-hover:opacity-100">
             <i :class="`fa fa-${timerButtonIcon}`" />
           </button>
-          <button @click="deleteItem()" class="play-button opacity-0 group-hover:opacity-100">
+          <button @click="deleteItem()" class="opacity-0 play-button group-hover:opacity-100">
             <i class="fa fa-trash" />
           </button>
         </div>

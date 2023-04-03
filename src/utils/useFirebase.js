@@ -133,5 +133,5 @@ export const setScreen = (screenName) => {
 
 export const functions = firebaseInstance.functions()
 if (import.meta.env.DEV) {
-    functions.useEmulator("localhost", 5001);
+    // functions.useEmulator("localhost", 5001);
 }

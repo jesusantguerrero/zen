@@ -13,7 +13,7 @@
 
                     <div class="flex items-center ml-9">
                         <div
-                            class="time-tracker-item__count border-green-500 border-2 text-green-500"
+                            class="text-green-500 border-2 border-green-500 time-tracker-item__count"
                             @click.stop="toggleExpand()"
                         >
                             {{ timeEntry.tracks.length }}
@@ -21,7 +21,7 @@
 
                         <span
                             type="text"
-                            class="mr-2 time-tracker__description font-bold"
+                            class="mr-2 font-bold time-tracker__description"
                         >
                             {{ timeEntry.description }}
                         </span>
@@ -44,11 +44,11 @@
                             class="time-duration-display"
                         />
 
-                        <button @click="initTimer()" class="play-button opacity-0 group-hover:opacity-100">
+                        <button @click="initTimer()" class="opacity-0 play-button group-hover:opacity-100">
                             <i class="fa fa-play" />
                         </button>
 
-                        <button @click="toggleExpand" class="play-button opacity-0 group-hover:opacity-100">
+                        <button @click="toggleExpand" class="opacity-0 play-button group-hover:opacity-100">
                             <i class="fa fa-th-list" />
                         </button>
                     </div>
@@ -64,6 +64,7 @@
                     :is-child="timeEntry.tracks.length > 1"
                     :time-entry="track"
                     :key="track.id"
+                    @updated="emit('updated', $event)"
                 />
             </template>
         </TransitionGroup>

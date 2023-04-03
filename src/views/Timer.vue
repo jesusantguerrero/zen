@@ -38,6 +38,7 @@
               :time-entry="track"
               :key="track.id"
               @toggle-select="toggleGroup(track, $event)"
+              @updated="updateLocalTrack"
           />
           {{ tracked  }}
           <VueCal 
@@ -45,10 +46,60 @@
             :events="events"
             :disable-views="['years', 'year', 'month']"
             hide-weekends
-            :on-event-click="onEventClick"
+            :time-cell-height="110"
           >
             <template v-slot:weekday-heading="{ heading : { label, date } }">
-              {{  label }}
+              <article>
+                <h4 class="text-xs">
+                  {{  label }}
+                </h4>
+                <section>
+                  {{ getTotalTimeByDate(date) }}
+                </section>
+              </article>
+
+            </template>
+            <template #event="{ event }"> 
+              <article class="relative">
+                <ElPopover
+                  placement="bottom-end"
+                  popper-class='tag-select dark:bg-gray-900 dark:text-gray-300'
+                  trigger="hover"
+                  :width="310"
+                >  
+                  <template #reference>
+                    <section class="relative">
+                      <button 
+                        class="absolute top-0 right-0 w-4 h-4 bg-green-400 rounded-full" 
+                        @click.stop="onEventClick(event)"
+                        :disabled="event.isLoading"
+                        v-if="!hasTempo(event)"
+                      >
+                        <IMdiSync />
+                      </button>
+                      <div class="vuecal__event-title" v-html="event.title" />
+                  
+                      <small class="vuecal__event-time">
+                        <!-- Using Vue Cal Date prototypes (activated by default) -->
+                        <strong>Event start:</strong> <span>{{ event.start.formatTime("h O'clock") }}</span><br/>
+                        <strong>Event end:</strong> <span>{{ event.end.formatTime("h O'clock") }}</span>
+                      </small>
+                    </section> 
+                  </template>
+                  <section>
+                    <div class="vuecal__event-title vuecal__event-title--edit"
+                          contenteditable
+                          @blur="event.title = $event.target.innerHTML"
+                          v-html="event.title" />
+                  
+                      <small class="vuecal__event-time">
+                        <!-- Using Vue Cal Date prototypes (activated by default) -->
+                        <strong>Event start:</strong> <span>{{ event.start.formatTime("h O'clock") }}</span><br/>
+                        <strong>Event end:</strong> <span>{{ event.end.formatTime("h O'clock") }}</span>
+                      </small>
+                  </section>
+                </ElPopover>      
+              </article>
             </template>
           </VueCal>
       </div>
@@ -68,7 +119,7 @@ import { ElNotification } from 'element-plus'
 import VueCal from "vue-cal";
 import 'vue-cal/dist/vuecal.css'
 import { functions } from '@/utils/useFirebase'
-import { useCollection } from "@/utils/useCollection"
+import { formatDurationFromMs } from '@/utils/useDateTime';
 // state and ui
 const state = reactive({
   tracked: [],
@@ -141,28 +192,31 @@ const syncTempoLogs = () => {
 
 const onEventClick = (event) => {
   if (!event.class.includes('tempo')) {
-    console.log(event);
     syncTempoUpdate(event)
   }
 }
 
+const { updateTrack } = useTrackFirestore();
 const syncTempoUpdate = async (event) => {
   const {data: issue } = await userApplication({
     appKey: 'jira',
     path: `issue/${event.title.slice(0, event.title.indexOf(" ")).trim()}` 
   });
+
+  event.isLoading = true;
+
   const tempoData = {
-        attributes: [{
-            "key": "_Account_",
-            "value": "DEV"
-        }],
-        authorAccountId: state.tempoEvents[0].author.accountId,
-        timeSpentSeconds: event.duration_ms / 1000,
-        billableSeconds: event.duration_ms / 1000,
-        description: event.description,
-        issueId: issue.id,
-        startDate: format(event.start, 'yyyy-MM-dd'),
-        startTime: format(event.start, 'HH:mm:ss')
+    attributes: [{
+        "key": "_Account_",
+        "value": "DEV"
+    }],
+    authorAccountId: state.tempoEvents[0].author.accountId,
+    timeSpentSeconds: event.duration_ms / 1000,
+    billableSeconds: event.duration_ms / 1000,
+    description: event.description,
+    issueId: issue.id,
+    startDate: format(event.start, 'yyyy-MM-dd'),
+    startTime: format(event.start, 'HH:mm:ss')
   }
   
   userApplication({
@@ -171,18 +225,34 @@ const syncTempoUpdate = async (event) => {
       path: '/worklogs',
       data: tempoData,
   }).then(({ data }) => {
-    syncTempoTracks(data.results).then(() => {
+    ElNotification({
+      type: 'success',
+      message: 'Zen track created in tempo  correctly'
+    })
+
+    syncTempoTracks([data]).then(() => {
       ElNotification({
         type: 'success',
         message: 'Tempo tracks synced correctly'
       })
+    })
+
+    const zenTrack = state.tracked.find( track => track.uid == event.uid)
+    event.isLoading = false;
+    updateTrack({
+      ...zenTrack,
+      relations: {
+        tempo: data
+      }
     })
   }).catch((err) => {
     console.log(err)
   })
 }
 
-
+const hasTempo = (event) => {
+  return event.class.includes('tempo') || event.relations && event.relations['tempo']
+}
 
 const fetchTempo = async (date) => {
   const from = startOfWeek(date)
@@ -193,7 +263,7 @@ const fetchTempo = async (date) => {
     const list = [];
     snap.forEach(doc => {
       const track = doc.data();
-      console.log(track)
+
       list.push({ ...track, uid: doc.id });
     });
     state.tempoEvents = list;
@@ -211,7 +281,6 @@ const groupedTracks = computed(() => {
     state.tracked.forEach(track => {
         const date = format(track.started_at.toDate(), "yyyy-MM-dd");
         if (!track.ended_at) return
-
         if (!trackGroup[date]) {
             trackGroup[date] = {
                 [track.description]: {
@@ -234,6 +303,17 @@ const groupedTracks = computed(() => {
     });
     return trackGroup;
 });
+
+const getTotalTimeByDate = (date) => {
+  const milliseconds = state.tracked.reduce((total, track) => {
+    if (format(date, 'yyyy-MM-dd') == format(track.started_at.toDate(), "yyyy-MM-dd") && track.ended_at) {
+      return total + track.duration_ms
+    }
+    return total;
+  }, 0) ?? 0
+
+  return formatDurationFromMs(milliseconds).toFormat('hh:mm:ss')
+}
 
 const events = computed(() => {
   const appEvents = state.tracked.filter(item => item.ended_at).map(event => ({
@@ -260,6 +340,15 @@ const toggleGroup = (timeEntry, isSelected) => {
           state.tracked[trackIndex].selected = isSelected;
         }
     );
+}
+
+const updateLocalTrack = (track) => {
+  updateTrack(track).then(() => {
+    ElNotification({
+      type: 'success',
+      message: 'track updated'
+    });
+  })
 }
 
 const formattedDate = (date) => {
