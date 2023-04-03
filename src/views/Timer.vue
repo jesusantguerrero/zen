@@ -38,6 +38,7 @@
               :time-entry="track"
               :key="track.id"
               @toggle-select="toggleGroup(track, $event)"
+              @updated="updateLocalTrack"
           />
           {{ tracked  }}
           <VueCal 
@@ -69,7 +70,7 @@
                   <template #reference>
                     <section class="relative">
                       <button 
-                        class="absolute rounded-full bg-green-400 h-4 w-4 right-0 top-0" 
+                        class="absolute top-0 right-0 w-4 h-4 bg-green-400 rounded-full" 
                         @click.stop="onEventClick(event)"
                         :disabled="event.isLoading"
                         v-if="!hasTempo(event)"
@@ -77,11 +78,6 @@
                         <IMdiSync />
                       </button>
                       <div class="vuecal__event-title" v-html="event.title" />
-                      <!-- Or if your events are editable: -->
-                      <div class="vuecal__event-title vuecal__event-title--edit"
-                          contenteditable
-                          @blur="event.title = $event.target.innerHTML"
-                          v-html="event.title" />
                   
                       <small class="vuecal__event-time">
                         <!-- Using Vue Cal Date prototypes (activated by default) -->
@@ -344,6 +340,15 @@ const toggleGroup = (timeEntry, isSelected) => {
           state.tracked[trackIndex].selected = isSelected;
         }
     );
+}
+
+const updateLocalTrack = (track) => {
+  updateTrack(track).then(() => {
+    ElNotification({
+      type: 'success',
+      message: 'track updated'
+    });
+  })
 }
 
 const formattedDate = (date) => {
