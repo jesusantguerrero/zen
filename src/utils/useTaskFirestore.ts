@@ -3,7 +3,21 @@ import { db, firebaseState, functions } from "./useFirebase";
 import { nextTick } from "vue";
 const collectionName = "tasks";
 
-const getDate = (task) => {
+
+export interface ITask {
+    uid: string; 
+    user_uid: string;
+    title: string;
+    created_at: Date;
+    order: number;
+    due_date: Date;
+    matrix: string;
+    tracks: any[];
+    tags: any[];
+    duration_ms?: number;
+}
+
+const getDate = (task: ITask) => {
     // return task.due_date instanceof Date ? formatDate(task.due_date, "yyyy-MM-dd") : task.due_date;
     return task.due_date instanceof Date ? task.due_date : DateTime.fromISO(task.due_date).toJSDate();
 }
@@ -183,6 +197,20 @@ export function useTaskFirestore() {
         })
     }
 
+    const getMatrix = (matrixName: string, callback: Function) => {
+        getTaskByMatrix(matrixName).then((collectionRef) => {
+          const unsubscribe = collectionRef.onSnapshot((snap) => {
+            const list: ITask[] = [];
+            snap.forEach((doc) => {
+              list.push({ ...doc.data(), uid: doc.id });
+            });
+            callback(list)
+          });
+      
+          return unsubscribe;
+        });
+    };
+
     return {
         saveTask,
         updateTask,
@@ -193,6 +221,7 @@ export function useTaskFirestore() {
         getUncommittedTasks,
         getCommittedTasks,
         getAllFromUser,
-        saveTaskBatch
+        saveTaskBatch,
+        getMatrix,
     }
 }

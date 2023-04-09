@@ -114,7 +114,7 @@
 
 <script setup>
 import { defineProps, ref, watch, computed, reactive, defineEmit, toRefs } from "vue"
-import { useTaskFirestore } from "./../../utils/useTaskFirestore"
+import { useTaskFirestore } from "../../utils/useTaskFirestore"
 import { useDateTime } from "./../../utils/useDateTime"
 import { useCustomSelect } from "./../../utils/useCustomSelect"
 import DateSelect from "../atoms/DateSelect.vue"

@@ -21,7 +21,7 @@
           :matrix="state.matrix"
           :standup="state.standup"
           :committed="state.committed"
-          :is-loaded="state.tasksLoaded"
+          :is-loaded="state.taskLoaded"
         />
 
         <OverdueAside 
@@ -89,7 +89,7 @@ import { startOfYesterday } from "date-fns";
 import format from "date-fns/format";
 import subDays from "date-fns/subDays/index";
 import Metrics from "../components/templates/MetricsTemplate.vue";
-import SummaryAside from "../components/templates/SummarySider.vue";
+import SummaryAside from "../components/templates/SummaryAside.vue";
 import MaterialIcon from "../components/atoms/MaterialIcon.vue";
 import Button from "../components/atoms/Button.vue";
 import OverdueAside from "../components/templates/OverdueAside.vue";
@@ -174,12 +174,12 @@ export default {
         list: [],
         ref: null,
       },
-      tasksloaded: computed(() => {
+      taskLoaded: computed(() => {
         return Object.values(state.matrix)
           .map((item) => item.loaded)
           .every((isLoaded) => isLoaded);
       }),
-      overdues: computed(() => {
+      overdueTasks: computed(() => {
         const { formatDate } = useDateTime();
         return Object.entries(state.matrix).reduce((list, matrix) => {
           return [
@@ -220,7 +220,7 @@ export default {
       state.isTaskModalOpen = true;
     };
 
-    const onEdittedTask = (task) => {
+    const onEditedTask = (task) => {
       const index = state[task.matrix].findIndex(
         (localTask) => localTask.uid == task.uid
       );
@@ -323,9 +323,9 @@ export default {
     };
 
     watch(
-      state.tasksloaded,
+      state.taskLoaded,
       () => {
-        if (state.tasksloaded && !state.standup.length) {
+        if (state.taskLoaded && !state.standup.length) {
           if (state.matrix.todo.list.length) {
             state.standupSummary = { ...state.matrix.todo.list };
             state.isStandupOpen = true;
@@ -406,7 +406,7 @@ export default {
       state,
       taskToEdit,
       setTaskToEdit,
-      onEdittedTask,
+      onEditedTask,
       onTaskUpdated,
       addTask,
       destroyTask,

@@ -16,7 +16,7 @@
       </div>
   
       <div class="flex items-center" v-if="user">
-        <app-notification
+        <AppNotification
             :notifications="unreadNotifications"
         />
     
