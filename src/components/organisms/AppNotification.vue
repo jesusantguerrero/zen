@@ -1,5 +1,5 @@
 <template>
-  <el-popover placement="bottom-end" :width="300" trigger="click">
+  <ElPopover placement="bottom-end" :width="300" trigger="click">
     <template #reference>
       <div
         class="relative flex p-2 mx-2 text-sm font-bold text-gray-400 rounded-md cursor-pointer lg:text-lg hover:bg-green-100 dark:hover:bg-gray-600 dark:hover:text-white"
@@ -14,7 +14,7 @@
       </div>
     </template>
 
-    <div class="notification-body">
+    <section class="notification-body">
       <div
         class="flex items-center justify-between pb-2 font-bold text-center border-b"
       >
@@ -52,8 +52,8 @@
           </router-link>  
         </div>
       </div>
-    </div>
-  </el-popover>
+    </section>
+  </ElPopover>
 </template>
 
 <script>

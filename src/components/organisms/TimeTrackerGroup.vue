@@ -51,6 +51,7 @@
                         <button @click="toggleExpand" class="opacity-0 play-button group-hover:opacity-100">
                             <i class="fa fa-th-list" />
                         </button>
+                        <slot name="actions-append" />
                     </div>
                 </div>
             </div>

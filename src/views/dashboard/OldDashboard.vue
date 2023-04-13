@@ -127,10 +127,14 @@
             </CardButton>
            
             <TaskTrackView :task="currentTask" :current-timer="currentTimer" />
-            <SummarySider 
-              :matrix="state.matrix"
-              :standup="state.standup"
+
+            <StandupYWidget
               :committed="state.committed"
+            />
+
+            <SummaryAside 
+              :matrix="matrix"
+              :standup="state.standup"
               :is-loaded="state.tasksLoaded"
             />
           </div>
@@ -171,9 +175,10 @@
 </template>
 
 <script setup lang="ts">
-import { inject, nextTick, onUnmounted, reactive, ref, watch, toRefs, watchEffect } from "vue";
+import { inject, nextTick, onUnmounted, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessageBox, ElNotification } from "element-plus";
+// @ts-ignore
 import { AtButton } from "atmosphere-ui";
 
 import TaskGroup from "@/components/organisms/TaskGroup.vue";
@@ -185,9 +190,9 @@ import TaskModal from "@/components/organisms/modals/TaskModal.vue";
 import SearchBox from "./SearchBox.vue";
 import TabHeader from "@/components/atoms/TabHeader.vue";
 import CardButton from "@/components/molecules/CardButton.vue";
-import SummarySider from "@/components/templates/SummarySider.vue";
+import SummaryAside from "@/components/templates/SummaryAside.vue";
 
-import { useTaskFirestore } from "@/utils/useTaskFirestore";
+import { useTaskFirestore, ITask } from "@/utils/useTaskFirestore";
 import { useTrackFirestore } from "@/utils/useTrackFirestore";
 import { timeReducer} from "@/utils/useTracker";
 import { formatDurationFromMs } from "@/utils/useDateTime";
@@ -196,12 +201,16 @@ import { useFuseSearch, useSearchOptions } from "@/utils/useFuseSearch";
 import { startFireworks } from "@/utils/useConfetti";
 import { getNextIndex } from "@/utils";
 import { useMagicKeys } from "@vueuse/core";
+import { computed } from "@vue/reactivity";
+import { startOfYesterday } from "date-fns";
+import StandupYWidget from "@/components/templates/StandupYWidget.vue";
 
 const {
   saveTask,
   deleteTask,
   updateTask,
-  getTaskByMatrix,
+  getMatrix,
+  getCommittedTasks,
   updateTaskBatch,
 } = useTaskFirestore();
 const { getAllTracksOfTask } = useTrackFirestore();
@@ -209,34 +218,7 @@ const { getAllTracksOfTask } = useTrackFirestore();
 nextTick(() => {});
 // state and ui
 const state = reactive({
-  todo: [],
-  schedule: [],
-  matrix: {
-    todo: {
-          ref: null,
-          list: [],
-          classes: "bg-green-300 hover:bg-green-400 text-white",
-          loaded: false,
-        },
-        schedule: {
-          ref: null,
-          list: [],
-          classes: "bg-blue-300 hover:bg-blue-400 text-white",
-          loaded: false,
-        },
-        delegate: {
-          ref: null,
-          list: [],
-          classes: "bg-yellow-300 hover:bg-yellow-400 text-white",
-          loaded: false,
-        },
-        delete: {
-          ref: null,
-          list: [],
-          classes: "bg-red-300 hover:bg-red-400 text-white",
-          loaded: false,
-        },
-  },
+  committed: [], 
   showReminder: false,
   isWelcomeOpen: false,
   isTaskModalOpen: false,
@@ -263,18 +245,59 @@ const state = reactive({
   ],
 });
 
+interface IMatrix {
+  ref: null | any;
+  list: ITask[];
+  classes: string;
+  loaded: boolean;
+}
+
+const matrix = reactive<Record<string, IMatrix>>({
+    todo: {
+      ref: null,
+      list: [],
+      classes: "bg-green-300 hover:bg-green-400 text-white",
+      loaded: false,
+    },
+    schedule: {
+      ref: null,
+      list: [],
+      classes: "bg-blue-300 hover:bg-blue-400 text-white",
+      loaded: false,
+    },
+    delegate: {
+      ref: null,
+      list: [],
+      classes: "bg-yellow-300 hover:bg-yellow-400 text-white",
+      loaded: false,
+    },
+    delete: {
+      ref: null,
+      list: [],
+      classes: "bg-red-300 hover:bg-red-400 text-white",
+      loaded: false,
+    },
+});
+
 state.isWelcomeOpen = state.isWelcomeOpen || !firebaseState.settings || !firebaseState.settings.hide_welcome;
 
 // search
 const tags = inject("tags", []);
 const { selectedTags, searchText, searchTags } = useSearchOptions()
 
-const { schedule, todo } = toRefs(state);
+const schedule = computed(() => {
+  return matrix.schedule.list;
+})
+
+const todo = computed(() => {
+  return matrix.todo.list;
+})
+
 const { filteredList: filteredSchedule } = useFuseSearch(searchText, schedule, selectedTags);
 const { filteredList: filteredTodos } = useFuseSearch(searchText, todo, selectedTags);
 
 // Current task
-const currentTask = ref({});
+const currentTask = ref<ITask>({} as ITask);
 const timeTrackerRef = ref();
 const setCurrentTask = (task: any, autoplay = false) => {
   currentTask.value = task;
@@ -284,22 +307,23 @@ const setCurrentTask = (task: any, autoplay = false) => {
     })
   }
 };
-const onClone = (task) => {
-  const data = state.todo.sort( (a, b) => a.created_at.toDate() < b.created_at.toDate() ? 1 : -1);
+const onClone = (task: ITask) => {
+  // @ts-ignore
+  const data = matrix.todo.list.sort( (a, b) => a.created_at.toDate() < b.created_at.toDate() ? 1 : -1);
   setCurrentTask(data[0]);
 }
 
 // Edit task
-const taskToEdit = ref({});
-const setTaskToEdit = (task) => {
+const taskToEdit = ref<ITask|null>({});
+const setTaskToEdit = (task: ITask) => {
   taskToEdit.value = task;
   state.isTaskModalOpen = false;
   state.isTaskModalOpen = true;
 };
 
-const onEditedTask = (task) => {
-  const index = state[task.matrix].findIndex((localTask) => localTask.uid == task.uid);
-  state[task.matrix][index] = { ...task };
+const onEditedTask = (task: ITask) => {
+  const index = matrix[task.matrix].list.findIndex((localTask) => localTask.uid == task.uid);
+  matrix[task.matrix].list[index] = { ...task };
   taskToEdit.value = null;
 };
 
@@ -315,6 +339,7 @@ watch(currentTask, () => {
 });
 
 const onTrackAdded = (taskUid: string, newTrack: any) => {
+  if (!Object.keys(currentTask.value)) return;
   currentTask.value.tracks.push(newTrack);
   const savedTime = timeReducer(currentTask.value.tracks);
   if (savedTime) {
@@ -328,7 +353,7 @@ const onTrackAdded = (taskUid: string, newTrack: any) => {
     })
   }
 }
-const onDone = (task) => {
+const onDone = (task: ITask) => {
   task.tracks = [];
   delete task.duration_ms;
 
@@ -336,81 +361,74 @@ const onDone = (task) => {
     if (state.todo.length) {
       currentTask.value = state.todo[0];
       updateSettings({
-        last_task_uid: currentTask.value.uid,
+        last_task_uid: currentTask.value?.uid,
       });
     } else {
-      currentTask.value = {};
+      currentTask.value = {} as ITask;
     }
     startFireworks();
   });
 };
 
 const onRemoved = () => {
-  currentTask.value = {};
-};
-
-const onTaskUpdated = (task) => {
-  const formData = { ...task };
-  formData.tracks = [];
-  delete task.duration_ms;
-
-  updateTask(formData).then(() => {
-    ElNotification({
-      title: "Updated",
-      message: "Task updated",
-    });
-  });
+  currentTask.value = {} as ITask;
 };
 
 // Timer
 const currentTimer = ref({});
 
-// Tasks manipulation
-const getMatrix = (matrix) => {
-  getTaskByMatrix(matrix).then((collectionRef) => {
-    const unsubscribe = collectionRef.onSnapshot((snap) => {
-      state[matrix] = [];
-      snap.forEach((doc) => {
-        state[matrix].push({ ...doc.data(), uid: doc.id });
-      });
+const initialize = () => {
+  // Tasks manipulation
+  Object.entries(matrix).forEach(([matrixName, matrixValue]) => {
+    matrixValue.ref = getMatrix(matrixName, (list: ITask[]) => {
+      matrixValue.list = list;
+      matrixValue.loaded = true;
     });
+  })
 
-    return unsubscribe;
+  getCommittedTasks(startOfYesterday()).then((committedRef) => {
+    state.committed.ref = committedRef.onSnapshot((snap) => {
+      const list: ITask[] = [];
+      snap.forEach((doc) => {
+        list.push({ ...doc.data(), uid: doc.id });
+      });
+      state.committed = list;
+    });
   });
-};
+}
 
-const scheduleRef = ref(null);
-const todoRef = ref(null);
-
-todoRef.value = getMatrix("todo");
-scheduleRef.value = getMatrix("schedule");
-
+initialize();
 
 onUnmounted(() => {
-  if (scheduleRef.value && todoRef.value) {
-    scheduleRef.value();
-    todoRef.value();
-  }
+  Object.values(matrix).forEach((matrix) => {
+    if (matrix.ref) {
+      matrix.ref();
+    }
+  });
+
+  // if (state.committed.ref) {
+  //   state.committed.ref();
+  // }
 });
 
-const addTask = async (task) => {
-  task.order = getNextIndex(state.todo);
+const addTask = async (task: ITask) => {
+  task.order = getNextIndex(matrix.todo.list);
   await saveTask(task);
   registerEvent('quick_task_added');
 };
 
-const destroyTask = async (task) => {
+const destroyTask = async (task: ITask) => {
   const canDelete = await ElMessageBox.confirm(
     "Are you sure you want to delete this task?",
     "Delete Task"
   );
   if (canDelete) {
     deleteTask(task).then(() => {
-      state[task.matrix] = state[task.matrix].filter(
+      matrix[task.matrix].list = matrix[task.matrix].list.filter(
         (localTask) => task.uid != localTask.uid
       );
 
-      if (task.uid == currentTask.value.uid) {
+      if (task.uid == currentTask.value?.uid) {
         onRemoved();
       }
 
@@ -423,10 +441,10 @@ const destroyTask = async (task) => {
   }
 };
 
-const moveTo = async (task, matrix) => {
+const moveTo = async (task: ITask, matrixName: string) => {
   const oldMatrix = task.matrix;
-  task.matrix = matrix;
-  task.order = getNextIndex(state[oldMatrix]);
+  task.matrix = matrixName;
+  task.order = getNextIndex(matrix[oldMatrix]);
   updateTask(task).then(() => {
     ElNotification({
       type: "success",
@@ -449,7 +467,7 @@ const closeWelcomeModal = () => {
 };
 
 // Drags
-const handleDragChanges = (e: any, matrix: string) => {
+const handleDragChanges = (e: any, matrixName: string) => {
   if (e.added) {
     e.added.element.matrix = matrix;
     updateTask(e.added.element).then(() => {
@@ -461,7 +479,7 @@ const handleDragChanges = (e: any, matrix: string) => {
 
   if (e.moved) {
     updateTaskBatch(
-      state[e.moved.element.matrix].map((task, index) => {
+      matrix[e.moved.element.matrix].list.map((task, index) => {
         task.order = index;
         return task;
       })

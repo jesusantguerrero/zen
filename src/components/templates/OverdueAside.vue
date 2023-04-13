@@ -1,16 +1,35 @@
+<script lang="ts" setup>
+defineProps({
+    committed: {
+        type: Array,
+        required: true,
+    },
+    standup: {
+        type: Array,
+        required: true,
+    },
+    overdue: {
+        type: Array,
+        default() {
+            return [];
+        },
+    }
+})
+</script>
+
 <template>
 <div class="px-8 pt-8 md:block md:mt-0">
-    <background-icon-card
+    <BackgroundIconCard
         class="overflow-auto text-left text-gray-400 bg-white border border-gray-100 h-46"
         icon="fas fa-clock"
         value="Quick Standup"
     >
         <template #content>
         <div class="text-left">
-            <h2 class="w-full mb-5 text-xl font-bold">Overdues</h2>
+            <h2 class="w-full mb-5 text-xl font-bold">Overdue</h2>
             <div class="h-40 space-y-2 overflow-auto ic-scroller">
             <p
-                v-for="task in overdues"
+                v-for="task in overdue"
                 :key="`task-${task.id}`"
                 class="flex items-start"
             >
@@ -33,9 +52,9 @@
             </div>
         </div>
         </template>
-    </background-icon-card>
+    </BackgroundIconCard>
 
-    <background-icon-card
+    <BackgroundIconCard
         class="overflow-auto text-left text-gray-400 bg-white border h-46"
         icon="fas fa-clock"
         value="Quick Standup"
@@ -47,7 +66,7 @@
             </div>
             <div class="h-40 space-y-2 overflow-auto ic-scroller">
             <p
-                v-for="task in committed.list"
+                v-for="task in committed"
                 :key="`task-${task.id}`"
                 class="flex items-start"
             >
@@ -70,29 +89,7 @@
             </div>
         </div>
         </template>
-    </background-icon-card>
+    </BackgroundIconCard>
 </div>
 </template>
 
-<script setup>
-import { useSearchOptions } from '../../utils/useFuseSearch';
-
-defineProps({
-    committed: {
-        type: Object,
-        required: true,
-    },
-    standup: {
-        type: Array,
-        required: true,
-    },
-    overdues: {
-        type: Array,
-        default() {
-            return [];
-        },
-    }
-})
-
-const { searchTags, searchText, selectedTags } = useSearchOptions()
-</script>

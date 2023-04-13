@@ -22,7 +22,7 @@
                   placeholder="Search task"
                 />
 
-                <tags-select
+                <TagsSelect
                   v-model="searchOptions.tags"
                   :multiple="true"
                   placeholder="Filter by tag"
@@ -31,12 +31,12 @@
                   :allow-add="false"
                 />
               </div>
-              <router-link 
+              <RouterLink 
                   to="/plan-ahead" 
                   class="flex items-center px-5 mr-2 text-white bg-green-500 rounded-md ring ring-green-400 ring-offset-0 hover:bg-green-400">
                   <i class="mr-2 fa fa-tasks"></i>
                   Plan Ahead
-              </router-link>
+              </RouterLink>
             </div>
           </div>
         </header>

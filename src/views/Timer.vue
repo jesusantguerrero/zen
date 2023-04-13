@@ -19,28 +19,39 @@
 
   <div class="">     
       <div v-for="(tracksByDate, trackDate) in groupedTracks" :key="trackDate" class="mb-12">
+        <header class="flex items-center justify-between bg-white">
           <div class="flex items-center w-full py-4 pl-16 space-x-2 font-bold bg-white">
             <span>
               {{ formattedDate(trackDate) }}
             </span>  
-              <section v-if="selectedItems.length" class="flex items-center text-gray-400">
-                <span> 
-                  {{selectedItems.length }} of {{ state.tracked.length }}
-                </span>
-                <button title="Copy tasks" @click="copyTasksTitles">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M18 2H9c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h9c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H9V4h9v12zM3 15v-2h2v2H3zm0-5.5h2v2H3v-2zM10 20h2v2h-2v-2zm-7-1.5v-2h2v2H3zM5 22c-1.1 0-2-.9-2-2h2v2zm3.5 0h-2v-2h2v2zm5 0v-2h2c0 1.1-.9 2-2 2zM5 6v2H3c0-1.1.9-2 2-2z"/></svg>
-                </button>
-              </section>
+            <section v-if="selectedItems.length" class="flex items-center text-gray-400">
+              <span> 
+                {{selectedItems.length }} of {{ state.tracked.length }}
+              </span>
+              <button title="Copy tasks" @click="copyTasksTitles">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M18 2H9c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h9c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H9V4h9v12zM3 15v-2h2v2H3zm0-5.5h2v2H3v-2zM10 20h2v2h-2v-2zm-7-1.5v-2h2v2H3zM5 22c-1.1 0-2-.9-2-2h2v2zm3.5 0h-2v-2h2v2zm5 0v-2h2c0 1.1-.9 2-2 2zM5 6v2H3c0-1.1.9-2 2-2z"/></svg>
+              </button>
+            </section>
           </div>
+          <section class="flex justify-end space-x-4 w-full bg-white h-full">
+            <AtButton type="success" @click="mergeTracks" rounded :disabled="!selectedItems.length">Merge</AtButton>
+            <AtButton type="success" rounded @click="extendTracks">Extend</AtButton>
+          </section>
+        </header>
 
-          <TimeTrackerGroup
-              v-for="track in tracksByDate"
-              :time-entry="track"
-              :key="track.id"
-              @toggle-select="toggleGroup(track, $event)"
-              @updated="updateLocalTrack"
-          />
-          {{ tracked  }}
+        <TimeTrackerGroup
+            v-for="track in tracksByDate"
+            :time-entry="track"
+            :key="track.id"
+            @toggle-select="toggleGroup(track, $event)"
+            @updated="updateLocalTrack"
+        >
+          <template #actions-append>
+            <button title="sync as group" @click="syncAsGroup(track.tracks)">
+              <i class="fa fa-th-list" />
+            </button>
+          </template>
+        </TimeTrackerGroup>
           <VueCal 
             style="height: 500px"
             :events="events"
@@ -112,7 +123,7 @@ import { reactive, watch, onUnmounted, computed } from 'vue'
 import { useTrackFirestore } from '../utils/useTrackFirestore'
 import SearchBar from "../components/molecules/SearchBar.vue"
 import { AtButton } from "atmosphere-ui";
-import { endOfWeek, format, formatRelative, isToday, parse, startOfDay, startOfWeek } from 'date-fns'
+import { endOfWeek, format, formatRelative, isSameDay, isSameHour, isToday, parse, startOfDay, startOfWeek } from 'date-fns'
 import { enUS } from 'date-fns/locale'
 import TimeTrackerGroup from '../components/organisms/TimeTrackerGroup.vue'
 import { ElNotification } from 'element-plus'
@@ -120,6 +131,7 @@ import VueCal from "vue-cal";
 import 'vue-cal/dist/vuecal.css'
 import { functions } from '@/utils/useFirebase'
 import { formatDurationFromMs } from '@/utils/useDateTime';
+import { durationFromMs } from '@/utils/useTracker';
 // state and ui
 const state = reactive({
   tracked: [],
@@ -197,7 +209,14 @@ const onEventClick = (event) => {
 }
 
 const { updateTrack } = useTrackFirestore();
-const syncTempoUpdate = async (event) => {
+
+const syncTempoUpdate = async (event, autoUpdateTrack = true) => {
+  const alreadyWithTempo = events.value.find( tempoEvent => {
+    console.log(event.start, tempoEvent.start)
+    return isSameHour(event.start, tempoEvent.start) && isSameDay(event.start, tempoEvent.start)
+  });
+
+  if (alreadyWithTempo) return;
   const {data: issue } = await userApplication({
     appKey: 'jira',
     path: `issue/${event.title.slice(0, event.title.indexOf(" ")).trim()}` 
@@ -239,12 +258,16 @@ const syncTempoUpdate = async (event) => {
 
     const zenTrack = state.tracked.find( track => track.uid == event.uid)
     event.isLoading = false;
-    updateTrack({
-      ...zenTrack,
-      relations: {
-        tempo: data
-      }
-    })
+
+    if (autoUpdateTrack) {
+      return updateTrack({
+        ...zenTrack,
+        relations: {
+          tempo: data
+        }
+      })
+    }
+    return data;
   }).catch((err) => {
     console.log(err)
   })
@@ -375,6 +398,52 @@ const copyTasksTitles = () => {
     message: `${selectedTitles.length} unique tasks were copied`
   });
  })
+}
+
+const mergeTracks = () => {
+  const timeToSum = selectedItems.value.slice(1).reduce((totalMs, track) => totalMs + track.duration_ms, 0)
+  const firstTrack = selectedItems.value.at(0);
+
+  console.log(timeToSum, firstTrack, selectedItems.value, "Hola");
+
+  const mergedTracks = { ...firstTrack}
+  mergedTracks.duration_ms += timeToSum;
+  console.log(durationFromMs(mergeTracks.duration_ms))
+  // console.log(merge) 
+  // syncTempoUpdate
+}
+
+const syncAsGroup = (groupedTracks) => {
+  const timeToSum = groupedTracks.slice(1).reduce((totalMs, track) => totalMs + track.duration_ms, 0)
+  const firstTrack = groupedTracks.at(0);
+
+  console.log(timeToSum, firstTrack, selectedItems.value, "Hola");
+
+  const mergedTracks = { 
+    ...firstTrack,
+    uid: firstTrack.uid,
+    start: firstTrack.started_at.toDate(),
+    end: firstTrack.ended_at?.toDate(),
+    title: firstTrack.description,
+  }
+
+  mergedTracks.duration_ms += timeToSum;
+
+  syncTempoUpdate(mergedTracks, false).then((tempoTrack) => {
+    groupedTracks.forEach((track) => {
+      updateTrack({
+        ...track,
+        relations: {
+          tempo: tempoTrack
+        }
+      })
+    })
+
+    ElNotification({
+      title: 'Group is synced as one',
+      message: `${groupedTracks.length} were synced with tempo as one`
+    });
+  })
 }
 
 onUnmounted(() => {
