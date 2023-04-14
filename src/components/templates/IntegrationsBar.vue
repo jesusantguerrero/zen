@@ -101,7 +101,7 @@
 
 <script setup>
 import { onUnmounted, reactive } from "vue";
-import { useCollection } from "../../utils/useCollection";
+import { useCollection } from "../../utils/firebase/useCollection";
 import { AtButton } from "atmosphere-ui";
 import TagsSelect from "../atoms/TagsSelect.vue";
 import {

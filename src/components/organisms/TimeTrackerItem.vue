@@ -77,11 +77,19 @@
         </div>
       </div>
       <div class="flex w-2/5 ml-auto">
-        <div class="flex time-tracker__controls">
-          <span disabled class="flex items-center start-dates">
-            {{ formatDateToTime(timeEntry.started_at) }} -
-            {{ formatDateToTime(timeEntry.ended_at) }}
-          </span>
+        <div class="flex time-tracker__controls ">
+          <DateSelect
+              v-model="timeEntry.started_at" 
+              placeholder="Duration"
+              v-slot:default="{ focusInput }"
+            >
+              <span disabled class="flex items-center start-dates cursor-pointer hover:bg-gray-100 rounded-md px-2"
+              @click.stop="focusInput()"
+              >
+                {{ formatDateToTime(timeEntry.started_at) }} -
+                {{ formatDateToTime(timeEntry.ended_at) }}
+              </span>
+            </DateSelect> 
 
           <input
             type="text"
@@ -107,6 +115,7 @@
 import Duration from "duration";
 import { computed, reactive } from "vue";
 import { durationFromMs, formatDateToTime } from "../../utils/useTracker"
+import DateSelect from "../atoms/DateSelect.vue";
 
 const props = defineProps({
     timeEntry: {

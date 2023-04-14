@@ -143,7 +143,7 @@
 <script setup>
 import { computed, reactive, watch, ref, toRefs } from "vue";
 import { useFuseSearch } from "../../utils/useFuseSearch"
-import { useCollection } from "../../utils/useCollection"
+import { useCollection } from "../../utils/firebase/useCollection"
 import { ElMessageBox, ElNotification } from "element-plus";
 
 const props = defineProps({

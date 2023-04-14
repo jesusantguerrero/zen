@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { useCollection } from '@/utils/useCollection'
+import { useCollection } from '@/utils/firebase/useCollection'
 
 const { save: addCycle, getAll: getAllCycles, update: updateCycle, destroy: removeCycle } = useCollection('cycles', 'objectives', [
   'title',

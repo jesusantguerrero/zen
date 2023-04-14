@@ -38,7 +38,7 @@
 import { computed, onUnmounted, reactive } from "vue"
 import { firebaseState, functions, } from "../../utils/useFirebase"
 import IconGithubLogo from "../atoms/icons/IconGithubLogo.vue"
-import { useCollection } from "../../utils/useCollection"
+import { useCollection } from "../../utils/firebase/useCollection"
 import { connectGoogle } from "../../domain/integrations/google";
 
 

@@ -17,7 +17,7 @@
 
 <script setup>
 import { onUnmounted, reactive } from "vue"
-import { useCollection } from "../../utils/useCollection"
+import { useCollection } from "../../utils/firebase/useCollection"
 import OauthForm from '../molecules/OauthForm.vue'
 import { AtButton } from "atmosphere-ui"
 

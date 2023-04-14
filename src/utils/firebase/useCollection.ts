@@ -1,11 +1,11 @@
-import { db, firebaseState } from "./useFirebase";
+import { db, firebaseState } from "../useFirebase";
 
 export function useCollection(tableName?: string, relationshipTable?: string, relationshipFields?: string[]) {
 
     const save = (item: any, collectionName = tableName) => {
         return db.collection(collectionName).add({
             ...item,
-            user_uid: firebaseState.user.uid,
+            user_uid: firebaseState?.user?.uid,
             created_at: new Date()
         }).then((docRef) => {
             return docRef.id

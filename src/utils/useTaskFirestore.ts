@@ -1,6 +1,8 @@
+// @ts-ignore
 import { DateTime } from "luxon";
 import { db, firebaseState, functions } from "./useFirebase";
 import { nextTick } from "vue";
+import { startOfDay, subDays } from "date-fns";
 const collectionName = "tasks";
 
 
@@ -15,6 +17,7 @@ export interface ITask {
     tracks: any[];
     tags: any[];
     duration_ms?: number;
+    checklist: any[];
 }
 
 const getDate = (task: ITask) => {
@@ -23,14 +26,14 @@ const getDate = (task: ITask) => {
 }
 
 export function useTaskFirestore() {
-    const saveTask = (task) => {
+    const saveTask = (task: ITask) => {
         if (task.due_date) {
             task.due_date = getDate(task)
         }
         return db.collection(collectionName, taskConverter.toFirestore(task))
         .add({
             ...task,
-            user_uid: firebaseState.user.uid,
+            user_uid: firebaseState.user?.uid,
             created_at: new Date()
         })
         .then((docRef) => {
@@ -84,7 +87,7 @@ export function useTaskFirestore() {
         const batch = db.batch()
         tasks.forEach((task) => {
             const trackRef = db.collection(collectionName)
-            withConverter(taskConverter)
+            .withConverter(taskConverter)
             .doc(task.uid)
             trackRef.update({
                 order: task.order
@@ -119,25 +122,28 @@ export function useTaskFirestore() {
         return tasks;
     }
 
-    const getCommittedTasks = async (date = new Date()) => {
-        const commitDate = DateTime.fromJSDate(date).toFormat('yyyy-MM-dd')
+    const getCommittedTasks = async (toDate = new Date(), fromDate?: Date) => {
+        const commitDateStart = DateTime.fromJSDate(fromDate|| subDays(startOfDay(new Date()), 1)).toFormat('yyyy-MM-dd')
+        const commitDateEnd = DateTime.fromJSDate(toDate).toFormat('yyyy-MM-dd')
+
         const committedRef = await db.collection(collectionName)
-        .where("user_uid", "==", firebaseState.user.uid)
+        .where("user_uid", "==", firebaseState?.user?.uid)
         .where("done", "==", true)
-        .where("commit_date", "==", commitDate)
+        .where("commit_date", ">=", commitDateStart)
+        .where("commit_date", "<=", commitDateEnd)
         .withConverter(taskConverter)
 
         return committedRef
     }
 
     const getUncommittedTasks = (userUuid) => {
-        const uncommitedRef = db.collection(collectionName)
-        .where("user_uid", "==", userUuid || firebaseState.user.uid)
+        const uncommittedRef = db.collection(collectionName)
+        .where("user_uid", "==", userUuid || firebaseState?.user?.uid)
         .where("done", "==", false)
         .orderBy("order")
         .withConverter(taskConverter)
     
-        return uncommitedRef
+        return uncommittedRef
     }
 
     const getTaskByMatrix = async (matrix) => {
@@ -161,23 +167,23 @@ export function useTaskFirestore() {
     }
 
     const taskConverter = {
-        fromFirestore( snapshot, options) {
+        fromFirestore(snapshot: firebase.default.firestore.DocumentSnapshot, options) {
             const data = snapshot.data(options);
             return { 
                 ...data, 
-                due_date: !data.due_date ? null : 
+                due_date: !data?.due_date ? null : 
                 data.due_date.toDate ? data.due_date.toDate() : data.due_date, 
-                checklist: data.checklist.map(item => ({
+                checklist: data?.checklist.map((item: Record<string, any>) => ({
                     ...item,
                     created_at: item.created_at?.toDate(), 
                     updated_at: item.update_at?.toDate() 
                 }))
             };
         },
-        toFirestore(data) {
+        toFirestore(data: ITask) {
             return {
                 ...data,
-                checklist: data.checklist?.map((item) => ({
+                checklist: data.checklist?.map((item: Record<string, any>) => ({
                     ...item ?? [],
                     created_at: item.created_at ?? new Date(),
                     updated_at: item.updated_at ?? new Date()
@@ -186,7 +192,7 @@ export function useTaskFirestore() {
         }
     }
 
-    const runRecurrence = (task) => {
+    const runRecurrence = (task: ITask) => {
         nextTick(() => {
             try {
                 // const setReminder = functions.httpsCallable('setRecurrence');

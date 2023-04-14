@@ -36,7 +36,7 @@
 <script setup>
 import { computed, onBeforeUnmount, reactive, watch, ref} from "vue";
 import { Duration, Interval, DateTime } from "luxon";
-import { useTrackFirestore } from "./../../utils/useTrackFirestore";
+import { useTrackFirestore } from "../../utils/useTrackFirestore";
 import { SESSION_MODES } from "./../../utils";
 import { usePromodoro } from "./../../utils/usePromodoro";
 import { useSlack } from "./../../utils/useSlack";
