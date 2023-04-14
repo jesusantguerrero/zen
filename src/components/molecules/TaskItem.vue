@@ -26,7 +26,7 @@
 
       <div class="flex items-start task-item__controls md:items-center">  
         <div class="flex-wrap items-center justify-end mr-1 md:flex">
-          <person-select
+          <PersonSelect
             v-if="type=='delegate'"
             v-model="task.contacts"
             :items="contacts"
@@ -43,7 +43,7 @@
             title="Delete">
             <i class="mr-1 fa fa-trash"></i>
           </div>
-          <time-tracker-button
+          <TimeTrackerButton
             :allow-run="allowRun"
             :default-value="timeTrackedLabel"
             :currentTimer="currentTimer"
@@ -53,7 +53,7 @@
           />
           
           <div>
-            <date-select 
+            <DateSelect 
               v-if="task.due_date || type == 'schedule'"
               v-model="task.due_date" 
               v-model:schedule="task.schedule"

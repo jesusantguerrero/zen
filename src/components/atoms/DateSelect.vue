@@ -9,19 +9,21 @@
             :show-arrow="false"
         >
             <template #reference>
-                <button
-                    @click.stop="focusInput"
-                    data-name="button"
-                    :tabindex="0"
-                    class="flex items-center focus:outline-none" 
-                >
-                <i class="mr-1 text-green-400 fa fa-redo" v-if="isRecurrent"></i>
-                <i class="mr-1 fa fa-calendar" v-else></i>
-                <span class="inline-block w-full text-sm font-bold text-left capitalize" > {{ humanDate || placeholder }} </span>
-                </button>
+                <slot :focusInput="focusInput">
+                    <button
+                            @click.stop="focusInput"
+                            data-name="button"
+                            :tabindex="0"
+                            class="flex items-center focus:outline-none" 
+                        >
+                        <i class="mr-1 text-green-400 fa fa-redo" v-if="isRecurrent"></i>
+                        <i class="mr-1 fa fa-calendar" v-else></i>
+                        <span class="inline-block w-full text-sm font-bold text-left capitalize" > {{ humanDate || placeholder }} </span>
+                    </button>
+                </slot>
             </template>
             <div>
-                <at-date-picker
+                <AtDatePicker
                     v-model:date="date"
                     v-model:has-error="hasError"
                     @update:date="emitDate()"
@@ -29,7 +31,7 @@
                     :accept-time="false"
                     :accept-recurrence="true"
                 />
-                <el-popover
+                <ElPopover
                     v-if="acceptRecurrence"
                     v-model:visible="isRecurrenceOpen"
                     trigger="manual"
@@ -38,22 +40,22 @@
                 >
                     <template #reference>
                         <div class="mx-2">
-                            <at-date-action @click="isRecurrenceOpen=!isRecurrenceOpen" class="focus:outline-none"> 
+                            <AtDateAction @click="isRecurrenceOpen=!isRecurrenceOpen" class="focus:outline-none"> 
                                 {{ recurrenceLabel }}
-                            </at-date-action>
+                            </AtDateAction>
                         </div>
                     </template>
-                    <recurrence-form
+                    <RecurrenceForm
                         :due-date="date"
                         :schedule="schedule"
                         @cancel="isRecurrenceOpen=false"
                         @done="setRecurrence"
                     />
-                </el-popover>
+                </ElPopover>
                 <div class="mx-2">
-                    <at-date-action @click="isOpen=false" class="focus:outline-none"> 
+                    <AtDateAction @click="isOpen=false" class="focus:outline-none"> 
                         Done
-                    </at-date-action>
+                    </AtDateAction>
                 </div>
             </div>
         </ElPopover>

@@ -52,12 +52,13 @@ export function useTrackFirestore() {
         return tasks;
     }
 
-    const getTracksByDates = async (startDate = new Date(), endDate) => {
+    const getTracksByDates = async (startDate = new Date(), endDate?: Date) => {
         const start = new Date(DateTime.fromJSDate(startDate).startOf('day'))
         const end = new Date(DateTime.fromJSDate(endDate || startDate).endOf('day'))
         
         const trackRef = db.collection('tracks')
-        .where("user_uid", "==", firebaseState.user.uid)
+        .withConverter(trackConverter)
+        .where("user_uid", "==", firebaseState?.user?.uid)
         .where('started_at', ">=", start)
         .where('started_at', "<=", end)
         return trackRef
@@ -68,6 +69,7 @@ export function useTrackFirestore() {
         const end = new Date(DateTime.fromJSDate(endDate || startDate).endOf('day'))
         
         const trackRef = db.collection('tempo')
+        .withConverter(trackConverter)
         .where("user_uid", "==", firebaseState.user.uid)
         .where('started_at', ">=", start)
         .where('started_at', "<=", end)
@@ -105,4 +107,23 @@ export function useTrackFirestore() {
         getTempoTracksByDates,
     }
 
+}
+
+const trackConverter = {
+    fromFirestore(
+        snapshot: firebase.default.firestore.DocumentSnapshot, 
+        options: firebase.default.firestore.SnapshotOptions
+    ) {
+        const data = snapshot.data(options);
+        return { 
+            ...data, 
+            started_at: data?.started_at?.toDate ? data.started_at.toDate?.() : data?.started_at,
+            ended_at: data?.ended_at?.toDate ? data.ended_at.toDate?.() : data?.ended_at,
+        };
+    },
+    toFirestore(data: ITrack) {
+        return {
+            ...data
+        }
+    }
 }

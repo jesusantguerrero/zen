@@ -79,7 +79,7 @@ import ModalBase from "../../molecules/ModalBase.vue";
 import { ElNotification } from "element-plus";
 import { AtSteps, AtStep, AtButton } from "atmosphere-ui";
 import { getProjects, getSites } from "../../../domain/integrations/jira";
-import { useCollection } from "../../../utils/useCollection";
+import { useCollection } from "../../../utils/firebase/useCollection";
 
 const props = defineProps({
   isOpen: Boolean,

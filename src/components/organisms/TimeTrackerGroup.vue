@@ -1,3 +1,64 @@
+<script setup>
+import { reactive, computed, nextTick } from "vue";
+import TimeEntryItem from "./TimeTrackerItem.vue";
+import { formatDateToTime } from "@/utils/useTracker";
+
+const props = defineProps({
+    timeEntry: {
+        type: Object,
+        default() {
+            return {
+                description: "",
+                billable: false,
+                start: null,
+                end: null,
+                duration: null
+            };
+        }
+    }
+});
+
+const emit = defineEmits(['toggle-select']);
+
+const state = reactive({
+    now: new Date(),
+    isExpanded: false,
+    selected: false
+});
+
+const durationFromMs = (ms) => {
+    const date = new Date(ms);
+    return date
+        .toISOString()
+        .slice(11, -2)
+        .split(":")
+        .map(unit => {
+            return Math.round(unit)
+                .toString()
+                .padStart(2, "0");
+        })
+        .join(":");
+}
+
+const toggleExpand = () => {
+    state.isExpanded = !state.isExpanded;
+}
+
+const toggleSelection = () => {
+    nextTick(() => {
+        emit('toggle-select', state.selected)
+    })
+}
+
+const duration = computed(() => {
+    const milliseconds = props.timeEntry.tracks.reduce((total, current) => {
+        return (total += (current.duration_ms || 0));
+    },0);
+    return durationFromMs(milliseconds);
+});
+
+</script>
+
 <template>
     <div>
         <div
@@ -73,70 +134,7 @@
     </div>
 </template>
 
-<script setup>
-import { format } from "date-fns";
-import { reactive, computed, nextTick } from "vue";
-import TimeEntryItem from "./TimeTrackerItem.vue";
 
-const props = defineProps({
-    timeEntry: {
-        type: Object,
-        default() {
-            return {
-                description: "",
-                billable: false,
-                start: null,
-                end: null,
-                duration: null
-            };
-        }
-    }
-});
-
-const emit = defineEmits(['toggle-select']);
-
-const state = reactive({
-    now: new Date(),
-    isExpanded: false,
-    selected: false
-});
-
-const formatDateToTime = (firebaseDate) => {
-    return format(firebaseDate.toDate(), "HH:mm:ss");
-}
-
-const durationFromMs = (ms) => {
-    const date = new Date(ms);
-    return date
-        .toISOString()
-        .slice(11, -2)
-        .split(":")
-        .map(unit => {
-            return Math.round(unit)
-                .toString()
-                .padStart(2, "0");
-        })
-        .join(":");
-}
-
-const toggleExpand = () => {
-    state.isExpanded = !state.isExpanded;
-}
-
-const toggleSelection = () => {
-    nextTick(() => {
-        emit('toggle-select', state.selected)
-    })
-}
-
-const duration = computed(() => {
-    const milliseconds = props.timeEntry.tracks.reduce((total, current) => {
-        return (total += (current.duration_ms || 0));
-    },0);
-    return durationFromMs(milliseconds);
-});
-
-</script>
 
 <style lang="scss" scoped>
 .time-tracker-item {

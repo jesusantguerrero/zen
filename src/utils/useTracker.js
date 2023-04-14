@@ -46,7 +46,7 @@ export const getMilliseconds = timeReducer
 
 export const formatDateToTime = (firebaseDate) => {
     if (!firebaseDate) return "--"
-    return format(firebaseDate.toDate(), "HH:mm:ss");
+    return format(firebaseDate, "HH:mm:ss");
 }
 
 export const durationFromMs = (ms) => {

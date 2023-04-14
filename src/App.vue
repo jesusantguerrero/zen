@@ -13,7 +13,7 @@ import AppHeader from './components/organisms/AppHeader.vue'
 import IntegrationsBar from './components/templates/IntegrationsBar.vue'
 import { logout, setLoaded, functions, firebaseState, firebaseInstance } from "./utils/useFirebase"
 import { useCustomSelect } from "./utils/useCustomSelect"
-import { useCollection } from "./utils/useCollection"
+import { useCollection } from "./utils/firebase/useCollection"
 import { useIntegrations } from './utils/useIntegrations'
 import MobileMenuBar from './components/organisms/mobile/MobileMenuBar.vue'
 

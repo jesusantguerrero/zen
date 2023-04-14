@@ -33,7 +33,7 @@
 <script setup>
     import { ElNotification } from "element-plus";
     import { inject } from "vue";
-    import { useCollection } from "../utils/useCollection"
+    import { useCollection } from "../utils/firebase/useCollection"
     import { firebaseInstance } from "../utils/useFirebase";
 
     const notifications = inject('notifications', []);

@@ -1,5 +1,5 @@
-import { inject, nextTick, provide, ref, watch } from "vue";
-import { useCollection } from "./useCollection"
+import { inject, provide, ref } from "vue";
+import { useCollection } from "./firebase/useCollection"
 
 const { save, getAll } = useCollection()
 

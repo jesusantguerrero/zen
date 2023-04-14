@@ -33,7 +33,7 @@ import TaskGroup from '../../components/organisms/TaskGroup.vue';
 import { getNextIndex } from '../../utils';
 import { registerEvent } from '../../utils/useFirebase';
 import { useSearchOptions } from '../../utils/useFuseSearch';
-import { useSnapshot } from '../../utils/useSnapshot';
+import { useSnapshot } from '../../utils/firebase/useSnapshot';
 import { useTaskFirestore } from '../../utils/useTaskFirestore';
 
 const {

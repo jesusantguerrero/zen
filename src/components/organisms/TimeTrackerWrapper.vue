@@ -39,7 +39,7 @@
 
 <script>
 import {  reactive, watch, ref} from "vue";
-import { useTrackFirestore } from "./../../utils/useTrackFirestore";
+import { useTrackFirestore } from "../../utils/useTrackFirestore";
 import { usePromodoro } from "./../../utils/usePromodoro";
 import { firebaseState } from "./../../utils/useFirebase";
 import { ElNotification } from "element-plus";

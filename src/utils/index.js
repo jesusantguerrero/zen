@@ -23,10 +23,14 @@ export const SESSION_MODES = {
   LONG_REST: 'long'
 }
 
-export const formatDate = (date) => {
+export const formatDate = (date, formatString = "MMM dd yyyy") => {
   try {
-    return format(date,  'MMM dd yyyy')
+    return format(date,  formatString)
   } catch (err) {
     return date;
   }
+}
+
+export const isSameDateTime = (firstDate, secondDate, formatString = "yyyy-MM-dd HH:mm:ss") => {
+  return formatDate(firstDate, formatString) == formatDate(secondDate, formatString)
 }

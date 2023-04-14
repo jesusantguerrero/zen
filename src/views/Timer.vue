@@ -47,7 +47,7 @@
             @updated="updateLocalTrack"
         >
           <template #actions-append>
-            <button title="sync as group" @click="syncAsGroup(track.tracks)">
+            <button title="sync as group" :disabled="track.isLoading" @click="syncAsGroup(track)">
               <i class="fa fa-th-list" />
             </button>
           </template>
@@ -71,46 +71,11 @@
 
             </template>
             <template #event="{ event }"> 
-              <article class="relative">
-                <ElPopover
-                  placement="bottom-end"
-                  popper-class='tag-select dark:bg-gray-900 dark:text-gray-300'
-                  trigger="hover"
-                  :width="310"
-                >  
-                  <template #reference>
-                    <section class="relative">
-                      <button 
-                        class="absolute top-0 right-0 w-4 h-4 bg-green-400 rounded-full" 
-                        @click.stop="onEventClick(event)"
-                        :disabled="event.isLoading"
-                        v-if="!hasTempo(event)"
-                      >
-                        <IMdiSync />
-                      </button>
-                      <div class="vuecal__event-title" v-html="event.title" />
-                  
-                      <small class="vuecal__event-time">
-                        <!-- Using Vue Cal Date prototypes (activated by default) -->
-                        <strong>Event start:</strong> <span>{{ event.start.formatTime("h O'clock") }}</span><br/>
-                        <strong>Event end:</strong> <span>{{ event.end.formatTime("h O'clock") }}</span>
-                      </small>
-                    </section> 
-                  </template>
-                  <section>
-                    <div class="vuecal__event-title vuecal__event-title--edit"
-                          contenteditable
-                          @blur="event.title = $event.target.innerHTML"
-                          v-html="event.title" />
-                  
-                      <small class="vuecal__event-time">
-                        <!-- Using Vue Cal Date prototypes (activated by default) -->
-                        <strong>Event start:</strong> <span>{{ event.start.formatTime("h O'clock") }}</span><br/>
-                        <strong>Event end:</strong> <span>{{ event.end.formatTime("h O'clock") }}</span>
-                      </small>
-                  </section>
-                </ElPopover>      
-              </article>
+              <TimerCalendarCard 
+                :event="event"
+                :allow-sync="!hasTempo(event)"
+                @sync-tempo=" onEventClick(event)"
+              />
             </template>
           </VueCal>
       </div>
@@ -132,6 +97,8 @@ import 'vue-cal/dist/vuecal.css'
 import { functions } from '@/utils/useFirebase'
 import { formatDurationFromMs } from '@/utils/useDateTime';
 import { durationFromMs } from '@/utils/useTracker';
+import { isSameDateTime} from '@/utils';
+import TimerCalendarCard from './TimerCalendarCard.vue';
 // state and ui
 const state = reactive({
   tracked: [],
@@ -210,13 +177,21 @@ const onEventClick = (event) => {
 
 const { updateTrack } = useTrackFirestore();
 
+
+
 const syncTempoUpdate = async (event, autoUpdateTrack = true) => {
-  const alreadyWithTempo = events.value.find( tempoEvent => {
-    console.log(event.start, tempoEvent.start)
-    return isSameHour(event.start, tempoEvent.start) && isSameDay(event.start, tempoEvent.start)
+  const alreadyWithTempo = events.value
+  .filter(item => item.class === 'tempo-event').find( tempoEvent => {
+    return isSameDateTime(event.start, tempoEvent.start);
   });
 
-  if (alreadyWithTempo) return;
+  if (alreadyWithTempo) {
+    ElNotification({
+      message: 'This date-time is already registered in tempo',
+      type: 'error'
+    })
+    return;
+  }
   const {data: issue } = await userApplication({
     appKey: 'jira',
     path: `issue/${event.title.slice(0, event.title.indexOf(" ")).trim()}` 
@@ -238,7 +213,7 @@ const syncTempoUpdate = async (event, autoUpdateTrack = true) => {
     startTime: format(event.start, 'HH:mm:ss')
   }
   
-  userApplication({
+  return userApplication({
       method: 'post',
       appKey: 'tempo',
       path: '/worklogs',
@@ -302,7 +277,7 @@ const groupedTracks = computed(() => {
     const trackGroup = {};
 
     state.tracked.forEach(track => {
-        const date = format(track.started_at.toDate(), "yyyy-MM-dd");
+        const date = format(track.started_at, "yyyy-MM-dd");
         if (!track.ended_at) return
         if (!trackGroup[date]) {
             trackGroup[date] = {
@@ -329,7 +304,7 @@ const groupedTracks = computed(() => {
 
 const getTotalTimeByDate = (date) => {
   const milliseconds = state.tracked.reduce((total, track) => {
-    if (format(date, 'yyyy-MM-dd') == format(track.started_at.toDate(), "yyyy-MM-dd") && track.ended_at) {
+    if (format(date, 'yyyy-MM-dd') == format(track.started_at, "yyyy-MM-dd") && track.ended_at) {
       return total + track.duration_ms
     }
     return total;
@@ -342,15 +317,15 @@ const events = computed(() => {
   const appEvents = state.tracked.filter(item => item.ended_at).map(event => ({
         ...event,
         uid: event.uid,
-        start: event.started_at.toDate(),
-        end: event.ended_at?.toDate(),
+        start: event.started_at,
+        end: event.ended_at,
         title: event.description,
         class: 'zen-event'
   }))
 
   return [...appEvents, ...state.tempoEvents.map((event) => ({
-      start: event.started_at.toDate(),
-      end: event.ended_at.toDate(),
+      start: event.started_at,
+      end: event.ended_at,
       title: event.description,
       class: 'tempo-event'
   }))]
@@ -413,23 +388,27 @@ const mergeTracks = () => {
   // syncTempoUpdate
 }
 
-const syncAsGroup = (groupedTracks) => {
+const syncAsGroup = (group) => {
+  if (group.isLoading) return
+  const groupedTracks = group.tracks;
   const timeToSum = groupedTracks.slice(1).reduce((totalMs, track) => totalMs + track.duration_ms, 0)
   const firstTrack = groupedTracks.at(0);
 
-  console.log(timeToSum, firstTrack, selectedItems.value, "Hola");
+  group.isLoading = true;
 
   const mergedTracks = { 
     ...firstTrack,
     uid: firstTrack.uid,
-    start: firstTrack.started_at.toDate(),
-    end: firstTrack.ended_at?.toDate(),
+    start: firstTrack.started_at,
+    end: firstTrack.ended_at,
     title: firstTrack.description,
   }
 
   mergedTracks.duration_ms += timeToSum;
 
-  syncTempoUpdate(mergedTracks, false).then((tempoTrack) => {
+  syncTempoUpdate(mergedTracks, false)
+    .then((tempoTrack) => {
+    console.log(tempoTrack)
     groupedTracks.forEach((track) => {
       updateTrack({
         ...track,
@@ -443,6 +422,8 @@ const syncAsGroup = (groupedTracks) => {
       title: 'Group is synced as one',
       message: `${groupedTracks.length} were synced with tempo as one`
     });
+  }).finally(() => {
+    group.isLoading = false;
   })
 }
 
