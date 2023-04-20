@@ -9,7 +9,7 @@
       </h2>  
       <div class="flex space-x-2">
          <div class="w-32">
-            <jet-select
+            <JetSelect
                v-model:selected="state.viewMode"
                :options="state.modes"
                label="name"

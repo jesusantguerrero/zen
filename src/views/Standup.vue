@@ -1,10 +1,10 @@
 <template>
-<div class="pt-24 mx-5 md:pt-28 md:mx-28">
+<div class="pt-24 mx-5 md:pt-28 md:mx-28 mb-28">
   <div class="items-center justify-between mb-10 section-header md:flex">
-      <h2 class="text-2xl font-bold text-left text-gray-400 flex items-center">
+      <h2 class="flex items-center text-2xl font-bold text-left text-gray-400">
          <span> Standup </span>
-         <span class="text-lg text-green-500 ml-2">{{ state.humanDate }}</span>
-         <integration-projects />
+         <span class="ml-2 text-lg text-green-500">{{ state.humanDate }}</span>
+         <IntegrationProjects />
       </h2>
       <SearchBar
         v-model="state.searchText"
@@ -14,7 +14,7 @@
       />
   </div> 
 
-  <div class="" v-for="dateGroup in committedByDate">
+  <div v-for="dateGroup in committedByDate" class="mb-4">
      <h4 class="block mb-2 font-bold text-left text-gray-500 capitalize md:text-xl">
         ✅ {{ getCommitTitle(dateGroup.date) }} ({{ dateGroup.list.length }}) 
     </h4>
@@ -30,48 +30,73 @@
         :allow-run="false"
         :allow-update="false"
         @undo="onUndo(task)"
-    />
-       
-    <div class="w-8/12 mx-auto mt-10 text-center md:w-6/12" v-if="!state.committed.length && state.isFirstLoaded">
-      <img src="../assets/undraw_following.svg" class="mx-auto w-12/12 md:w-5/12"> 
-      <div class="mt-10 font-bold text-gray-500 md:mt-5 dark:text-gray-300"> There's no tasks</div>
-    </div>
-    
-    <h5 class="block mt-5 mb-2 font-bold text-left text-gray-500 capitalize md:text-lg">
-      ⏳ Worked on ({{ state.tracked.length }}) 
-    </h5>
-    <div v-for="track in state.tracked">
-      <TaskItem
-        :task="parseTrack(track)" 
-        type="backlog"
-        :handle-mode="false"
-        :show-select="false"
-        :show-controls="false"
-        :is-item-as-handler="false"
-        :is-compact="true"
-        :class="''"
-        :allow-run="false"
-        :allow-update="false"
-      />
-    </div>
+    >
+      <template #append-actions>
+        <AtButton 
+          v-if="!isYesterday(parseISO(task.commit_date))" 
+          class="flex items-center h-6 px-2 ml-2 text-xs font-bold text-white transition-colors bg-gray-600 rounded-md hover:bg-gray-500"
+          @click="commitAsYesterday(task)"
+        >
+          To yesterday
+        </AtButton>
+        <AtButton 
+          v-else 
+          class="flex items-center h-6 px-2 ml-2 text-xs font-bold text-white transition-colors bg-gray-600 rounded-md hover:bg-gray-500"
+          @click="commitAsToday(task)"
+        >
+          To today
+        </AtButton>
+      </template>
+    </TaskItem> 
+  </div>
+  <div class="w-8/12 mx-auto mt-10 text-center md:w-6/12" v-if="!state.committed.length && state.isFirstLoaded">
+    <img src="../assets/undraw_following.svg" class="mx-auto w-12/12 md:w-5/12"> 
+    <div class="mt-10 font-bold text-gray-500 md:mt-5 dark:text-gray-300"> There's no tasks</div>
+  </div>
+  
+  <h5 class="block mt-5 mb-2 font-bold text-left text-gray-500 capitalize md:text-lg">
+    ⏳ Worked on ({{ state.tracked.length }}) 
+  </h5>
+  <div v-for="track in state.tracked">
+    <TaskItem
+      :task="parseTrack(track)" 
+      type="backlog"
+      :handle-mode="false"
+      :show-select="false"
+      :show-controls="false"
+      :is-item-as-handler="false"
+      :is-compact="true"
+      :class="''"
+      :allow-run="false"
+      :allow-update="false"
+    >
+    <template #append-actions>
+        <AtButton
+        class="flex items-center h-6 px-2 ml-2 text-xs font-bold text-white transition-colors bg-gray-600 rounded-md hover:bg-gray-500"
+        @click="commitTrackTaskAsToday(track)"
+      >
+        Finish
+      </AtButton>
+    </template>
+    </TaskItem>
+  </div>
 
-    <h5 class="block mt-5 mb-2 font-bold text-left text-gray-500 capitalize md:text-lg">
-      ✨ Suggested for today  ({{ state.suggestions.length }}) 
-    </h5>
-    <div v-for="task in state.suggestions">
-      <TaskItem
-        :task="task" 
-        type="schedule"
-        :handle-mode="false"
-        :show-select="false"
-        :show-controls="false"
-        :is-item-as-handler="false"
-        :is-compact="true"
-        :class="''"
-        :allow-run="false"
-        :allow-update="false"
-      />
-    </div>
+  <h5 class="block mt-5 mb-2 font-bold text-left text-gray-500 capitalize md:text-lg">
+    ✨ Suggested for today  ({{ state.suggestions.length }}) 
+  </h5>
+  <div v-for="task in state.suggestions">
+    <TaskItem
+      :task="task" 
+      type="schedule"
+      :handle-mode="false"
+      :show-select="false"
+      :show-controls="false"
+      :is-item-as-handler="false"
+      :is-compact="true"
+      :class="''"
+      :allow-run="false"
+      :allow-update="false"
+    />
   </div>
 </div>
 
@@ -79,14 +104,20 @@
 
 <script setup>
 import { reactive, watch, onUnmounted, computed, toRefs } from 'vue'
-import { useTaskFirestore } from '../utils/useTaskFirestore'
-import { useTrackFirestore } from '../utils/useTrackFirestore'
-import SearchBar from "../components/molecules/SearchBar.vue"
-import { format, formatRelative, parseISO, startOfDay, subDays } from 'date-fns'
+import { format, formatRelative, isYesterday, parseISO, startOfDay, startOfToday, startOfYesterday, subDays } from 'date-fns'
 import { enUS } from 'date-fns/locale'
-import TaskItem from '../components/molecules/TaskItem.vue'
-import IntegrationProjects from '../components/organisms/IntegrationProjects.vue'
+import { AtButton } from "atmosphere-ui";
+
+import SearchBar from "@/components/molecules/SearchBar.vue"
+import TaskItem from '@/components/molecules/TaskItem.vue'
+import IntegrationProjects from '@/components/organisms/IntegrationProjects.vue'
+
+import { useTrackFirestore } from '@/utils/useTrackFirestore'
+import { useTaskFirestore } from '@/utils/useTaskFirestore'
 import { useSnapshot } from '@/utils/firebase/useSnapshot'
+import { formatDate } from '@/utils';
+import { track } from '@vue/reactivity';
+import { ElNotification } from 'element-plus';
 
 // state and ui
 const state = reactive({
@@ -194,12 +225,44 @@ const onUndo = (task) => {
   })
 };
 
+const commitAsYesterday = (task) => {
+  updateTask({
+    ...task,
+    commit_date: formatDate(startOfYesterday(), 'yyyy-MM-dd'),
+  });
+};
+
+const commitAsToday = (task) => {
+  updateTask({
+    ...task,
+    commit_date: formatDate(startOfToday(), 'yyyy-MM-dd'),
+  });
+};
+
+const commitTrackTaskAsToday = (track) => {
+  updateTask({
+    uid: track.task_uid,
+    commit_date: formatDate(startOfToday(), 'yyyy-MM-dd'),
+  }).then(() => {
+    ElNotification({
+      title: 'State changed',
+      message: 'Committed',
+    })
+  }).catch(() => {
+    ElNotification({
+      title: 'State change failed',
+      message: 'The change has failed',
+    })
+  });
+};
+
 const parseTrack = (track) => {
   return {
     duration_ms: track.duration_ms,
     done: false,
     commit_date: null,
     uid: track.uid,
+    task_id: track.task_id,
     tags: [],
     title: track.description,
     type: 'todo',
@@ -210,7 +273,11 @@ const parseTrack = (track) => {
 onUnmounted(() => {
   Object.values(state.firebaseRefs).forEach( fbRef => {
     if (fbRef) {
-      fbRef()
+      try {
+        fbRef()
+      } catch (err) {
+        // not exists
+      }
     }
   })
 });

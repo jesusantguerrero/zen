@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="items-center px-4 mb-2 transition-all bg-white border-2 border-gray-200 rounded-md cursor-pointer task-item dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 hover:border-green-200"
+    class="items-center px-4 transition-all bg-white border-2 border-gray-200 rounded-md cursor-pointer task-item dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 hover:border-green-200"
     :class="{'border-green-400': isSelected, 'py-3 shadow-md ': !isCompact, 'py-2': isCompact }"
     @click="$emit('selected', task)"
     @dblclick.prevent="$emit('edited', task)"
@@ -69,6 +69,7 @@
           <button class="h-6 px-2 ml-2 text-xs text-white transition-colors bg-gray-600 rounded-md hover:bg-gray-500" v-if="task.done" @click.stop="$emit('undo', task)">
             <i class="fas fa-undo"></i> Undo
           </button>
+          <slot name="append-actions" />
         </div>
 
         <el-dropdown trigger="click" @command="handleCommand" v-if="showControls" :disabled="isDisabled" @click.stop="">

@@ -27,7 +27,7 @@
               @move="emitMove"
               @change="emitChange($event, type)"
             >
-              <task-item 
+              <TaskItem 
                 v-for="task in tasks" 
                 :key="task" 
                 :task="task" 
@@ -43,6 +43,7 @@
                 :class="taskClass"
                 :allow-run="allowRun"
                 :allow-update="allowUpdate"
+                class="mb-2"
                 @toggle-key="onToggleKey(task)"
                 @toggle-timer="emit('toggle-timer', task)"
                 @selected="emit('selected', task)"
