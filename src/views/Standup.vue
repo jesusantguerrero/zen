@@ -55,9 +55,9 @@
   </div>
   
   <h5 class="block mt-5 mb-2 font-bold text-left text-gray-500 capitalize md:text-lg">
-    ⏳ Worked on ({{ state.tracked.length }}) 
+    ⏳ Worked on ({{ trackedUnfinished.length }}) 
   </h5>
-  <div v-for="track in state.tracked">
+  <div v-for="track in trackedUnfinished">
     <TaskItem
       :task="parseTrack(track)" 
       type="backlog"
@@ -200,6 +200,11 @@ const fetchTracked = (date) => {
     }
   })
 }
+
+const trackedUnfinished = computed(() => {
+  const doneTasks = state.committed.map(task => task.title);
+  return state.tracked.filter(track => !doneTasks.includes(track.description));
+})
 
 // suggestions [todo + schedule]
 const { getTaskByMatrix } = useTaskFirestore();
