@@ -101,7 +101,7 @@ export default {
           text: "Take a short break",
         },
       },
-      volume: 100,
+      volume: 50,
       pushSubscription: null,
       lastTrackId: null
     });
