@@ -12,7 +12,7 @@
     <div class="flex items-center">
       <button 
         v-if="!state.isMini"
-        class="text-2xl text-gray-400 rounded-full  focus:outline-none dark:hover:bg-gray-600 h-14 w-14" 
+        class="text-2xl text-gray-400 rounded-full focus:outline-none dark:hover:bg-gray-600 h-14 w-14" 
         :class="{'hover:bg-gray-100': hasPrevMode}"
         @click="prevMode" 
         :disabled="!hasPrevMode"   
@@ -104,7 +104,7 @@ export default {
       currentStep: 0,
       now: null,
       mode: "promodoro",
-      volume: 100,
+      volume: 50,
       timer: null,
       durationTarget: null,
       modes: {

@@ -1,9 +1,7 @@
 <template>
 <div class="pt-24 mx-5 md:pt-28 md:mx-28">
   <div class="items-center justify-between mb-10 section-header md:flex">
-      <h2 class="flex items-center text-2xl font-bold text-left text-gray-400">
-         <span> Time Tracks </span>
-      </h2>
+      <TabHeader v-model="state.tabSelected" :tabs="state.tabs" class="h-full overflow-hidden rounded-md"/>
       <section class="flex space-x-2">
         <SearchBar
           v-model="state.searchText"
@@ -11,7 +9,8 @@
           v-model:tags="state.tags"
           v-model:selectedTags="state.selectedTags"
         />
-        <AtButton class="text-white bg-green-500" rounded @click="syncTempoLogs()">
+        <AtButton class="text-white bg-green-500" rounded @click="syncTempoLogs()"
+        v-if="state.tabSelected=='week'">
           Sync Tempo
         </AtButton>
       </section>
@@ -33,51 +32,58 @@
               </button>
             </section>
           </div>
-          <section class="flex justify-end space-x-4 w-full bg-white h-full">
+          <section class="flex justify-end w-full h-full space-x-4 bg-white" v-if="state.tabSelected=='timer'">
             <AtButton type="success" @click="mergeTracks" rounded :disabled="!selectedItems.length">Merge</AtButton>
             <AtButton type="success" rounded @click="extendTracks">Extend</AtButton>
           </section>
         </header>
 
-        <TimeTrackerGroup
-            v-for="track in tracksByDate"
-            :time-entry="track"
-            :key="track.id"
-            @toggle-select="toggleGroup(track, $event)"
-            @updated="updateLocalTrack"
-        >
-          <template #actions-append>
-            <button title="sync as group" :disabled="track.isLoading" @click="syncAsGroup(track)">
-              <i class="fa fa-th-list" />
-            </button>
-          </template>
-        </TimeTrackerGroup>
-          <VueCal 
-            style="height: 500px"
-            :events="events"
-            :disable-views="['years', 'year', 'month']"
-            hide-weekends
-            :time-cell-height="110"
+        <template  v-if="state.tabSelected=='timer'">
+          <TimeTrackerGroup
+              v-for="track in tracksByDate"
+              :time-entry="track"
+              :key="track.id"
+              @toggle-select="toggleGroup(track, $event)"
+              @updated="updateLocalTrack"
           >
-            <template v-slot:weekday-heading="{ heading : { label, date } }">
-              <article>
-                <h4 class="text-xs">
-                  {{  label }}
-                </h4>
-                <section>
-                  {{ getTotalTimeByDate(date) }}
-                </section>
-              </article>
+            <template #actions-append>
+              <button title="sync as group" :disabled="track.isLoading" @click="syncAsGroup(track)">
+                <i class="fa fa-th-list" />
+              </button>
+            </template>
+          </TimeTrackerGroup>
+        </template>
+      </div>
+      <VueCal 
+        v-if="state.tabSelected=='week'"
+        style="height: 500px"
+        :events="events"
+        :disable-views="['years', 'year', 'month']"
+        hide-weekends
+        :time-cell-height="110"
+      >
+        <template v-slot:weekday-heading="{ heading : { label, date } }">
+          <article>
+            <h4 class="text-xs">
+              {{  label }}
+            </h4>
+            <section>
+              {{ getTotalTimeByDate(date) }}
+            </section>
+          </article>
 
-            </template>
-            <template #event="{ event }"> 
-              <TimerCalendarCard 
-                :event="event"
-                :allow-sync="!hasTempo(event)"
-                @sync-tempo=" onEventClick(event)"
-              />
-            </template>
-          </VueCal>
+        </template>
+        <template #event="{ event }"> 
+          <TimerCalendarCard 
+            :event="event"
+            :allow-sync="!hasTempo(event)"
+            @sync-tempo=" onEventClick(event)"
+          />
+        </template>
+      </VueCal>
+      <div class="w-full mx-auto mt-10 text-center md:w-6/12" v-if="!events.length && state.tabSelected=='timer'">
+        <img src="../assets/undraw_following.svg" class="w-full mx-auto md:w-5/12"> 
+        <p class="mt-10 font-bold text-gray-500 md:mt-5 dark:text-gray-300"> There's no tracks</p>
       </div>
   </div>
 </div>
@@ -99,6 +105,7 @@ import { formatDurationFromMs } from '@/utils/useDateTime';
 import { durationFromMs } from '@/utils/useTracker';
 import { isSameDateTime} from '@/utils';
 import TimerCalendarCard from './TimerCalendarCard.vue';
+import TabHeader from '@/components/atoms/TabHeader.vue';
 // state and ui
 const state = reactive({
   tracked: [],
@@ -128,6 +135,24 @@ const state = reactive({
   humanDate: computed(() => {
     return format(state.date, 'dd LLL, yyyy')
   }),
+  tabSelected: 'timer',
+  tabs: [
+    {
+      label: "Timer",
+      name: "timer",
+      focusClass: "text-gray-600",
+    },
+    {
+      label: "Week view",
+      name: "week",
+      focusClass: "text-gray-600",
+    },
+    // {
+    //   label: "Reports",
+    //   name: "reports",
+    //   focusClass: "text-gray-600",
+    // },
+  ],
 })
 
 // tracked tasks

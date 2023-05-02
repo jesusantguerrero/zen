@@ -120,7 +120,7 @@ const state = reactive({
   },
   now: null,
   mode: "promodoro",
-  volume: 100,
+  volume: 50,
   timer: null,
   pushSubscription: null,
   durationTarget: null,
