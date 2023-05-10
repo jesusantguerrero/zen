@@ -42,14 +42,14 @@ export function useTrackFirestore() {
     }
 
     const getAllTracks = async (where = {}) => {
-        const tracks = [];
+        const tracks: any[] = [];
         await db.collection('tracks').get().then(querySnapshot => {
             querySnapshot.forEach((doc) => {
                 tracks.push({...doc.data(), uid: doc.id });
             });
         })
 
-        return tasks;
+        return tracks;
     }
 
     const getTracksByDates = async (startDate = new Date(), endDate?: Date) => {
@@ -96,6 +96,24 @@ export function useTrackFirestore() {
         })
     }
 
+    const getRunningTracks = async () => {
+        const tracks: any[] = [];
+        const myDate = new Date(2022, 6, 10)
+        await db.collection('tracks')
+        .withConverter(trackConverter)
+        .where('ended_at', '==', null)
+        .where("user_uid", "==", firebaseState.user.uid)
+        .where('started_at', ">=", myDate)
+        .orderBy('started_at')
+        .get()
+        .then(q => {
+            q.forEach((doc) => {
+                tracks.push({...doc.data(), uid: doc.id });
+            });
+        })
+        return tracks;
+    }
+
     return {
         saveTrack,
         deleteTrack,
@@ -105,6 +123,7 @@ export function useTrackFirestore() {
         getTracksByDates,
         syncTempoTracks,
         getTempoTracksByDates,
+        getRunningTracks,
     }
 
 }
