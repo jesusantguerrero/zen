@@ -45,12 +45,12 @@
                             </AtDateAction>
                         </div>
                     </template>
-                    <RecurrenceForm
+                    <!-- <RecurrenceForm
                         :due-date="date"
                         :schedule="schedule"
                         @cancel="isRecurrenceOpen=false"
                         @done="setRecurrence"
-                    />
+                    /> -->
                 </ElPopover>
                 <div class="mx-2">
                     <AtDateAction @click="isOpen=false" class="focus:outline-none"> 
@@ -68,7 +68,7 @@ import { computed, defineComponent, onMounted, reactive, ref, toRefs, watch } fr
 import { useDateTime } from "../../utils/useDateTime";
 import { ElPopper, ElPopover } from "element-plus"
 import { AtDatePicker, AtDateAction } from "atmosphere-ui";
-import RecurrenceForm from "../organisms/RecurrenceForm.vue";
+// import RecurrenceForm from "../organisms/RecurrenceForm.vue";
 import { OnClickOutside } from "@vueuse/components"
 
 export default defineComponent({
@@ -77,7 +77,6 @@ export default defineComponent({
         ElPopover,
         AtDatePicker,
         AtDateAction,
-        RecurrenceForm,
         OnClickOutside
     },
     props: {

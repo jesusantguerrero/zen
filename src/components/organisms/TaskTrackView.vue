@@ -3,7 +3,7 @@
   <div class="flex">
       <div class="flex items-center justify-center w-16 h-16 font-extrabold text-gray-400 border-4 border-gray-400 rounded-full task__target">
         <span class="text-xl">
-          {{ completedPomodoros}}
+          {{ completedPomodoros }}
         </span>
         <i class="ml-1 fas fa-stopwatch" /> 
       </div>
@@ -16,7 +16,7 @@
         </div>
         
         <div v-else class="text-lg">
-          No data to show
+          ({{ totalTimeToday }})
         </div>
       </div>
   </div>
@@ -24,12 +24,15 @@
 </template>
 
 <script setup>
-import { computed, toRefs, watch, nextTick } from "vue";
-import { useTracker } from "../../utils/useTracker";
-import { useDateTime } from "../../utils/useDateTime";
-import { useTaskFirestore } from "../../utils/useTaskFirestore";
+import { computed, toRefs, onUnmounted, reactive } from "vue";
+import { useTracker } from "@/utils/useTracker";
+import { useTaskFirestore } from "@/utils/useTaskFirestore";
+import { useTrackFirestore } from "@/utils/useTrackFirestore";
+import { formatDurationFromMs } from "@/utils/useDateTime";
 
 const { updateTask } = useTaskFirestore()
+// tracked tasks
+
 
 const props = defineProps({
   task: {
@@ -53,5 +56,46 @@ const completedPomodoros= computed(() => {
 })
 const { timeTracked } = useTracker(task, currentTimer)
 
+const state = reactive({
+  firebaseRefs: {},
+  tracked: []
+})
 
+const  { getTracksByDates, getTempoTracksByDates } = useTrackFirestore()
+const fetchTracked = (date) => {
+  return getTracksByDates(date).then(trackedRef => {
+    state.firebaseRefs['tracked'] = trackedRef.onSnapshot( snap => {
+      const list = []
+      snap.forEach(doc => {
+        const track = doc.data()
+          list.push({ ...track, uid: doc.id })
+      })
+      state.tracked = list;
+    })
+  })
+}
+
+fetchTracked(new Date());
+
+
+const totalTimeToday = computed(() => {
+ 
+  console.log(state.tracked, "from here")
+  const milliseconds = state.tracked.reduce((total, track) => {
+    if (track.ended_at) {
+      return total + track.duration_ms
+    }
+    return total;
+  }, 0) ?? 0
+
+  console.log(milliseconds)
+
+  return formatDurationFromMs(milliseconds).toFormat('hh:mm:ss')
+})
+
+onUnmounted(() => {
+  Object.values(state.firebaseRefs).forEach((firebaseRef) => {
+    if (firebaseRef) firebaseRef()
+  })
+});
 </script>
