@@ -1,20 +1,33 @@
+// @ts-expect-error: no definitions for  luzon
 import { DateTime } from "luxon";
 import { db, firebaseState } from "./useFirebase";
 import { addSeconds, parseISO } from "date-fns";
 
+export interface ITrack {
+    uid: string;
+    duration_ms: number;
+    started_at: Date;
+    ended_at: Date;
+    description: string;
+    billable?: boolean;
+    labels?: {
+      title: string;
+    }[];
+    selected?: boolean;
+}
 export function useTrackFirestore() {
-    const saveTrack = (track) => {
+    const saveTrack = (track: Partial<ITrack>) => {
         return db.collection("tracks").add({
             ...track,
             user_uid: firebaseState.user.uid,
             created_at: new Date()
         })
-        .then(docRef => {
-            return docRef.id
-        })
+        .catch(function(error) {
+            console.error("Error adding document: ", error);
+        });
     }
 
-    const updateTrack = (track) => {
+    const updateTrack = (track: Record<string, any>) => {
         const trackRef = db.collection("tracks").doc(track.uid)
         return trackRef.set(track, { merge: true })
         .then(() => {
@@ -22,11 +35,8 @@ export function useTrackFirestore() {
         })
     }
 
-    const deleteTrack = (track) => {
-        return db.collection("tracks").doc(track.uid).delete()
-        .then(docRef => {
-            return docRef.id
-        })
+    const deleteTrack = async (track: Record<string, any>) => {
+        return await db.collection("tracks").doc(track.uid).delete()
     }
 
     const getAllTracksOfTask = async (taskId) => {

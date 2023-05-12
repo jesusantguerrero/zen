@@ -1,3 +1,61 @@
+<script setup lang="ts">
+// @ts-expect-error: no tyoes for this lib
+import Duration from "duration";
+import { computed, reactive } from "vue";
+import { durationFromMs, formatDateToTime } from "../../utils/useTracker"
+import DateSelect from "../atoms/DateSelect.vue";
+import { ITrack } from "@/utils/useTrackFirestore";
+
+
+const emit = defineEmits<{
+  deleteItem: [track: ITrack];
+  resumeTimer: [track: ITrack ]
+}>();
+
+const { timeEntry, isChild } = defineProps<{
+ timeEntry: ITrack;
+ isChild: boolean; 
+}>();
+
+const state = reactive({
+    now: new Date(),
+    running: false
+});
+
+const duration = computed(() => {
+  return timeEntry.duration_ms 
+  ? (durationFromMs(timeEntry.duration_ms) || localDuration.value)
+  : 0
+});
+
+const localDuration = computed(() => {
+  let duration = 0;
+  if (timeEntry.started_at) {
+    duration = new Duration(timeEntry.started_at, timeEntry.ended_at);
+    // @ts-ignore: expect warning in to string
+    return duration.toString("%H:%M:%S");
+  }
+
+  return "00:00:00";
+});
+
+const timerButtonIcon = computed(() => {
+  return state.running ? "stop" : "play";
+});
+
+const labels = computed(() => {
+  return timeEntry.labels ? timeEntry.labels.map(label => label.title).join(", ") : "";
+});
+
+const deleteItem = () => {
+  emit('deleteItem', timeEntry)
+};
+
+const toggleTimer = () => {
+  emit('resumeTimer', timeEntry);
+}
+</script>
+
 <template>
   <div class="flex items-center w-full px-8 bg-white time-tracker-item group">
     <div class="flex w-full">
@@ -5,7 +63,7 @@
         <input
           type="checkbox"
           class="w-full mr-4 form-control-check checkbox-done" 
-          v-model="timeEntry.selected" :value="timeEntry.id" 
+          v-model="timeEntry.selected" :value="timeEntry.uid" 
         />
         <div class="flex items-center w-full" :class="[isChild? 'ml-11' : 'ml-4']">
           <div 
@@ -32,7 +90,7 @@
               type="checkbox"
               name="time-tracker-billable"
               class="hide"
-              :id="`time-tracker-billable-${timeEntry.id}`"
+              :id="`time-tracker-billable-${timeEntry.uid}`"
               v-model="timeEntry.billable"
             />
           </label>
@@ -99,7 +157,7 @@
             class="time-duration-display"
           />
 
-          <button @click="initTimer()" class="opacity-0 play-button group-hover:opacity-100">
+          <button @click="emit('resumeTimer', timeEntry)" class="opacity-0 play-button group-hover:opacity-100">
             <i :class="`fa fa-${timerButtonIcon}`" />
           </button>
           <button @click="deleteItem()" class="opacity-0 play-button group-hover:opacity-100">
@@ -111,79 +169,7 @@
   </div>
 </template>
 
-<script setup>
-import Duration from "duration";
-import { computed, reactive } from "vue";
-import { durationFromMs, formatDateToTime } from "../../utils/useTracker"
-import DateSelect from "../atoms/DateSelect.vue";
 
-const props = defineProps({
-    timeEntry: {
-      type: Object,
-      default() {
-        return {
-          description: "",
-          billable: false,
-          start: null,
-          end: null,
-          duration: null
-        };
-      }
-    },
-    isChild: {
-      type: Boolean,
-    }
-});
-
-const state = reactive({
-    now: new Date(),
-    running: false
-});
-
-const duration = computed(() => {
-  return props.timeEntry.duration_ms 
-  ? (durationFromMs(props.timeEntry.duration_ms) || this.localDuration)
-  : 0
-});
-
-const localDuration = computed(() => {
-  let duration = 0;
-  if (props.timeEntry.started_at) {
-    duration = new Duration(props.timeEntry.started_at.toDate(), props.timeEntry.ended_at.toDate());
-    return duration.toString("%H:%M:%S");
-  }
-
-  return "00:00:00";
-});
-
-const timerButtonIcon = computed(() => {
-  return state.running ? "stop" : "play";
-});
-
-const labels = computed(() => {
-      return props.timeEntry.labels ? props.timeEntry.labels.map(label => label.title).join(", ") : "";
-});
-
-const deleteItem = () => {
-    this.showConfirm({
-        title: `Delete ${props.timeEntry.description}`,
-        content: "Are you sure you want to delete this entry?",
-        confirmationButtonText: "Yes, delete",
-        confirm: () => {
-            axios.delete(`time-entries/${props.timeEntry.id}`).then(() => {
-                this.$inertia.reload({
-                    only: ['tracks'],
-                    preserveState: true
-                })
-            })
-        }
-    })
-};
-
-const toggleTimer = () => {
-      this.startTimer();
-}
-</script>
 
 <style lang="scss" scoped>
 .time-tracker-item {

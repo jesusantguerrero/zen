@@ -1,24 +1,23 @@
-<script setup>
+<script setup lang="ts">
 import { reactive, computed, nextTick } from "vue";
 import TimeEntryItem from "./TimeTrackerItem.vue";
 import { formatDateToTime } from "@/utils/useTracker";
+import { ITrack } from "@/utils/useTrackFirestore";
+import { formatDurationFromMs } from "@/utils/useDateTime";
+import { ITask } from "@/utils/useTaskFirestore";
 
-const props = defineProps({
+const emit = defineEmits<{
+  deleteItem: [track: ITrack];
+  resumeTimer: [track: ITrack ];
+  toggleSelect: [state: boolean];
+  updated: [track: ITrack]
+}>();
+
+const { timeEntry } = defineProps<{
     timeEntry: {
-        type: Object,
-        default() {
-            return {
-                description: "",
-                billable: false,
-                start: null,
-                end: null,
-                duration: null
-            };
-        }
-    }
-});
-
-const emit = defineEmits(['toggle-select']);
+        tracks: ITrack[]
+    };
+}>();
 
 const state = reactive({
     now: new Date(),
@@ -26,37 +25,29 @@ const state = reactive({
     selected: false
 });
 
-const durationFromMs = (ms) => {
-    const date = new Date(ms);
-    return date
-        .toISOString()
-        .slice(11, -2)
-        .split(":")
-        .map(unit => {
-            return Math.round(unit)
-                .toString()
-                .padStart(2, "0");
-        })
-        .join(":");
-}
-
 const toggleExpand = () => {
     state.isExpanded = !state.isExpanded;
 }
 
 const toggleSelection = () => {
     nextTick(() => {
-        emit('toggle-select', state.selected)
+        emit('toggleSelect', state.selected)
     })
 }
 
-const duration = computed(() => {
-    const milliseconds = props.timeEntry.tracks.reduce((total, current) => {
+const duration = computed<string>(() => {
+    // @ts-expect-error: I dont know
+    const milliseconds = timeEntry.tracks.reduce((total: number, current: ITask): number => {
         return (total += (current.duration_ms || 0));
     },0);
-    return durationFromMs(milliseconds);
+
+    return formatDurationFromMs(milliseconds).toFormat('hh:mm:ss');
 });
 
+
+const onResumeTimer = () => {
+    emit('resumeTimer', timeEntry.tracks[0] )
+}
 </script>
 
 <template>
@@ -95,7 +86,7 @@ const duration = computed(() => {
                     <div class="flex time-tracker__controls">
                         <span disabled class="flex items-center start-dates">
                             {{ formatDateToTime(timeEntry.tracks[0].started_at) }} -
-                            {{ formatDateToTime(timeEntry.tracks.at(-1).ended_at) }}
+                            {{ timeEntry.tracks.length && formatDateToTime(timeEntry.tracks.at?.(-1)?.ended_at) }}
                         </span>
                         <input
                             type="text"
@@ -105,7 +96,7 @@ const duration = computed(() => {
                             class="time-duration-display"
                         />
 
-                        <button @click="initTimer()" class="opacity-0 play-button group-hover:opacity-100">
+                        <button @click="onResumeTimer" class="opacity-0 play-button group-hover:opacity-100">
                             <i class="fa fa-play" />
                         </button>
 
@@ -125,7 +116,8 @@ const duration = computed(() => {
                     v-for="track in timeEntry.tracks"
                     :is-child="timeEntry.tracks.length > 1"
                     :time-entry="track"
-                    :key="track.id"
+                    :key="track.uid"
+                    @deleteItem="emit('deleteItem', $event)"
                     @updated="emit('updated', $event)"
                 />
             </template>

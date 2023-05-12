@@ -1,107 +1,18 @@
-<template>
-<div class="pt-24 mx-5 md:pt-28 md:mx-28">
-  <div class="items-center justify-between mb-10 section-header md:flex">
-      <TabHeader v-model="state.tabSelected" :tabs="state.tabs" class="h-full overflow-hidden rounded-md"/>
-      <section class="flex space-x-2">
-        <SearchBar
-          v-model="state.searchText"
-          v-model:date="state.date"
-          v-model:tags="state.tags"
-          v-model:selectedTags="state.selectedTags"
-        />
-        <AtButton class="text-white bg-green-500" rounded @click="syncTempoLogs()"
-        v-if="state.tabSelected=='week'">
-          Sync Tempo
-        </AtButton>
-      </section>
-  </div> 
-
-  <div class="">     
-      <div v-for="(tracksByDate, trackDate) in groupedTracks" :key="trackDate" class="mb-12">
-        <header class="flex items-center justify-between bg-white">
-          <div class="flex items-center w-full py-4 pl-16 space-x-2 font-bold bg-white">
-            <span>
-              {{ formattedDate(trackDate) }}
-            </span>  
-            <section v-if="selectedItems.length" class="flex items-center text-gray-400">
-              <span> 
-                {{selectedItems.length }} of {{ state.tracked.length }}
-              </span>
-              <button title="Copy tasks" @click="copyTasksTitles">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M18 2H9c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h9c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H9V4h9v12zM3 15v-2h2v2H3zm0-5.5h2v2H3v-2zM10 20h2v2h-2v-2zm-7-1.5v-2h2v2H3zM5 22c-1.1 0-2-.9-2-2h2v2zm3.5 0h-2v-2h2v2zm5 0v-2h2c0 1.1-.9 2-2 2zM5 6v2H3c0-1.1.9-2 2-2z"/></svg>
-              </button>
-            </section>
-          </div>
-          <section class="flex justify-end w-full h-full space-x-4 bg-white" v-if="state.tabSelected=='timer'">
-            <AtButton type="success" @click="mergeTracks" rounded :disabled="!selectedItems.length">Merge</AtButton>
-            <AtButton type="success" rounded @click="extendTracks">Extend</AtButton>
-          </section>
-        </header>
-
-        <template  v-if="state.tabSelected=='timer'">
-          <TimeTrackerGroup
-              v-for="track in tracksByDate"
-              :time-entry="track"
-              :key="track.id"
-              @toggle-select="toggleGroup(track, $event)"
-              @updated="updateLocalTrack"
-          >
-            <template #actions-append>
-              <button title="sync as group" :disabled="track.isLoading" @click="syncAsGroup(track)">
-                <i class="fa fa-th-list" />
-              </button>
-            </template>
-          </TimeTrackerGroup>
-        </template>
-      </div>
-      <VueCal 
-        v-if="state.tabSelected=='week'"
-        style="height: 500px"
-        :events="events"
-        :disable-views="['years', 'year', 'month']"
-        hide-weekends
-        :time-cell-height="110"
-      >
-        <template v-slot:weekday-heading="{ heading : { label, date } }">
-          <article>
-            <h4 class="text-xs">
-              {{  label }}
-            </h4>
-            <section>
-              {{ getTotalTimeByDate(date) }}
-            </section>
-          </article>
-
-        </template>
-        <template #event="{ event }"> 
-          <TimerCalendarCard 
-            :event="event"
-            :allow-sync="!hasTempo(event)"
-            @sync-tempo=" onEventClick(event)"
-          />
-        </template>
-      </VueCal>
-      <div class="w-full mx-auto mt-10 text-center md:w-6/12" v-if="!events.length && state.tabSelected=='timer'">
-        <img src="../assets/undraw_following.svg" class="w-full mx-auto md:w-5/12"> 
-        <p class="mt-10 font-bold text-gray-500 md:mt-5 dark:text-gray-300"> There's no tracks</p>
-      </div>
-  </div>
-</div>
-</template>
-
-<script setup>
+<script setup lang="ts">
 import { reactive, watch, onUnmounted, computed } from 'vue'
-import { useTrackFirestore } from '../utils/useTrackFirestore'
+import { ITrack, useTrackFirestore } from '../utils/useTrackFirestore'
 import SearchBar from "../components/molecules/SearchBar.vue"
+// @ts-expect-error
 import { AtButton } from "atmosphere-ui";
-import { endOfWeek, format, formatRelative, isSameDay, isSameHour, isToday, parse, startOfDay, startOfWeek } from 'date-fns'
+import { endOfWeek, format, formatRelative, isToday, parse, startOfDay, startOfWeek } from 'date-fns'
 import { enUS } from 'date-fns/locale'
 import TimeTrackerGroup from '../components/organisms/TimeTrackerGroup.vue'
-import { ElNotification } from 'element-plus'
+import { ElMessageBox, ElNotification } from 'element-plus'
+// @ts-expect-error
 import VueCal from "vue-cal";
 import 'vue-cal/dist/vuecal.css'
 import { functions } from '@/utils/useFirebase'
-import { formatDurationFromMs } from '@/utils/useDateTime';
+import { formatDurationFromMs, getDurationOfTracks } from '@/utils/useDateTime';
 import { durationFromMs } from '@/utils/useTracker';
 import { isSameDateTime} from '@/utils';
 import TimerCalendarCard from './TimerCalendarCard.vue';
@@ -156,7 +67,7 @@ const state = reactive({
 })
 
 // tracked tasks
-const  { getTracksByDates, syncTempoTracks, getTempoTracksByDates } = useTrackFirestore()
+const  { getTracksByDates, syncTempoTracks, deleteTrack, getTempoTracksByDates } = useTrackFirestore()
 const fetchTracked = (date) => {
   return getTracksByDates(date).then(trackedRef => {
     state.firebaseRefs['tracked'] = trackedRef.onSnapshot( snap => {
@@ -455,8 +366,123 @@ onUnmounted(() => {
     if (firebaseRef) firebaseRef()
   })
 });
+
+const getDurationInGroups = (tracksInDate: Record<string, any>) => {
+return getDurationOfTracks(state.tracked)
+}
+
+const onDeleteItem = async (track: ITrack) => {
+  const canDelete = await ElMessageBox.confirm(
+        "Are you sure you want to delete this task?",
+        "Delete Task"
+      );
+  if (canDelete) {
+    console.log(track);
+    deleteTrack(track).then(() => {
+      ElNotification({
+        type: "success",
+        message: "Task deleted",
+        title: "Task deleted",
+      });
+    });
+  }
+}
 </script>
 
+<template>
+<div class="pt-24 mx-5 md:pt-28 md:mx-28">
+  <div class="items-center justify-between mb-10 section-header md:flex">
+      <TabHeader v-model="state.tabSelected" :tabs="state.tabs" class="h-full overflow-hidden rounded-md"/>
+      <section class="flex space-x-2">
+        <SearchBar
+          v-model="state.searchText"
+          v-model:date="state.date"
+          v-model:tags="state.tags"
+          v-model:selectedTags="state.selectedTags"
+        />
+        <AtButton class="text-white bg-green-500" rounded @click="syncTempoLogs()"
+        v-if="state.tabSelected=='week'">
+          Sync Tempo
+        </AtButton>
+      </section>
+  </div> 
+
+  <div class="">     
+      <div v-for="(tracksInDate, trackDate) in groupedTracks" :key="trackDate" class="mb-12">
+        <header class="flex items-center justify-between bg-white">
+          <div class="flex items-center w-full py-4 pl-16 space-x-2 font-bold bg-white">
+            <span>
+              {{ formattedDate(trackDate) }}
+            </span>  
+            <section v-if="selectedItems.length" class="flex items-center text-gray-400">
+              <span> 
+                {{selectedItems.length }} of {{ state.tracked.length }} items selected
+              </span>
+              <button title="Copy tasks" @click="copyTasksTitles">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M18 2H9c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h9c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H9V4h9v12zM3 15v-2h2v2H3zm0-5.5h2v2H3v-2zM10 20h2v2h-2v-2zm-7-1.5v-2h2v2H3zM5 22c-1.1 0-2-.9-2-2h2v2zm3.5 0h-2v-2h2v2zm5 0v-2h2c0 1.1-.9 2-2 2zM5 6v2H3c0-1.1.9-2 2-2z"/></svg>
+              </button>
+            </section>
+          </div>
+          <section class="flex items-center justify-end w-full h-full space-x-4 bg-white" v-if="state.tabSelected=='timer'">
+            <span>
+              {{ getDurationInGroups(tracksInDate) }}
+            </span>
+            <AtButton type="success" @click="mergeTracks" rounded :disabled="!selectedItems.length">Merge</AtButton>
+            <AtButton type="success" rounded @click="extendTracks">Extend</AtButton>
+          </section>
+        </header>
+
+        <template  v-if="state.tabSelected=='timer'">
+          <TimeTrackerGroup
+              v-for="track in tracksInDate"
+              :time-entry="track"
+              :key="track.id"
+              @toggle-select="toggleGroup(track, $event)"
+              @updated="updateLocalTrack"
+              @deleteItem="onDeleteItem"
+          >
+            <template #actions-append>
+              <button title="sync as group" :disabled="track.isLoading" @click="syncAsGroup(track)">
+                <i class="fa fa-th-list" />
+              </button>
+            </template>
+          </TimeTrackerGroup>
+        </template>
+      </div>
+      <VueCal 
+        v-if="state.tabSelected=='week'"
+        style="height: 500px"
+        :events="events"
+        :disable-views="['years', 'year', 'month']"
+        hide-weekends
+        :time-cell-height="110"
+      >
+        <template v-slot:weekday-heading="{ heading : { label, date } }">
+          <article>
+            <h4 class="text-xs">
+              {{  label }}
+            </h4>
+            <section>
+              {{ getTotalTimeByDate(date) }}
+            </section>
+          </article>
+
+        </template>
+        <template #event="{ event }"> 
+          <TimerCalendarCard 
+            :event="event"
+            :allow-sync="!hasTempo(event)"
+            @sync-tempo=" onEventClick(event)"
+          />
+        </template>
+      </VueCal>
+      <div class="w-full mx-auto mt-10 text-center md:w-6/12" v-if="!events.length && state.tabSelected=='timer'">
+        <img src="../assets/undraw_following.svg" class="w-full mx-auto md:w-5/12"> 
+        <p class="mt-10 font-bold text-gray-500 md:mt-5 dark:text-gray-300"> There's no tracks</p>
+      </div>
+  </div>
+</div>
+</template>
 
 <style lang="scss">
 .tempo-event, .zen-event {
