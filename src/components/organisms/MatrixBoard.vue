@@ -262,10 +262,9 @@ const roadmapState = reactive({
 
 const roadmapTasks = computed(() => {
     const filtered =  filteredList.value.map((task) => {
-      task.start = task.created_at.toDate();
+      task.start = task.created_at;
       task.end = new Date();
       const matrix = task.matrix || 'backlog';
-      console.log(matrix)
       task.colorClass = state.quadrants[matrix]?.background
       task.diff = differenceInCalendarDays(task.start, task.end)
       return task;
@@ -314,7 +313,7 @@ const getTasks = (mode = "default") => {
         return item.due_date && item.due_date < new Date();
       }),
       stale:  state.tasks.filter((item) => {
-        return item.created_at && differenceInCalendarDays(new Date(), item.created_at.toDate()) > 14;
+        return item.created_at && differenceInCalendarDays(new Date(), item.created_at) > 14;
       })
   }
 

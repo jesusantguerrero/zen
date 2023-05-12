@@ -332,13 +332,16 @@ const updateTrackFromLocal = async (track) => {
   const formData = { ...track }
   const duration = Interval.fromDateTimes(formData.started_at, formData.ended_at).toDuration();
 
-  // if ( duration.as('minutes') < 1) {
-  //   await deleteTrack(formData);
-  //   ElNotification({
-  //     message: 'Track should be at leas 1 minute',
-  //     type: 'error'
-  //   })
-  // }
+  if ( duration.as('minutes') < 1) {
+    await deleteTrack(formData);
+    emit("update:currentTimer", {})
+    emit('track-trashed', props.task.uid, formData)
+    ElNotification({
+      message: 'Track should be at leas 1 minute',
+      type: 'error'
+    })
+    return
+  }
 
   formData.duration_ms = duration.as('milliseconds'),
   formData.duration_iso = duration.toISO(),

@@ -98,7 +98,7 @@ const tracksGroup = computed(() => {
 
     if (state.tracks) {
     state.tracks.forEach(track => {
-        const date = format(track.started_at.toDate(), "yyyy-MM-dd");
+        const date = format(track.started_at, "yyyy-MM-dd");
 
         if (!trackGroup[date]) {
             trackGroup[date] = {

@@ -21,10 +21,9 @@ export function useTrackFirestore() {
             ...track,
             user_uid: firebaseState.user.uid,
             created_at: new Date()
+        }) .then(docRef => {
+            return docRef.id
         })
-        .catch(function(error) {
-            console.error("Error adding document: ", error);
-        });
     }
 
     const updateTrack = (track: Record<string, any>) => {
@@ -37,6 +36,9 @@ export function useTrackFirestore() {
 
     const deleteTrack = async (track: Record<string, any>) => {
         return await db.collection("tracks").doc(track.uid).delete()
+        .catch((error) => {debugger
+            console.error("Error adding document: ", error);
+        });
     }
 
     const getAllTracksOfTask = async (taskId) => {
