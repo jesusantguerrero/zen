@@ -20,9 +20,9 @@ export interface ITask {
     checklist: any[];
 }
 
-const getDate = (task: ITask) => {
+const getDate = (date: Date| string) => {
     // return task.due_date instanceof Date ? formatDate(task.due_date, "yyyy-MM-dd") : task.due_date;
-    return task.due_date instanceof Date ? task.due_date : DateTime.fromISO(task.due_date).toJSDate();
+    return date instanceof Date ? date : DateTime.fromISO(date).toJSDate();
 }
 
 export function useTaskFirestore() {
@@ -47,10 +47,10 @@ export function useTaskFirestore() {
         });
     }
 
-    const updateTask = (task) => {
+    const updateTask = (task: Partial<ITask>) => {
         const trackRef = db.collection(collectionName).doc(task.uid)
         if (task.due_date) {
-            task.due_date = getDate(task)
+            task.due_date = getDate(task.due_date)
         }
         if (!task.order || task.order < 0) {
             task.order = 0
@@ -192,7 +192,7 @@ export function useTaskFirestore() {
         }
     }
 
-    const runRecurrence = (task: ITask) => {
+    const runRecurrence = (task: Partial<ITask>) => {
         nextTick(() => {
             try {
                 // const setReminder = functions.httpsCallable('setRecurrence');

@@ -5,6 +5,19 @@ import { computed, ref} from "vue";
 export const formatDurationFromMs = (ms) => {
     return Duration.fromMillis(ms)
 }
+
+export const getDurationOfTracks = (tracks) => {
+ 
+    const milliseconds = tracks.reduce((total, track) => {
+      if (track.ended_at) {
+        return total + track.duration_ms
+      }
+      return total;
+    }, 0) ?? 0
+    
+    return formatDurationFromMs(milliseconds).toFormat('hh:mm:ss')
+}
+
 export function useDateTime(dateRef) {
     const date = dateRef || ref(null)
     

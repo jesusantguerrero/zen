@@ -28,7 +28,7 @@ import { computed, toRefs, onUnmounted, reactive } from "vue";
 import { useTracker } from "@/utils/useTracker";
 import { useTaskFirestore } from "@/utils/useTaskFirestore";
 import { useTrackFirestore } from "@/utils/useTrackFirestore";
-import { formatDurationFromMs } from "@/utils/useDateTime";
+import { formatDurationFromMs, getDurationOfTracks } from "@/utils/useDateTime";
 
 const { updateTask } = useTaskFirestore()
 // tracked tasks
@@ -61,7 +61,7 @@ const state = reactive({
   tracked: []
 })
 
-const  { getTracksByDates, getTempoTracksByDates } = useTrackFirestore()
+const  { getTracksByDates } = useTrackFirestore()
 const fetchTracked = (date) => {
   return getTracksByDates(date).then(trackedRef => {
     state.firebaseRefs['tracked'] = trackedRef.onSnapshot( snap => {
@@ -80,17 +80,7 @@ fetchTracked(new Date());
 
 const totalTimeToday = computed(() => {
  
-  console.log(state.tracked, "from here")
-  const milliseconds = state.tracked.reduce((total, track) => {
-    if (track.ended_at) {
-      return total + track.duration_ms
-    }
-    return total;
-  }, 0) ?? 0
-
-  console.log(milliseconds)
-
-  return formatDurationFromMs(milliseconds).toFormat('hh:mm:ss')
+  return getDurationOfTracks(state.tracked);
 })
 
 onUnmounted(() => {

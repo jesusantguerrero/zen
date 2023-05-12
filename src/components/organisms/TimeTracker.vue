@@ -43,8 +43,11 @@ import { useSlack } from "./../../utils/useSlack";
 import { firebaseState } from "./../../utils/useFirebase";
 import { ElMessageBox, ElNotification } from "element-plus";
 import { useTitle } from "@vueuse/core";
+import { useTaskFirestore } from "@/utils/useTaskFirestore";
 
-const { saveTrack, updateTrack } = useTrackFirestore();
+const { saveTrack, updateTrack, deleteTrack } = useTrackFirestore();
+const { updateTask } = useTaskFirestore();
+
 const props = defineProps({
   task: {
     type: Object
@@ -215,6 +218,10 @@ const createTrack = () => {
   saveTrack(formData)
     .then(uid => {
       track.uid = uid;
+      updateTask({
+        uid: props.task.uid,
+        last_tracked_at: track.started_at
+      })
       emit("update:currentTimer", track)
     })
 }
@@ -321,9 +328,21 @@ watch(() => props.task.title, (newValue, oldValue) => {
 })
 
 // Persistence
-const updateTrackFromLocal = (track) => {
+const updateTrackFromLocal = async (track) => {
   const formData = { ...track }
   const duration = Interval.fromDateTimes(formData.started_at, formData.ended_at).toDuration();
+
+  if ( duration.as('minutes') < 1) {
+    await deleteTrack(formData);
+    emit("update:currentTimer", {})
+    emit('track-trashed', props.task.uid, formData)
+    ElNotification({
+      message: 'Track should be at leas 1 minute',
+      type: 'error'
+    })
+    return
+  }
+
   formData.duration_ms = duration.as('milliseconds'),
   formData.duration_iso = duration.toISO(),
   delete formData.currentTime;
