@@ -80,16 +80,13 @@ fetchTracked(new Date());
 
 const totalTimeToday = computed(() => {
  
-  console.log(state.tracked, "from here")
   const milliseconds = state.tracked.reduce((total, track) => {
     if (track.ended_at) {
       return total + track.duration_ms
     }
     return total;
   }, 0) ?? 0
-
-  console.log(milliseconds)
-
+  
   return formatDurationFromMs(milliseconds).toFormat('hh:mm:ss')
 })
 
