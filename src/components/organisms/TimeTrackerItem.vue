@@ -83,7 +83,7 @@
               placeholder="Duration"
               v-slot:default="{ focusInput }"
             >
-              <span disabled class="flex items-center start-dates cursor-pointer hover:bg-gray-100 rounded-md px-2"
+              <span disabled class="flex items-center px-2 rounded-md cursor-pointer start-dates hover:bg-gray-100"
               @click.stop="focusInput()"
               >
                 {{ formatDateToTime(timeEntry.started_at) }} -
@@ -141,7 +141,9 @@ const state = reactive({
 });
 
 const duration = computed(() => {
-  return durationFromMs(props.timeEntry.duration_ms) || this.localDuration;
+  return props.timeEntry.duration_ms 
+  ? (durationFromMs(props.timeEntry.duration_ms) || this.localDuration)
+  : 0
 });
 
 const localDuration = computed(() => {

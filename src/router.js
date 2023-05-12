@@ -71,12 +71,19 @@ export const routes = [
   },
   {
     path: "/timer",
-    component: () => import("./views/Timer.vue"),
     name: "timer",
+    component: () => import("./views/Timer.vue"),
     meta: {
       requiresAuth: true,
+    }},
+    {
+        path: '/timer-unfinished',
+        name: 'DateTimerUnfinished',
+        component: () => import("./views/UnfinishedTimer.vue"),
+        meta: {
+          requiresAuth: true,
+        }
     },
-  },
   // {
   //   path: "/brain",
   //   name: "brain",

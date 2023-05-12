@@ -102,7 +102,6 @@ import VueCal from "vue-cal";
 import 'vue-cal/dist/vuecal.css'
 import { functions } from '@/utils/useFirebase'
 import { formatDurationFromMs } from '@/utils/useDateTime';
-import { durationFromMs } from '@/utils/useTracker';
 import { isSameDateTime} from '@/utils';
 import TimerCalendarCard from './TimerCalendarCard.vue';
 import TabHeader from '@/components/atoms/TabHeader.vue';
@@ -156,18 +155,11 @@ const state = reactive({
 })
 
 // tracked tasks
-const  { getTracksByDates, syncTempoTracks, getTempoTracksByDates } = useTrackFirestore()
-const fetchTracked = (date) => {
-  return getTracksByDates(date).then(trackedRef => {
-    state.firebaseRefs['tracked'] = trackedRef.onSnapshot( snap => {
-      const list = []
-      snap.forEach(doc => {
-        const track = doc.data()
-          list.push({ ...track, uid: doc.id })
-      })
-      state.tracked = list;
-    })
-  })
+const  { getRunningTracks, syncTempoTracks, getTempoTracksByDates } = useTrackFirestore()
+const fetchTracked = async (date) => {
+  const data = await getRunningTracks();
+  state.tracked = data;
+
 }
 
 const userApplication = functions.httpsCallable('userApplication');
@@ -301,7 +293,6 @@ const groupedTracks = computed(() => {
 
     state.tracked.forEach(track => {
         const date = format(track.started_at, "yyyy-MM-dd");
-        if (!track.ended_at) return
         if (!trackGroup[date]) {
             trackGroup[date] = {
                 [track.description]: {
@@ -406,7 +397,6 @@ const mergeTracks = () => {
 
   const mergedTracks = { ...firstTrack}
   mergedTracks.duration_ms += timeToSum;
-  console.log(durationFromMs(mergeTracks.duration_ms))
   // console.log(merge) 
   // syncTempoUpdate
 }

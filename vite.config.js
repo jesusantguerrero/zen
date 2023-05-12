@@ -39,7 +39,8 @@ export default {
     fs: {
       // Allow serving files from one level up to the project root
       allow: ['..']
-    }
+    },
+    port: 3000
   },
   test: {
     environment: 'happy-dom',
