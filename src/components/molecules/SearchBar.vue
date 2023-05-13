@@ -5,13 +5,14 @@
         v-model="searchOptions.text"
         v-model:selectedTags="searchOptions.tags"
         placeholder="Search task..."
+        :hide-tags="hideTags"
         :multiple="true"
         :tags="tags" 
         :allow-add="false"
     />
     <!-- /search -->
 
-    <div class="flex justify-between mt-2 md:mt-0">
+    <div class="flex justify-between mt-2 md:mt-0" v-if="!hideDate">
         <!-- date-pager -->
         <DatePager v-model="searchOptions.date" />
         <!-- /date-pager -->
@@ -19,34 +20,39 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
   reactive,
   watch,
   computed,
   inject
 } from "vue";
-import TagsSelect from "@/components/atoms/TagsSelect.vue";
-import SearchInput from "@/components/atoms/Search.vue";
 import DatePager from "@/components/atoms/DatePage.vue";
 import SearchBox from "@/views/dashboard/SearchBox.vue";
 
-const props = defineProps({
-  modelValue: String,
-  date: Date,
-  tags: Array,
-  selectedTags: Array,
-});
+const props = defineProps<{
+  modelValue: string,
+  date: Date;
+  tags: any[];
+  selectedTags: any[];
+  hideDate: boolean;
+  hideTags: boolean;
+}>();
 
+const emit = defineEmits<{
+  "update:modelValue": [value: string],
+  "update:date": [date: Date],
+  "update:tags": [tags: any[]],
+  "update:selectedTags": [selected: any[]],
+}>();
 
-const emit = defineEmits({
-  "update:modelValue": String,
-  "update:date": Date,
-  "update:tags": Array,
-  "update:selectedTags": Array,
-});
+interface ISearchOptions  {
+  text: string;
+  tags: any[];
+  date: Date;
+}
 
-const searchOptions = reactive({
+const searchOptions = reactive<ISearchOptions>({
   text: "",
   tags: [],
   date: new Date(),
@@ -70,7 +76,7 @@ watch( () => searchOptions.text, (value) => {
   }
 );
 
-watch(() => searchOptions.date, (value) => {
+watch(() => searchOptions.date, (value: Date) => {
     emit('update:date', value)
   }
 );
@@ -85,5 +91,4 @@ watch( () => [...searchOptions.tags], (value) => {
     emit('update:selectedTags', selectedTags.value)
   }
 );
-
 </script>

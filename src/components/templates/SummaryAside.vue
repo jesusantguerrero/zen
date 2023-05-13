@@ -1,20 +1,20 @@
 <template>
-<div class="md:block md:mt-0 space-y-4">
+<div class="space-y-4 md:block md:mt-0">
     <!-- Matrix summary card-->
-    <section class="rounded-md overflow-hidden border grid grid-cols-2 bg-white">
-            <article class="flex flex-col transition items-center justify-center h-24 px-4 relative cursor-pointer font-bold" 
+    <section class="grid grid-cols-2 gap-1 overflow-hidden bg-white border rounded-b-md">
+            <article class="relative flex flex-col items-center justify-center h-24 px-4 font-bold transition cursor-pointer" 
                 v-for="(matrix, matrixName) in matrix"
                 :key="matrixName"
                 :class="matrix.classes"
             >
-                <div class="absolute w-6/12 bg-gradient-to-r from-transparent via-transparent to-white h-full right-0 opacity-20" />
+                <div class="absolute right-0 w-6/12 h-full bg-gradient-to-r from-transparent via-transparent to-white opacity-20" />
                 <span class="mr-2 capitalize">{{ matrixName}}</span>
                 {{ matrix.list.length }}
             </article>
     </section>
 
     <!-- Shared Card-->
-    <!-- <div class="rounded-md border bg-white py-2 px-4">
+    <!-- <div class="px-4 py-2 bg-white border rounded-md">
         <div class="flex justify-between mb-5 font-bold text-gray-500">
             <h4 class="text-sm">
                 Shared with me

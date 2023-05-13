@@ -1,10 +1,13 @@
 <script lang="ts" setup>
+// @ts-expect-error: no ts definitions
+import { AtInput } from "atmosphere-ui"
 import TagsSelect from "@/components/atoms/TagsSelect.vue"
-import {AtInput } from "atmosphere-ui"
+
 defineProps<{
   tags: any[];
   selectedTags: any[];
-  modelValue: string
+  modelValue: string;
+  hideTags: boolean;
 }>();
 </script>
 
@@ -25,6 +28,7 @@ defineProps<{
       </template>
     </AtInput>
     <TagsSelect
+      v-if="!hideTags"
       :model-value="selectedTags"
       @update:model-value="$emit('update:selectedTags', $event)"
       :multiple="true"

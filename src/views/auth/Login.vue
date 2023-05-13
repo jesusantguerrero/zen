@@ -202,6 +202,7 @@ const validateRegistration = () => {
 }
 
 .login-box {
+    min-height: 100svh;
     min-height: 100vh;
     width: 100%;
     display: flex;

@@ -8,6 +8,7 @@ import { ITask } from "@/utils/useTaskFirestore";
 
 const emit = defineEmits<{
   deleteItem: [track: ITrack];
+  deleteGroup: [tracks: ITrack[]];
   resumeTimer: [track: ITrack ];
   toggleSelect: [state: boolean];
   updated: [track: ITrack]
@@ -133,6 +134,17 @@ const onResumeTimer = () => {
     height: 64px;
     margin: 2px 0;
     overflow: hidden;
+    
+    /** NEW FEATURES: CSS has */
+    &:has(:checked) {
+        @apply bg-green-50;
+    }
+    
+    /** NEW FEATURES: CSS has */
+    &:has(.time-tracker-item__count) {
+        @apply bg-gray-50;
+    }
+
 
     .card-body {
         padding: 0 !important;

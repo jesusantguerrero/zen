@@ -19,11 +19,11 @@
         </header>
         <section class="flex justify-between mt-5">
           <div v-if="!state.showAdd" class="h-10">
-            <TabHeader v-model="state.tabSelected" :tabs="state.tabs" class="overflow-hidden h-full rounded-md"/>
+            <TabHeader v-model="state.tabSelected" :tabs="state.tabs" class="h-full overflow-hidden rounded-md"/>
           </div>
 
-          <section class="flex space-x-2 items-center" :class="{'w-full flex-col': state.showAdd}">
-              <header  v-if="!state.showAdd" class="items-center flex space-x-2 justify-between mb-2 overflow-hidden font-bold text-gray-400 md:flex">
+          <section class="flex items-center space-x-2" :class="{'w-full flex-col': state.showAdd}">
+              <header  v-if="!state.showAdd" class="flex items-center justify-between mb-2 space-x-2 overflow-hidden font-bold text-gray-400 md:flex">
                 <SearchBox
                     v-model="searchText"
                     v-model:selectedTags="searchTags"
@@ -36,7 +36,7 @@
                   New
                 </AtButton>      
               </header>
-            <div v-show="state.showAdd"  class="mb-4 quick__add w-full">
+            <div v-show="state.showAdd"  class="w-full mb-4 quick__add">
               <QuickAdd 
                 type="todo" 
                 ref="quickAdd" 
@@ -113,29 +113,31 @@
         <div class="divide-y-2 divide-gray-200 comming-up__list dark:divide-gray-600 dark:text-gray-300 divide-solid">
          
           <div class="pt-4 space-y-4">
-            <CardButton 
-                class="mt-4"
-                title="Plan ahead"
-                description="Prioritize your day"
-                @click="push('/plan-ahead')"
-            >
-                <template #icon>
-                    <div class="rounded-full p-3 bg-gray-500 h-9 w-9 flex text-white items-center justify-center">
-                        <i class="fa fa-tasks"/>
-                    </div>
-                </template>
-            </CardButton>
+            <section>
+              <CardButton 
+                  class="mt-4"
+                  title="Plan ahead"
+                  description="Prioritize your day"
+                  @click="push('/plan-ahead')"
+              >
+                  <template #icon>
+                      <div class="flex items-center justify-center p-3 text-white bg-gray-500 rounded-full h-9 w-9">
+                          <i class="fa fa-tasks"/>
+                      </div>
+                  </template>
+              </CardButton>
+              <SummaryAside 
+                class="-mt-4"
+                :matrix="matrix"
+                :standup="state.standup"
+                :is-loaded="state.tasksLoaded"
+              />
+            </section>
            
             <TaskTrackView :task="currentTask" :current-timer="currentTimer" />
 
             <StandupYWidget
               :committed="state.committed"
-            />
-
-            <SummaryAside 
-              :matrix="matrix"
-              :standup="state.standup"
-              :is-loaded="state.tasksLoaded"
             />
           </div>
         </div>

@@ -150,6 +150,7 @@ import DateSelect from "../atoms/DateSelect.vue"
 import TimeTrackerButton from "../atoms/tracker/TimeTrackerButton.vue";
 import { useDateTime } from "../../utils/useDateTime";
 import { useCustomSelect } from "../../utils/useCustomSelect";
+import { durationFromMs } from "@/utils/useTracker";
 
 export default {
   components: {
@@ -191,7 +192,11 @@ export default {
     const { task, currentTask, currentTimer} = toRefs(props)
     const state = reactive({
       timeTrackedLabel: computed(() => {
-        return task.value.duration_ms ||  "00:00:00"
+        const durationMs = task.value.duration_ms;
+        if (typeof durationMs == 'number') {
+          return durationFromMs(durationMs) 
+        }
+        return durationMs ||  "00:00:00"
       }),
       typeColor: computed(() => {
         const colors = {

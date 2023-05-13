@@ -50,15 +50,19 @@ export const formatDateToTime = (firebaseDate) => {
 }
 
 export const durationFromMs = (ms) => {
-    const date = new Date(ms);
-    return date
-        .toISOString()
-        .slice(11, -2)
-        .split(":")
-        .map(unit => {
-            return Math.round(unit)
-                .toString()
-                .padStart(2, "0");
-        })
-        .join(":");
+    try {
+        const date = new Date(ms);
+        return date
+            .toISOString()
+            .slice(11, -2)
+            .split(":")
+            .map(unit => {
+                return Math.round(unit)
+                    .toString()
+                    .padStart(2, "0");
+            })
+            .join(":");
+    } catch(err) {
+        return "--:--:--";
+    }
 }
