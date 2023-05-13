@@ -41,13 +41,24 @@ export function useTrackFirestore() {
         });
     }
 
-    const getAllTracksOfTask = async (taskId) => {
-        const tracks = [];
+    const deleteBatch = async (tracks: ITrack[]) => {
+        const batch = db.batch()
+        tracks.forEach((track) => {        
+            db.collection("tracks").doc(track.uid).delete()
+        })
+        return batch.commit().catch((error) => {
+            console.error("Error adding document: ", error);
+        });
+    }
+
+    const getAllTracksOfTask = async (taskId: string) => {
+        if (firebaseState.user) return;
+        const tracks: ITrack[] = [];
         await db.collection('tracks').where(
             'task_uid', '==', taskId 
-        ).where("user_uid", "==", firebaseState.user.uid).get().then(querySnapshot => {
+        ).where("user_uid", "==", firebaseState.user?.uid).get().then(querySnapshot => {
             querySnapshot.forEach((doc) => {
-                tracks.push({...doc.data(), uid: doc.id });
+                tracks.push({...doc.data(), uid: doc.id } as ITrack);
             });
         })
         return tracks;
@@ -136,6 +147,7 @@ export function useTrackFirestore() {
         syncTempoTracks,
         getTempoTracksByDates,
         getRunningTracks,
+        deleteBatch
     }
 
 }

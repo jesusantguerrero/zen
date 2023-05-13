@@ -8,6 +8,7 @@ import { ITask } from "@/utils/useTaskFirestore";
 
 const emit = defineEmits<{
   deleteItem: [track: ITrack];
+  deleteGroup: [tracks: ITrack[]];
   resumeTimer: [track: ITrack ];
   toggleSelect: [state: boolean];
   updated: [track: ITrack]
