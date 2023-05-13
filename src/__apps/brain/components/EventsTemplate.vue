@@ -74,6 +74,7 @@ const onDelete = async(item) => {
 
 <style lang="scss" scoped>
 .scheduler {
+  height: calc(100svh - 200px);
   height: calc(100vh - 200px);
 }
 

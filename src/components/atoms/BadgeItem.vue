@@ -47,7 +47,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   :root {
     --color: rgb(245, 158, 11);
     --offset-with: 2px

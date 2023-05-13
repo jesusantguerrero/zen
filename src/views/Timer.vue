@@ -8,17 +8,14 @@ import { endOfWeek, format, formatRelative, isToday, parse, startOfDay, startOfW
 import { enUS } from 'date-fns/locale'
 import TimeTrackerGroup from '../components/organisms/TimeTrackerGroup.vue'
 import { ElMessageBox, ElNotification } from 'element-plus'
-// @ts-expect-error
-import VueCal from "vue-cal";
-import 'vue-cal/dist/vuecal.css'
 import { functions } from '@/utils/useFirebase'
-import { formatDurationFromMs, getDurationOfTracks } from '@/utils/useDateTime';
+import { getDurationOfTracks } from '@/utils/useDateTime';
 import { durationFromMs } from '@/utils/useTracker';
 import { isSameDateTime} from '@/utils';
-import TimerCalendarCard from './TimerCalendarCard.vue';
 import TabHeader from '@/components/atoms/TabHeader.vue';
+import TimerCalendar from './TimerCalendar.vue';
 // state and ui
-const state = reactive({
+const state: any = reactive({
   tracked: [],
   firebaseRefs: {},
   searchText: "",
@@ -27,7 +24,7 @@ const state = reactive({
   date:startOfDay(new Date()),
   selectedTags: [],
   committedTitle: computed(() => { 
-    const relativeLocale = {
+    const relativeLocale: Record<string, string> = {
         lastWeek: "'Last' eeee",
         yesterday: "'Yesterday'",
         today: "'Today'",
@@ -37,7 +34,7 @@ const state = reactive({
     }   
     const locale = {
       ...enUS,
-      formatRelative: (token) => relativeLocale[token]
+      formatRelative: (token: string) => relativeLocale[token]
     }
     
     const dateName = formatRelative(state.date, new Date(), { locale });
@@ -58,17 +55,17 @@ const state = reactive({
       name: "week",
       focusClass: "text-gray-600",
     },
-    // {
-    //   label: "Reports",
-    //   name: "reports",
-    //   focusClass: "text-gray-600",
-    // },
+    {
+      label: "Month view",
+      name: "month",
+      focusClass: "text-gray-600",
+    },
   ],
 })
 
 // tracked tasks
 const  { getTracksByDates, syncTempoTracks, deleteTrack, getTempoTracksByDates } = useTrackFirestore()
-const fetchTracked = (date) => {
+const fetchTracked = (date: Date) => {
   return getTracksByDates(date).then(trackedRef => {
     state.firebaseRefs['tracked'] = trackedRef.onSnapshot( snap => {
       const list = []
@@ -105,7 +102,7 @@ const syncTempoLogs = () => {
   })
 }
 
-const onEventClick = (event) => {
+const onEventClick = (event: any) => {
   if (!event.class.includes('tempo')) {
     syncTempoUpdate(event)
   }
@@ -113,7 +110,7 @@ const onEventClick = (event) => {
 
 const { updateTrack } = useTrackFirestore();
 
-const syncTempoUpdate = async (event, autoUpdateTrack = true) => {
+const syncTempoUpdate = async (event: any, autoUpdateTrack = true) => {
   const alreadyWithTempo = events.value
   .filter(item => item.class === 'tempo-event').find( tempoEvent => {
     return isSameDateTime(event.start, tempoEvent.start);
@@ -165,7 +162,7 @@ const syncTempoUpdate = async (event, autoUpdateTrack = true) => {
       })
     })
 
-    const zenTrack = state.tracked.find( track => track.uid == event.uid)
+    const zenTrack = state.tracked.find( (track: ITrack) => track.uid == event.uid)
     event.isLoading = false;
 
     if (autoUpdateTrack) {
@@ -182,21 +179,17 @@ const syncTempoUpdate = async (event, autoUpdateTrack = true) => {
   })
 }
 
-const hasTempo = (event) => {
-  return event.class.includes('tempo') || event.relations && event.relations['tempo']
-}
-
-const fetchTempo = async (date) => {
+const fetchTempo = async (date: Date) => {
   const from = startOfWeek(date)
   const to = endOfWeek(date)
 
   const tempoRef = await getTempoTracksByDates(from, to);
   state.firebaseRefs['tempoRef'] = tempoRef.onSnapshot(snap => {
-    const list = [];
+    const list: ITrack[] = [];
     snap.forEach(doc => {
       const track = doc.data();
 
-      list.push({ ...track, uid: doc.id });
+      list.push({ ...track, uid: doc.id } as ITrack);
     });
     state.tempoEvents = list;
   });
@@ -207,24 +200,33 @@ watch(() => state.date , async () => {
  await fetchTempo(state.date)
 }, { immediate: true })
 
-const groupedTracks = computed(() => {
-    const trackGroup = {};
+interface ITrackGroup {
+  id: string;
+  description: string;
+  isLoading?: boolean;
+  tracks: ITrack[]
+}
 
-    state.tracked.forEach(track => {
+type IGroupByDate = Record<string, ITrackGroup>;
+const groupedTracks = computed(() => {
+    const trackGroup: Record<string,IGroupByDate> = {};
+
+    state.tracked.forEach((track: ITrack) => {
         const date = format(track.started_at, "yyyy-MM-dd");
         if (!track.ended_at) return
         if (!trackGroup[date]) {
             trackGroup[date] = {
                 [track.description]: {
-                    id: `group-${track.id}`,
+                    id: `group-${track.uid}`,
                     description: track.description,
+                    isLoading: false,
                     tracks: [track]
                 }
             };
         } else {
             if (!trackGroup[date][track.description]) {
                 trackGroup[date][track.description] = {
-                        id: `group-${track.id}`,
+                        id: `group-${track.uid}`,
                         description: track.description,
                         tracks: [track]
                 };
@@ -235,17 +237,6 @@ const groupedTracks = computed(() => {
     });
     return trackGroup;
 });
-
-const getTotalTimeByDate = (date) => {
-  const milliseconds = state.tracked.reduce((total, track) => {
-    if (format(date, 'yyyy-MM-dd') == format(track.started_at, "yyyy-MM-dd") && track.ended_at) {
-      return total + track.duration_ms
-    }
-    return total;
-  }, 0) ?? 0
-
-  return formatDurationFromMs(milliseconds).toFormat('hh:mm:ss')
-}
 
 const events = computed(() => {
   const appEvents = state.tracked.filter(item => item.ended_at).map(event => ({
@@ -265,16 +256,16 @@ const events = computed(() => {
   }))]
 })
 
-const toggleGroup = (timeEntry, isSelected) => {
-    timeEntry.tracks.forEach(
+const toggleGroup = (group: ITrackGroup, isSelected: boolean) => {
+    group.tracks.forEach(
         track => {
-          const trackIndex = state.tracked.findIndex(storedTracked => storedTracked.uid == track.uid)
+          const trackIndex = state.tracked.findIndex((tracked: ITrack) => tracked.uid == track.uid)
           state.tracked[trackIndex].selected = isSelected;
         }
     );
 }
 
-const updateLocalTrack = (track) => {
+const updateLocalTrack = (track: ITrack) => {
   updateTrack(track).then(() => {
     ElNotification({
       type: 'success',
@@ -283,8 +274,8 @@ const updateLocalTrack = (track) => {
   })
 }
 
-const formattedDate = (date) => {
-    const dateT = parse(date, 'yyyy-MM-dd', new Date());
+const formattedDate = (dateString: string) => {
+    const dateT = parse(dateString, 'yyyy-MM-dd', new Date());
     return isToday(dateT) ? 'Today' : format(dateT, 'E, dd LLL yyyy')
 }
 
@@ -299,7 +290,7 @@ const selectedItems = computed(() => {
 
 // 
 const copyTasksTitles = () => {
- const selectedTitles =  Array.from(new Set(selectedItems.value.map(track => track.description)));
+ const selectedTitles =  Array.from(new Set(selectedItems.value.map((track: ITrack) => track.description)));
 
  navigator.clipboard.writeText(selectedTitles.join("\n")).then(() => {
   ElNotification({
@@ -310,25 +301,25 @@ const copyTasksTitles = () => {
 }
 
 const mergeTracks = () => {
-  const timeToSum = selectedItems.value.slice(1).reduce((totalMs, track) => totalMs + track.duration_ms, 0)
+  const timeToSum = selectedItems.value.slice(1).reduce((totalMs: number, track: ITrack) => totalMs + track.duration_ms, 0)
   const firstTrack = selectedItems.value.at(0);
-
-  console.log(timeToSum, firstTrack, selectedItems.value, "Hola");
 
   const mergedTracks = { ...firstTrack}
   mergedTracks.duration_ms += timeToSum;
-  console.log(durationFromMs(mergeTracks.duration_ms))
+  console.log(durationFromMs(mergedTracks.duration_ms))
   // console.log(merge) 
   // syncTempoUpdate
 }
 
-const syncAsGroup = (group) => {
+const syncAsGroup = (group: ITrackGroup) => {
   if (group.isLoading) return
   const groupedTracks = group.tracks;
   const timeToSum = groupedTracks.slice(1).reduce((totalMs, track) => totalMs + track.duration_ms, 0)
   const firstTrack = groupedTracks.at(0);
 
   group.isLoading = true;
+
+  if (!firstTrack) return;
 
   const mergedTracks = { 
     ...firstTrack,
@@ -342,7 +333,6 @@ const syncAsGroup = (group) => {
 
   syncTempoUpdate(mergedTracks, false)
     .then((tempoTrack) => {
-    console.log(tempoTrack)
     groupedTracks.forEach((track) => {
       updateTrack({
         ...track,
@@ -361,8 +351,9 @@ const syncAsGroup = (group) => {
   })
 }
 
+type FirebaseReference = () => void;
 onUnmounted(() => {
-  Object.values(state.firebaseRefs).forEach((firebaseRef) => {
+  Object.values(state.firebaseRefs as FirebaseReference[]).forEach((firebaseRef: FirebaseReference) => {
     if (firebaseRef) firebaseRef()
   })
 });
@@ -399,9 +390,14 @@ const onDeleteItem = async (track: ITrack) => {
           v-model:date="state.date"
           v-model:tags="state.tags"
           v-model:selectedTags="state.selectedTags"
+          date-type=""
         />
-        <AtButton class="text-white bg-green-500" rounded @click="syncTempoLogs()"
-        v-if="state.tabSelected=='week'">
+        <AtButton 
+          class="text-white bg-green-500" 
+          rounded 
+          @click="syncTempoLogs()"
+          v-if="state.tabSelected=='week'"
+        >
           Sync Tempo
         </AtButton>
       </section>
@@ -428,7 +424,7 @@ const onDeleteItem = async (track: ITrack) => {
               {{ getDurationInGroups(tracksInDate) }}
             </span>
             <AtButton type="success" @click="mergeTracks" rounded :disabled="!selectedItems.length">Merge</AtButton>
-            <AtButton type="success" rounded @click="extendTracks">Extend</AtButton>
+            <AtButton type="success" rounded>Extend</AtButton>
           </section>
         </header>
 
@@ -449,65 +445,17 @@ const onDeleteItem = async (track: ITrack) => {
           </TimeTrackerGroup>
         </template>
       </div>
-      <VueCal 
-        v-if="state.tabSelected=='week'"
-        style="height: 500px"
+      <TimerCalendar
+        v-if="['week', 'month'].includes(state.tabSelected)"
+        :tracks="state.tracked" 
         :events="events"
-        :disable-views="['years', 'year', 'month']"
-        hide-weekends
-        :time-cell-height="110"
-      >
-        <template v-slot:weekday-heading="{ heading : { label, date } }">
-          <article>
-            <h4 class="text-xs">
-              {{  label }}
-            </h4>
-            <section>
-              {{ getTotalTimeByDate(date) }}
-            </section>
-          </article>
-
-        </template>
-        <template #event="{ event }"> 
-          <TimerCalendarCard 
-            :event="event"
-            :allow-sync="!hasTempo(event)"
-            @sync-tempo=" onEventClick(event)"
-          />
-        </template>
-      </VueCal>
-      <div class="w-full mx-auto mt-10 text-center md:w-6/12" v-if="!events.length && state.tabSelected=='timer'">
+        :active-view="state.tabSelected"
+        :tempoEvents="state.tempoEvents"  
+      />
+      <div class="w-full mx-auto mt-10 text-center md:w-6/12" v-if="!state.tracked.length && state.tabSelected=='timer'">
         <img src="../assets/undraw_following.svg" class="w-full mx-auto md:w-5/12"> 
         <p class="mt-10 font-bold text-gray-500 md:mt-5 dark:text-gray-300"> There's no tracks</p>
       </div>
   </div>
 </div>
 </template>
-
-<style lang="scss">
-.tempo-event, .zen-event {
-  position: relative;
-    height: 102.667px;
-    width: 168px;
-    min-height: 20px;
-    border: 1px solid rgb(188, 216, 224);
-    border-radius: 4px;
-    box-shadow: rgba(0, 0, 0, 0.08) 0px 1px 3px 0px;
-    font-size: 14px;
-    flex-direction: column;
-    display: flex;
-    transition: min-height 0.3s ease 0s, box-shadow 0.3s ease-in-out 0s;
-    text-decoration: none;
-    background: rgb(238, 243, 248);
-    line-height: 1.42857;
-    touch-action: none;
-    -webkit-box-pack: justify;
-    justify-content: space-between;
-    padding: 8px;
-    opacity: 1;
-    cursor: grab;
-    margin-bottom: 0px;
-    color: rgba(0, 28, 61, 0.72);
-    user-select: none;
-}
-</style>

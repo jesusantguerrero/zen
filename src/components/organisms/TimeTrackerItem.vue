@@ -72,7 +72,7 @@ const toggleTimer = () => {
           />
           <input
             type="text"
-            class="w-full px-8 time-tracker__description"
+            class="w-full px-8 time-tracker__description bg-transparent"
             placeholder="Add description"
             :class="[isChild? '' : 'font-bold']"
             v-model.lazy="timeEntry.description"
