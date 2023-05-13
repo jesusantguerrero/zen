@@ -137,20 +137,10 @@ const state = reactive({
   tabSelected: 'timer',
   tabs: [
     {
-      label: "Timer",
+      label: "Unfinished Tracks",
       name: "timer",
       focusClass: "text-gray-600",
     },
-    {
-      label: "Week view",
-      name: "week",
-      focusClass: "text-gray-600",
-    },
-    // {
-    //   label: "Reports",
-    //   name: "reports",
-    //   focusClass: "text-gray-600",
-    // },
   ],
 })
 

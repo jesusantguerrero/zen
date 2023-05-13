@@ -36,7 +36,7 @@ export function useTrackFirestore() {
 
     const deleteTrack = async (track: Record<string, any>) => {
         return await db.collection("tracks").doc(track.uid).delete()
-        .catch((error) => {debugger
+        .catch((error) => {
             console.error("Error adding document: ", error);
         });
     }
@@ -116,7 +116,7 @@ export function useTrackFirestore() {
         .where('ended_at', '==', null)
         .where("user_uid", "==", firebaseState.user.uid)
         .where('started_at', ">=", myDate)
-        .orderBy('started_at')
+        .orderBy('started_at', 'desc')
         .get()
         .then(q => {
             q.forEach((doc) => {
