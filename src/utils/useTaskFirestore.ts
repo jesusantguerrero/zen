@@ -17,7 +17,10 @@ export interface ITask {
     tracks: any[];
     tags: any[];
     duration_ms?: number;
+    duration?: number;
     checklist: any[];
+    last_tracked_at?: Date;
+    last_tracked_ended_at?: Date;
 }
 
 const getDate = (date: Date| string) => {

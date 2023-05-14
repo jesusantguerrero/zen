@@ -1,0 +1,84 @@
+import {  ref,  watch, nextTick, toValue  } from "vue"
+import { defineStore } from 'pinia'
+import { formatDurationFromMs } from '@/utils/useDateTime';
+import { ITask, useTaskFirestore } from '@/utils/useTaskFirestore';
+import { ITrack, useTrackFirestore } from '@/utils/useTrackFirestore';
+import { timeReducer } from '@/utils/useTracker';
+import { firebaseState } from "@/utils/useFirebase"
+
+const { getRunningTrack, getAllTracksOfTask } = useTrackFirestore();
+const { updateTask } = useTaskFirestore();
+export const useTrackerStore = defineStore('tracker', () => {
+
+const currentTimer = ref<Partial<ITrack>>({})
+const timerSubtype = ref<string|null>(null)
+const currentTask = ref<Partial<ITask>>({});
+const isRunning = ref(false);
+
+const toggleTracker = (autoplay: boolean) => {
+  isRunning.value = autoplay;
+  console.log("here we go")
+}
+
+const setCurrentTask = (task: Partial<ITask>, autoplay: boolean = false) => {
+  currentTask.value = toValue(task);
+  if (autoplay) {
+    toggleTracker(autoplay) 
+  }
+};
+
+const updateTaskTracks = (tracks: ITrack[]) => {
+  currentTask.value.tracks = tracks;
+}
+
+const onTrackAdded = (taskUid: string, newTrack: any) => {
+  if (!currentTask.value || !Object.keys(currentTask.value)) return;
+  
+  currentTask.value.tracks?.push(newTrack);
+  const savedTime = timeReducer(currentTask.value.tracks);
+  if (savedTime) {
+    const timeFormatted = formatDurationFromMs(savedTime);
+    nextTick(() => {
+      updateTask({
+        uid: taskUid,
+        duration_ms: timeFormatted.toFormat("hh:mm:ss"),
+        duration: savedTime,
+        last_tracked_at: newTrack.started_at,
+        ...(newTrack.end_at ? {
+          last_tracked_ended_at: newTrack.end_at
+        } : {}) 
+      })
+    })
+  }
+}
+watch(() => firebaseState.user, async (user) => {
+  if (user) {
+    try {
+      currentTimer.value = await getRunningTrack() || {}
+    } catch(err) {
+      console.log(err)
+    }
+  }
+}, { immediate: true, deep: true })
+
+
+watch(() => currentTask.value, (task) => {
+  if (task.uid) {
+    getAllTracksOfTask(task.uid).then((tracks) => {
+      if (tracks && tracks.length) {
+        updateTaskTracks(tracks)
+      }
+    });
+  }
+});
+
+  return {
+      currentTask,
+      currentTimer,
+      timerSubtype,
+      updateTaskTracks,
+      setCurrentTask,
+      onTrackAdded,
+      toggleTracker
+  }
+})

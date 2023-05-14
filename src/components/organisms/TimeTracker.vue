@@ -4,14 +4,14 @@
   >
     <div class="flex items-center justify-between text-2xl font-bold">
       <div class="mr-2 text-sm"   :class="`${trackerMode.color} ${trackerMode.colorBorder}`" >
-            {{ trackerMode.text }}
+        {{ trackerMode.text }}
       </div>
       <div 
         class="flex items-center justify-center w-8 h-8 mr-2 rounded-full cursor-pointer"
         title="click here to start"
         :class="`${trackerMode.color} ${trackerMode.colorBorder}`" 
         @click="toggleTracker"
-        >
+      >
         <i class="text-3xl far fa-play" :class="trackerIcon"></i>
       </div>
       <div
@@ -33,14 +33,14 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, onBeforeUnmount, reactive, watch, ref} from "vue";
 import { Duration, Interval, DateTime } from "luxon";
-import { useTrackFirestore } from "../../utils/useTrackFirestore";
-import { SESSION_MODES } from "./../../utils";
-import { usePromodoro } from "./../../utils/usePromodoro";
-import { useSlack } from "./../../utils/useSlack";
-import { firebaseState } from "./../../utils/useFirebase";
+import { ITrack, useTrackFirestore } from "@/utils/useTrackFirestore";
+import { SESSION_MODES } from "@/utils";
+import { usePromodoro } from "@/utils/usePromodoro";
+import { useSlack } from "@/utils/useSlack";
+import { firebaseState } from "@/utils/useFirebase";
 import { ElMessageBox, ElNotification } from "element-plus";
 import { useTitle } from "@vueuse/core";
 import { useTaskFirestore } from "@/utils/useTaskFirestore";
@@ -55,6 +55,9 @@ const props = defineProps({
   currentTimer: {
     type: Object
   },
+  min: {
+    type: Number
+  },
   trackableModes: {
     type: Array,
     default() {
@@ -65,7 +68,11 @@ const props = defineProps({
       ]
     }
   },
+  now: {
+    type: Number,
+  } 
 })
+
 const emit = defineEmits({
   "update:currentTimer": (timer) =>  timer
 })
@@ -121,16 +128,39 @@ const state = reactive({
       text: "Take a short break",
     },
   },
-  now: null,
   mode: "promodoro",
   volume: 50,
-  timer: null,
+ 
   pushSubscription: null,
   durationTarget: null,
 });
 
+// clock
+
+interface IClock {
+  now: null|Date;
+  timer: NodeJS.Timer|null
+}
+
+const clock = reactive<IClock>({
+  now: null,
+  timer: null,
+})
+
+const startClock = () => {
+  clock.timer = setInterval(() => {
+    clock.now = new Date();
+  }, 100);
+}
+
+const stopClock = () => {
+  clock.now = null;
+  if(clock.timer)
+  clearInterval(clock.timer)
+}
+
 // UI
-const trackerIcon = computed(() => state.now ? 'far fa-stop-circle': 'far fa-play-circle' );
+const trackerIcon = computed(() => clock.now ? 'far fa-stop-circle': 'far fa-play-circle' );
 const trackerMode = computed(() => state.modes[state.mode]);
 const promodoroTotal = computed(() => {
   return state.template
@@ -158,7 +188,7 @@ const setDurationTarget = () => {
 setDurationTarget();
 
 const targetTime = computed(() => {
-  if (track.started_at && state.now) {
+  if (track.started_at && clock.now) {
     const targetTime = DateTime.fromJSDate(track.started_at).plus(state.durationTarget);
     return targetTime;
   }
@@ -166,8 +196,8 @@ const targetTime = computed(() => {
 });
 
 const currentTime = computed(() => {
-  if (track.started_at && state.now && state.durationTarget) {
-    let duration = Interval.fromDateTimes(track.started_at, state.now).toDuration()
+  if (track.started_at && clock.now && state.durationTarget) {
+    let duration = Interval.fromDateTimes(track.started_at, clock.now).toDuration()
     track.currentTime = duration;
     if (duration) {
       duration = state.durationTarget.minus(duration).plus({ seconds: 0.9 });
@@ -180,14 +210,14 @@ const currentTime = computed(() => {
 });
 
 watch(() => currentTime.value, () => {
-  if (state.now) {
+  if (clock.now) {
     useTitle(`Zen.  ${currentTime.value}`)
   } else {
     useTitle('Zen.')
   }
 });
 
-watch(() => state.now, (now) => {
+watch(() => clock.now, (now) => {
   if (targetTime.value && now && targetTime.value.diffNow() < 0) {
     track.completed = true;
     stop();
@@ -234,12 +264,34 @@ const { setStatus } = useSlack();
 
 // Controls
 const toggleTracker = () => {
-  track.started_at ? stop(null, true) : play();
+  track.started_at ? stop(false, true) : play();
 };
 
+const resume = (currentTimer: Record<string, any>) => {
+    track.uid = currentTimer.uid;
+    track.started_at = currentTimer.started_at;
+    track.task_uid = currentTimer.task_uid;
+    track.description = currentTimer.description;
+    track.target_time = currentTimer.target_time;
+    track.subtype = currentTimer.subtype;
+    track.completed = false;
 
+    setDurationTarget();
+    startClock();
+  };
+
+  watch(
+    () => props.currentTimer,
+    (timer) => {
+      console.log(timer)
+      if (timer && timer.uid !== clock.timer) {
+       timer?.started_at && resume(timer);
+      }
+    },
+    { immediate: true }
+  );
 const play = () => {
-  if (isTrackableMode() && !validatePlay()) {
+  if (!validatePlay()) {
     ElNotification({
       title: "Select a task",
         message: "Must select a task to start promodoro",
@@ -250,31 +302,32 @@ const play = () => {
   
   stopSound()
   track.started_at = new Date();
-  state.now = track.started_at;
+  clock.now = track.started_at;
   
   if (validatePlay()) {
     setStatus('Zen mode.', ':slack:')
     createTrack(track)
   }
 
-  state.timer = setInterval(() => {
-    state.now = new Date();
-  }, 100);
+  startClock();
 };
 
-const stop = (shouldCallNextMode = true, silent) => {
+
+
+const stop = (shouldCallNextMode = true, silent = false) => {
+ 
   track.ended_at = new Date();
-  if (validatePlay() && state.now) {
+  if (validatePlay() && clock.now) {
     updateTrackFromLocal({...track});
   }
 
-  const wasRunning = Boolean(state.now);
+  const wasRunning = Boolean(clock.now);
   const previousMode = state.mode;
   const message = track.completed ? "finished" : "stopped";
   
   clearTrack()
-  clearInterval(state.timer);
-  state.now = null;
+  clearInterval(clock.timer);
+  clock.now = null;
   
   nextMode();
   if (!silent) {
@@ -295,7 +348,7 @@ const reset = () => {
 }
 
 const nextMode = () => {
-  if (state.now) {
+  if (clock.now) {
     stop(false);
   }
 
@@ -307,7 +360,7 @@ const nextMode = () => {
 };
 
 const clearTrack = () => {
-  clearInterval(state.timer);
+  clearInterval(clock.timer);
   track.started_at = null;
   track.ended_at = null;
   track.duration = null;
@@ -322,17 +375,20 @@ onBeforeUnmount(() => {
 })
 
 watch(() => props.task.title, (newValue, oldValue) => {
-  if (oldValue && state.now && state.mode == 'promodoro') {
+  if (oldValue && clock.now && state.mode == 'promodoro') {
     stop(false, true)
   }
 })
 
+
+
 // Persistence
-const updateTrackFromLocal = async (track) => {
+const updateTrackFromLocal = async (track: Partial<ITrack>) => {
+  if (!track.started_at) return;
   const formData = { ...track }
   const duration = Interval.fromDateTimes(formData.started_at, formData.ended_at).toDuration();
 
-  if ( duration.as('minutes') < 1) {
+  if (props.min && duration.as('minutes') < props.min) {
     await deleteTrack(formData);
     emit("update:currentTimer", {})
     emit('track-trashed', props.task.uid, formData)
@@ -358,9 +414,8 @@ const updateTrackFromLocal = async (track) => {
 };
 
 const togglePlay = () => {
-    if (!props.currentTimer || props.task.uid != props.currentTimer.task_uid) {
+    if (!props.currentTimer || props.task?.uid != props.currentTimer.task_uid) {
       reset();
-      console.log("Reset")
     }
     toggleTracker()
 }

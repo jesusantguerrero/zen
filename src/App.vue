@@ -1,12 +1,3 @@
-<template>
-  <div class="text-center">
-      <AppHeader :user="firebaseState.user" class="z-50" @logout="logoutUser" v-if="firebaseState.user"/>
-      <RouterView />
-      <IntegrationsBar v-if="firebaseState.user" />
-      <MobileMenuBar v-if="firebaseState.user" />
-  </div>
-</template>
-
 <script setup>
 import { nextTick, ref, provide, onUnmounted, watch } from 'vue'
 import AppHeader from './components/organisms/AppHeader.vue'
@@ -93,6 +84,15 @@ onUnmounted(() => {
   closeConnections()
 })
 </script>
+
+<template>
+    <div class="text-center">
+        <AppHeader :user="firebaseState.user" class="z-50" @logout="logoutUser" v-if="firebaseState.user"/>
+        <RouterView />
+        <IntegrationsBar v-if="firebaseState.user" />
+        <MobileMenuBar v-if="firebaseState.user" />
+    </div>
+</template>
 
 <style>
 #app {

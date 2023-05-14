@@ -49,7 +49,7 @@
             :currentTimer="currentTimer"
             :is-current="currentTask.uid == task.uid"
             :task="currentTask"
-            @toggle-timer="$emit('toggle-timer', task)"
+            @toggle-timer="toggleTimer"
           />
           
           <div>
@@ -298,9 +298,14 @@ export default {
     const {list: tags, addToList: createTag, selectItem: addTag} = useCustomSelect(task, 'tags')
     const {list: contacts, addToList: createContact, selectItem: selectContact} = useCustomSelect(task, 'contacts')
 
+    const toggleTimer = () => {
+      emit('toggle-timer', task.value)
+    }
+
     return {
       ...toRefs(state),
       handleCommand,
+      toggleTimer,
       toggleExpand,
       updateItems,
       tags,createTag, addTag,

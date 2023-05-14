@@ -1,73 +1,28 @@
-<template>
-  <div class="fixed z-50 w-full">
-    <div
-      class="flex items-center justify-between w-full h-16 px-2 bg-white border-b-2 border-gray-400 shadow-md dark:bg-gray-700 dark:border-gray-600 md:px-32"
-    >
-      <div class="flex items-baseline">
-        <router-link class="text-2xl font-bold dark:text-gray-300 dark:hover:text-white zen" to="/"> Zen.</router-link>
-        <div class="hidden md:flex md:items-center md:ml-4" v-if="user">
-          <!-- <menu-item class="pl-2 mx-2" to="/home" icon="dashboard"> Home </menu-item> -->
-          <menu-item class="pl-2 mx-2" to="/zenboard" icon="schedule">Zenboard </menu-item>
-          <menu-item class="px-2 ml-2" to="/standup" icon="history">Stand Up</menu-item>
-          <menu-item class="px-2 mx-2" to="/matrix" icon="grid_view">Matrix</menu-item>
-          <menu-item class="px-2 mx-2" to="/metrics" icon="grid_view">Metrics</menu-item>
-          <menu-item class="px-2 mx-2" to="/timer" icon="grid_view">Timer</menu-item>
-        </div>
-      </div>
-  
-      <div class="flex items-center" v-if="user">
-        <AppNotification
-            :notifications="unreadNotifications"
-        />
-    
-        <div class="relative flex p-2 mx-2 text-sm font-bold text-gray-400 rounded-md cursor-pointer lg:text-lg changelog hover:bg-green-100 dark:hover:bg-gray-600 dark:hover:text-white">
-            <i class="fa fa-bullhorn"></i>
-        </div>
-  
-        <el-dropdown trigger="click" class="mt-3" placement="bottom-end" :show-arrow="false" :offset="-2" @command="handleCommand">
-          <el-avatar :src="profileImage">
-              {{ initials }}
-          </el-avatar>
-          <template #dropdown>
-            <el-dropdown-menu class="dark:bg-gray-800 dark:text-gray-200">
-              <el-dropdown-item disabled class="dark:bg-gray-800 dark:hover:bg-gray-700">
-                <i class="fa fa-user"></i>
-                {{ profileName }}
-              </el-dropdown-item>
-              <el-dropdown-item class="p-0" command="settings">
-                  <i class="cursor-pointer fa fa-cog"></i>
-                  Settings
-              </el-dropdown-item> 
-              <el-dropdown-item class="p-0" command="about">
-                  <i class="cursor-pointer fa fa-question"></i>
-                  About
-              </el-dropdown-item> 
-              <el-dropdown-item class="p-0" command="logout">
-                  <i class="cursor-pointer fa fa-power-off"></i>
-                  Logout
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
-      </div>
-    </div>
-  </div>
-</template>
-
-<script setup>
-import { computed, toRefs, onMounted, watch, inject } from "vue";
+<script lang="ts" setup>
+import { computed, nextTick, ref, onMounted, watch, inject } from "vue";
 import MenuItem from "../molecules/MenuItem.vue";
-import MobileMenu from "./MobileMenu.vue";
 import AppNotification from "../organisms/AppNotification.vue";
 import { useRouter } from "vue-router";
+import TimeTracker from "./TimeTracker.vue";
+import { useTrackerStore } from "@/store/tracker";
 
-const props = defineProps({
+const trackStore = useTrackerStore()
+const timeTrackerRef = ref();
+trackStore.$onAction(({ name, args, after }) => {
+  after(() => {
+    if (name == 'setCurrentTask' && args[1]) {
+      nextTick(() => {
+        timeTrackerRef.value?.togglePlay()
+      });
+    }
+  })
+});
+
+const { user } = defineProps({
   user: {
     type: Object,
   },
 });
-
-const { user } = toRefs(props)
 
 const emit = defineEmits({
   logout: Function,
@@ -77,7 +32,7 @@ const initHeadway = () => {
   window.Headway && Headway.init(HW_config)
 }
 
-watch(() => user.value, (userData) => {
+watch(() => user, (userData) => {
   if (userData) {
     initHeadway()
   }
@@ -90,17 +45,17 @@ onMounted(() => {
 
 // state
 const profileName = computed(() => {
-  const provider = user.value.providerData[0];
+  const provider = user.providerData[0];
   return provider.displayName || provider.email;
 })
 
 const profileImage = computed(() => {
-  const provider = user.value.providerData[0];
+  const provider = user.providerData[0];
   return provider.photoURL;
 })
 
 const initials = computed(() => {
-  const provider = user.value.providerData[0];
+  const provider = user.providerData[0];
   return profileName.value.split(' ').map( name => name[0]).join('');
 })
 
@@ -127,6 +82,73 @@ const logout = () => {
 };
 </script>
 
+<template>
+  <div class="fixed z-50 w-full">
+    <div
+      class="flex items-center justify-between w-full h-16 px-2 bg-white border-b-2 border-gray-400 shadow-md dark:bg-gray-700 dark:border-gray-600 md:px-32"
+    >
+      <div class="flex items-baseline">
+        <router-link class="text-2xl font-bold dark:text-gray-300 dark:hover:text-white zen" to="/"> Zen.</router-link>
+        <div class="hidden md:flex md:items-center md:ml-4" v-if="user">
+          <!-- <MenuItem class="pl-2 mx-2" to="/home" icon="dashboard"> Home </MenuItem> -->
+          <MenuItem class="pl-2 mx-2" to="/zenboard" icon="schedule">Zenboard </MenuItem>
+          <MenuItem class="px-2 ml-2" to="/standup" icon="history">Stand Up</MenuItem>
+          <MenuItem class="px-2 mx-2" to="/matrix" icon="grid_view">Matrix</MenuItem>
+          <MenuItem class="px-2 mx-2" to="/metrics" icon="grid_view">Metrics</MenuItem>
+          <MenuItem class="px-2 mx-2" to="/timer" icon="grid_view">Timer</MenuItem>
+        </div>
+      </div>
+  
+      <div class="flex items-center" v-if="user">
+        <AppNotification
+            :notifications="unreadNotifications"
+        />
+
+        <TimeTracker 
+          class="mr-4"
+          :task="trackStore.currentTask" 
+          ref="timeTrackerRef"
+          v-model:currentTimer="trackStore.currentTimer"
+          v-model:subType="trackStore.timerSubtype"
+          @track-added="trackStore.onTrackAdded"
+        />
+    
+        <div class="relative flex p-2 mx-2 text-sm font-bold text-gray-400 rounded-md cursor-pointer lg:text-lg changelog hover:bg-green-100 dark:hover:bg-gray-600 dark:hover:text-white">
+            <i class="fa fa-bullhorn"></i>
+        </div>
+  
+        <ElDropdown trigger="click" class="mt-3" placement="bottom-end" :show-arrow="false" :offset="-2" @command="handleCommand">
+          <ElAvatar :src="profileImage">
+              {{ initials }}
+          </ElAvatar>
+          <template #dropdown>
+            <ElDropdownMenu class="dark:bg-gray-800 dark:text-gray-200">
+              <ElDropdownItem disabled class="dark:bg-gray-800 dark:hover:bg-gray-700">
+                <i class="fa fa-user"></i>
+                {{ profileName }}
+              </ElDropdownItem>
+              <ElDropdownItem class="p-0" command="settings">
+                  <i class="cursor-pointer fa fa-cog"></i>
+                  Settings
+              </ElDropdownItem> 
+              <ElDropdownItem class="p-0" command="about">
+                  <i class="cursor-pointer fa fa-question"></i>
+                  About
+              </ElDropdownItem> 
+              <ElDropdownItem class="p-0" command="logout">
+                  <i class="cursor-pointer fa fa-power-off"></i>
+                  Logout
+              </ElDropdownItem>
+            </ElDropdownMenu>
+          </template>
+        </ElDropdown>
+      </div>
+    </div>
+  </div>
+</template>
+
+
+
 <style lang="scss">
 :root {
   --tw-border-opacity: 0.7
@@ -146,7 +168,7 @@ html.dark {
   }
 }
 
-.router-link-active .menu-item{
+.router-link-active .MenuItem{
   @apply text-gray-700
 }
 
