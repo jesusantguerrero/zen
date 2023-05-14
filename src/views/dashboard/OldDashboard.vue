@@ -69,6 +69,7 @@
               :is-item-as-handler="true"
               :use-external-done="true"
               @toggle-timer="trackStore.setCurrentTask($event, true)"
+              @selected="trackStore.setCurrentTask"
               @change="handleDragChanges"
               @clone="onClone"
               @deleted="destroyTask"
