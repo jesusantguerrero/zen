@@ -72,12 +72,16 @@
           <slot name="append-actions" />
         </div>
 
-        <ElDropdown trigger="click" @command="handleCommand" v-if="showControls" :disabled="isDisabled" @click.prevent="">
-          <div class="px-2 py-1 text-sm text-gray-400 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-50 focus:outline-none hover:text-gray-600" :title="isDisabled? 'Can updates tasks when timer is running' : ''" @click.stop="">
-            <i class="fa fa-ellipsis-v"></i>
-          </div>
+        <ElDropdown trigger="click" @command="handleCommand" v-if="showControls && !isDisabled" :disabled="isDisabled" @click.stop>
+          <button 
+            class="px-2 py-1 text-sm text-gray-400 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-50 focus:outline-none hover:text-gray-600" 
+            :title="isDisabled? 'Can updates tasks when timer is running' : ''" 
+            @click.prevent.self
+          >
+            <i class="fa fa-ellipsis-v"></i> {{ isDisabled }}
+          </button>
           <template #dropdown>
-            <ElDropdownMenu>
+            <el-dropdown-menu>
               <ElDropdownItem command="edit" icon="el-icon-edit">Edit</ElDropdownItem>
               <ElDropdownItem command="delete" icon="el-icon-delete">Delete </ElDropdownItem>
               <ElDropdownItem command="done" icon="el-icon-check" v-if="!task.done"> Mark as done </ElDropdownItem>
@@ -86,7 +90,7 @@
               <ElDropdownItem command="toggle-key" icon="el-icon-s-flag" v-if="task.matrix=='todo'"> Key task </ElDropdownItem>
               <ElDropdownItem command="up" icon="el-icon-arrow-left" v-if="task.matrix=='schedule'">Move to todo</ElDropdownItem>
               <ElDropdownItem command="down" icon="el-icon-arrow-right" v-if="task.matrix=='todo'">Move to schedule</ElDropdownItem>
-            </ElDropdownMenu>
+            </el-dropdown-menu>
           </template>
       </ElDropdown>
       </div>
@@ -109,8 +113,9 @@
         </div>
       </button>
 
-      <div class="flex justify-end w-full">
+      <div class="flex justify-end w-full h-4" >
           <TagsSelect
+            v-if="!isDisabled"
             v-model="task.tags"
             :tags="tags"
             :multiple="true" 
@@ -142,7 +147,7 @@
 
 <script>
 import { toRefs, computed, reactive } from "vue"
-import { ElDropdown, ElDropdownMenu, ElNotification } from "element-plus";
+import { ElDropdown, ElDropdownItem, ElDropdownMenu, ElNotification } from "element-plus";
 import ChecklistContainer from "../organisms/ListContainer.vue"
 import PersonSelect from "../atoms/PersonSelect.vue"
 import TagsSelect from "../atoms/TagsSelect.vue"
@@ -160,7 +165,8 @@ export default {
     DateSelect,
     TimeTrackerButton,
     ElDropdown,
-    ElDropdownMenu
+    ElDropdownMenu,
+    ElDropdownItem
 },
   props: {
     task: Object,
@@ -191,7 +197,7 @@ export default {
     'toggle-timer': Object
   },
   setup(props, { emit }) {
-    const { task, currentTask, currentTimer} = toRefs(props)
+    const { task, currentTask, currentTimer } = toRefs(props)
     const state = reactive({
       timeTrackedLabel: computed(() => {
         const durationMs = task.value.duration_ms;
