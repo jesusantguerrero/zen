@@ -52,7 +52,7 @@ export function useTrackFirestore() {
     }
 
     const getAllTracksOfTask = async (taskId: string) => {
-        if (firebaseState.user) return;
+        if (!firebaseState.user) return;
         const tracks: ITrack[] = [];
         await db.collection('tracks').where(
             'task_uid', '==', taskId 

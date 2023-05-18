@@ -58,6 +58,8 @@ export function useTaskFirestore() {
         if (!task.order || task.order < 0) {
             task.order = 0
         }
+
+        console.log("saved task with: ", task);
         return trackRef
         .update(taskConverter.toFirestore(task), { merge: true })
         .then(() => {

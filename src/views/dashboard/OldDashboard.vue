@@ -186,7 +186,6 @@ import CardButton from "@/components/molecules/CardButton.vue";
 import SummaryAside from "@/components/templates/SummaryAside.vue";
 
 import { useTaskFirestore, ITask } from "@/utils/useTaskFirestore";
-import { useTrackFirestore } from "@/utils/useTrackFirestore";
 import { firebaseState, registerEvent, updateSettings } from "@/utils/useFirebase";
 import { useFuseSearch, useSearchOptions } from "@/utils/useFuseSearch";
 import { startFireworks } from "@/utils/useConfetti";
@@ -205,7 +204,6 @@ const {
   getCommittedTasks,
   updateTaskBatch,
 } = useTaskFirestore();
-const { getAllTracksOfTask } = useTrackFirestore();
 
 nextTick(() => {});
 // state and ui

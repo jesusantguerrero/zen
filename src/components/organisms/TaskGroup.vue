@@ -16,7 +16,7 @@
 
       <slot name="addForm"></slot>
       <slot name="content">
-        <el-collapse-transition>
+        <ElCollapseTransition>
           <div class="w-full list-group ic-scroller" ref="listGroup"  v-show="isExpanded">
             <draggable
               class="dragArea"
@@ -59,7 +59,7 @@
             </draggable>
             <slot name="empty" v-if="!tasks.length"></slot>
           </div>
-        </el-collapse-transition>
+        </ElCollapseTransition>
       </slot>
   </div>
 </template>

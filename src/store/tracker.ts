@@ -13,35 +13,42 @@ export const useTrackerStore = defineStore('tracker', () => {
 const currentTimer = ref<Partial<ITrack>>({})
 const timerSubtype = ref<string|null>(null)
 const currentTask = ref<Partial<ITask>>({});
+const currentTaskTracks = ref<ITrack[]>([]);
 const isRunning = ref(false);
 
 const toggleTracker = (autoplay: boolean) => {
   isRunning.value = autoplay;
-  console.log("here we go")
 }
 
 const setCurrentTask = (task: Partial<ITask>, autoplay: boolean = false) => {
-  currentTask.value = toValue(task);
+  if (currentTask.value?.uid !== task?.uid) {
+    currentTask.value = toValue(task);
+    setTracksForCurrentTask()
+  }
   if (autoplay) {
     toggleTracker(autoplay) 
   }
 };
 
 const updateTaskTracks = (tracks: ITrack[]) => {
-  currentTask.value.tracks = tracks;
+  currentTask.value.tracks = tracks.map(track => {
+    track.date_f = track.created_at.toDate()
+    return track;
+  }) || [];
+  currentTaskTracks.value = tracks;
 }
 
 const onTrackAdded = (taskUid: string, newTrack: any) => {
   if (!currentTask.value || !Object.keys(currentTask.value)) return;
   
-  currentTask.value.tracks?.push(newTrack);
-  const savedTime = timeReducer(currentTask.value.tracks);
+  const oldTracks = currentTaskTracks.value ?? [];
+  const savedTime = timeReducer([...(oldTracks), newTrack]);
   if (savedTime) {
-    const timeFormatted = formatDurationFromMs(savedTime);
+    const timeFormatted = formatDurationFromMs(savedTime).toFormat("hh:mm:ss");
     nextTick(() => {
       updateTask({
         uid: taskUid,
-        duration_ms: timeFormatted.toFormat("hh:mm:ss"),
+        duration_ms: timeFormatted,
         duration: savedTime,
         last_tracked_at: newTrack.started_at,
         ...(newTrack.end_at ? {
@@ -56,21 +63,19 @@ watch(() => firebaseState.user, async (user) => {
     try {
       currentTimer.value = await getRunningTrack() || {}
     } catch(err) {
-      console.log(err)
+      console.error(err)
     }
   }
 }, { immediate: true, deep: true })
 
-
-watch(() => currentTask.value, (task) => {
-  if (task.uid) {
-    getAllTracksOfTask(task.uid).then((tracks) => {
-      if (tracks && tracks.length) {
-        updateTaskTracks(tracks)
-      }
-    });
-  }
-});
+const setTracksForCurrentTask = () => {
+  if (!currentTask.value?.uid) return
+  getAllTracksOfTask(currentTask.value?.uid).then((tracks) => {
+    if (tracks && tracks.length) {
+      updateTaskTracks(tracks)
+    }
+  });
+}
 
   return {
       currentTask,

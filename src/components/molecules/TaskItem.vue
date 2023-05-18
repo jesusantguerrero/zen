@@ -72,23 +72,23 @@
           <slot name="append-actions" />
         </div>
 
-        <el-dropdown trigger="click" @command="handleCommand" v-if="showControls" :disabled="isDisabled" @click.stop="">
+        <ElDropdown trigger="click" @command="handleCommand" v-if="showControls" :disabled="isDisabled" @click.prevent="">
           <div class="px-2 py-1 text-sm text-gray-400 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-50 focus:outline-none hover:text-gray-600" :title="isDisabled? 'Can updates tasks when timer is running' : ''" @click.stop="">
             <i class="fa fa-ellipsis-v"></i>
           </div>
           <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item command="edit" icon="el-icon-edit">Edit</el-dropdown-item>
-              <el-dropdown-item command="delete" icon="el-icon-delete">Delete </el-dropdown-item>
-              <el-dropdown-item command="done" icon="el-icon-check" v-if="!task.done"> Mark as done </el-dropdown-item>
-              <el-dropdown-item command="undo" icon="el-icon-refresh-left" v-else> undo </el-dropdown-item>
-              <el-dropdown-item command="clone" icon="el-icon-document-copy"> Duplicate </el-dropdown-item>
-              <el-dropdown-item command="toggle-key" icon="el-icon-s-flag" v-if="task.matrix=='todo'"> Key task </el-dropdown-item>
-              <el-dropdown-item command="up" icon="el-icon-arrow-left" v-if="task.matrix=='schedule'">Move to todo</el-dropdown-item>
-              <el-dropdown-item command="down" icon="el-icon-arrow-right" v-if="task.matrix=='todo'">Move to schedule</el-dropdown-item>
-            </el-dropdown-menu>
+            <ElDropdownMenu>
+              <ElDropdownItem command="edit" icon="el-icon-edit">Edit</ElDropdownItem>
+              <ElDropdownItem command="delete" icon="el-icon-delete">Delete </ElDropdownItem>
+              <ElDropdownItem command="done" icon="el-icon-check" v-if="!task.done"> Mark as done </ElDropdownItem>
+              <ElDropdownItem command="undo" icon="el-icon-refresh-left" v-else> undo </ElDropdownItem>
+              <ElDropdownItem command="clone" icon="el-icon-document-copy"> Duplicate </ElDropdownItem>
+              <ElDropdownItem command="toggle-key" icon="el-icon-s-flag" v-if="task.matrix=='todo'"> Key task </ElDropdownItem>
+              <ElDropdownItem command="up" icon="el-icon-arrow-left" v-if="task.matrix=='schedule'">Move to todo</ElDropdownItem>
+              <ElDropdownItem command="down" icon="el-icon-arrow-right" v-if="task.matrix=='todo'">Move to schedule</ElDropdownItem>
+            </ElDropdownMenu>
           </template>
-      </el-dropdown>
+      </ElDropdown>
       </div>
     </div>
 
@@ -110,7 +110,7 @@
       </button>
 
       <div class="flex justify-end w-full">
-          <tags-select
+          <TagsSelect
             v-model="task.tags"
             :tags="tags"
             :multiple="true" 
@@ -122,7 +122,7 @@
     </div>
 
     <!-- Item body -->
-    <el-collapse-transition>
+    <ElCollapseTransition>
       <div class="task-item__body" v-show="isExpanded">
         <div
           class="pt-2 text-left whitespace-pre-line task-item__description" 
@@ -131,10 +131,10 @@
           v-html="task.description"
         />
         <div class="mt-5 task-item__checklist">
-          <checklist-container :items="task.checklist" :task="task"  @updated="updateItems"></checklist-container>
+          <ChecklistContainer :items="task.checklist" :task="task"  @updated="updateItems"></ChecklistContainer>
         </div>
       </div>
-    </el-collapse-transition>
+    </ElCollapseTransition>
     <!-- /item body -->
   </div>
 
@@ -142,7 +142,7 @@
 
 <script>
 import { toRefs, computed, reactive } from "vue"
-import { ElNotification } from "element-plus";
+import { ElDropdown, ElDropdownMenu, ElNotification } from "element-plus";
 import ChecklistContainer from "../organisms/ListContainer.vue"
 import PersonSelect from "../atoms/PersonSelect.vue"
 import TagsSelect from "../atoms/TagsSelect.vue"
@@ -158,8 +158,10 @@ export default {
     PersonSelect,
     TagsSelect,
     DateSelect,
-    TimeTrackerButton
-  },
+    TimeTrackerButton,
+    ElDropdown,
+    ElDropdownMenu
+},
   props: {
     task: Object,
     type: String,
