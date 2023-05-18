@@ -40,9 +40,8 @@ const updateTaskTracks = (tracks: ITrack[]) => {
 
 const onTrackAdded = (taskUid: string, newTrack: any) => {
   if (!currentTask.value || !Object.keys(currentTask.value)) return;
-  
-  const oldTracks = currentTaskTracks.value ?? [];
-  const savedTime = timeReducer([...(oldTracks), newTrack]);
+  currentTask.value.tracks?.push(newTrack);
+  const savedTime = timeReducer(currentTask.value.tracks ?? []);
   if (savedTime) {
     const timeFormatted = formatDurationFromMs(savedTime).toFormat("hh:mm:ss");
     nextTick(() => {

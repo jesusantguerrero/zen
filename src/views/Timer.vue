@@ -64,7 +64,7 @@ const state: any = reactive({
 })
 
 // tracked tasks
-const  { getTracksByDates, syncTempoTracks, deleteTrack, getTempoTracksByDates } = useTrackFirestore()
+const  { getTracksByDates, syncTempoTracks, deleteTrack, getTempoTracksByDates, deleteBatch } = useTrackFirestore()
 const fetchTracked = (date: Date) => {
   return getTracksByDates(date).then(trackedRef => {
     state.firebaseRefs['tracked'] = trackedRef.onSnapshot( snap => {
@@ -362,20 +362,29 @@ const getDurationInGroups = (tracksInDate: Record<string, any>) => {
 return getDurationOfTracks(state.tracked)
 }
 
-const onDeleteItem = async (track: ITrack) => {
+const onDeleteItem = async (tracks: ITrack|ITrack[]) => {
   const canDelete = await ElMessageBox.confirm(
         "Are you sure you want to delete this task?",
         "Delete Task"
       );
   if (canDelete) {
-    console.log(track);
-    deleteTrack(track).then(() => {
-      ElNotification({
-        type: "success",
-        message: "Task deleted",
-        title: "Task deleted",
+    if (Array.isArray(tracks)) {
+      deleteBatch(tracks).then(() => {
+        ElNotification({
+          type: "success",
+          message: "Task deleted",
+          title: "Task deleted",
+        })
       });
-    });
+    } else {
+      deleteTrack(tracks).then(() => {
+        ElNotification({
+          type: "success",
+          message: "Task deleted",
+          title: "Task deleted",
+        });
+      });
+    }
   }
 }
 </script>
@@ -440,6 +449,9 @@ const onDeleteItem = async (track: ITrack) => {
             <template #actions-append>
               <button title="sync as group" :disabled="track.isLoading" @click="syncAsGroup(track)">
                 <i class="fa fa-th-list" />
+              </button>
+              <button v-if="track?.tracks" @click="onDeleteItem(track.tracks)" class="opacity-0 ml-2 play-button group-hover:opacity-100 hover:text-red-400">
+                <i class="fa fa-trash" />
               </button>
             </template>
           </TimeTrackerGroup>
