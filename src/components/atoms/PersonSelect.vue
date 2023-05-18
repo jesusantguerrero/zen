@@ -4,6 +4,7 @@
             v-model="state.isOpen"
             placement="bottom-end"
             popper-class='tag-select'
+            trigger="click"
             :width="240"
             :show-arrow="false"
             @after-enter="focusInput()"

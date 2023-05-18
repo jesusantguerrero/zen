@@ -9,13 +9,6 @@
           <div class="flex items-center text-2xl font-bold text-gray-400 md:block dark:text-gray-300">
             <h1 class="inline-block"> Dashboard </h1>
           </div>
-
-          <TimeTracker 
-            :task="currentTask" 
-            ref="timeTrackerRef"
-            v-model:currentTimer="currentTimer"
-            @track-added="onTrackAdded"
-          />
         </header>
         <section class="flex justify-between mt-5">
           <div v-if="!state.showAdd" class="h-10">
@@ -71,16 +64,16 @@
               :tasks="filteredTodos"
               :show-select="true"
               :show-controls="true"
-              :current-task="currentTask"
-              :current-timer="currentTimer"
+              :current-task="trackStore.currentTask"
+              :current-timer="trackStore.currentTimer"
               :is-item-as-handler="true"
               :use-external-done="true"
-              @toggle-timer="setCurrentTask($event, true)"
+              @toggle-timer="trackStore.setCurrentTask($event, true)"
+              @selected="trackStore.setCurrentTask"
               @change="handleDragChanges"
               @clone="onClone"
               @deleted="destroyTask"
               @edited="setTaskToEdit"
-              @selected="setCurrentTask"
               @done="onDone"
               @down="moveTo($event, 'schedule')"
             />
@@ -129,12 +122,10 @@
               <SummaryAside 
                 class="-mt-4"
                 :matrix="matrix"
-                :standup="state.standup"
-                :is-loaded="state.tasksLoaded"
               />
             </section>
            
-            <TaskTrackView :task="currentTask" :current-timer="currentTimer" />
+            <TaskTrackView :task="trackStore.currentTask" :current-timer="trackStore.currentTimer" />
 
             <StandupYWidget
               :committed="state.committed"
@@ -195,9 +186,6 @@ import CardButton from "@/components/molecules/CardButton.vue";
 import SummaryAside from "@/components/templates/SummaryAside.vue";
 
 import { useTaskFirestore, ITask } from "@/utils/useTaskFirestore";
-import { useTrackFirestore } from "@/utils/useTrackFirestore";
-import { timeReducer} from "@/utils/useTracker";
-import { formatDurationFromMs } from "@/utils/useDateTime";
 import { firebaseState, registerEvent, updateSettings } from "@/utils/useFirebase";
 import { useFuseSearch, useSearchOptions } from "@/utils/useFuseSearch";
 import { startFireworks } from "@/utils/useConfetti";
@@ -206,6 +194,7 @@ import { useMagicKeys } from "@vueuse/core";
 import { computed } from "@vue/reactivity";
 import { startOfYesterday } from "date-fns";
 import StandupYWidget from "@/components/templates/StandupYWidget.vue";
+import { useTrackerStore } from "@/store/tracker";
 
 const {
   saveTask,
@@ -215,12 +204,12 @@ const {
   getCommittedTasks,
   updateTaskBatch,
 } = useTaskFirestore();
-const { getAllTracksOfTask } = useTrackFirestore();
 
 nextTick(() => {});
 // state and ui
 const state = reactive({
   committed: [], 
+  committedRef: null, 
   showReminder: false,
   isWelcomeOpen: false,
   isTaskModalOpen: false,
@@ -299,20 +288,13 @@ const { filteredList: filteredSchedule } = useFuseSearch(searchText, schedule, s
 const { filteredList: filteredTodos } = useFuseSearch(searchText, todo, selectedTags);
 
 // Current task
-const currentTask = ref<ITask>({} as ITask);
 const timeTrackerRef = ref();
-const setCurrentTask = (task: any, autoplay = false) => {
-  currentTask.value = task;
-  if (autoplay) {
-    nextTick(() => {
-      timeTrackerRef.value?.togglePlay()
-    })
-  }
-};
+const trackStore = useTrackerStore()
+
 const onClone = (task: ITask) => {
   // @ts-ignore
   const data = matrix.todo.list.sort( (a, b) => a.created_at.toDate() < b.created_at.toDate() ? 1 : -1);
-  setCurrentTask(data[0]);
+  trackStore.setCurrentTask(data[0]);
 }
 
 // Edit task
@@ -329,55 +311,26 @@ const onEditedTask = (task: ITask) => {
   taskToEdit.value = null;
 };
 
-watch(currentTask, () => {
-  if (currentTask.value.uid) {
-    getAllTracksOfTask(currentTask.value.uid).then((tracks) => {
-      currentTask.value.tracks = tracks.map(track => {
-        track.date_f = track.created_at.toDate()
-        return track;
-      }) || [];
-    });
-  }
-});
-
-const onTrackAdded = (taskUid: string, newTrack: any) => {
-  if (!Object.keys(currentTask.value)) return;
-  currentTask.value.tracks.push(newTrack);
-  const savedTime = timeReducer(currentTask.value.tracks);
-  if (savedTime) {
-    const timeFormatted = formatDurationFromMs(savedTime);
-    nextTick(() => {
-      updateTask({
-        uid: taskUid,
-        duration_ms: timeFormatted.toFormat("hh:mm:ss"),
-        duration: savedTime
-      })
-    })
-  }
-}
 const onDone = (task: ITask) => {
   task.tracks = [];
   delete task.duration_ms;
 
   updateTask(task).then(() => {
-    if (state.todo.length) {
-      currentTask.value = state.todo[0];
+    if (matrix.todo.list.length) {
+      trackStore.setCurrentTask(matrix.todo.list[0])
       updateSettings({
-        last_task_uid: currentTask.value?.uid,
+        last_task_uid: trackStore.currentTask?.uid,
       });
     } else {
-      currentTask.value = {} as ITask;
+      trackStore.setCurrentTask({})
     }
     startFireworks();
   });
 };
 
 const onRemoved = () => {
-  currentTask.value = {} as ITask;
+  trackStore.setCurrentTask({});
 };
-
-// Timer
-const currentTimer = ref({});
 
 const initialize = () => {
   // Tasks manipulation
@@ -389,7 +342,7 @@ const initialize = () => {
   })
 
   getCommittedTasks(startOfYesterday()).then((committedRef) => {
-    state.committed.ref = committedRef.onSnapshot((snap) => {
+    state.committedRef = committedRef.onSnapshot((snap) => {
       const list: ITask[] = [];
       snap.forEach((doc) => {
         list.push({ ...doc.data(), uid: doc.id });
@@ -408,9 +361,9 @@ onUnmounted(() => {
     }
   });
 
-  // if (state.committed.ref) {
-  //   state.committed.ref();
-  // }
+  if (state.committedRef) {
+    state.committedRef();
+  }
 });
 
 const addTask = async (task: ITask) => {
@@ -430,7 +383,7 @@ const destroyTask = async (task: ITask) => {
         (localTask) => task.uid != localTask.uid
       );
 
-      if (task.uid == currentTask.value?.uid) {
+      if (task.uid == trackStore.currentTask?.uid) {
         onRemoved();
       }
 

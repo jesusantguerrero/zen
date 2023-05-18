@@ -52,7 +52,7 @@ export function useTrackFirestore() {
     }
 
     const getAllTracksOfTask = async (taskId: string) => {
-        if (firebaseState.user) return;
+        if (!firebaseState.user) return;
         const tracks: ITrack[] = [];
         await db.collection('tracks').where(
             'task_uid', '==', taskId 
@@ -119,7 +119,7 @@ export function useTrackFirestore() {
         })
     }
 
-    const getRunningTracks = async () => {
+    const getUnfinished = async () => {
         const tracks: any[] = [];
         const myDate = new Date(2022, 6, 10)
         await db.collection('tracks')
@@ -137,6 +137,25 @@ export function useTrackFirestore() {
         return tracks;
     }
 
+    const getRunningTrack = async () => {
+        const myDate = new Date(2022, 6, 10)
+        const ref =  await db.collection('tracks')
+        .where('ended_at', '==', null)
+        .where("user_uid", "==", firebaseState.user?.uid)
+        .where('started_at', ">=", myDate)
+        .limitToLast(1)
+        .orderBy('started_at')
+        .get()
+        .then(q => {
+            return q.size && q.docs.at(0) ? {
+                ...q.docs.at(0)?.data(), 
+                started_at: q.docs.at(0)?.data().started_at.toDate(), 
+                uid: q.docs.at(0)?.id 
+            } as ITrack: {};
+        })
+        return ref
+    }
+
     return {
         saveTrack,
         deleteTrack,
@@ -146,8 +165,9 @@ export function useTrackFirestore() {
         getTracksByDates,
         syncTempoTracks,
         getTempoTracksByDates,
-        getRunningTracks,
-        deleteBatch
+        getUnfinished,
+        deleteBatch,
+        getRunningTrack
     }
 
 }

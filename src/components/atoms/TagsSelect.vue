@@ -1,6 +1,7 @@
 <template>
     <div class="flex items-center justify-center tag-select">
         <el-popover
+            trigger="click"
             v-model="state.isOpen"
             placement="bottom-end"
             popper-class='tag-select dark:bg-gray-900 dark:text-gray-300'

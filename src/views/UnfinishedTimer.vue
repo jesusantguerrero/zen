@@ -51,9 +51,9 @@ const state: any = reactive({
 })
 
 // tracked tasks
-const  { getRunningTracks, syncTempoTracks, deleteBatch } = useTrackFirestore()
+const  { getUnfinished, syncTempoTracks, deleteBatch } = useTrackFirestore()
 const fetchUnfinished = async () => {
-  const data = await getRunningTracks();
+  const data = await getUnfinished();
   state.tracked = data;
 
 }

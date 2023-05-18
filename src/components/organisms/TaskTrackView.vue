@@ -10,13 +10,12 @@
 
       <div class="items-center ml-5 text-gray-400 sessions md:flex md:text-2xl">
         <div v-if="task.title" class="md:flex">
-          Totals: 
           <span class="ml-2 font-bold">{{ timeTracked }} </span> 
-          <div class="mx-2 font-bold" v-if="!hideSessions">{{ task.tracks && task.tracks.length }} Sessions</div>
+          <div class="mx-2 font-bold" v-if="!hideSessions">{{ task.tracks && task.tracks.length }}x</div>
         </div>
         
-        <div v-else class="text-lg">
-          ({{ totalTimeToday }})
+        <div class="text-lg">
+          (Tracked today: {{ totalTimeToday }})
         </div>
       </div>
   </div>
