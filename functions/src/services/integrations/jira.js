@@ -1,5 +1,5 @@
 const integrations = require("./index");
-const { default: config } = require("../../config")
+const { default: config } = require("../../../config")
 const admin = require('firebase-admin');
 const axios = require('axios');
 const TOKEN_ENDPOINT = "https://auth.atlassian.com/oauth/token";

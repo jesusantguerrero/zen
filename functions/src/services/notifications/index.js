@@ -1,9 +1,9 @@
 const admin = require('firebase-admin');
 const functions = require("firebase-functions");
 const { format } = require('date-fns');
-const { getUserSettings } = require("../../utils");
+const { getUserSettings, setUserSettings } = require("../../utils");
 const { notificationWorkers } = require('../../utils/notificationWorkers');
-
+const { execReminders, runDailyNotifications } = require('../../utils/notifications');
 exports.dailyNotifications = functions.https.onCall(async(_data, context) => {
     const user = await getUserSettings(context.auth.uid);
     const now = admin.firestore.Timestamp.now().toDate();
@@ -18,7 +18,8 @@ exports.dailyNotifications = functions.https.onCall(async(_data, context) => {
 })
 
 exports.taskReminderNotifications = functions.runWith({ memory: "2GB" }).pubsub.schedule("* * * * *").onRun(async () => {
-    return execReminders().catch((err) => {
+    return execReminders()
+    .catch((err) => {
         console.log((JSON.stringify({
             error: {
             id: 'unable-to-send-messages',
