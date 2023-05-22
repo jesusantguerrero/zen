@@ -22,12 +22,12 @@
     </div>
     <div class="flex items-center mt-5 integrations" @click.prevent="handleGoogleConnect">
       <a href="javascript;;" class="inline-block w-48"> 
-        <icon-github-logo class="text-4xl"/>
+        Google
       </a>
       <a href="javascript;;" class="inline-block w-48 ml-5"> 
-        <button class="px-2 py-2 text-white bg-gray-600 rounded-md focus:outline-none hover:bg-opacity-75"> {{
-          state.githubText
-        }} </button>
+        <button class="px-2 py-2 text-white bg-gray-600 rounded-md focus:outline-none hover:bg-opacity-75"> 
+          {{ state.googleText}} 
+        </button>
       </a>
     </div>
   </div>
@@ -56,6 +56,9 @@ const state = reactive({
   jiraText: computed(() => {
     return state.hasJira ? 'Disconnect from Jira' : 'Connect with Jira'
   }),
+  googleText: computed(() => {
+    return state.hasJira ? 'Disconnect from Google' : 'Connect with Google'
+  }),
 })
 
 const connectJira = computed(() => {
@@ -76,7 +79,7 @@ const handleGoogleConnect = () => {
     functions.httpsCallable('requestAccess')({
       userId: firebaseState.user.uid,
       ...credentials,
-      service: 'googleCalendar'
+      service: 'google'
     })
   })
 }

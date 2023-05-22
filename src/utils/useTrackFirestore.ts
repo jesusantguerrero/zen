@@ -1,7 +1,6 @@
-// @ts-expect-error: no definitions for  luzon
-import { DateTime } from "luxon";
+import { DateTime, Duration } from "luxon";
 import { db, firebaseState } from "./useFirebase";
-import { addSeconds, parseISO } from "date-fns";
+import { addSeconds, isBefore, parseISO } from "date-fns";
 
 export interface ITrack {
     uid: string;
@@ -10,6 +9,7 @@ export interface ITrack {
     ended_at: Date;
     description: string;
     billable?: boolean;
+    target_time: string;
     labels?: {
       title: string;
     }[];
@@ -147,11 +147,26 @@ export function useTrackFirestore() {
         .orderBy('started_at')
         .get()
         .then(q => {
-            return q.size && q.docs.at(0) ? {
+            const currentTrack: Partial<ITrack> = q.size && q.docs.at(0) ? {
                 ...q.docs.at(0)?.data(), 
                 started_at: q.docs.at(0)?.data().started_at.toDate(), 
                 uid: q.docs.at(0)?.id 
             } as ITrack: {};
+
+            if (currentTrack?.started_at && currentTrack.target_time) {
+               const targetTime = DateTime.fromJSDate(currentTrack.started_at).plus(Duration.fromISO(currentTrack.target_time));
+               if (isBefore(targetTime, new Date())) {
+                   return currentTrack  
+                } else {
+                    updateTrack({
+                        ...currentTrack,
+                        ended_at: targetTime.toJSDate(),
+                        toConfirm: true,
+                    })
+                    return {}
+                }  
+            }
+            return {}
         })
         return ref
     }
