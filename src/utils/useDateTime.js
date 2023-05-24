@@ -7,15 +7,15 @@ export const formatDurationFromMs = (ms) => {
 }
 
 export const getDurationOfTracks = (tracks) => {
- 
     const milliseconds = tracks.reduce((total, track) => {
-      if (track.ended_at) {
-        return total + track.duration_ms
-      }
-      return total;
+        if (track.ended_at && track.duration_ms) {
+        return total + (track.duration_ms ?? 0)
+        }
+        return total;
     }, 0) ?? 0
     
     return formatDurationFromMs(milliseconds).toFormat('hh:mm:ss')
+   
 }
 
 export function useDateTime(dateRef) {
