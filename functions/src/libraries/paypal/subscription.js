@@ -1,5 +1,4 @@
 const { DateTime } = require("luxon");
-const { default: ApiContext } = require("./apiContext");
 const ENDPOINT = "billing/subscriptions";
 
 exports.default = class Subscription {

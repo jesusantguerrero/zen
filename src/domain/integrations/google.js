@@ -7,7 +7,7 @@ export const connectGoogle = async (callback) => {
                 apiKey: config.GOOGLE_APP_KEY,
                 clientId: config.GOOGLE_APP_CLIENT,
                 accessType: "offline",
-                scope: `profile https://www.googleapis.com/auth/calendar.readonly`,
+                scope: `profile https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/spreadsheets.readonly`,
                 discoveryDocs: [
                     "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
                     "https://sheets.googleapis.com/discovery/rest?version=v4"
