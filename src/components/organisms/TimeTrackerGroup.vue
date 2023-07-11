@@ -11,6 +11,7 @@ const emit = defineEmits<{
   deleteGroup: [tracks: ITrack[]];
   resumeTimer: [track: ITrack ];
   toggleSelect: [state: boolean];
+  editTrack: [track: ITrack]
   updated: [track: ITrack]
 }>();
 
@@ -118,6 +119,7 @@ const onResumeTimer = () => {
                     :is-child="timeEntry.tracks.length > 1"
                     :time-entry="track"
                     :key="track.uid"
+                    @edit="emit('editTrack', track)"
                     @deleteItem="emit('deleteItem', $event)"
                     @updated="emit('updated', $event)"
                 />

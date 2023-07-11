@@ -107,11 +107,25 @@ export function useTaskFirestore() {
         })
     }
 
-    const deleteTask = (task) => {
+    const deleteTask = (task: ITask) => {
         return db.collection(collectionName).doc(task.uid).delete()
         .catch(function(error) {
             console.error("Error adding document: ", error);
         });
+    }
+
+    const getTaskById = async (uid: string) => {
+        let task = null;
+        console.log("The task uid is", uid);
+        await db.collection(collectionName).doc(uid)
+        .withConverter(taskConverter)
+        .get().then(doc => {
+            task = {...doc.data(), uid: doc.id };
+        })
+
+        console.log("The task is: ", task);
+
+        return task;
     }
 
     const getAllFromUser = async (where = {}) => {
@@ -234,5 +248,6 @@ export function useTaskFirestore() {
         getAllFromUser,
         saveTaskBatch,
         getMatrix,
+        getTaskById
     }
 }

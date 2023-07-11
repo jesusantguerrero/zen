@@ -3,7 +3,12 @@ import { DateTime, Duration } from "luxon";
 import { computed, ref} from "vue";
 
 export const formatDurationFromMs = (ms) => {
-    return Duration.fromMillis(ms)
+    try {
+        return Duration.fromMillis(ms)
+    } catch (err) {
+        console.log(ms)
+        return 0
+    }
 }
 
 export const getDurationOfTracks = (tracks) => {

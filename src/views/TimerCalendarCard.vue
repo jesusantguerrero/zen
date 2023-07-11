@@ -17,7 +17,7 @@ const props = defineProps<{
       :width="310"
     >  
       <template #reference>
-        <section class="relative">
+        <section class="relative" :class="{'border border-green-400': !event.duration_ms}">
           <button 
             class="absolute top-0 right-0 w-4 h-4 bg-green-400 rounded-full" 
             @click.stop="$emit('sync-tempo', event)"
@@ -26,7 +26,7 @@ const props = defineProps<{
           >
             <IMdiSync />
           </button>
-          <div class="vuecal__event-title" v-html="event.title" />
+          <div class="vuecal__event-title text-xs" v-html="event.title" />
       
           <small class="vuecal__event-time">
             <!-- Using Vue Cal Date prototypes (activated by default) -->

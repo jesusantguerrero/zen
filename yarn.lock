@@ -847,6 +847,11 @@
   "resolved" "https://registry.npmjs.org/@types/long/-/long-4.0.2.tgz"
   "version" "4.0.2"
 
+"@types/luxon@^3.3.0":
+  "integrity" "sha512-uKRI5QORDnrGFYgcdAVnHvEIvEZ8noTpP/Bg+HeUzZghwinDlIS87DEenV5r1YoOF9G4x600YsUXLWZ19rmTmg=="
+  "resolved" "https://registry.npmjs.org/@types/luxon/-/luxon-3.3.0.tgz"
+  "version" "3.3.0"
+
 "@types/markdown-it@^12.2.3":
   "integrity" "sha512-GKMHFfv3458yYy+v/N8gjufHO6MSZKCOXpZc5GXIWWy8uldwfmPn98vp81gZ5f9SVw8YYBctgfJ22a2d7AOMeQ=="
   "resolved" "https://registry.npmjs.org/@types/markdown-it/-/markdown-it-12.2.3.tgz"
