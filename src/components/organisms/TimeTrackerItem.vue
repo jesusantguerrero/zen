@@ -2,12 +2,13 @@
 // @ts-expect-error: no tyoes for this lib
 import Duration from "duration";
 import { computed, reactive } from "vue";
-import { durationFromMs } from "../../utils/useTracker"
+import { durationFromMs, formatDateToTime } from "../../utils/useTracker"
 import { ITrack } from "@/utils/useTrackFirestore";
 
 
 const emit = defineEmits<{
   deleteItem: [track: ITrack];
+  editItem: [track: ITrack];
   resumeTimer: [track: ITrack ]
 }>();
 
@@ -140,15 +141,12 @@ const setDates = (startDate: Date, endDate: Date) => {
       </div>
       <div class="flex w-2/5 ml-auto">
         <div class="flex time-tracker__controls ">
-          <ElDatePicker
-            :model-value="[timeEntry.started_at, timeEntry.ended_at]"
-            range-separator="-"
-            type="datetimerange"
-            start-placeholder="Start date"
-            end-placeholder="End date"
-            size="large"
-            @calendar-change="setDates"
-          />
+          <span disabled class="flex items-center px-2 rounded-md cursor-pointer start-dates hover:bg-gray-100"
+          @click="emit('editItem', timeEntry)"
+          >
+            {{ formatDateToTime(timeEntry.started_at) }} -
+            {{ formatDateToTime(timeEntry.ended_at) }}
+          </span>
 
           <input
             type="text"
