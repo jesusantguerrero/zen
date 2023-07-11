@@ -25,11 +25,14 @@
             <div>
                 <AtDatePicker
                     v-model:date="date"
+                    v-model:end-date="endDate"
                     v-model:has-error="hasError"
                     @update:date="emitDate()"
+                    @update:enddate="emitEndDate()"
                     :shortcuts="shortcuts"
-                    :accept-time="false"
-                    :accept-recurrence="true"
+                    :accept-time="true"
+                    :accept-end-date="true"
+                    :accept-recurrence="false"
                 />
                 <ElPopover
                     v-if="acceptRecurrence"
@@ -77,6 +80,9 @@ export default defineComponent({
         modelValue: {
             type: [Date, String],
         },
+        to: {
+            type: [Date, String],
+        },
         placeholder: {
             type: String,
             default: 'date'
@@ -97,7 +103,8 @@ export default defineComponent({
         }
     },
     emits: {
-        'update:modelValue': Date
+        'update:modelValue': Date,
+        'update:to': Date
     },
     setup(props, { emit }) {
         const state = reactive({
@@ -123,14 +130,24 @@ export default defineComponent({
             }],
         })
         const date = ref(null)
+        const endDate = ref(null)
+
         const { humanDate , getDateFromString } = useDateTime(date);
 
         watch(() => props.modelValue, (value) => {
             date.value = typeof value == 'string' ? getDateFromString(value) : value
         }, { immediate: true })
+        
+        watch(() => props.to, (value) => {
+           console.log(props.to)
+            endDate.value = typeof value == 'string' ? getDateFromString(value) : value
+        }, { immediate: true })
 
         const emitDate = () => {
             emit('update:modelValue', date.value);
+        }
+        const emitEndDate = () => {
+            emit('update:to', endDate.value);
         }
 
         const input = ref(null)
@@ -171,9 +188,11 @@ export default defineComponent({
         return {
             ...toRefs(state),
             date,
+            endDate,
             humanDate,
             input,
             emitDate,
+            emitEndDate,
             focusInput,
             closeModal,
             isRecurrenceOpen,

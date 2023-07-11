@@ -15,6 +15,7 @@ export interface ITrack {
     }[];
     selected?: boolean;
 }
+
 export function useTrackFirestore() {
     const saveTrack = (track: Partial<ITrack>) => {
         return db.collection("tracks").add({
@@ -154,13 +155,13 @@ export function useTrackFirestore() {
             } as ITrack: {};
 
             if (currentTrack?.started_at && currentTrack.target_time) {
-               const targetTime = DateTime.fromJSDate(currentTrack.started_at).plus(Duration.fromISO(currentTrack.target_time));
-               if (isBefore(targetTime, new Date())) {
+               const targetTime = DateTime.fromJSDate(currentTrack.started_at).plus(Duration.fromISO(currentTrack.target_time)).toJSDate();
+               if (isBefore(new Date(), targetTime)) {
                    return currentTrack  
                 } else {
                     updateTrack({
                         ...currentTrack,
-                        ended_at: targetTime.toJSDate(),
+                        ended_at: targetTime,
                         toConfirm: true,
                     })
                     return {}

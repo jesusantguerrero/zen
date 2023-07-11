@@ -84,7 +84,7 @@ const syncTempoUpdate = async (event: any, autoUpdateTrack = true) => {
         message: 'Tempo tracks synced correctly'
       })
     })
-
+    
     const zenTrack = tracks.find( track => track.uid == event.uid)
     event.isLoading = false;
 
@@ -109,12 +109,12 @@ const hasTempo = (event: any) => {
 const getTotalTimeByDate = (date: Date) => {
   const milliseconds = tracks.reduce((total: number, track: any) => {
     if (format(date, 'yyyy-MM-dd') == format(track.started_at, "yyyy-MM-dd") && track.ended_at) {
-      return total + track.duration_ms
+      return total + (track.duration_ms ?? 0)
     }
     return total;
   }, 0) ?? 0
 
-  return formatDurationFromMs(milliseconds).toFormat('hh:mm:ss')
+  return formatDurationFromMs(milliseconds)?.toFormat?.('hh:mm:ss')
 }
 
 const events = computed(() => {

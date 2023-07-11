@@ -7,7 +7,7 @@ import { timeReducer } from '@/utils/useTracker';
 import { firebaseState } from "@/utils/useFirebase"
 
 const { getRunningTrack, getAllTracksOfTask } = useTrackFirestore();
-const { updateTask } = useTaskFirestore();
+const { updateTask, getTaskById } = useTaskFirestore();
 export const useTrackerStore = defineStore('tracker', () => {
 
 const currentTimer = ref<Partial<ITrack>>({})
@@ -61,6 +61,11 @@ watch(() => firebaseState.user, async (user) => {
   if (user) {
     try {
       currentTimer.value = await getRunningTrack() || {}
+      console.log(currentTimer.value)
+      if (currentTimer.value.task_uid) {
+        const task = await getTaskById(currentTimer.value.task_uid)
+        setCurrentTask(task)
+      }
     } catch(err) {
       console.error(err)
     }

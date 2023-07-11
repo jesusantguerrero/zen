@@ -1,40 +1,38 @@
 <template>
-  <div
-    class="text-center"
-  >
+  <div class="text-center">
     <div class="flex items-center justify-between text-2xl font-bold">
-      <div class="mr-2 text-sm"   :class="`${trackerMode.color} ${trackerMode.colorBorder}`" >
+      <div
+        class="mr-2 text-sm"
+        :class="`${trackerMode.color} ${trackerMode.colorBorder}`"
+      >
         {{ trackerMode.text }}
       </div>
-      <div 
+      <div
         class="flex items-center justify-center w-8 h-8 mr-2 rounded-full cursor-pointer"
         title="click here to start"
-        :class="`${trackerMode.color} ${trackerMode.colorBorder}`" 
+        :class="`${trackerMode.color} ${trackerMode.colorBorder}`"
         @click="toggleTracker"
       >
         <i class="text-3xl far fa-play" :class="trackerIcon"></i>
       </div>
-      <div
-        class="select-none"
-        :class="trackerMode.color"
-      >
+      <div class="select-none" :class="trackerMode.color">
         {{ currentTime }}
         <div class="flex w-full h-1">
           <div
             v-for="(stage, index) in promodoroTotal"
-            :title="`Round ${index+1}: ${stage.name}`"
+            :title="`Round ${index + 1}: ${stage.name}`"
             class="w-full h-1 mr-1 cursor-pointer bg-red hover:ring hover:ring-offset-1"
             :class="[state.currentStep >= stage.originalIndex ? currentStateColor : '']"
             :key="stage.name"
           ></div>
         </div>
-      </div>     
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, reactive, watch, ref} from "vue";
+import { computed, onBeforeUnmount, reactive, watch, ref } from "vue";
 import { Duration, Interval, DateTime } from "luxon";
 import { ITrack, useTrackFirestore } from "@/utils/useTrackFirestore";
 import { SESSION_MODES } from "@/utils";
@@ -50,32 +48,28 @@ const { updateTask } = useTaskFirestore();
 
 const props = defineProps({
   task: {
-    type: Object
+    type: Object,
   },
   currentTimer: {
-    type: Object
+    type: Object,
   },
   min: {
-    type: Number
+    type: Number,
   },
   trackableModes: {
     type: Array,
     default() {
-      return [
-        SESSION_MODES.WORK,
-        SESSION_MODES.REST,
-        SESSION_MODES.LONG_REST
-      ]
-    }
+      return [SESSION_MODES.WORK, SESSION_MODES.REST, SESSION_MODES.LONG_REST];
+    },
   },
   now: {
     type: Number,
-  } 
-})
+  },
+});
 
 const emit = defineEmits({
-  "update:currentTimer": (timer) =>  timer
-})
+  "update:currentTimer": (timer) => timer,
+});
 
 // state
 const track = reactive({
@@ -87,7 +81,8 @@ const track = reactive({
   subtype: null,
   duration: null,
   target_time: null,
-  completed: false
+  completed: false,
+  description: "",
 });
 
 const state = reactive({
@@ -130,7 +125,7 @@ const state = reactive({
   },
   mode: "promodoro",
   volume: 50,
- 
+
   pushSubscription: null,
   durationTarget: null,
 });
@@ -138,29 +133,30 @@ const state = reactive({
 // clock
 
 interface IClock {
-  now: null|Date;
-  timer: NodeJS.Timer|null
+  now: null | Date;
+  timer: NodeJS.Timer | null;
 }
 
 const clock = reactive<IClock>({
   now: null,
   timer: null,
-})
+});
 
 const startClock = () => {
   clock.timer = setInterval(() => {
     clock.now = new Date();
   }, 100);
-}
+};
 
 const stopClock = () => {
   clock.now = null;
-  if(clock.timer)
-  clearInterval(clock.timer)
-}
+  if (clock.timer) clearInterval(clock.timer);
+};
 
 // UI
-const trackerIcon = computed(() => clock.now ? 'far fa-stop-circle': 'far fa-play-circle' );
+const trackerIcon = computed(() =>
+  clock.now ? "far fa-stop-circle" : "far fa-play-circle"
+);
 const trackerMode = computed(() => state.modes[state.mode]);
 const promodoroTotal = computed(() => {
   return state.template
@@ -177,7 +173,7 @@ const currentStateColor = computed(() => {
 });
 const isTrackableMode = () => {
   return props.trackableModes.includes(state.mode);
-}
+};
 
 // Time manipulation
 const setDurationTarget = () => {
@@ -197,7 +193,7 @@ const targetTime = computed(() => {
 
 const currentTime = computed(() => {
   if (track.started_at && clock.now && state.durationTarget) {
-    let duration = Interval.fromDateTimes(track.started_at, clock.now).toDuration()
+    let duration = Interval.fromDateTimes(track.started_at, clock.now).toDuration();
     track.currentTime = duration;
     if (duration) {
       duration = state.durationTarget.minus(duration).plus({ seconds: 0.9 });
@@ -209,56 +205,71 @@ const currentTime = computed(() => {
   }
 });
 
-watch(() => currentTime.value, () => {
-  if (clock.now) {
-    useTitle(`Zen.  ${currentTime.value}`)
-  } else {
-    useTitle('Zen.')
+watch(
+  () => currentTime.value,
+  () => {
+    if (clock.now) {
+      useTitle(`Zen.  ${currentTime.value}`);
+    } else {
+      useTitle("Zen.");
+    }
   }
-});
+);
 
-watch(() => clock.now, (now) => {
-  if (targetTime.value && now && targetTime.value.diffNow() < 0) {
-    track.completed = true;
-    stop();
+watch(
+  () => clock.now,
+  (now) => {
+    if (targetTime.value && now && targetTime.value.diffNow() < 0) {
+      track.completed = true;
+      stop();
+    }
   }
-});
+);
 
 // Settings
-const { playSound, stopSound, promodoroState, setSettings, showNotification } = usePromodoro()
-const isModalOpen = ref(false)
+const {
+  playSound,
+  stopSound,
+  promodoroState,
+  setSettings,
+  showNotification,
+} = usePromodoro();
+const isModalOpen = ref(false);
 
 setSettings(firebaseState.settings);
 
-watch(() => promodoroState, (localState) => {
-  state.template = localState.template;
-  state.modes = localState.modes;
-  state.pushSubscription = localState.pushSubscription;
-  state.volume = localState.volume
-  setDurationTarget()
-}, { immediate: true })
+watch(
+  () => promodoroState,
+  (localState) => {
+    state.template = localState.template;
+    state.modes = localState.modes;
+    state.pushSubscription = localState.pushSubscription;
+    state.volume = localState.volume;
+    setDurationTarget();
+  },
+  { immediate: true }
+);
 
 const createTrack = () => {
   track.task_uid = props.task.uid;
   track.description = props.task.title;
   track.target_time = state.durationTarget.toISO();
   track.subtype = state.mode;
-  const formData = { ...track }
-  delete formData.currentTime
-  saveTrack(formData)
-    .then(uid => {
-      track.uid = uid;
-      updateTask({
-        uid: props.task.uid,
-        last_tracked_at: track.started_at
-      })
-      emit("update:currentTimer", track)
-    })
-}
+  const formData = { ...track };
+  delete formData.currentTime;
+  saveTrack(formData).then((uid) => {
+    track.uid = uid;
+    updateTask({
+      uid: props.task.uid,
+      last_tracked_at: track.started_at,
+    });
+    emit("update:currentTimer", track);
+  });
+};
 
 const validatePlay = () => {
-  return isTrackableMode() && props.task.title;
-}
+  return isTrackableMode() && (props.task.title || track.description);
+};
 
 const { setStatus } = useSlack();
 
@@ -268,84 +279,81 @@ const toggleTracker = () => {
 };
 
 const resume = (currentTimer: Record<string, any>) => {
-    track.uid = currentTimer.uid;
-    track.started_at = currentTimer.started_at;
-    track.task_uid = currentTimer.task_uid;
-    track.description = currentTimer.description;
-    track.target_time = currentTimer.target_time;
-    track.subtype = currentTimer.subtype;
-    track.completed = false;
+  track.uid = currentTimer.uid;
+  track.started_at = currentTimer.started_at;
+  track.task_uid = currentTimer.task_uid;
+  track.description = currentTimer.description;
+  track.target_time = currentTimer.target_time;
+  track.subtype = currentTimer.subtype;
+  track.completed = false;
 
-    setDurationTarget();
-    startClock();
-  };
+  setDurationTarget();
+  startClock();
+};
 
-  watch(
-    () => props.currentTimer,
-    (timer) => {
-      console.log(timer)
-      if (timer && timer.uid !== clock.timer) {
-       timer?.started_at && resume(timer);
-      }
-    },
-    { immediate: true }
-  );
+watch(
+  () => props.currentTimer,
+  (timer) => {
+    console.log(timer);
+    if (timer && timer.uid !== clock.timer) {
+      timer?.started_at && resume(timer);
+    }
+  },
+  { immediate: true }
+);
 const play = () => {
   if (!validatePlay()) {
     ElNotification({
       title: "Select a task",
-        message: "Must select a task to start promodoro",
-        type: "info"
-      })
-    return  
+      message: "Must select a task to start promodoro",
+      type: "info",
+    });
+    return;
   }
-  
-  stopSound()
+
+  stopSound();
   track.started_at = new Date();
   clock.now = track.started_at;
-  
+
   if (validatePlay()) {
-    setStatus('Zen mode.', ':slack:')
-    createTrack(track)
+    setStatus("Zen mode.", ":slack:");
+    createTrack(track);
   }
 
   startClock();
 };
 
-
-
 const stop = (shouldCallNextMode = true, silent = false) => {
- 
   track.ended_at = new Date();
-  if (validatePlay() && clock.now) {
-    updateTrackFromLocal({...track});
+  const isValidated = validatePlay();
+  if (isValidated && clock.now) {
+    updateTrackFromLocal({ ...track });
   }
 
   const wasRunning = Boolean(clock.now);
   const previousMode = state.mode;
   const message = track.completed ? "finished" : "stopped";
-  
-  clearTrack()
+
+  clearTrack();
   clearInterval(clock.timer);
   clock.now = null;
-  
+
   nextMode();
   if (!silent) {
-    playSound()
+    playSound();
     if (wasRunning && previousMode == "promodoro") {
-      showNotification("Promodoro session finished")
-      ElMessageBox.confirm(`Promodoro session ${message}`)
+      showNotification("Promodoro session finished");
+      ElMessageBox.confirm(`Promodoro session ${message}`);
     }
   }
-  
 };
 
 const reset = () => {
   stop();
   state.mode = "promodoro";
-  state.currentStep = 0
+  state.currentStep = 0;
   setDurationTarget();
-}
+};
 
 const nextMode = () => {
   if (clock.now) {
@@ -365,63 +373,67 @@ const clearTrack = () => {
   track.ended_at = null;
   track.duration = null;
   track.target_time = null;
-  track.completed = false
+  track.completed = false;
 };
 
 // checks to stop
 onBeforeUnmount(() => {
-    useTitle('Zen.')
-    stop(false, true) 
-})
+  useTitle("Zen.");
+  stop(false, true);
+});
 
-watch(() => props.task.title, (newValue, oldValue) => {
-  if (oldValue && clock.now && state.mode == 'promodoro') {
-    stop(false, true)
+watch(
+  () => props.task.title,
+  (newValue, oldValue) => {
+    if (oldValue && clock.now && state.mode == "promodoro") {
+      stop(false, true);
+    }
   }
-})
-
-
+);
 
 // Persistence
 const updateTrackFromLocal = async (track: Partial<ITrack>) => {
   if (!track.started_at) return;
-  const formData = { ...track }
-  const duration = Interval.fromDateTimes(formData.started_at, formData.ended_at).toDuration();
+  const formData = { ...track };
+  const duration = Interval.fromDateTimes(
+    formData.started_at,
+    formData.ended_at
+  ).toDuration();
 
-  if (props.min && duration.as('minutes') < props.min) {
+  if (props.min && duration.as("minutes") < props.min) {
     await deleteTrack(formData);
-    emit("update:currentTimer", {})
-    emit('track-trashed', props.task.uid, formData)
+    emit("update:currentTimer", {});
+    emit("track-trashed", props.task.uid, formData);
     ElNotification({
-      message: 'Track should be at leas 1 minute',
-      type: 'error'
-    })
-    return
+      message: "Track should be at leas 1 minute",
+      type: "error",
+    });
+    return;
   }
 
-  formData.duration_ms = duration.as('milliseconds'),
-  formData.duration_iso = duration.toISO(),
-  delete formData.currentTime;
+  (formData.duration_ms = duration.as("milliseconds")),
+    (formData.duration_iso = duration.toISO()),
+    delete formData.currentTime;
   updateTrack(formData).then(() => {
-    emit("update:currentTimer", {})
-    emit('track-added', props.task.uid, formData)
+    emit("update:currentTimer", {});
+    emit("track-added", props.task.uid, formData);
     ElNotification({
       title: "Pomodoro Saved",
       message: "Pomodoro saved",
-      type: "success"
-    })
-  })
+      type: "success",
+    });
+  });
 };
 
 const togglePlay = () => {
-    if (!props.currentTimer || props.task?.uid != props.currentTimer.task_uid) {
-      reset();
-    }
-    toggleTracker()
-}
+  if (!props.currentTimer || props.task?.uid != props.currentTimer.task_uid) {
+    reset();
+  }
+  toggleTracker();
+};
 
 defineExpose({
   toggleTracker,
-  togglePlay
-})
+  togglePlay,
+});
 </script>

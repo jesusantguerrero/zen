@@ -14,6 +14,8 @@ import { durationFromMs } from '@/utils/useTracker';
 import { isSameDateTime} from '@/utils';
 import TabHeader from '@/components/atoms/TabHeader.vue';
 import TimerCalendar from './TimerCalendar.vue';
+import { ref } from 'vue';
+import TrackModal from '@/components/organisms/modals/TrackModal.vue';
 // state and ui
 const state: any = reactive({
   tracked: [],
@@ -387,6 +389,22 @@ const onDeleteItem = async (tracks: ITrack|ITrack[]) => {
     }
   }
 }
+
+const isTrackModalOpen = ref(false)
+const trackToEdit = ref<ITrack|null>(null);
+
+const setTrackToEdit = (task: ITrack) => {
+  trackToEdit.value = task;
+  isTrackModalOpen.value = false;
+  isTrackModalOpen.value = true;
+};
+const onEditedTrack = (track: ITrack) => {
+  const index = state.tracked.findIndex(
+    (trackItem: ITrack) => trackItem.uid == track.uid
+  );
+  state.tracked[index] = { ...track };
+  trackToEdit.value = null;
+};
 </script>
 
 <template>
@@ -436,13 +454,19 @@ const onDeleteItem = async (tracks: ITrack|ITrack[]) => {
             <AtButton type="success" rounded>Extend</AtButton>
           </section>
         </header>
-
+        <TrackModal
+          v-model:is-open="isTrackModalOpen"
+          :data="trackToEdit"
+          @saved="onEditedTrack"
+          @closed="trackToEdit = null"
+        />
         <template  v-if="state.tabSelected=='timer'">
           <TimeTrackerGroup
               v-for="track in tracksInDate"
               :time-entry="track"
               :key="track.id"
               @toggle-select="toggleGroup(track, $event)"
+              @editTrack="setTrackToEdit"
               @updated="updateLocalTrack"
               @deleteItem="onDeleteItem"
           >
@@ -450,7 +474,7 @@ const onDeleteItem = async (tracks: ITrack|ITrack[]) => {
               <button title="sync as group" :disabled="track.isLoading" @click="syncAsGroup(track)">
                 <i class="fa fa-th-list" />
               </button>
-              <button v-if="track?.tracks" @click="onDeleteItem(track.tracks)" class="opacity-0 ml-2 play-button group-hover:opacity-100 hover:text-red-400">
+              <button v-if="track?.tracks" @click="onDeleteItem(track.tracks)" class="ml-2 opacity-0 play-button group-hover:opacity-100 hover:text-red-400">
                 <i class="fa fa-trash" />
               </button>
             </template>

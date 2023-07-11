@@ -2,8 +2,7 @@
 // @ts-expect-error: no tyoes for this lib
 import Duration from "duration";
 import { computed, reactive } from "vue";
-import { durationFromMs, formatDateToTime } from "../../utils/useTracker"
-import DateSelect from "../atoms/DateSelect.vue";
+import { durationFromMs } from "../../utils/useTracker"
 import { ITrack } from "@/utils/useTrackFirestore";
 
 
@@ -54,6 +53,11 @@ const deleteItem = () => {
 const toggleTimer = () => {
   emit('resumeTimer', timeEntry);
 }
+
+const setDates = (startDate: Date, endDate: Date) => {
+  timeEntry.started_at = startDate; 
+  timeEntry.ended_at = endDate; 
+}
 </script>
 
 <template>
@@ -72,7 +76,7 @@ const toggleTimer = () => {
           />
           <input
             type="text"
-            class="w-full px-8 time-tracker__description bg-transparent"
+            class="w-full px-8 bg-transparent time-tracker__description"
             placeholder="Add description"
             :class="[isChild? '' : 'font-bold']"
             v-model.lazy="timeEntry.description"
@@ -136,18 +140,15 @@ const toggleTimer = () => {
       </div>
       <div class="flex w-2/5 ml-auto">
         <div class="flex time-tracker__controls ">
-          <DateSelect
-              v-model="timeEntry.started_at" 
-              placeholder="Duration"
-              v-slot:default="{ focusInput }"
-            >
-              <span disabled class="flex items-center px-2 rounded-md cursor-pointer start-dates hover:bg-gray-100"
-              @click.stop="focusInput()"
-              >
-                {{ formatDateToTime(timeEntry.started_at) }} -
-                {{ formatDateToTime(timeEntry.ended_at) }}
-              </span>
-            </DateSelect> 
+          <ElDatePicker
+            :model-value="[timeEntry.started_at, timeEntry.ended_at]"
+            range-separator="-"
+            type="datetimerange"
+            start-placeholder="Start date"
+            end-placeholder="End date"
+            size="large"
+            @calendar-change="setDates"
+          />
 
           <input
             type="text"
