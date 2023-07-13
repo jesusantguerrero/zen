@@ -107,8 +107,6 @@
               @change="handleDragChanges"
             />
           </section>
-
-          {{ trackStore.currentTask }}
         </div>
       </div>
 
