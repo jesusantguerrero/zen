@@ -1,6 +1,9 @@
 import vue from '@vitejs/plugin-vue'
 import markdown from 'vite-plugin-md';
 import { dirname, join, resolve } from "path";
+import Icons from 'unplugin-icons/vite'
+import IconsResolver from "unplugin-icons/resolver"
+import Components from 'unplugin-vue-components/vite'
 import { fileURLToPath } from 'url';
 
 const _dirname = typeof __dirname !== 'undefined'
@@ -15,6 +18,14 @@ export default {
       include: [/\.vue$/,/\.md$/]
     }),
     markdown(),
+    Components({
+      resolvers: [
+          IconsResolver(),
+      ],
+    }),
+    Icons({
+      autoInstall: true,
+    })
   ],
   optimizeDeps: {
     include:[ 'firebase/app', 'atmosphere-ui', 'firebase/analytics', 'firebase/messaging', 'firebase/auth'],

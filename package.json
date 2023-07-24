@@ -28,6 +28,8 @@
     "luxon": "^3.3.0",
     "pinia": "^2.0.36",
     "randomcolor": "^0.6.2",
+    "unplugin-icons": "^0.16.5",
+    "unplugin-vue-components": "^0.25.1",
     "vee-validate": "^4.9.3",
     "volar": "^0.0.0",
     "vue": "^3.3.2",

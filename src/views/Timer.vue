@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, watch, onUnmounted, computed } from 'vue'
+import { reactive, watch, onUnmounted, computed, Ref } from 'vue'
 import { ITrack, useTrackFirestore } from '../utils/useTrackFirestore'
 import SearchBar from "../components/molecules/SearchBar.vue"
 // @ts-expect-error
@@ -16,6 +16,8 @@ import TabHeader from '@/components/atoms/TabHeader.vue';
 import TimerCalendar from './TimerCalendar.vue';
 import { ref } from 'vue';
 import TrackModal from '@/components/organisms/modals/TrackModal.vue';
+import { ITask, useTaskFirestore } from '@/utils/useTaskFirestore';
+import TaskModal from '@/components/organisms/modals/TaskModal.vue';
 // state and ui
 const state: any = reactive({
   tracked: [],
@@ -405,6 +407,16 @@ const onEditedTrack = (track: ITrack) => {
   state.tracked[index] = { ...track };
   trackToEdit.value = null;
 };
+
+const { getTaskById  } = useTaskFirestore();
+const isTaskModalOpen = ref(false)
+const taskToEdit = ref<ITask|null>(null);
+
+const onDetail = async (track: ITrack) => {
+  taskToEdit.value = await getTaskById(track.task_uid);
+  isTaskModalOpen.value = false;
+  isTaskModalOpen.value = true;
+};
 </script>
 
 <template>
@@ -460,6 +472,12 @@ const onEditedTrack = (track: ITrack) => {
           @saved="onEditedTrack"
           @closed="trackToEdit = null"
         />
+        <TaskModal
+          v-model:is-open="isTaskModalOpen"
+          :task-data="taskToEdit"
+          :editable="false"
+          @closed="taskToEdit = null"
+        />
         <template  v-if="state.tabSelected=='timer'">
           <TimeTrackerGroup
               v-for="track in tracksInDate"
@@ -469,6 +487,7 @@ const onEditedTrack = (track: ITrack) => {
               @editTrack="setTrackToEdit"
               @updated="updateLocalTrack"
               @deleteItem="onDeleteItem"
+              @detail="onDetail"
           >
             <template #actions-append>
               <button title="sync as group" :disabled="track.isLoading" @click="syncAsGroup(track)">

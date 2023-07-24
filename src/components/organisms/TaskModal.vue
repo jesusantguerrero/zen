@@ -113,7 +113,7 @@
 </template>
 
 <script setup>
-import { defineProps, ref, watch, computed, reactive, defineEmit, toRefs } from "vue"
+import { ref, watch, computed, reactive, toRefs } from "vue"
 import { useTaskFirestore } from "../../utils/useTaskFirestore"
 import { useDateTime } from "./../../utils/useDateTime"
 import { useCustomSelect } from "./../../utils/useCustomSelect"
@@ -138,7 +138,7 @@ const props = defineProps({
     allowEdit: Boolean
 })
 
-const emit = defineEmit({
+const emit = defineEmits({
     "update:isOpen": Boolean,
     "saved": Object,
     "closed": Boolean

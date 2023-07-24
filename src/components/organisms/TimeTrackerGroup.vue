@@ -11,8 +11,9 @@ const emit = defineEmits<{
   deleteGroup: [tracks: ITrack[]];
   resumeTimer: [track: ITrack ];
   toggleSelect: [state: boolean];
-  editTrack: [track: ITrack]
-  updated: [track: ITrack]
+  editTrack: [track: ITrack];
+  updated: [track: ITrack];
+  detail: [track: ITrack];
 }>();
 
 const { timeEntry } = defineProps<{
@@ -103,7 +104,7 @@ const onResumeTimer = () => {
                         </button>
 
                         <button @click="toggleExpand" class="opacity-0 play-button group-hover:opacity-100">
-                            <i class="fa fa-th-list" />
+                            <IMdiSync />
                         </button>
                         <slot name="actions-append" />
                     </div>
@@ -119,6 +120,7 @@ const onResumeTimer = () => {
                     :is-child="timeEntry.tracks.length > 1"
                     :time-entry="track"
                     :key="track.uid"
+                    @detail="emit('detail', $event)"
                     @edit-item="emit('editTrack', track)"
                     @delete-item="emit('deleteItem', $event)"
                     @updated="emit('updated', $event)"
