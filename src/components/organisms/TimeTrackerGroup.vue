@@ -64,8 +64,8 @@ watch(() => timeEntry.description, () => {
 const onGroupDescriptionChanged = () => {
     if (taskGroupDescription.value !== timeEntry.description) {
         emit('groupDescriptionChanged', timeEntry.tracks.map((track) => ({
-            ...track, 
-            description: timeEntry.description
+            ...track,
+            description: taskGroupDescription.value
         })))
     }
     isEditing.value = false;
