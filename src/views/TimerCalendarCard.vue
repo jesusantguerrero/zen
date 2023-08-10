@@ -1,10 +1,20 @@
 <script setup lang="ts">
 import { ElPopover } from 'element-plus';
+import { computed } from "vue";
 
-const props = defineProps<{
+const { event } = defineProps<{
   event: any;
   allowSync: boolean;
 }>()
+
+const syncButtonTheme = computed((() => {
+  const classes: Record<string, string> = {
+    "zen-event": "bg-green-400",
+    "tempo-event": "bg-blue-500 text-white",
+  }
+
+  return classes[event.class];
+}))
 
 </script>
 
@@ -17,9 +27,10 @@ const props = defineProps<{
       :width="310"
     >  
       <template #reference>
-        <section class="relative" :class="{'border border-green-400': !event.duration_ms}">
+        <section class="relative" :class="{'border border-green-400': !event.duration_ms && event.class == 'zen-event'}">
           <button 
-            class="absolute top-0 right-0 w-4 h-4 bg-green-400 rounded-full" 
+            class="absolute top-0 right-0 w-4 h-4  rounded-full" 
+            :class="syncButtonTheme"
             @click.stop="$emit('sync-tempo', event)"
             :disabled="event.isLoading"
             v-if="allowSync"
@@ -55,27 +66,31 @@ const props = defineProps<{
 <style lang="scss">
 .tempo-event, .zen-event {
   position: relative;
-    height: 102.667px;
-    width: 168px;
-    min-height: 20px;
-    border: 1px solid rgb(188, 216, 224);
-    border-radius: 4px;
-    box-shadow: rgba(0, 0, 0, 0.08) 0px 1px 3px 0px;
-    font-size: 14px;
-    flex-direction: column;
-    display: flex;
-    transition: min-height 0.3s ease 0s, box-shadow 0.3s ease-in-out 0s;
-    text-decoration: none;
-    background: rgb(238, 243, 248);
-    line-height: 1.42857;
-    touch-action: none;
-    -webkit-box-pack: justify;
-    justify-content: space-between;
-    padding: 8px;
-    opacity: 1;
-    cursor: grab;
-    margin-bottom: 0px;
-    color: rgba(0, 28, 61, 0.72);
-    user-select: none;
+  height: 102.667px;
+  width: 168px;
+  min-height: 20px;
+  border: 1px solid rgb(188, 216, 224);
+  border-radius: 4px;
+  box-shadow: rgba(0, 0, 0, 0.08) 0px 1px 3px 0px;
+  font-size: 14px;
+  flex-direction: column;
+  display: flex;
+  transition: min-height 0.3s ease 0s, box-shadow 0.3s ease-in-out 0s;
+  text-decoration: none;
+  background: rgb(238, 243, 248);
+  line-height: 1.42857;
+  touch-action: none;
+  -webkit-box-pack: justify;
+  justify-content: space-between;
+  padding: 8px;
+  opacity: 1;
+  cursor: grab;
+  margin-bottom: 0px;
+  color: rgba(0, 28, 61, 0.72);
+  user-select: none;
+}
+
+.vuecal__event.tempo-event {
+  background-color: white !important;
 }
 </style>

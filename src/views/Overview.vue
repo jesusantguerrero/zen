@@ -252,7 +252,7 @@ import TagsSelect from "../components/atoms/TagsSelect.vue";
 import TabHeader from "../components/atoms/TabHeader.vue";
 import TaskGroup from "../components/organisms/TaskGroup.vue";
 import WelcomeModal from "../components/organisms/WelcomeModal.vue";
-import TaskModal from "../components/organisms/TaskModal.vue";
+import TaskModal from "../components/organisms/modals/TaskModal.vue";
 import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
 
 const {

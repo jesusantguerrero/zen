@@ -10,6 +10,7 @@ const emit = defineEmits<{
   deleteItem: [track: ITrack];
   editItem: [track: ITrack];
   resumeTimer: [track: ITrack ]
+  detail: [track: ITrack] 
 }>();
 
 const { timeEntry, isChild } = defineProps<{
@@ -51,14 +52,6 @@ const deleteItem = () => {
   emit('deleteItem', timeEntry)
 };
 
-const toggleTimer = () => {
-  emit('resumeTimer', timeEntry);
-}
-
-const setDates = (startDate: Date, endDate: Date) => {
-  timeEntry.started_at = startDate; 
-  timeEntry.ended_at = endDate; 
-}
 </script>
 
 <template>
@@ -73,7 +66,8 @@ const setDates = (startDate: Date, endDate: Date) => {
         <div class="flex items-center w-full" :class="[isChild? 'ml-11' : 'ml-4']">
           <div 
             v-if="isChild"
-            class="w-4 h-4 text-green-500 bg-green-100 border border-green-500 rounded-full"
+            @click="$emit('detail', timeEntry)"
+            class="w-4 h-4 text-green-500 bg-green-100 border border-green-500 rounded-full cursor-pointer"
           />
           <input
             type="text"

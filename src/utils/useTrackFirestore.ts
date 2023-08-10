@@ -51,6 +51,15 @@ export function useTrackFirestore() {
             console.error("Error adding document: ", error);
         });
     }
+    const updateBatch = async (tracks: ITrack[]) => {
+        const batch = db.batch()
+        tracks.forEach((track) => {        
+            db.collection("tracks").doc(track.uid).set(track, { merge: true })
+        })
+        return batch.commit().catch((error) => {
+            console.error("Error adding document: ", error);
+        });
+    }
 
     const getAllTracksOfTask = async (taskId: string) => {
         if (!firebaseState.user) return;
@@ -183,6 +192,7 @@ export function useTrackFirestore() {
         getTempoTracksByDates,
         getUnfinished,
         deleteBatch,
+        updateBatch,
         getRunningTrack
     }
 
