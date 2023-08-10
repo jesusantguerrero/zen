@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import { defineProps, ref, watch } from "vue"
+import { ref, watch } from "vue"
 import WelcomeForm from "../molecules/WelcomeForm.vue"
 import AboutForm from "../molecules/AboutForm.vue"
 import HelpView from "../molecules/HelpView.vue"

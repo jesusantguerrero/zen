@@ -1,10 +1,15 @@
 <script setup lang="ts">
-import { reactive, computed, nextTick } from "vue";
+import { reactive, computed, nextTick, ref, watch } from "vue";
 import TimeEntryItem from "./TimeTrackerItem.vue";
 import { formatDateToTime } from "@/utils/useTracker";
 import { ITrack } from "@/utils/useTrackFirestore";
 import { formatDurationFromMs } from "@/utils/useDateTime";
 import { ITask } from "@/utils/useTaskFirestore";
+
+interface ITrackGroup {
+    description: string;
+    tracks: ITrack[] 
+}
 
 const emit = defineEmits<{
   deleteItem: [track: ITrack];
@@ -14,12 +19,11 @@ const emit = defineEmits<{
   editTrack: [track: ITrack];
   updated: [track: ITrack];
   detail: [track: ITrack];
+  groupDescriptionChanged: [ITrack[]];
 }>();
 
 const { timeEntry } = defineProps<{
-    timeEntry: {
-        tracks: ITrack[]
-    };
+    timeEntry: ITrackGroup;
 }>();
 
 const state = reactive({
@@ -38,6 +42,8 @@ const toggleSelection = () => {
     })
 }
 
+const taskGroupDescription = ref(timeEntry.description);
+
 const duration = computed<string>(() => {
     // @ts-expect-error: I dont know
     const milliseconds = timeEntry.tracks.reduce((total: number, current: ITask): number => {
@@ -51,6 +57,21 @@ const duration = computed<string>(() => {
 const onResumeTimer = () => {
     emit('resumeTimer', timeEntry.tracks[0] )
 }
+
+watch(() => timeEntry.description, () => {
+    taskGroupDescription.value = timeEntry.description;
+})
+const onGroupDescriptionChanged = () => {
+    if (taskGroupDescription.value !== timeEntry.description) {
+        emit('groupDescriptionChanged', timeEntry.tracks.map((track) => ({
+            ...track, 
+            description: timeEntry.description
+        })))
+    }
+    isEditing.value = false;
+}
+
+const isEditing = ref(false)
 </script>
 
 <template>
@@ -60,32 +81,48 @@ const onResumeTimer = () => {
             class="flex items-center w-full px-8 bg-white time-tracker-item group"
         >
             <div class="flex w-full">
-                <div class="flex items-center w-2/5">
+                <div class="flex items-center w-3/5">
                     <input
                         type="checkbox"
                         class="inline-block form-control-check checkbox-done" 
                         v-model="state.selected" @change="toggleSelection" />
 
-                    <div class="flex items-center ml-9">
+                    <div class="flex items-start ml-9 w-full">
                         <div
-                            class="text-green-500 border-2 border-green-500 time-tracker-item__count"
+                            class="text-green-500 border-2  whitespace-nowrap border-green-500 time-tracker-item__count"
                             @click.stop="toggleExpand()"
                         >
                             {{ timeEntry.tracks.length }}
                         </div>
 
-                        <span
-                            type="text"
-                            class="mr-2 font-bold time-tracker__description"
+                        <section
+                            v-if="!isEditing"
+                            class="flex w-full items-start"
                         >
-                            {{ timeEntry.description }}
-                        </span>
-
+                            <div
+                                type="text"
+                                class="mr-2 font-bold time-tracker__description inline-flex text-left"
+                                
+                            >
+                                {{ timeEntry.description }}
+                            </div>
+                            <button @click="isEditing = !isEditing">
+                                <IMdiPencil />
+                            </button>
+                        </section>
+                        <textarea
+                            v-else
+                            type="text"
+                            class="w-full px-8 bg-transparent active:border-transparent active:outline-none"
+                            placeholder="Add description"
+                            v-model.lazy="taskGroupDescription"
+                            @blur="onGroupDescriptionChanged"
+                        />
 
                     </div>
                 </div>
 
-                <div class="flex w-3/5 ml-auto">
+                <div class="flex w-2/5 ml-auto">
                     <div class="flex time-tracker__controls">
                         <span disabled class="flex items-center start-dates">
                             {{ formatDateToTime(timeEntry.tracks[0].started_at) }} -
@@ -98,14 +135,6 @@ const onResumeTimer = () => {
                             disabled
                             class="time-duration-display"
                         />
-
-                        <button @click="onResumeTimer" class="opacity-0 play-button group-hover:opacity-100">
-                            <i class="fa fa-play" />
-                        </button>
-
-                        <button @click="toggleExpand" class="opacity-0 play-button group-hover:opacity-100">
-                            <IMdiSync />
-                        </button>
                         <slot name="actions-append" />
                     </div>
                 </div>

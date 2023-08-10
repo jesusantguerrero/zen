@@ -52,14 +52,6 @@ const deleteItem = () => {
   emit('deleteItem', timeEntry)
 };
 
-const toggleTimer = () => {
-  emit('resumeTimer', timeEntry);
-}
-
-const setDates = (startDate: Date, endDate: Date) => {
-  timeEntry.started_at = startDate; 
-  timeEntry.ended_at = endDate; 
-}
 </script>
 
 <template>

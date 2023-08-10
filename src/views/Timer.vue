@@ -68,7 +68,14 @@ const state: any = reactive({
 })
 
 // tracked tasks
-const  { getTracksByDates, syncTempoTracks, deleteTrack, getTempoTracksByDates, deleteBatch } = useTrackFirestore()
+const  { 
+  getTracksByDates, 
+  syncTempoTracks, 
+  deleteTrack, 
+  getTempoTracksByDates, 
+  deleteBatch,
+  updateBatch 
+} = useTrackFirestore()
 const fetchTracked = (date: Date) => {
   return getTracksByDates(date).then(trackedRef => {
     state.firebaseRefs['tracked'] = trackedRef.onSnapshot( snap => {
@@ -315,13 +322,16 @@ const mergeTracks = () => {
   // syncTempoUpdate
 }
 
-const syncAsGroup = (group: ITrackGroup) => {
-  if (group.isLoading) return
-  const groupedTracks = group.tracks;
-  const timeToSum = groupedTracks.slice(1).reduce((totalMs, track) => totalMs + track.duration_ms, 0)
-  const firstTrack = groupedTracks.at(0);
+const isSyncingGroup = ref(false);
+const syncAsGroup = (tracks: ITrack[], group?:|ITrackGroup) => {
+  if (group?.isLoading) return
+  const timeToSum = tracks.slice(1).reduce((totalMs, track) => totalMs + track.duration_ms, 0)
+  const firstTrack = tracks.at(0);
 
-  group.isLoading = true;
+  if (group) {
+    group.isLoading = true;
+  }
+  isSyncingGroup.value = true;
 
   if (!firstTrack) return;
 
@@ -351,7 +361,10 @@ const syncAsGroup = (group: ITrackGroup) => {
       message: `${groupedTracks.length} were synced with tempo as one`
     });
   }).finally(() => {
-    group.isLoading = false;
+    if (group) {
+      group.isLoading = false;
+    }
+    isSyncingGroup.value = false;
   })
 }
 
@@ -408,6 +421,16 @@ const onEditedTrack = (track: ITrack) => {
   trackToEdit.value = null;
 };
 
+const onGroupDescriptionChanged = (tracks: ITrack[]) => {
+    updateBatch(tracks).then(() => {
+        ElNotification({
+          type: "success",
+          message: "Group updated",
+          title: "Task group updated correctly",
+        });
+      });
+};
+
 const { getTaskById  } = useTaskFirestore();
 const isTaskModalOpen = ref(false)
 const taskToEdit = ref<ITask|null>(null);
@@ -417,6 +440,22 @@ const onDetail = async (track: ITrack) => {
   isTaskModalOpen.value = false;
   isTaskModalOpen.value = true;
 };
+
+
+// group options
+
+const areGroupOptionsActive = computed(() => {
+  const selectedDescription = selectedItems.value.at(0)?.description;
+  return !!selectedItems.value.length && selectedItems.value.every((track: ITrack) => track.description == selectedDescription)
+})
+
+const canMergeTracks = computed(() => {
+  return areGroupOptionsActive.value && selectedItems.value.length > 1;
+})
+
+const canUploadAsGroup = computed(() => {
+  return areGroupOptionsActive.value && selectedItems.value.every((track: ITrack) => !track.relations?.tempo);
+})
 </script>
 
 <template>
@@ -444,8 +483,8 @@ const onDetail = async (track: ITrack) => {
 
   <div class="">     
       <div v-for="(tracksInDate, trackDate) in groupedTracks" :key="trackDate" class="mb-12">
-        <header class="flex items-center justify-between bg-white">
-          <div class="flex items-center w-full py-4 pl-16 space-x-2 font-bold bg-white">
+        <header class="flex items-center justify-between bg-white px-8">
+          <div class="flex items-center w-full py-4 space-x-2 font-bold bg-white">
             <span>
               {{ formattedDate(trackDate) }}
             </span>  
@@ -462,8 +501,25 @@ const onDetail = async (track: ITrack) => {
             <span>
               {{ getDurationInGroups(tracksInDate) }}
             </span>
-            <AtButton type="success" @click="mergeTracks" rounded :disabled="!selectedItems.length">Merge</AtButton>
-            <AtButton type="success" rounded>Extend</AtButton>
+            <AtButton class="flex " type="success" @click="mergeTracks" rounded :disabled="!canMergeTracks">
+              <IMdiVectorCombine class="mr-2"/>
+              <span>
+                Merge
+              </span>
+            </AtButton>
+            <AtButton 
+              title="sync as group" type="success" class="flex" @click="syncAsGroup(selectedItems)" 
+              rounded :disabled="!canUploadAsGroup || isSyncingGroup">
+                <IMdiUpload class="mr-2" v-if="!isSyncingGroup"/>
+                <IMdiSync class="mr-2 animate-spin" v-else />
+                <span>
+                  Upload tempo
+                </span>
+            </AtButton>
+            <AtButton type="success" rounded class="flex" :disabled="!areGroupOptionsActive">
+              <IMdiArrowExpandHorizontal class="mr-2" />
+              Extend
+            </AtButton>
           </section>
         </header>
         <TrackModal
@@ -487,15 +543,18 @@ const onDetail = async (track: ITrack) => {
               @editTrack="setTrackToEdit"
               @updated="updateLocalTrack"
               @deleteItem="onDeleteItem"
+              @groupDescriptionChanged="onGroupDescriptionChanged"
               @detail="onDetail"
           >
             <template #actions-append>
-              <button title="sync as group" :disabled="track.isLoading" @click="syncAsGroup(track)">
-                <i class="fa fa-th-list" />
-              </button>
-              <button v-if="track?.tracks" @click="onDeleteItem(track.tracks)" class="ml-2 opacity-0 play-button group-hover:opacity-100 hover:text-red-400">
-                <i class="fa fa-trash" />
-              </button>
+              <section class="flex">
+                <button title="sync as group" :disabled="track.isLoading" @click="syncAsGroup(track.tracks, track)">
+                  <IMdiSync />
+                </button>
+                <button v-if="track?.tracks" @click="onDeleteItem(track.tracks)" class="ml-2 opacity-0 play-button group-hover:opacity-100 hover:text-red-400">
+                  <i class="fa fa-trash" />
+                </button>
+              </section>
             </template>
           </TimeTrackerGroup>
         </template>

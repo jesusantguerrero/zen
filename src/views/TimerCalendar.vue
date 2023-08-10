@@ -28,6 +28,8 @@ const userApplication = functions.httpsCallable('userApplication');
 const onEventClick = (event: any) => {
   if (!event.class.includes('tempo')) {
     syncTempoUpdate(event)
+  } else {
+    syncZenUpdate(event);
   }
 }
 
@@ -66,6 +68,8 @@ const syncTempoUpdate = async (event: any, autoUpdateTrack = true) => {
     startDate: format(event.start, 'yyyy-MM-dd'),
     startTime: format(event.start, 'HH:mm:ss')
   }
+
+  const zenTrack = tracks.find( track => track.uid == event.uid)
   
   return userApplication({
       method: 'post',
@@ -78,14 +82,19 @@ const syncTempoUpdate = async (event: any, autoUpdateTrack = true) => {
       message: 'Zen track created in tempo  correctly'
     })
 
-    syncTempoTracks([data]).then(() => {
+    syncTempoTracks([{
+      ...data, 
+      relations: {
+        zen: zenTrack
+      }
+    }]).then(() => {
       ElNotification({
         type: 'success',
         message: 'Tempo tracks synced correctly'
       })
     })
     
-    const zenTrack = tracks.find( track => track.uid == event.uid)
+    
     event.isLoading = false;
 
     if (autoUpdateTrack) {
@@ -100,6 +109,62 @@ const syncTempoUpdate = async (event: any, autoUpdateTrack = true) => {
   }).catch((err) => {
     console.log(err)
   })
+  .finally(() => {
+
+  })
+}
+
+
+const syncZenUpdate = async (event: any, autoUpdateTrack = true) => {
+  const alreadyInZen = events.value
+  .filter(item => item.class === 'zen-event').find( tempoEvent => {
+    return isSameDateTime(event.start, tempoEvent.start);
+  });
+
+  if (alreadyInZen) {
+    ElNotification({
+      message: 'This date-time is already registered in zen',
+      type: 'error'
+    })
+    return;
+  }
+
+  event.isLoading = true;
+  
+  try { 
+    const zenTrack = tracks.find( track => track.uid == alreadyInZen.uid)
+    
+    if (autoUpdateTrack) {
+      return updateTrack({
+        ...zenTrack,
+        relations: {
+          tempo: {
+            attributes: [{
+                "key": "_Account_",
+                "value": "DEV"
+            }],
+            authorAccountId: event.authorAccountId,
+            timeSpentSeconds: event.duration_ms / 1000,
+            billableSeconds: event.duration_ms / 1000,
+            description: event.description,
+            issueId: event.issueId,
+            startDate: format(event.start, 'yyyy-MM-dd'),
+            startTime: format(event.start, 'HH:mm:ss')
+          }
+        }
+      }).then(() => {
+          ElNotification({
+            type: 'success',
+            message: 'Zen track created in tempo  correctly'
+          })
+      })
+      .finally(() => {
+        event.isLoading = false;
+      })
+    }
+  } catch(err) {
+    console.log(err)
+  }
 }
 
 const hasTempo = (event: any) => {
@@ -118,20 +183,24 @@ const getTotalTimeByDate = (date: Date) => {
 }
 
 const events = computed(() => {
-  const appEvents = tracks.filter(item => item.ended_at).map(event => ({
+  const appEvents = tracks.filter(item => item.ended_at && !item.relations?.tempo).map(event => ({
         ...event,
         uid: event.uid,
         start: event.started_at,
         end: event.ended_at,
         title: event.description,
-        class: 'zen-event'
+        class: 'zen-event',
+        isLoading: false,
+        allowSync: !event.relations?.tempo
   }))
 
   return [...appEvents, ...tempoEvents.map((event) => ({
       start: event.started_at,
       end: event.ended_at,
       title: event.description,
-      class: 'tempo-event'
+      class: 'tempo-event',
+      isLoading: false,
+      allowSync: !event.relations?.zen || event.allowSync
   }))]
 })
 </script>
@@ -171,8 +240,8 @@ const events = computed(() => {
         <template #event="{ event }"> 
           <TimerCalendarCard 
             :event="event"
-            :allow-sync="!hasTempo(event)"
-            @sync-tempo=" onEventClick(event)"
+            :allow-sync="true"
+            @sync-tempo="onEventClick(event)"
           />
         </template>
       </VueCal>
