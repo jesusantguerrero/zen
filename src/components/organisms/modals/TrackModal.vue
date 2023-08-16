@@ -1,6 +1,13 @@
 <template>
 <div>
-  <ModalBase v-model:is-open="state.isOpenLocal" title="Edit track" @closed="clearForm()" @click-outside="clearForm()" :click-to-close="false">
+  <ModalBase 
+    v-model:is-open="state.isOpenLocal" 
+    title="Edit track" 
+    @closed="clearForm()" 
+    @click-outside="clearForm()" 
+    :click-to-close="false"
+    content-class="md:w-4/12"
+  >
       <template #title>
            <div class="flex justify-between pr-5">
                   <div class="flex items-center w-full text-left">
@@ -8,14 +15,8 @@
                       <h1
                           class="w-full px-2 text-lg font-bold" 
                       >
-                        Edit task
+                        Edit track
                       </h1>
-                      </div>
-                  </div>
-
-                  <div class="flex items-center task-item__controls" v-if="!isReminder">
-                      <div class="text-xl transition-colors cursor-pointer hover:text-red-400">
-                        <i class="my-auto fa fa-times" @click="close()"></i>
                       </div>
                   </div>
               </div>
@@ -26,56 +27,53 @@
               class="items-center px-4 py-3 bg-white border-2 border-transparent cursor-default task-form dark:bg-gray-700 md:rounded-md"
               @submit.prevent
           >   
-              <div class="flex justify-between">
-                  <div class="flex items-center w-full">
-                      <div class="w-full">
+              <section>
+                  <AtField label="Description" primary>
                       <input 
                           type="text" 
-                          class="w-full px-2 border-b-2 border-gray-100 focus:outline-none dark:bg-transparent dark:text-gray-300 dark:border-gray-600 dark:focus:border-gray-500"  
+                          class="w-full mt-2 inline-block border-b-2 border-gray-100 focus:outline-none dark:bg-transparent dark:text-gray-300 dark:border-gray-600 dark:focus:border-gray-500"  
                           :placeholder="placeholder" 
                           v-model="track.description"
                       >
-                      </div>
-                  </div>
-              </div>
+                    </AtField>
+              </section>
 
                 
-              <div class="flex items-center w-full p-3 pb-20 mt-4 space-x-2 task-item__body">
+              <section class="flex items-center text-left w-full pl-0 p-3 mt-4 space-x-2 task-item__body">
                 <div class="w-full">
-                  <label for="">
-                    Started At
-                  </label>
-                  <ElDatePicker
-                    placeholder="Due date"
-                    class="w-full"
-                    type="datetime"
-                    size="large"
-                    v-model="track.started_at"              
-                  />
+                  <AtField label="Started at">
+                    <ElDatePicker
+                      placeholder="Due date"
+                      class="w-full"
+                      type="datetime"
+                      size="large"
+                      :format="datePickerFormat"
+                      v-model="track.started_at"              
+                    />
+                  </AtField>
+                
                 </div>
                 <div class="w-full">
-                  <label for="">
-                    Ended At
-                  </label>
-                  <ElDatePicker
-                    placeholder="Due date"
-                    class="w-full"
-                    type="datetime"
-                    size="large"
-                    v-model="track.ended_at"              
-                  />
+                  <AtField label="Ended at">
+                    <ElDatePicker
+                      placeholder="Due date"
+                      class="w-full"
+                      type="datetime"
+                      size="large"
+                      :format="datePickerFormat"
+                      v-model="track.ended_at"              
+                    />
+                  </AtField>
                 </div>
+              </section>
 
-                <div class="w-full">
-                  <label for="">
-                    Duration
-                  </label>
-                <span class="flex items-center h-10 ">
-                  {{ formatDurationFromMs(track.duration_ms).toFormat('hh:mm:ss') }}
-                </span>
-                </div>
-
-              </div>
+              <section class="w-full text-left mt-4">
+                <AtField label="Duration">
+                  <span class="flex items-center h-10" :class="{'text-green-500': isTimeChanged}">
+                    {{ localDuration }}
+                  </span>
+                </AtField>
+              </section>
           </form>
       </template>
 
@@ -97,34 +95,26 @@
 </div>
 </template>
 
-<script setup>
-import { ref, watch, computed, reactive, toRefs } from "vue"
-import { useTaskFirestore } from "../../../utils/useTaskFirestore"
-import { formatDurationFromMs, useDateTime } from "../../../utils/useDateTime"
-import { useCustomSelect } from "../../../utils/useCustomSelect"
-import TagsSelect from "../../atoms/TagsSelect.vue"
-import PersonSelect from "../../atoms/PersonSelect.vue"
-import ModalBase from "../../molecules/ModalBase.vue";
-import ChecklistContainer from "../ListContainer.vue";
-import { ElMessageBox, ElNotification } from "element-plus"
-import { firebaseInstance, firebaseState } from "../../../utils/useFirebase"
-import DateSelect from "../../atoms/DateSelect.vue"
-import { useTrackFirestore } from "@/utils/useTrackFirestore"
-import { Interval } from "luxon"
+<script setup lang="ts">
+import { ref, watch, computed, reactive, toRefs } from "vue";
+import { useTrackFirestore } from "@/utils/useTrackFirestore";
+import { ElNotification } from "element-plus";
+import { Interval } from "luxon";
+import { isSameDay } from "date-fns";
+// @ts-ignore: doesn't have definitions
+import { AtField } from "atmosphere-ui";
 
-const props = defineProps({
-    isOpen: Boolean,
-    data: Object,
-        mode: {
-      Type: String,
-      default: 'task'
-    },
-    placeholder: {
-      default: "Add a title"
-    },
-    type: String,
-    allowEdit: Boolean
-})
+import ModalBase from "../../molecules/ModalBase.vue";
+
+
+const props = withDefaults(defineProps<{
+  isOpen: boolean;
+  data: any;
+  placeholder: string;
+  allowEdit?: boolean;
+}>(), {
+  placeholder: 'Add a title'
+});
 
 const emit = defineEmits({
     "update:isOpen": Boolean,
@@ -167,6 +157,8 @@ const track = reactive({
   started_at: null,
   ended_at: null,
   type: "promodoro",
+  duration_ms: 0,
+  duration_iso: "",
   subtype: null,
   duration: null,
   target_time: null,
@@ -177,7 +169,7 @@ const track = reactive({
 
 const { data } = toRefs(props);
 
-const setTrackData = (newData) => {
+const setTrackData = (newData: any) => {
   if (newData && track) {
     const formData = Object.assign(newData, {});
     
@@ -188,7 +180,7 @@ const setTrackData = (newData) => {
   }
 }
 
-watch(()=> props.isOpen, (isOpen) => {
+watch(()=> props.isOpen, () => {
   if(data.value || state.isOpenLocal) {
     setTrackData(data.value)
   }
@@ -202,40 +194,57 @@ const clearForm = () => {
   track.duration = null;
 }
 
+const isSameDate = computed(() => {
+  return track.started_at && track.ended_at ? isSameDay(track.started_at, track.ended_at) : false
+});
+
+const datePickerFormat = computed(() => {
+  return isSameDate.value ? 'HH:mm:ss' : 'HH:mm:ss DD/MM'
+});
+
+const localDurationBare = computed(() => {
+  if (!track.started_at || !track.ended_at) return;
+  return Interval.fromDateTimes(track.started_at, track.ended_at).toDuration()
+})
+
+const localDuration = computed(() => {
+  return localDurationBare.value?.toFormat('hh:mm:ss')
+})
+
+const isTimeChanged = computed(() => {
+  return localDurationBare.value?.as?.('milliseconds') !== track.duration_ms;
+});
+
+const close = () => {
+  emit('closed')
+  state.isOpenLocal = false
+  clearForm()
+}
+
 const { updateTrack } = useTrackFirestore();
 const save = async () => {
   const formData = { ...track };
+  if ( !formData.started_at || !formData.ended_at) return;
+
   const duration = Interval.fromDateTimes(
     formData.started_at,
     formData.ended_at
   ).toDuration();
 
-  if (props.min && duration.as("minutes") < props.min) {
-    emit("update:currentTimer", {});
+  formData.duration_ms = duration.as("milliseconds")
+  formData.duration_iso = duration.toISO() ?? ""
+
+  updateTrack(formData).then(() => {
+    emit("saved", {
+      ...formData,
+      uuid: track.uid 
+    });
     ElNotification({
-      message: "Track should be at leas 1 minute",
-      type: "error",
+      title: "Track updated",
+      message: "Track updated",
+      type: "success",
     });
-    return;
-  }
-
-  (formData.duration_ms = duration.as("milliseconds")),
-    (formData.duration_iso = duration.toISO()),
-    updateTrack(formData).then(() => {
-      emit("update:currentTimer", {});
-      emit("track-updated", track.uid, formData);
-      ElNotification({
-        title: "Track updated",
-        message: "Track updated",
-        type: "success",
-      });
-    });
-}
-
-const close = () => {
-    emit('closed')
-    state.isOpenLocal = false
-    clearForm()
+  });
 }
 </script>
 

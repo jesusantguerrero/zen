@@ -16,6 +16,7 @@ import { format } from 'date-fns';
 const { tempoEvents, tracks }= defineProps<{
   tempoEvents: any[];
   tracks: any[];
+  date: Date;
   activeView: string;
 }>()
 
@@ -210,26 +211,17 @@ const events = computed(() => {
         style="height: 500px"
         :events="events"
         :disable-views="['years', 'year']"
-        hide-view-selector
         :active-view="activeView"
         :time-cell-height="110"
-        today-button
+        :selected-date="date"
+        :start-week-on-sunday="true"
+        hide-view-selector
+        watchRealTime
       >
-
-        <template #today-button>
-            <ElTooltip
-                class="box-item"
-                effect="dark"
-                content="Go to Today's date"
-                placement="top-start"
-              >
-                <ElButton>Today</ElButton>
-            </ElTooltip>
-        </template>
         <template v-slot:weekday-heading="{ heading : { label, date } }">
           <article>
             <h4 class="text-xs">
-              {{  label }}
+              {{ format(date, "EEEE, dd ")}} {{ label }}
             </h4>
             <section v-if="activeView == 'week'">
               {{ getTotalTimeByDate(date) }}

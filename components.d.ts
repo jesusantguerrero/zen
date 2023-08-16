@@ -40,6 +40,8 @@ declare module 'vue' {
     IconSharpBarChart: typeof import('./src/components/atoms/icons/IconSharpBarChart.vue')['default']
     IMdiArrowExpandHorizontal: typeof import('~icons/mdi/arrow-expand-horizontal')['default']
     IMdiArrowHorizontal: typeof import('~icons/mdi/arrow-horizontal')['default']
+    IMdiChevronLeft: typeof import('~icons/mdi/chevron-left')['default']
+    IMdiChevronRight: typeof import('~icons/mdi/chevron-right')['default']
     IMdiCombine: typeof import('~icons/mdi/combine')['default']
     IMdiPecil: typeof import('~icons/mdi/pecil')['default']
     IMdiPencil: typeof import('~icons/mdi/pencil')['default']

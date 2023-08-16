@@ -7,7 +7,7 @@ defineProps<{
   tags: any[];
   selectedTags: any[];
   modelValue: string;
-  hideTags: boolean;
+  hideTags?: boolean;
 }>();
 </script>
 

@@ -1,5 +1,5 @@
-import vue from '@vitejs/plugin-vue'
-import markdown from 'vite-plugin-md';
+import Vue from '@vitejs/plugin-vue'
+import Markdown from 'vite-plugin-md';
 import { dirname, join, resolve } from "path";
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from "unplugin-icons/resolver"
@@ -14,10 +14,10 @@ const _dirname = typeof __dirname !== 'undefined'
  */
 export default {
   plugins: [
-    vue({
+    Vue({
       include: [/\.vue$/,/\.md$/]
     }),
-    markdown(),
+    Markdown(),
     Components({
       resolvers: [
           IconsResolver(),
