@@ -289,10 +289,10 @@ const addTag = () => {
     }
 }
 
-const { update: updateTags, destroy: deleteTags } = useCollection();
+const { update: updateTags, destroy: deleteTags } = useCollection('tags');
 const updateTag = (tag) => {
     if (tag.uid) {
-        updateTags('tags', tag).then(() => {
+        updateTags(tag).then(() => {
             ElNotification({
                 message: "Tag updated",
                 type: "success"
@@ -308,7 +308,7 @@ const deleteTag = async (tag) => {
     })
 
     if (tag.uid && canDelete) {
-        deleteTags('tags', tag).then(() => {
+        deleteTags(tag).then(() => {
                ElNotification({
                 message: "Tag deleted",
                 type: "success"

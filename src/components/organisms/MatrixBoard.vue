@@ -15,7 +15,7 @@
           :class="[showHelp && (!isLineUp || isLineUpMatrix(matrix))? `border-2 ${state.quadrants[matrix].border} border-dashed pr-5 pl-3`: '', 
           ]"
           v-for="matrix in state.matrix" :key="matrix">
-            <task-group
+            <TaskGroup
               v-if="!isLineUp || isLineUpMatrix(matrix)"
               :title="getMatrixName(matrix)"
               :type="matrix"
@@ -49,7 +49,7 @@
               <template #content v-if="showHelp">
                 <matrix-help-view :matrix="matrix"></matrix-help-view>
               </template>
-            </task-group>
+            </TaskGroup>
         </div>
       </div>
 
@@ -61,7 +61,7 @@
           'border-2 border-gray-400 border-dashed pr-5 pl-5': showHelp
         }" 
         class="pt-3" v-if="isBacklog || showUncategorized && !state.isTimeLine">
-          <task-group
+          <TaskGroup
               title="No prioritized"
               type="backlog"
               color="text-gray-400"
@@ -90,7 +90,7 @@
               <template #content v-if="showHelp">
                 <matrix-help-view matrix="backlog"></matrix-help-view>
               </template>
-          </task-group>
+          </TaskGroup>
       </div>
     </div>
 
@@ -98,7 +98,7 @@
       <div class="mb-2 font-bold text-left text-gray-500">
             Timeline: <span class="text-sm font-normal">Track the number of days since the task was created until today</span>
       </div>
-      <roadmap-view 
+      <RoadmapView 
         :show-toolbar="true"
         :tasks="roadmapTasks" 
         @task-clicked="setTaskToEdit"
@@ -130,16 +130,15 @@
               </jet-select>
            </div>
         </template>
-      </roadmap-view> 
+      </RoadmapView> 
     </div>
 
-    <task-modal 
+    <TaskModal 
       v-model:is-open="state.isTaskModalOpen" 
       :task-data="taskToEdit" 
       @saved="onEdittedTask"
       @closed="taskToEdit = null"
-    >
-    </task-modal>
+    />
   </div>
 </template>
 

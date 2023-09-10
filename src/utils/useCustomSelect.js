@@ -31,7 +31,7 @@ export function useCustomSelect(entity, resourceName) {
     }
 
     const addToList = (item) => {
-      save(resourceName, item).then((itemUid) => {
+      save(item, resourceName).then((itemUid) => {
          return selectItem({ ...item, uid: itemUid })
       })
     }
