@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, watch, onUnmounted, computed  } from 'vue'
 import { ITrack, useTrackFirestore } from '../utils/useTrackFirestore'
-import SearchBar from "../components/molecules/SearchBar.vue"
+import SearchBar from "@/components/molecules/SearchBar.vue"
 import { enUS } from 'date-fns/locale'
 import { endOfWeek, format, formatRelative, isToday, parse, startOfDay, startOfMonth, startOfWeek } from 'date-fns'
 import { ref } from 'vue';

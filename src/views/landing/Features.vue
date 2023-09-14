@@ -63,7 +63,7 @@
 </template>
 
 <script setup>
-import MatrixHelpView from "../../components/molecules/MatrixHelpView.vue";
+import MatrixHelpView from "@/components/molecules/MatrixHelpView.vue";
 import NormalWave from "./waves/normal-wave.vue";
 
 const features = [

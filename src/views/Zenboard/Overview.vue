@@ -162,7 +162,7 @@
           </div>
 
           <!-- Shared -->
-           <div class="py-4 quick__add" v-if="false">
+           <div class="py-4 quick__add" v-if="shared">
               <div class="flex justify-between mb-5 font-bold text-gray-500">
                 <h4>
                   Shared with me
@@ -178,7 +178,7 @@
               </div>
               <div class="flex space-x-2">
                 <div v-for="person in  shared" :key="person.uid" class="text-center cursor-pointer">
-                  <el-avatar class="block"> {{ person.name }} </el-avatar>
+                  <ElAvatar class="block"> {{ person.name }} </ElAvatar>
                 </div>
               </div>
           </div>
@@ -207,7 +207,7 @@
                 </h4> 
               </div>
      
-            <background-icon-card
+            <BackgroundIconCard
               class="mt-5 text-white bg-gray-700 h-36"
               icon="fas fa-calendar"
               value="Schedule"
@@ -215,45 +215,32 @@
               <template #action>
                 <Button class="bg-gray-800"> Connect Calendar </Button>
               </template>
-            </background-icon-card>
+            </BackgroundIconCard>
           </div>
         </div>
       </div>
     </div>
-
-    <welcome-modal
-      :is-open="state.isWelcomeOpen"
-      @closed="closeWelcomeModal"
-    ></welcome-modal>
-
-    <task-modal
-      v-model:is-open="state.isTaskModalOpen"
-      :task-data="taskToEdit"
-      @saved="onEdittedTask"
-      @closed="taskToEdit = null"
-    >
-    </task-modal>
   </div>
 </template>
 
 <script setup>
-import { inject, nextTick, onUnmounted, reactive, ref, watch, computed, onMounted } from "vue";
+import { inject, nextTick, onUnmounted, reactive, ref, watch, computed } from "vue";
 import { useRouter } from "vue-router";
 import { ElNotification } from "element-plus";
-import { useTaskFirestore } from "../utils/useTaskFirestore";
-import { useDateTime } from "../utils/useDateTime";
-import { useTrackFirestore } from "../utils/useTrackFirestore";
-import { firebaseState, updateSettings } from "../utils/useFirebase";
-import { startFireworks } from "../utils/useConfetti";
-import BadgeItem from "../components/atoms/BadgeItem.vue";
-import Button from "../components/atoms/Button.vue";
-import BackgroundIconCard from "../components/molecules/BackgroundIconCard.vue";
-import TagsSelect from "../components/atoms/TagsSelect.vue";
-import TabHeader from "../components/atoms/TabHeader.vue";
-import TaskGroup from "../components/organisms/TaskGroup.vue";
-import WelcomeModal from "../components/organisms/WelcomeModal.vue";
-import TaskModal from "../components/organisms/modals/TaskModal.vue";
 import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
+
+import Button from "@/components/atoms/Button.vue";
+import BackgroundIconCard from "@/components/molecules/BackgroundIconCard.vue";
+import TagsSelect from "@/components/atoms/TagsSelect.vue";
+import TabHeader from "@/components/atoms/TabHeader.vue";
+import TaskGroup from "@/components/organisms/TaskGroup.vue";
+
+import { useTaskFirestore } from "@/utils/useTaskFirestore";
+import { useDateTime } from "@/utils/useDateTime";
+import { useTrackFirestore } from "@/utils/useTrackFirestore";
+import { firebaseState, updateSettings } from "@/utils/useFirebase";
+import { startFireworks } from "@/utils/useConfetti";
+
 
 const {
   updateTask,

@@ -51,7 +51,7 @@
 
 <script setup>
 import { reactive } from "vue";
-import TaskGroup from "../../components/organisms/TaskGroup.vue";
+import TaskGroup from "@/components/organisms/TaskGroup.vue";
 
 const state = reactive({
     tabs: {

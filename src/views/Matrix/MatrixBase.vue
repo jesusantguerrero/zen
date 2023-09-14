@@ -35,38 +35,39 @@
          <MatrixTeammates v-model:selected="state.selectedUser" />           
       </div>
       
-      <button class="px-5 py-1 font-bold border rounded-md focus:outline-none"
-         :class="state.showUncategorized ? 'text-gray-200 bg-gray-600' : 'text-gray-700 bg-gray-200'"
-         @click="toggleUncategorized">Show Uncategorized 
+      <button class="px-5 py-1 font-bold border rounded-md focus:outline-none capitalize"
+         :class="showUncategorized ? 'text-gray-200 bg-gray-600' : 'text-gray-700 bg-gray-200'"
+         @click="toggleUncategorized">{{ uncategorizedText }} Uncategorized 
       </button>
    </div>
 
-   <matrix-board 
+   <MatrixBoard 
       class="mt-8"
       :search="state.search" 
       :show-help="state.showHelp" 
-      :show-uncategorized="state.showUncategorized" 
+      :show-uncategorized="showUncategorized" 
       :mode="state.selectedView" 
       :user="state.user"
       :allow-update="!state.selectedUser"
       :allow-add="!state.selectedUser"
    />
-
 </div>
 </template>
 
 <script setup>
 import { computed, reactive, watch } from "vue"
-import MatrixBoard from "../components/organisms/MatrixBoard.vue"
-import ShareBoard from "../components/organisms/ShareBoard.vue"
-import JetSelect from "../components/atoms/JetSelect.vue";
-import MatrixTeammates from "../components/organisms/MatrixTeammates.vue";
+import { useLocalStorage } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router"
-import { firebaseState } from "../utils/useFirebase";
+
+import MatrixBoard from "@/components/organisms/MatrixBoard.vue"
+import ShareBoard from "@/components/organisms/ShareBoard.vue"
+import JetSelect from "@/components/atoms/JetSelect.vue";
+import MatrixTeammates from "@/components/organisms/MatrixTeammates.vue";
+import { firebaseState } from "@/utils/useFirebase";
+
 
 const state = reactive({
    showHelp:  false,
-   showUncategorized:  true,
    search: "",
    modes: [{
       name: 'Board',
@@ -99,6 +100,11 @@ const state = reactive({
    }),
 })
 
+const showUncategorized = useLocalStorage(`ZEN::${firebaseState.uid}/showUncategorized`, true);
+const uncategorizedText = computed(() => {
+   return showUncategorized.value ? 'Hide' : 'Show'
+})
+
 const { query, fullPath } = useRoute()
 const { replace } = useRouter()
 watch(() => state.viewMode.value, () => {
@@ -112,7 +118,7 @@ watch(fullPath, () => {
 }, { immediate: true, deep: true })
 
 const toggleUncategorized = () => {
-   state.showUncategorized=!state.showUncategorized;
+   showUncategorized.value =!showUncategorized.value;
 }
 
 </script>

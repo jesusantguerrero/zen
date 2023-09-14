@@ -1,19 +1,30 @@
+// marketing
 import Landing from "./views/landing/index.vue";
-import Login from "./views/auth/Login.vue";
-import Home from "./views/Home.vue";
-import ZenBoard from "./views/ZenBoard.vue";
-import Matrix from "./views/Matrix.vue";
-import Standup from "./views/Standup.vue";
-import Metrics from "./views/Metrics.vue";
-import PlanAhead from "./views/PlanAhead.vue";
-import About from "./views/About.vue";
-import OauthAccept from "./views/auth/OauthAccept.vue";
-import OauthConnect from "./views/auth/OauthConnect.vue";
-import Settings from "./views/Settings.vue";
 import Privacy from "./views/Privacy.vue"
 import Terms from "./views/Terms.vue"
-import Notifications from "./views/Notifications.vue";
+
+// auth
+import Login from "./views/auth/Login.vue";
+import OauthAccept from "./views/auth/OauthAccept.vue";
+import OauthConnect from "./views/auth/OauthConnect.vue";
+
+// Zen
+import ZenBoard from "./views/Zenboard/Zen.vue";
+import Home from "./views/Zenboard/Overview.vue";
+
+import Matrix from "./views/Matrix/MatrixBase.vue";
+import MatrixShared from "./views/Matrix/MatrixShared.vue";
+import PlanAhead from "./views/Matrix/PlanAhead.vue";
+
+import Standup from "./views/Standup/Overview.vue";
+import Metrics from "./views/Metrics/Overview.vue";
+
 import Collect from "./views/collect/index.vue";
+// App
+import Settings from "./views/Settings.vue";
+import About from "./views/About.vue";
+import Notifications from "./views/Notifications/Notifications.vue";
+
 import { createRouter, createWebHistory } from "vue-router";
 import { isAuthenticated, registerEvent, setScreen } from "./utils/useFirebase";
 
@@ -37,6 +48,10 @@ export const routes = [
   { path: "/matrix", 
     name: 'matrix',
     component: Matrix 
+  },
+  { path: "/matrix/shared", 
+    name: 'matrixShared',
+    component: MatrixShared 
   },
   { 
     path: "/metrics", 
@@ -72,14 +87,14 @@ export const routes = [
   {
     path: "/timer",
     name: "timer",
-    component: () => import("./views/Timer.vue"),
+    component: () => import("./views/Timer/Timer.vue"),
     meta: {
       requiresAuth: true,
     }},
     {
         path: '/timer-unfinished',
         name: 'DateTimerUnfinished',
-        component: () => import("./views/UnfinishedTimer.vue"),
+        component: () => import("./views/Timer/TimerUnfinished.vue"),
         meta: {
           requiresAuth: true,
         }

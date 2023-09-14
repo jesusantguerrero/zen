@@ -71,28 +71,28 @@ import {
 } from "vue";
 import { useRouter } from "vue-router";
 import { ElNotification, ElMessageBox } from "element-plus";
-import { useTaskFirestore } from "../utils/useTaskFirestore";
-import { useDateTime } from "../utils/useDateTime";
-import { useCollection } from "../utils/firebase/useCollection";
-import { firebaseState, updateSettings } from "../utils/useFirebase";
-import { startFireworks } from "../utils/useConfetti";
-import TagsSelect from "../components/atoms/TagsSelect.vue";
-import TabHeader from "../components/atoms/TabHeader.vue";
-import TaskGroup from "../components/organisms/TaskGroup.vue";
-import WelcomeModal from "../components/organisms/modals/WelcomeModal.vue";
-import StandupModal from "../components/organisms/modals/StandupModal.vue";
-import TaskModal from "../components/organisms/modals/TaskModal.vue";
-import QuickAdd from "../components/molecules/QuickAdd.vue";
-import BackgroundIconCard from "../components/molecules/BackgroundIconCard.vue";
+import { useTaskFirestore } from "@/utils/useTaskFirestore";
+import { useDateTime } from "@/utils/useDateTime";
+import { useCollection } from "@/utils/firebase/useCollection";
+import { firebaseState, updateSettings } from "@/utils/useFirebase";
+import { startFireworks } from "@/utils/useConfetti";
+import TagsSelect from "@/components/atoms/TagsSelect.vue";
+import TabHeader from "@/components/atoms/TabHeader.vue";
+import TaskGroup from "@/components/organisms/TaskGroup.vue";
+import WelcomeModal from "@/components/organisms/modals/WelcomeModal.vue";
+import StandupModal from "@/components/organisms/modals/StandupModal.vue";
+import TaskModal from "@/components/organisms/modals/TaskModal.vue";
+import QuickAdd from "@/components/molecules/QuickAdd.vue";
+import BackgroundIconCard from "@/components/molecules/BackgroundIconCard.vue";
 import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
 import { startOfYesterday } from "date-fns";
 import format from "date-fns/format";
 import subDays from "date-fns/subDays/index";
-import Metrics from "../components/templates/MetricsTemplate.vue";
-import SummaryAside from "../components/templates/SummaryAside.vue";
-import MaterialIcon from "../components/atoms/MaterialIcon.vue";
-import Button from "../components/atoms/Button.vue";
-import OverdueAside from "../components/templates/OverdueAside.vue";
+import Metrics from "@/components/templates/MetricsTemplate.vue";
+import SummaryAside from "@/components/templates/SummaryAside.vue";
+import MaterialIcon from "@/components/atoms/MaterialIcon.vue";
+import Button from "@/components/atoms/Button.vue";
+import OverdueAside from "@/components/templates/OverdueAside.vue";
 
 export default {
   components: {

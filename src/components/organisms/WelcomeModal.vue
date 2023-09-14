@@ -25,7 +25,7 @@ const props = defineProps({
     isOpen: Boolean
 })
 
-const emit = defineEmit({
+const emit = defineEmits({
     closed: Function
 })
 

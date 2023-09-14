@@ -5,10 +5,11 @@ import {
   computed,
   inject
 } from "vue";
-import DatePagerOld from "@/components/atoms/DatePage.vue";
-import SearchBox from "@/views/dashboard/SearchBox.vue";
+// @ts-expect-error: undefined
 import { AtDatePager } from "atmosphere-ui";
 import { format } from "date-fns";
+
+import SearchBox from "./SearchBox.vue";
 
 const props = defineProps<{
   modelValue: string,
