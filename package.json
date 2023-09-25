@@ -37,7 +37,7 @@
     "vee-validate": "^4.11.7",
     "volar": "^0.0.2",
     "vue": "^3.3.4",
-    "vue-cal": "https://github.com/jesusantguerrero/vue-cal.git",
+    "vue-cal": "^4.8.1",
     "vue-draggable-next": "^2.2.1",
     "vue-final-modal": "^1.8.8",
     "vue-router": "^4.2.5",

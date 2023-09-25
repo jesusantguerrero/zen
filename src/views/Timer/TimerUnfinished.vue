@@ -291,7 +291,7 @@ const onDeleteItem = async (tracks: ITrack[]) => {
         </template>
       </div>
       <div class="w-full mx-auto mt-10 text-center md:w-6/12" v-if="!state.tracked.length && state.tabSelected=='timer'">
-        <img src="@assets/undraw_following.svg" class="w-full mx-auto md:w-5/12"> 
+        <img src="@/undraw_following.svg" class="w-full mx-auto md:w-5/12"> 
         <p class="mt-10 font-bold text-gray-500 md:mt-5 dark:text-gray-300"> There's no tracks</p>
       </div>
   </div>

@@ -51,7 +51,7 @@
   </div>
 
   <div class="w-8/12 mx-auto mt-10 text-center md:w-6/12" v-if="!state.committed.length && state.isFirstLoaded">
-    <img src="../assets/undraw_following.svg" class="mx-auto w-12/12 md:w-5/12"> 
+    <img src="@/assets/undraw_following.svg" class="mx-auto w-12/12 md:w-5/12"> 
     <div class="mt-10 font-bold text-gray-500 md:mt-5 dark:text-gray-300"> There's no tasks</div>
   </div>
   

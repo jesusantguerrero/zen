@@ -1,7 +1,7 @@
 <template>
 <div class="py-5 mx-auto prose prose-xl text-center dark:text-gray-200">
     <div>
-        <img src="../../assets/undraw_following.svg" alt="" class="w-4/12 mx-auto">
+        <img src="@/assets/undraw_following.svg" alt="" class="w-4/12 mx-auto">
     </div>
     
     <h4 class="text-center dark:text-white"> Welcome to Zen.</h4>
