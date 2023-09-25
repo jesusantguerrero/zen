@@ -31,6 +31,8 @@
               @deleted="destroyTask"
               @edited="setTaskToEdit"
               @change="handleDragChanges"
+              @plus="addOccurrence($event, 'up')"
+              @minus="addOccurrence($event, 'down')"
               @down="moveTo($event, 'schedule')"
               @up="moveTo($event, 'todo')"
               @move="onMove"
@@ -145,18 +147,20 @@
 <script setup>
 import { computed, reactive, watch, ref, onUnmounted, toRefs } from 'vue'
 import { ElMessageBox, ElNotification } from 'element-plus';
-import { RoadmapView } from "vue-temporal-components";
-import { useTaskFirestore } from "../../utils/useTaskFirestore"
-import { useDateTime } from "../../utils/useDateTime"
-import { useFuseSearch } from "../../utils/useFuseSearch"
-import TaskGroup from "../organisms/TaskGroup.vue"
-import QuickAdd from "../molecules/QuickAdd.vue"
-import TaskModal from "./modals/TaskModal.vue"
-import MatrixHelpView from "../molecules/MatrixHelpView.vue"
-import JetSelect from "../atoms/JetSelect.vue";
 import { orderBy } from "lodash-es"
 import { differenceInCalendarDays } from 'date-fns';
-import { firebaseState } from '../../utils/useFirebase';
+import { RoadmapView } from "vue-temporal-components";
+
+import TaskGroup from "@components/organisms/TaskGroup.vue"
+import QuickAdd from "@components/molecules/QuickAdd.vue"
+import TaskModal from "./modals/TaskModal.vue"
+import MatrixHelpView from "@components/molecules/MatrixHelpView.vue"
+import JetSelect from "@components/atoms/JetSelect.vue";
+
+import { useFuseSearch } from "@/utils/useFuseSearch"
+import { useTaskFirestore } from "@/utils/useTaskFirestore"
+import { useDateTime } from "@/utils/useDateTime"
+import { firebaseState } from '@/utils/useFirebase';
 
 
 // state and ui
@@ -278,7 +282,14 @@ const getMatrixColor = (matrixName) => {
 
 // Tasks manipulation
 const { toISO } = useDateTime() 
-const { getUncommittedTasks, saveTask, updateTask, updateTaskBatch, deleteTask } = useTaskFirestore()
+const { 
+  getUncommittedTasks, 
+  saveTask, 
+  updateTask, 
+  updateTaskBatch, 
+  deleteTask ,
+  addOccurrence,
+} = useTaskFirestore()
 
 const fetchTasks = () => {
   const collectionRef = getUncommittedTasks(props.user)

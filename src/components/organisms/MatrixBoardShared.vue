@@ -91,7 +91,7 @@
 </template>
 
 <script setup>
-import { computed, defineProps, reactive, watch, ref } from 'vue'
+import { computed, reactive, watch, ref } from 'vue'
 import { ElMessageBox, ElNotification } from 'element-plus'
 import { useTaskFirestore } from "../../utils/useTaskFirestore"
 import { useDateTime } from "../../utils/useDateTime"

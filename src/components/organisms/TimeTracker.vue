@@ -13,7 +13,7 @@
         :class="`${trackerMode.color} ${trackerMode.colorBorder}`"
         @click="toggleTracker"
       >
-        <i class="text-3xl far fa-play" :class="trackerIcon"></i>
+        <i class="text-3xl" :class="trackerIcon" />
       </div>
       <div class="select-none" :class="trackerMode.color">
         {{ currentTime }}
@@ -55,6 +55,7 @@ const props = defineProps({
   },
   min: {
     type: Number,
+    default: 1,
   },
   trackableModes: {
     type: Array,
@@ -72,7 +73,7 @@ const emit = defineEmits({
 });
 
 // state
-const track = reactive({
+const track = reactive<Record<string, any>>({
   uid: null,
   task_uid: null,
   started_at: null,
@@ -149,8 +150,12 @@ const startClock = () => {
 };
 
 const stopClock = () => {
-  clock.now = null;
-  if (clock.timer) clearInterval(clock.timer);
+  if (clock.timer) {
+    clearInterval(clock.timer);
+    clock.timer = null;
+    clock.now = null;
+    emit("update:currentTimer", {});
+  }
 };
 
 // UI
@@ -279,23 +284,23 @@ const toggleTracker = () => {
 };
 
 const resume = (currentTimer: Record<string, any>) => {
-  track.uid = currentTimer.uid;
-  track.started_at = currentTimer.started_at;
-  track.task_uid = currentTimer.task_uid;
-  track.description = currentTimer.description;
-  track.target_time = currentTimer.target_time;
-  track.subtype = currentTimer.subtype;
-  track.completed = false;
-
-  setDurationTarget();
-  startClock();
+  if (!clock.timer) {
+    track.uid = currentTimer.uid;
+    track.started_at = currentTimer.started_at;
+    track.task_uid = currentTimer.task_uid;
+    track.description = currentTimer.description;
+    track.target_time = currentTimer.target_time;
+    track.subtype = currentTimer.subtype;
+    track.completed = false;
+    setDurationTarget();
+    startClock();
+  }
 };
 
 watch(
   () => props.currentTimer,
   (timer) => {
-    console.log(timer);
-    if (timer && timer.uid !== clock.timer) {
+    if (timer && timer.uid !== track.uid) {
       timer?.started_at && resume(timer);
     }
   },
@@ -335,8 +340,7 @@ const stop = (shouldCallNextMode = true, silent = false) => {
   const message = track.completed ? "finished" : "stopped";
 
   clearTrack();
-  clearInterval(clock.timer);
-  clock.now = null;
+  stopClock();
 
   nextMode();
   if (!silent) {
@@ -402,7 +406,6 @@ const updateTrackFromLocal = async (track: Partial<ITrack>) => {
 
   if (props.min && duration.as("minutes") < props.min) {
     await deleteTrack(formData);
-    emit("update:currentTimer", {});
     emit("track-trashed", props.task.uid, formData);
     ElNotification({
       message: "Track should be at leas 1 minute",

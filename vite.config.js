@@ -34,6 +34,7 @@ export default {
   resolve: {
     alias: {
       '@': resolve('./src/'),
+      '@components': resolve('./src/components'),
     },
   },
   build: {

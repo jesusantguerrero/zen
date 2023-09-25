@@ -55,6 +55,8 @@
                 @clone="onClone(task)"
                 @up="emit('up', task)"
                 @down="emit('down', task)"
+                @plus="emit('plus', task)"
+                @minus="emit('minus', task)"
               />
             </draggable>
             <slot name="empty" v-if="!tasks.length"></slot>
@@ -74,7 +76,6 @@ import { useWindowSize } from "@vueuse/core"
 import TaskItem from "../molecules/TaskItem.vue"
 import IconExpand from "../atoms/IconExpand.vue"
 import IconCollapse from "../atoms/IconCollapse.vue"
-import ShareModal from "./modals/ShareModal.vue";
 
 const props = defineProps({
     tasks: {
@@ -140,6 +141,8 @@ const emit = defineEmits({
   edited: Object,
   up: Object,
   down: Object,
+  plus: Object,
+  minus: Object,
   move: Object,
   change: Object,
   undo: Object,

@@ -9,7 +9,7 @@ import { useTrackFirestore } from '@/utils/useTrackFirestore'
 import { functions } from '@/utils/useFirebase'
 import { formatDurationFromMs } from '@/utils/useDateTime';
 import { isSameDateTime} from '@/utils';
-import TimerCalendarCard from './TimerCalendarCard.vue';
+import TimerCalendarCard from './Partials/TimerCalendarCard.vue';
 import { format } from 'date-fns';
 
 
@@ -183,6 +183,14 @@ const getTotalTimeByDate = (date: Date) => {
   return formatDurationFromMs(milliseconds)?.toFormat?.('hh:mm:ss')
 }
 
+const formatDate = (date: Date) => {
+  try {
+    format(date, "EEEE, dd ")
+  } catch (err) {
+    return date;
+  }
+}
+
 const events = computed(() => {
   const appEvents = tracks.filter(item => item.ended_at && !item.relations?.tempo).map(event => ({
         ...event,
@@ -221,7 +229,7 @@ const events = computed(() => {
         <template v-slot:weekday-heading="{ heading : { label, date } }">
           <article>
             <h4 class="text-xs">
-              {{ format(date, "EEEE, dd ")}} {{ label }}
+              {{ formatDate(date)}} {{ label }}
             </h4>
             <section v-if="activeView == 'week'">
               {{ getTotalTimeByDate(date) }}

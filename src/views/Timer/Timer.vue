@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, watch, onUnmounted, computed  } from 'vue'
-import { ITrack, useTrackFirestore } from '../utils/useTrackFirestore'
+import { ITrack, useTrackFirestore } from '@/utils/useTrackFirestore'
 import SearchBar from "@/components/molecules/SearchBar.vue"
 import { enUS } from 'date-fns/locale'
 import { endOfWeek, format, formatRelative, isToday, parse, startOfDay, startOfMonth, startOfWeek } from 'date-fns'
@@ -483,6 +483,10 @@ const canMergeTracks = computed(() => {
 const canUploadAsGroup = computed(() => {
   return areGroupOptionsActive.value && selectedItems.value.every((track: ITrack) => !track.relations?.tempo);
 })
+
+const isView = (viewName: string) => {
+  return state.tabSelected== viewName
+}
 </script>
 
 <template>
@@ -511,12 +515,12 @@ const canUploadAsGroup = computed(() => {
       </section>
   </header> 
 
-  <section class="w-full mx-auto mt-10 text-center md:w-6/12" v-if="!state.tracked.length">
-    <img src="../assets/undraw_following.svg" class="w-full mx-auto md:w-5/12"> 
+  <section class="w-full mx-auto mt-10 text-center md:w-6/12" v-if="!state.tracked.length && isView('timer')">
+    <img src="@/assets/undraw_following.svg" class="w-full mx-auto md:w-5/12"> 
     <p class="mt-10 font-bold text-gray-500 md:mt-5 dark:text-gray-300"> There's no tracks</p>
   </section>
 
-  <section v-else-if="state.tabSelected=='timer'">     
+  <section v-else-if="isView('timer')">     
       <div v-for="(tracksInDate, trackDate) in groupedTracks" :key="trackDate" class="mb-12">
         <header class="flex items-center justify-between bg-white px-8">
           <div class="flex items-center w-full py-4 space-x-2 font-bold bg-white">
