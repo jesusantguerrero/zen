@@ -242,7 +242,7 @@ const events = computed(() => {
             </section>
           </article>
         </template>
-        
+
         <template #event="{ event }"> 
           <TimerCalendarCard 
             :event="event"
