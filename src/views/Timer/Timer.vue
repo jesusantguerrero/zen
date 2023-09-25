@@ -449,6 +449,8 @@ const onEditedTrack = (track: ITrack) => {
   isTrackModalOpen.value = false;
 };
 
+const { getTaskById, updateTask  } = useTaskFirestore();
+
 const onGroupDescriptionChanged = (tracks: ITrack[]) => {
     updateBatch(tracks).then(() => {
         ElNotification({
@@ -457,9 +459,14 @@ const onGroupDescriptionChanged = (tracks: ITrack[]) => {
           title: "Task group updated correctly",
         });
       });
+
+      updateTask({
+        uid: tracks.at(0)?.task_uid,
+        title: tracks.at(0)?.description
+      });
 };
 
-const { getTaskById  } = useTaskFirestore();
+
 const isTaskModalOpen = ref(false)
 const taskToEdit = ref<ITask|null>(null);
 
