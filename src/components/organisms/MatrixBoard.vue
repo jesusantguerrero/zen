@@ -40,11 +40,11 @@
             >
               <template #addForm v-if="!showHelp && allowAdd">
                 <div class="mb-4 quick__add">
-                  <quick-add 
+                  <QuickAdd 
                     @saved="addTask"
                     :allow-edit="true"
                     :type="matrix"
-                  ></quick-add>
+                  />
                 </div>
               </template>
 

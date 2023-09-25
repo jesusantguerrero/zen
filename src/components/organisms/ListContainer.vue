@@ -1,6 +1,6 @@
 <template>
 <div class="text-sm checklist-container" ref="checklistContainer">
-    <h4 class="font-bold text-gray-500 dark:text-gray-300">
+    <h4 class="font-bold text-gray-500 dark:text-gray-300 mb-2">
         Checklist ({{ doneItems }} / {{ items ? items.length : 0 }})
     </h4>
    <draggable :model-value="items" @update:model-value="$emit('update:items', $event)" handle=".handle">
@@ -39,14 +39,14 @@
         </div>
     </draggable>
 
-    <div class="flex items-center justify-between px-2 bg-gray-100 border-2 border-gray-100 rounded-md shadow-sm text dark:bg-gray-800 dark:border-gray-600"
+    <div class="flex items-center justify-between px-2 bg-gray-100 border-2 border-gray-100 rounded-md shadow-sm text dark:bg-base-lvl-2 dark:border-base-lvl-3"
         :class="{'border-gray-400': isFocused}"
         v-if="allowEdit"
     >
         <input type="checkbox" disabled class="mr-2">
         <input 
             :value="modelValue"
-            class="w-full h-8 bg-gray-100 dark:bg-gray-800 dark:text-gray-300 focus:outline-none"
+            class="w-full h-8 bg-gray-100  dark:bg-base-lvl-2 dark:text-white focus:outline-none"
             type="text" 
             ref="input"
             @input="emit('update:modelValue', input.value)"

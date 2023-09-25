@@ -35,8 +35,8 @@
          <MatrixTeammates v-model:selected="state.selectedUser" />           
       </div>
       
-      <button class="px-5 py-1 font-bold border rounded-md focus:outline-none capitalize"
-         :class="showUncategorized ? 'text-gray-200 bg-gray-600' : 'text-gray-700 bg-gray-200'"
+      <button class="px-5 py-1 font-bold border rounded-md focus:outline-none capitalize dark:border-lvl-3"
+      :class="showUncategorized ? 'text-gray-200 bg-gray-600 dark:bg-base-lvl-1' : 'text-gray-700 bg-gray-200 dark:text-white dark:bg-base-lvl-2'"
          @click="toggleUncategorized">{{ uncategorizedText }} Uncategorized 
       </button>
    </div>

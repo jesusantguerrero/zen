@@ -1,5 +1,5 @@
 <template>
-  <form class="items-center px-4 py-3 mb-2 text-sm bg-white border-2 border-gray-200 rounded-md shadow-md cursor-default task-item dark:bg-gray-700 dark:border-gray-600"
+  <form class="items-center px-4 py-3 mb-2 text-sm bg-white border-2 border-gray-200 rounded-md shadow-md cursor-default task-item dark:bg-base-lvl-1 dark:border-base-lvl-3"
      @submit.prevent
      @keydown.ctrl.enter="save()"
      @keydown.enter.prevent.exact
@@ -7,7 +7,7 @@
     >
     <div class="flex justify-between">
       <div class="flex justify-start w-full">
-        <button class="px-2 py-1 mr-3 transition-colors rounded-md focus:outline-none dark:bg-gray-600 hover:text-white" :class="typeColor" @click="save()"> 
+        <button class="px-2 py-1 mr-3 transition-colors rounded-md focus:outline-none dark:bg-base-lvl-2 hover:text-white" :class="typeColor" @click="save()"> 
             <i :class="icon" />
         </button>
 
@@ -15,7 +15,7 @@
           <input 
             ref="quickAddInput"
             type="text" 
-            class="w-full px-2 focus:outline-none dark:bg-gray-700 dark:text-gray-300" 
+            class="w-full px-2 focus:outline-none dark:bg-transparent dark:text-gray-300" 
             :placeholder="placeholder" 
             v-model="task.title"
             @click="state.isExpanded = true"
@@ -47,27 +47,26 @@
     </div>
     
     <ElCollapseTransition>
-      <div class="w-full p-3 task-item__body" v-if="state.isExpanded">
+      <div class="w-full py-3 task-item__body" v-if="state.isExpanded">
         <textarea 
           v-model="task.description"
-          class="w-full pt-2 task-item__description focus:outline-none dark:bg-gray-700 dark:text-gray-300" 
+          class="w-full pt-2 task-item__description focus:outline-none dark:bg-base-lvl-2 rounded-md px-4 dark:text-gray-300" 
           placeholder="Add a short description"
           @keydown.enter.exact.stop="">
         </textarea>
         
-        <div class="text-left task-item__checklist">
-          <checklist-container 
+        <div class="text-left task-item__checklist mt-4">
+          <ChecklistContainer 
             v-model="state.checklistTitle"
             :items="task.checklist" 
             :allow-edit="allowEdit"
             :task="task"
-            >
-          </checklist-container>
+          />
         </div>
 
         <div class="flex items-center justify-between mt-2">
-            <div class="text-gray-400 hover:text-gray-600 dark:bg-gray-700 dark:text-gray-300">
-              <tags-select
+            <div class="text-gray-400 hover:text-gray-600 dark:text-white">
+              <TagsSelect
                 v-model="task.tags"
                 :tags="tags"
                 :multiple="true" 
@@ -77,7 +76,11 @@
             </div>
 
           <div class="w-6/12 mt-2 text-right">
-            <button class="px-5 py-2 text-white transition-colors bg-green-400 rounded-md focus:outline-none hover:bg-green-500 " type="submit" @click.prevent="save()"> Save</button>
+            <button 
+              class="px-5 py-2 dark:bg-accent dark:font-bold text-white transition-colors bg-green-400 rounded-md focus:outline-none hover:bg-green-500 " type="submit"
+              @click.prevent="save()"> 
+              Save
+            </button>
           </div>
         </div>
         <div class="pt-2 mr-2 text-xs font-bold text-right text-gray-600 dark:text-white">
@@ -92,13 +95,15 @@
 <script setup>
 import { computed, reactive, onMounted, ref, watch } from "vue"
 import { onClickOutside } from  "@vueuse/core"
-import { useDateTime } from "../../utils/useDateTime"
-import { useCustomSelect } from "./../../utils/useCustomSelect"
-import DateSelect from "../atoms/DateSelect.vue"
-import TagsSelect from "../atoms/TagsSelect.vue"
-import PersonSelect from "../atoms/PersonSelect.vue"
-import ChecklistContainer from "../organisms/ListContainer.vue";
 import { ElMessageBox, ElNotification } from "element-plus";
+
+import DateSelect from "@components/atoms/DateSelect.vue"
+import TagsSelect from "@components/atoms/TagsSelect.vue"
+import PersonSelect from "@components/atoms/PersonSelect.vue"
+import ChecklistContainer from "@components/organisms/ListContainer.vue";
+
+import { useCustomSelect } from "@/utils/useCustomSelect"
+import { useDateTime } from "@/utils/useDateTime"
 
 const props = defineProps({
     mode: {

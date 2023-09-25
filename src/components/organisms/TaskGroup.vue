@@ -314,7 +314,7 @@ const onToggleKey = (task) => {
 }
 
 .dragArea {
-  @apply rounded-md dark:bg-gray-500 ;
+  @apply rounded-md dark:bg-base-lvl-1 dark:border-base-lvl-3;
   background: rgba(229, 231, 235, .2);
   padding-bottom: 40px;
 }

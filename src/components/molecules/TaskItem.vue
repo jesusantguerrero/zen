@@ -1,6 +1,6 @@
 <template>
   <article 
-    class="items-stretch flex transition-all bg-white relative border-2 border-gray-200 rounded-md cursor-pointer task-item dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 hover:border-green-200"
+    class="items-stretch flex transition-all bg-white relative border-2 border-gray-200 rounded-md cursor-pointer task-item dark:bg-base-lvl-2 dark:border-gray-600 dark:text-gray-300 hover:border-green-200"
     :class="{'border-green-400': isSelected, 'shadow-md ': !isCompact }"
     @click="$emit('selected', task)"
     @dblclick.prevent="$emit('edited', task)"
@@ -148,11 +148,11 @@
       <!-- /item body -->
     </main>
     <aside v-if="type == 'delete'" class="grid grid-rows-2 h-full">
-        <button class="hover:bg-green-400 dark:hover:bg-green-400 hover:text-white px-3 py-3 rounded-tl-md dark:bg-gray-900 bg-gray-200 transition-colors" 
+        <button class="hover:bg-green-400 dark:hover:bg-green-400 hover:text-white px-3 py-3 rounded-tl-md dark:bg-base-lvl-1 bg-gray-200 transition-colors" 
           @click.stop="$emit('plus', task)">
           <IMdiChevronUp />
         </button>
-        <button class="hover:bg-red-400 dark:hover:bg-red-400 hover:text-white px-3 py-3 rounded-bl-md dark:bg-gray-900 bg-gray-200 transition-colors" 
+        <button class="hover:bg-red-400 dark:hover:bg-red-400 hover:text-white px-3 py-3 rounded-bl-md dark:bg-base-lvl-1 bg-gray-200 transition-colors" 
           @click.stop="$emit('minus', task)">
           <IMdiChevronDown />
         </button>

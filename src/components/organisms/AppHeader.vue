@@ -85,10 +85,13 @@ const logout = () => {
 <template>
   <div class="fixed z-50 w-full">
     <div
-      class="flex items-center justify-between w-full h-16 px-2 bg-white border-b-2 border-gray-400 shadow-md dark:bg-gray-700 dark:border-gray-600 md:px-32"
+      class="flex items-center justify-between w-full h-16 px-2 bg-white border-b border-gray-400 dark:border-base-lvl-3/50 shadow-md dark:bg-base-lvl-1  md:px-32"
     >
       <div class="flex items-baseline">
-        <router-link class="text-2xl font-bold dark:text-gray-300 dark:hover:text-white zen" to="/"> Zen.</router-link>
+        <RouterLink class="text-2xl font-bold dark:text-white dark:hover:text-white zen relative" to="/"> 
+          Zen
+          <span class="dark:text-accent -right-3 absolute">.</span>
+        </RouterLink>
         <div class="hidden md:flex md:items-center md:ml-4" v-if="user">
           <!-- <MenuItem class="pl-2 mx-2" to="/home" icon="dashboard"> Home </MenuItem> -->
           <MenuItem class="pl-2 mx-2" to="/zenboard" icon="schedule">Zenboard </MenuItem>
@@ -122,8 +125,8 @@ const logout = () => {
               {{ initials }}
           </ElAvatar>
           <template #dropdown>
-            <ElDropdownMenu class="dark:bg-gray-800 dark:text-gray-200">
-              <ElDropdownItem disabled class="dark:bg-gray-800 dark:hover:bg-gray-700">
+            <ElDropdownMenu class="dark:bg-base-lvl-1 dark:text-gray-200">
+              <ElDropdownItem disabled class="dark:bg-base-lvl-1 dark:hover:bg-gray-700">
                 <i class="fa fa-user"></i>
                 {{ profileName }}
               </ElDropdownItem>
@@ -168,8 +171,8 @@ html.dark {
   }
 }
 
-.router-link-active .MenuItem{
-  @apply text-gray-700
+.router-link-active div {
+  @apply text-gray-700 dark:text-accent
 }
 
 html.dark {

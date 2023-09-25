@@ -1,6 +1,6 @@
 <template>
-<div class="px-5 py-3 mb-10 bg-white rounded-md dark:bg-gray-700 dark:border-gray-600">
-    <div class="flex justify-between font-bold text-left text-gray-500 dark:text-gray-300">
+<div class="px-5 py-3 mb-10  rounded-md  dark:border-gray-600">
+    <div class="flex justify-between font-bold text-left text-gray-500 dark:text-white">
         <div>
             Pomodoro Stats
         </div>
@@ -17,18 +17,17 @@
             <slot class="mt-2 -md:mt-0" />
         </div>
     </div>
-    <div class="py-3 bg-white rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300" style="height: 400px" v-if="state.selectedMode == 'session'">
-        <report-chart data-class="graphics chart" id="chart-pomo-sessions" :data="completedPomodoros" :labels="timeData" :config="state.chartConfig.pomodoros"></report-chart>
+    <div class="py-3  rounded-md  dark:border-gray-600 dark:text-white" style="height: 400px" v-if="state.selectedMode == 'session'">
+        <ReportChart data-class="graphics chart" id="chart-pomo-sessions" :data="completedPomodoros" :labels="timeData" :config="state.chartConfig.pomodoros"></ReportChart>
     </div>
 
-    <div class="py-3 bg-white rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300" style="height: 400px" v-if="state.selectedMode== 'time'">
-        <report-chart data-class="graphics chart" id="chart-pomo-sessions" :data="durationPomodoros" :labels="timeData" :config="state.chartConfig.pomodoroDuration"></report-chart>
+    <div class="py-3  rounded-md  dark:border-gray-600 dark:text-white" style="height: 400px" v-if="state.selectedMode== 'time'">
+        <ReportChart data-class="graphics chart" id="chart-pomo-sessions" :data="durationPomodoros" :labels="timeData" :config="state.chartConfig.pomodoroDuration"></ReportChart>
     </div>
 </div>
 </template>
 
 <script setup>
-import { useDateTime } from "../../utils/useDateTime";
 import { reactive, toRefs, computed } from "vue";
 import ReportChart from "./ReportChart.vue"
 
@@ -70,8 +69,6 @@ const state = reactive({
     }
   },
 })
-
-
 
 const completedPomodoros = computed(() => {
   return statsByDay.value && statsByDay.value.map((stat) => {

@@ -76,25 +76,25 @@ const matrix = reactive<Record<string, IMatrix>>({
   todo: {
     ref: null,
     list: [],
-    classes: "bg-green-300 hover:bg-green-400 text-white",
+    classes: "bg-green-300 dark:bg-accent hover:bg-green-400 text-white",
     loaded: false,
   },
   schedule: {
     ref: null,
     list: [],
-    classes: "bg-blue-300 hover:bg-blue-400 text-white",
+    classes: "bg-blue-300 dark:bg-info hover:bg-blue-400 text-white",
     loaded: false,
   },
   delegate: {
     ref: null,
     list: [],
-    classes: "bg-yellow-300 hover:bg-yellow-400 text-white",
+    classes: "bg-yellow-300 dark:bg-warning hover:bg-yellow-400 text-white",
     loaded: false,
   },
   delete: {
     ref: null,
     list: [],
-    classes: "bg-red-300 hover:bg-red-400 text-white",
+    classes: "bg-red-300 dark:bg-error hover:bg-red-400 text-white",
     loaded: false,
   },
 });
@@ -333,7 +333,7 @@ const toggleQuickAdd = () => {
                 :tags="tags"
                 :allow-add="false"
               />
-              <AtButton type="success" class="h-full" rounded @click="toggleQuickAdd">
+              <AtButton type="success" class="h-full bg-accent" rounded @click="toggleQuickAdd">
                 New
               </AtButton>
             </header>
@@ -416,14 +416,14 @@ const toggleQuickAdd = () => {
           <div class="pt-4 space-y-4">
             <section>
               <CardButton
-                class="mt-4 dark:border-gray-600"
+                class="mt-4 dark:border-base-lvl-3"
                 title="Plan ahead"
                 description="Prioritize your day"
                 @click="push('/plan-ahead')"
               >
                 <template #icon>
                   <div
-                    class="flex items-center justify-center p-3 text-white bg-gray-500 rounded-full h-9 w-9"
+                    class="flex items-center justify-center p-3 text-white bg-gray-500 dark:bg-base-lvl-1 dark:border-base-lvl-3 border rounded-full h-9 w-9"
                   >
                     <i class="fa fa-tasks" />
                   </div>

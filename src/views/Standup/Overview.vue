@@ -1,7 +1,7 @@
 <template>
 <div class="pt-24 mx-5 md:pt-28 md:mx-28 mb-28">
   <div class="items-center justify-between mb-10 section-header md:flex">
-      <h2 class="flex items-center text-2xl font-bold text-left text-gray-400">
+      <h2 class="flex items-center text-2xl font-bold text-left text-gray-400 dark:text-white">
          <span> Standup </span>
          <span class="ml-2 text-lg text-green-500">{{ state.humanDate }}</span>
          <IntegrationProjects />
@@ -15,7 +15,7 @@
   </div> 
 
   <div v-for="dateGroup in committedByDate" class="mb-4">
-     <h4 class="block mb-2 font-bold text-left text-gray-500 capitalize md:text-xl">
+     <h4 class="block mb-2 font-bold text-left text-gray-500 dark:text-white capitalize md:text-xl">
         ✅ {{ getCommitTitle(dateGroup.date) }} ({{ dateGroup.list.length }}) 
     </h4>
     <TaskItem 
@@ -49,12 +49,13 @@
       </template>
     </TaskItem> 
   </div>
+
   <div class="w-8/12 mx-auto mt-10 text-center md:w-6/12" v-if="!state.committed.length && state.isFirstLoaded">
     <img src="../assets/undraw_following.svg" class="mx-auto w-12/12 md:w-5/12"> 
     <div class="mt-10 font-bold text-gray-500 md:mt-5 dark:text-gray-300"> There's no tasks</div>
   </div>
   
-  <h5 class="block mt-5 mb-2 font-bold text-left text-gray-500 capitalize md:text-lg">
+  <h5 class="block mt-5 mb-2 font-bold text-left text-gray-500 dark:text-white capitalize md:text-lg">
     ⏳ Worked on ({{ trackedUnfinished.length }}) 
   </h5>
   <div v-for="track in trackedUnfinished">
@@ -81,7 +82,7 @@
     </TaskItem>
   </div>
 
-  <h5 class="block mt-5 mb-2 font-bold text-left text-gray-500 capitalize md:text-lg">
+  <h5 class="block mt-5 mb-2 font-bold text-left text-gray-500 dark:text-white capitalize md:text-lg">
     ✨ Suggested for today  ({{ state.suggestions.length }}) 
   </h5>
   <div v-for="task in state.suggestions">
