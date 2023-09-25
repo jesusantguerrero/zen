@@ -94,7 +94,7 @@ onUnmounted(() => {
     </div>
 </template>
 
-<style>
+<style lang="scss">
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -102,4 +102,15 @@ onUnmounted(() => {
   text-align: center;
   color: #2c3e50;
 }
+
+.dark {
+  .el-message-box {
+      @apply bg-base-lvl-1;
+  }
+
+  #WH_frame_count .topBar {
+    @apply bg-base-lvl-1;
+  }
+}
+
 </style>

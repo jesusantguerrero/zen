@@ -22,7 +22,7 @@ const syncButtonTheme = computed((() => {
   <article class="relative">
     <ElPopover
       placement="bottom-end"
-      popper-class='tag-select dark:bg-gray-900 dark:text-gray-300'
+      popper-class='tag-select dark:bg-base-lvl-2 dark:text-gray-300'
       trigger="hover"
       :width="310"
     >  
@@ -62,35 +62,3 @@ const syncButtonTheme = computed((() => {
     </ElPopover>      
   </article>     
 </template>
-
-<style lang="scss">
-.tempo-event, .zen-event {
-  position: relative;
-  height: 102.667px;
-  width: 168px;
-  min-height: 20px;
-  border: 1px solid rgb(188, 216, 224);
-  border-radius: 4px;
-  box-shadow: rgba(0, 0, 0, 0.08) 0px 1px 3px 0px;
-  font-size: 14px;
-  flex-direction: column;
-  display: flex;
-  transition: min-height 0.3s ease 0s, box-shadow 0.3s ease-in-out 0s;
-  text-decoration: none;
-  background: rgb(238, 243, 248);
-  line-height: 1.42857;
-  touch-action: none;
-  -webkit-box-pack: justify;
-  justify-content: space-between;
-  padding: 8px;
-  opacity: 1;
-  cursor: grab;
-  margin-bottom: 0px;
-  color: rgba(0, 28, 61, 0.72);
-  user-select: none;
-}
-
-.vuecal__event.tempo-event {
-  background-color: white !important;
-}
-</style>

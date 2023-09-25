@@ -110,7 +110,7 @@ const state = reactive({
     promodoro: {
       min: 25,
       sec: 0,
-      color: "text-red-400",
+      color: "text-red-400 dark:text-error",
       colorBg: "bg-red-400",
       colorBorder: "border-red-400",
       text: "Pomodoro session",

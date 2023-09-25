@@ -431,21 +431,7 @@ onUnmounted(() => {
   })
 });
 
-const getNextIndex = (list) => {
-  return Math.max(...list.map((item) => Number(item.order || 0))) + 1;
-};
-
 const { push } = useRouter();
-const closeWelcomeModal = () => {
-  updateSettings({
-    hide_welcome: true,
-  }).then(() => {
-    state.isWelcomeOpen = false;
-    push({
-      name: "planAhead",
-    });
-  });
-};
 
 // Drags
 const handleDragChanges = (e, matrix) => {

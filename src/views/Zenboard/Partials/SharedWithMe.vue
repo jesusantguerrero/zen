@@ -228,16 +228,6 @@ const getNextIndex = (list) => {
 };
 
 const { push } = useRouter();
-const closeWelcomeModal = () => {
-  updateSettings({
-    hide_welcome: true,
-  }).then(() => {
-    state.isWelcomeOpen = false;
-    push({
-      name: "planAhead",
-    });
-  });
-};
 
 // Drags
 const handleDragChanges = (e, matrix) => {
