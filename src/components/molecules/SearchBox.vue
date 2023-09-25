@@ -12,7 +12,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="items-center h-12 w-full rounded-md md:flex border-2 border-gray-200 overflow-hidden bg-white">
+  <div class="items-center h-12 w-full rounded-md md:flex border-2 border-gray-200 overflow-hidden bg-white dark:bg-transparent dark:border-transparent">
     <AtInput
       type="search"
       :model-value="modelValue"

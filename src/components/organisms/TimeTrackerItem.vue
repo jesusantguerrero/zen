@@ -55,7 +55,7 @@ const deleteItem = () => {
 </script>
 
 <template>
-  <div class="flex items-center w-full px-8 bg-white time-tracker-item group">
+  <div class="flex items-center w-full px-8 bg-white dark:bg-gray-700 time-tracker-item group">
     <div class="flex w-full">
       <div class="flex items-center w-2/5">
         <input
@@ -135,7 +135,7 @@ const deleteItem = () => {
       </div>
       <div class="flex w-2/5 ml-auto">
         <div class="flex time-tracker__controls ">
-          <span disabled class="flex items-center px-2 rounded-md cursor-pointer start-dates hover:bg-gray-100"
+          <span disabled class="flex items-center px-2 rounded-md cursor-pointer start-dates hover:bg-gray-100/20"
           @click="emit('editItem', timeEntry)"
           >
             {{ formatDateToTime(timeEntry.started_at) }} -
@@ -203,7 +203,6 @@ const deleteItem = () => {
     width: max-content;
     text-align: center;
     width: 90px;
-    background: white;
     border: none;
     display: flex;
     margin-right: 5px;

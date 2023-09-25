@@ -95,7 +95,7 @@ const toggleEdit = () => {
   <div>
     <div
       v-if="timeEntry.tracks.length > 1"
-      class="flex items-center w-full px-8 bg-white time-tracker-item group"
+      class="flex items-center w-full px-8 bg-white dark:bg-gray-700 dark:text-gray-200 time-tracker-item group"
     >
       <div class="flex w-full">
         <div class="flex items-center w-3/5">
@@ -117,7 +117,7 @@ const toggleEdit = () => {
             <section
               v-if="!isEditing"
               @click="toggleEdit"
-              class="flex w-full items-start hover:bg-gray-200 cursor-pointer py-2 px-4 rounded-md"
+              class="flex w-full items-start hover:bg-gray-200/20 cursor-pointer py-2 px-4 rounded-md"
             >
               <div
                 type="text"
@@ -152,7 +152,7 @@ const toggleEdit = () => {
               name=""
               :value="duration"
               disabled
-              class="time-duration-display"
+              class="time-duration-display bg-gray-50/20 rounded-md"
             />
             <slot name="actions-append" />
           </div>
@@ -165,6 +165,7 @@ const toggleEdit = () => {
       <template v-if="timeEntry.tracks.length <= 1 || state.isExpanded">
         <TimeEntryItem
           v-for="track in timeEntry.tracks"
+          class="dark:text-gray-300"
           :is-child="timeEntry.tracks.length > 1"
           :time-entry="track"
           :key="track.uid"
@@ -187,12 +188,12 @@ const toggleEdit = () => {
 
   /** NEW FEATURES: CSS has */
   &:has(:checked) {
-    @apply bg-green-50;
+    @apply bg-green-50/20;
   }
 
   /** NEW FEATURES: CSS has */
   &:has(.time-tracker-item__count) {
-    @apply bg-gray-50;
+    @apply bg-gray-50/20;
   }
 
   .card-body {
@@ -241,7 +242,6 @@ const toggleEdit = () => {
     width: max-content;
     text-align: center;
     width: 90px;
-    background: white;
     border: none;
     display: flex;
     margin-right: 5px;

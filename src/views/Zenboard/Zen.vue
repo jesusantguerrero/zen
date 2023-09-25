@@ -416,7 +416,7 @@ const toggleQuickAdd = () => {
           <div class="pt-4 space-y-4">
             <section>
               <CardButton
-                class="mt-4"
+                class="mt-4 dark:border-gray-600"
                 title="Plan ahead"
                 description="Prioritize your day"
                 @click="push('/plan-ahead')"
@@ -429,7 +429,7 @@ const toggleQuickAdd = () => {
                   </div>
                 </template>
               </CardButton>
-              <SummaryAside class="-mt-4" :matrix="matrix" />
+              <SummaryAside class="-mt-4 dark:border-gray-600" :matrix="matrix" />
             </section>
 
             <TaskTrackView

@@ -529,12 +529,12 @@ const isView = (viewName: string) => {
 
   <section v-else-if="isView('timer')">     
       <div v-for="(tracksInDate, trackDate) in groupedTracks" :key="trackDate" class="mb-12">
-        <header class="flex items-center justify-between bg-white px-8">
-          <div class="flex items-center w-full py-4 space-x-2 font-bold bg-white">
+        <header class="flex items-center justify-between bg-white dark:bg-gray-700 px-8 text-gray-400 dark:text-gray-300">
+          <div class="flex items-center w-full py-4 space-x-2 font-bold">
             <span>
               {{ formattedDate(trackDate) }}
             </span>  
-            <section v-if="selectedItems.length" class="flex items-center text-gray-400">
+            <section v-if="selectedItems.length" class="flex items-center ">
               <span> 
                 {{selectedItems.length }} of {{ state.tracked.length }} items selected
               </span>
@@ -543,7 +543,7 @@ const isView = (viewName: string) => {
               </button>
             </section>
           </div>
-          <section class="flex items-center justify-end w-full h-full space-x-4 bg-white" >
+          <section class="flex items-center justify-end w-full h-full space-x-4" >
             <span>
               {{ getDurationInGroups(tracksInDate) }}
             </span>

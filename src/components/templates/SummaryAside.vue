@@ -1,7 +1,7 @@
 <template>
 <div class="space-y-4 md:block md:mt-0">
     <!-- Matrix summary card-->
-    <section class="grid grid-cols-2 gap-1 overflow-hidden bg-white border rounded-b-md">
+    <section class="grid grid-cols-2 gap-1 overflow-hidden bg-white dark:bg-gray-500 border dark:border-gray-600 rounded-b-md">
             <article class="relative flex flex-col items-center justify-center h-24 px-4 font-bold transition cursor-pointer" 
                 v-for="(matrix, matrixName) in matrix"
                 :key="matrixName"

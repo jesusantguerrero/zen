@@ -112,7 +112,7 @@
         </button>
   
         <div class="flex justify-end w-full h-4" >
-           <section v-if="task.currentStreak" class="flex mr-2" :class="{'text-blue-700': isCold, 'text-red-600': !isCold}">
+           <section v-if="task.currentStreak" class="flex mr-2" :class="{'text-blue-700': isCold, 'text-red-600 dark:text-red-400': !isCold}">
             <IPhSnowflakeDuotone v-if="task.currentStreak.direction == 'down'" /> 
             <IPhFireDuotone v-else />
             <span>
@@ -148,11 +148,11 @@
       <!-- /item body -->
     </main>
     <aside v-if="type == 'delete'" class="grid grid-rows-2 h-full">
-        <button class="hover:bg-green-400 hover:text-white px-3 py-3 rounded-tl-md bg-gray-200 transition-colors" 
+        <button class="hover:bg-green-400 dark:hover:bg-green-400 hover:text-white px-3 py-3 rounded-tl-md dark:bg-gray-900 bg-gray-200 transition-colors" 
           @click.stop="$emit('plus', task)">
           <IMdiChevronUp />
         </button>
-        <button class="hover:bg-red-400 hover:text-white px-3 py-3 rounded-bl-md bg-gray-200 transition-colors" 
+        <button class="hover:bg-red-400 dark:hover:bg-red-400 hover:text-white px-3 py-3 rounded-bl-md dark:bg-gray-900 bg-gray-200 transition-colors" 
           @click.stop="$emit('minus', task)">
           <IMdiChevronDown />
         </button>
@@ -234,7 +234,6 @@ export default {
         }
 
         return colors[props.type] || colors['todo']
-
       }),
       keyStyles: computed(() => {
         return task.value.is_key && props.type == 'todo' ? 'border-green-300 border-2 bg-green-500 text-white' : ''
