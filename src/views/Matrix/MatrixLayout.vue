@@ -4,7 +4,7 @@
    <div class="items-center justify-between mb-2 section-header md:flex">
       <h2 class="items-center space-x-2 text-2xl font-bold text-left text-gray-400">
          <div>
-            <span v-if="state.matrixOwner">{{ state.matrixOwner }} 's</span>  Eisenhower Matrix
+            <span v-if="state.matrixOwner">{{ state.matrixOwner }} 's</span> Matrix
          </div>
       </h2>  
       <div class="flex space-x-2">
@@ -29,44 +29,44 @@
       </div>
    </div>
 
-   <div class="flex justify-between w-full text-right" v-if="false">
+   <div class="flex justify-between w-full text-right">
       <div class="flex">
-         <share-board /> 
-         <matrix-teammates v-model:selected="state.selectedUser" />           
+         <ShareBoard /> 
+         <MatrixTeammates v-model:selected="state.selectedUser" />           
       </div>
       
-      <button class="px-5 py-1 font-bold border rounded-md focus:outline-none"
-         :class="state.showUncategorized ? 'text-gray-200 bg-gray-600' : 'text-gray-700 bg-gray-200'"
-         @click="toggleUncategorized">Show Uncategorized 
+      <button class="px-5 py-1 font-bold border rounded-md focus:outline-none capitalize dark:border-lvl-3"
+         :class="showUncategorized ? 'text-gray-200 bg-gray-600 dark:bg-base-lvl-1' : 'text-gray-700 bg-gray-200 dark:base-lvl-2'"
+         @click="toggleUncategorized">{{ uncategorizedText }} Uncategorized 
       </button>
    </div>
 
-   <matrix-board 
+   <RouterView 
       class="mt-8"
       :search="state.search" 
       :show-help="state.showHelp" 
-      :show-uncategorized="state.showUncategorized" 
+      :show-uncategorized="showUncategorized" 
       :mode="state.selectedView" 
       :user="state.user"
       :allow-update="!state.selectedUser"
       :allow-add="!state.selectedUser"
    />
-
 </div>
 </template>
 
 <script setup>
 import { computed, reactive, watch } from "vue"
-import MatrixBoard from "../components/organisms/MatrixBoard.vue"
-import ShareBoard from "../components/organisms/ShareBoard.vue"
-import JetSelect from "../components/atoms/JetSelect.vue";
-import MatrixTeammates from "../components/organisms/MatrixTeammates.vue";
+import { useLocalStorage } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router"
-import { firebaseState } from "../utils/useFirebase";
+
+import ShareBoard from "@/components/organisms/ShareBoard.vue"
+import JetSelect from "@/components/atoms/JetSelect.vue";
+import MatrixTeammates from "@/components/organisms/MatrixTeammates.vue";
+import { firebaseState } from "@/utils/useFirebase";
+
 
 const state = reactive({
    showHelp:  false,
-   showUncategorized:  true,
    search: "",
    modes: [{
       name: 'Board',
@@ -99,6 +99,11 @@ const state = reactive({
    }),
 })
 
+const showUncategorized = useLocalStorage(`ZEN::${firebaseState.uid}/showUncategorized`, true);
+const uncategorizedText = computed(() => {
+   return showUncategorized.value ? 'Hide' : 'Show'
+})
+
 const { query, fullPath } = useRoute()
 const { replace } = useRouter()
 watch(() => state.viewMode.value, () => {
@@ -112,7 +117,7 @@ watch(fullPath, () => {
 }, { immediate: true, deep: true })
 
 const toggleUncategorized = () => {
-   state.showUncategorized=!state.showUncategorized;
+   showUncategorized.value =!showUncategorized.value;
 }
 
 </script>

@@ -43,7 +43,7 @@
 <script setup>
 import { reactive, computed, ref } from "vue"
 import { useRouter } from "vue-router";
-import MatrixBoard from "../components/organisms/MatrixBoard.vue"
+import MatrixBoard from "@/components/organisms/MatrixBoard.vue"
 
 const state = reactive({
   list: ['backlog', 'matrix', 'lineup'],

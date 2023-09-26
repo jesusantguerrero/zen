@@ -28,13 +28,13 @@
 </template>
 
 <script setup>
-import QuickAdd from '../../components/molecules/QuickAdd.vue';
-import TaskGroup from '../../components/organisms/TaskGroup.vue';
-import { getNextIndex } from '../../utils';
-import { registerEvent } from '../../utils/useFirebase';
-import { useSearchOptions } from '../../utils/useFuseSearch';
-import { useSnapshot } from '../../utils/firebase/useSnapshot';
-import { useTaskFirestore } from '../../utils/useTaskFirestore';
+import QuickAdd from '@/components/molecules/QuickAdd.vue';
+import TaskGroup from '@/components/organisms/TaskGroup.vue';
+import { getNextIndex } from '@/utils';
+import { registerEvent } from '@/utils/useFirebase';
+import { useSearchOptions } from '@/utils/useFuseSearch';
+import { useSnapshot } from '@/utils/firebase/useSnapshot';
+import { useTaskFirestore } from '@/utils/useTaskFirestore';
 
 const {
   saveTask,

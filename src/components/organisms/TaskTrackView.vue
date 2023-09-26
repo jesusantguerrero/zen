@@ -1,14 +1,14 @@
 <template>
-<div class="flex px-5 py-3 mt-10 bg-white border-2 border-gray-100 rounded-md shadow-md task__promodoros dark:bg-gray-700 dark:border-gray-600">
+<div class="flex px-5 py-3 mt-10 bg-white border-2 border-gray-100 rounded-md text-gray-400 dark:text-white shadow-md task__promodoros dark:bg-base-lvl-2 dark:border-base-lvl-3">
   <div class="flex">
-      <div class="flex items-center justify-center w-16 h-16 font-extrabold text-gray-400 border-4 border-gray-400 rounded-full task__target">
+      <div class="flex items-center justify-center w-16 h-16 font-extrabold  border-4 border-gray-400 dark:border-base-lvl-3 rounded-full task__target">
         <span class="text-xl">
           {{ completedPomodoros }}
         </span>
         <i class="ml-1 fas fa-stopwatch" /> 
       </div>
 
-      <div class="items-center ml-5 text-gray-400 sessions md:flex md:text-2xl">
+      <div class="items-center ml-5 sessions md:flex md:text-2xl">
         <div v-if="task.title" class="md:flex">
           <span class="ml-2 font-bold">{{ timeTracked }} </span> 
           <div class="mx-2 font-bold" v-if="!hideSessions">{{ task.tracks && task.tracks.length }}x</div>

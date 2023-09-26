@@ -1,23 +1,26 @@
 <script setup lang="ts">
-import { reactive, watch, onUnmounted, computed, Ref } from 'vue'
-import { ITrack, useTrackFirestore } from '../utils/useTrackFirestore'
-import SearchBar from "../components/molecules/SearchBar.vue"
+import { reactive, watch, onUnmounted, computed  } from 'vue'
+import { ITrack, useTrackFirestore } from '@/utils/useTrackFirestore'
+import SearchBar from "@/components/molecules/SearchBar.vue"
+import { enUS } from 'date-fns/locale'
+import { endOfWeek, format, formatRelative, isToday, parse, startOfDay, startOfMonth, startOfWeek } from 'date-fns'
+import { ref } from 'vue';
+import { ElMessageBox, ElNotification } from 'element-plus'
 // @ts-expect-error
 import { AtButton } from "atmosphere-ui";
-import { endOfWeek, format, formatRelative, isToday, parse, startOfDay, startOfWeek } from 'date-fns'
-import { enUS } from 'date-fns/locale'
-import TimeTrackerGroup from '../components/organisms/TimeTrackerGroup.vue'
-import { ElMessageBox, ElNotification } from 'element-plus'
-import { functions } from '@/utils/useFirebase'
-import { getDurationOfTracks } from '@/utils/useDateTime';
-import { durationFromMs } from '@/utils/useTracker';
-import { isSameDateTime} from '@/utils';
+
+import TimeTrackerGroup from '@/components/organisms/TimeTrackerGroup.vue'
 import TabHeader from '@/components/atoms/TabHeader.vue';
-import TimerCalendar from './TimerCalendar.vue';
-import { ref } from 'vue';
 import TrackModal from '@/components/organisms/modals/TrackModal.vue';
-import { ITask, useTaskFirestore } from '@/utils/useTaskFirestore';
 import TaskModal from '@/components/organisms/modals/TaskModal.vue';
+import TimerCalendar from './TimerCalendar.vue';
+
+import { isSameDateTime} from '@/utils';
+import { getDurationOfTracks } from '@/utils/useDateTime';
+import { functions } from '@/utils/useFirebase'
+import { ITask, useTaskFirestore } from '@/utils/useTaskFirestore';
+import { durationFromMs } from '@/utils/useTracker';
+
 // state and ui
 const state: any = reactive({
   tracked: [],
@@ -26,6 +29,8 @@ const state: any = reactive({
   tempoEvents: [],
   tags: [],
   date:startOfDay(new Date()),
+  endDate:startOfDay(new Date()),
+  startDate:startOfDay(new Date()),
   selectedTags: [],
   committedTitle: computed(() => { 
     const relativeLocale: Record<string, string> = {
@@ -67,6 +72,16 @@ const state: any = reactive({
   ],
 })
 
+const pagerMode = computed(() => {
+  const modes: Record<string, string> = {
+    'week': 'week',
+    'month': 'month',
+    'timer': 'day' 
+  }
+
+  return modes[state.tabSelected]
+})
+
 // tracked tasks
 const  { 
   getTracksByDates, 
@@ -76,14 +91,15 @@ const  {
   deleteBatch,
   updateBatch 
 } = useTrackFirestore()
-const fetchTracked = (date: Date) => {
-  return getTracksByDates(date).then(trackedRef => {
+const fetchTracked = (date: Date, endDate?: Date) => {
+  return getTracksByDates(date, endDate).then(trackedRef => {
     state.firebaseRefs['tracked'] = trackedRef.onSnapshot( snap => {
-      const list = []
+      const list: ITrack[] = []
       snap.forEach(doc => {
         const track = doc.data()
-          list.push({ ...track, uid: doc.id })
+          list.push({ ...track, uid: doc.id } as ITrack)
       })
+      console.log(list);
       state.tracked = list;
     })
   })
@@ -113,11 +129,6 @@ const syncTempoLogs = () => {
   })
 }
 
-const onEventClick = (event: any) => {
-  if (!event.class.includes('tempo')) {
-    syncTempoUpdate(event)
-  }
-}
 
 const { updateTrack } = useTrackFirestore();
 
@@ -206,10 +217,25 @@ const fetchTempo = async (date: Date) => {
   });
 }
 
+const fetchData = async(dates?: Date[]) => {
+  if (pagerMode.value == 'day') {
+    await fetchTracked(state.date)
+    await fetchTempo(state.date)
+  } else {
+    const startDate = pagerMode.value == "month" ? startOfMonth(state.endDate) : state.startDate;
+    await fetchTracked(startDate, state.endDate)
+    await fetchTempo(startDate, state.endDate)
+  }
+}
+
 watch(() => state.date , async () => {
- await fetchTracked(state.date)
- await fetchTempo(state.date)
+  fetchData()
 }, { immediate: true })
+
+watch(() => state.endDate , async () => {
+  fetchData()
+}, { immediate: true })
+
 
 interface ITrackGroup {
   id: string;
@@ -413,13 +439,17 @@ const setTrackToEdit = (task: ITrack) => {
   isTrackModalOpen.value = false;
   isTrackModalOpen.value = true;
 };
+
 const onEditedTrack = (track: ITrack) => {
   const index = state.tracked.findIndex(
     (trackItem: ITrack) => trackItem.uid == track.uid
   );
   state.tracked[index] = { ...track };
   trackToEdit.value = null;
+  isTrackModalOpen.value = false;
 };
+
+const { getTaskById, updateTask  } = useTaskFirestore();
 
 const onGroupDescriptionChanged = (tracks: ITrack[]) => {
     updateBatch(tracks).then(() => {
@@ -429,9 +459,14 @@ const onGroupDescriptionChanged = (tracks: ITrack[]) => {
           title: "Task group updated correctly",
         });
       });
+
+      updateTask({
+        uid: tracks.at(0)?.task_uid,
+        title: tracks.at(0)?.description
+      });
 };
 
-const { getTaskById  } = useTaskFirestore();
+
 const isTaskModalOpen = ref(false)
 const taskToEdit = ref<ITask|null>(null);
 
@@ -443,7 +478,6 @@ const onDetail = async (track: ITrack) => {
 
 
 // group options
-
 const areGroupOptionsActive = computed(() => {
   const selectedDescription = selectedItems.value.at(0)?.description;
   return !!selectedItems.value.length && selectedItems.value.every((track: ITrack) => track.description == selectedDescription)
@@ -456,18 +490,25 @@ const canMergeTracks = computed(() => {
 const canUploadAsGroup = computed(() => {
   return areGroupOptionsActive.value && selectedItems.value.every((track: ITrack) => !track.relations?.tempo);
 })
+
+const isView = (viewName: string) => {
+  return state.tabSelected== viewName
+}
 </script>
 
 <template>
-<div class="pt-24 mx-5 md:pt-28 md:mx-28">
-  <div class="items-center justify-between mb-10 section-header md:flex">
-      <TabHeader v-model="state.tabSelected" :tabs="state.tabs" class="h-full overflow-hidden rounded-md"/>
-      <section class="flex space-x-2">
+<main class="pt-24 mx-5 md:pt-28 md:mx-28">
+  <header class="items-center justify-between mb-10 section-header md:flex">
+      <TabHeader v-model="state.tabSelected" :tabs="state.tabs" class="h-full overflow-hidden rounded-md w-full "/>
+      <section class="flex space-x-2 w-full justify-end">
         <SearchBar
           v-model="state.searchText"
           v-model:date="state.date"
+          v-model:startDate="state.startDate"
+          v-model:endDate="state.endDate"
           v-model:tags="state.tags"
           v-model:selectedTags="state.selectedTags"
+          :pager-mode="pagerMode"
           date-type=""
         />
         <AtButton 
@@ -479,16 +520,21 @@ const canUploadAsGroup = computed(() => {
           Sync Tempo
         </AtButton>
       </section>
-  </div> 
+  </header> 
 
-  <div class="">     
+  <section class="w-full mx-auto mt-10 text-center md:w-6/12" v-if="!state.tracked.length && isView('timer')">
+    <img src="@/assets/undraw_following.svg" class="w-full mx-auto md:w-5/12"> 
+    <p class="mt-10 font-bold text-gray-500 md:mt-5 dark:text-gray-300"> There's no tracks</p>
+  </section>
+
+  <section v-else-if="isView('timer')">     
       <div v-for="(tracksInDate, trackDate) in groupedTracks" :key="trackDate" class="mb-12">
-        <header class="flex items-center justify-between bg-white px-8">
-          <div class="flex items-center w-full py-4 space-x-2 font-bold bg-white">
+        <header class="flex items-center justify-between bg-white dark:bg-gray-700 px-8 text-gray-400 dark:text-gray-300">
+          <div class="flex items-center w-full py-4 space-x-2 font-bold">
             <span>
               {{ formattedDate(trackDate) }}
             </span>  
-            <section v-if="selectedItems.length" class="flex items-center text-gray-400">
+            <section v-if="selectedItems.length" class="flex items-center ">
               <span> 
                 {{selectedItems.length }} of {{ state.tracked.length }} items selected
               </span>
@@ -497,7 +543,7 @@ const canUploadAsGroup = computed(() => {
               </button>
             </section>
           </div>
-          <section class="flex items-center justify-end w-full h-full space-x-4 bg-white" v-if="state.tabSelected=='timer'">
+          <section class="flex items-center justify-end w-full h-full space-x-4" >
             <span>
               {{ getDurationInGroups(tracksInDate) }}
             </span>
@@ -522,18 +568,7 @@ const canUploadAsGroup = computed(() => {
             </AtButton>
           </section>
         </header>
-        <TrackModal
-          v-model:is-open="isTrackModalOpen"
-          :data="trackToEdit"
-          @saved="onEditedTrack"
-          @closed="trackToEdit = null"
-        />
-        <TaskModal
-          v-model:is-open="isTaskModalOpen"
-          :task-data="taskToEdit"
-          :editable="false"
-          @closed="taskToEdit = null"
-        />
+
         <template  v-if="state.tabSelected=='timer'">
           <TimeTrackerGroup
               v-for="track in tracksInDate"
@@ -559,17 +594,28 @@ const canUploadAsGroup = computed(() => {
           </TimeTrackerGroup>
         </template>
       </div>
-      <TimerCalendar
-        v-if="['week', 'month'].includes(state.tabSelected)"
-        :tracks="state.tracked" 
-        :events="events"
-        :active-view="state.tabSelected"
-        :tempoEvents="state.tempoEvents"  
-      />
-      <div class="w-full mx-auto mt-10 text-center md:w-6/12" v-if="!state.tracked.length && state.tabSelected=='timer'">
-        <img src="../assets/undraw_following.svg" class="w-full mx-auto md:w-5/12"> 
-        <p class="mt-10 font-bold text-gray-500 md:mt-5 dark:text-gray-300"> There's no tracks</p>
-      </div>
-  </div>
-</div>
+  </section>
+
+  <TimerCalendar
+    v-else-if="['week', 'month'].includes(state.tabSelected)"
+    :date="state.startDate"
+    :tracks="state.tracked" 
+    :events="events"
+    :active-view="state.tabSelected"
+    :tempoEvents="state.tempoEvents"  
+  />
+
+  <TrackModal
+    v-model:is-open="isTrackModalOpen"
+    :data="trackToEdit"
+    @closed="trackToEdit = null"
+    @saved="onEditedTrack"
+  />
+  <TaskModal
+    v-model:is-open="isTaskModalOpen"
+    :task-data="taskToEdit"
+    :editable="false"
+    @closed="taskToEdit = null"
+  />
+</main>
 </template>

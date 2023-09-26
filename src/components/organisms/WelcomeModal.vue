@@ -1,17 +1,17 @@
 <template>
 <div>
-    <vue-final-modal 
+    <VueFinalModal 
         v-model="isOpenLocal" 
         name="welcome" 
         classes="flex justify-center md:pt-20 w-full"
         content-class="md:w-5/12"
         >
         <div class="w-full bg-white rounded-md shadow-md welcome-modal__form">
-            <welcome-form v-if="section=='welcome'" @closed="section='about'"></welcome-form>
-            <about-form v-if="section=='about'" @closed="section='help'"></about-form>
-            <help-view v-if="section=='help'" @closed="emit('closed')"></help-view>
+            <WelcomeForm v-if="section=='welcome'" @closed="section='about'"></WelcomeForm>
+            <AboutForm v-if="section=='about'" @closed="section='help'"></AboutForm>
+            <HelpView v-if="section=='help'" @closed="emit('closed')"></HelpView>
         </div>
-    </vue-final-modal>
+    </VueFinalModal>
 </div>
 </template>
 
@@ -25,7 +25,7 @@ const props = defineProps({
     isOpen: Boolean
 })
 
-const emit = defineEmit({
+const emit = defineEmits({
     closed: Function
 })
 

@@ -29,7 +29,7 @@
 <script setup>
 import NormalWave from "./waves/normal-wave.vue";
 import FeatureCard from "./card/FeatureCard.vue";
-import BadgeItem from "../../components/atoms/BadgeItem.vue";
+import BadgeItem from "@/components/atoms/BadgeItem.vue";
 
 const steps = [
   {

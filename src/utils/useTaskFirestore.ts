@@ -5,7 +5,10 @@ import { nextTick } from "vue";
 import { startOfDay, subDays } from "date-fns";
 const collectionName = "tasks";
 
-
+export interface TaskStreak {
+    direction: 'up'| 'down',
+    streak: number;
+}
 export interface ITask {
     uid: string; 
     user_uid: string;
@@ -21,6 +24,8 @@ export interface ITask {
     checklist: any[];
     last_tracked_at?: Date;
     last_tracked_ended_at?: Date;
+    currentStreak?: TaskStreak;
+    goal?: number;
 }
 
 const getDate = (date: Date| string) => {
@@ -66,7 +71,33 @@ export function useTaskFirestore() {
             runRecurrence(task)
             return task.uid;
         })
-    
+    }
+    const addOccurrence = (task: Partial<ITask>, direction: 'up'|'down') => {
+        const trackRef = db.collection(collectionName).doc(task.uid);
+        const occurrence = {
+            created_at: new Date(),
+            direction,
+            user_uid: firebaseState.user?.uid,
+        };
+        
+        trackRef.collection('history').add(occurrence)
+        if (task.currentStreak?.direction != occurrence.direction) {
+            task.currentStreak = {
+                direction: occurrence.direction,
+                streak: 1
+            }
+        } else if (task.currentStreak) {
+            task.currentStreak = {
+                direction: occurrence.direction,
+                streak: task.currentStreak.streak + 1
+            }
+        }
+        return trackRef
+        .update(taskConverter.toFirestore(task), { merge: true })
+        .then(() => {
+            runRecurrence(task)
+            return task.uid;
+        })
     }
 
     const saveTaskBatch = (tasks, uniqueKey = 'source_id') => {
@@ -248,6 +279,7 @@ export function useTaskFirestore() {
         getAllFromUser,
         saveTaskBatch,
         getMatrix,
-        getTaskById
+        getTaskById,
+        addOccurrence
     }
 }

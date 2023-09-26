@@ -5,7 +5,7 @@
 html {
     background: #f8f8f8;
     &.dark {
-      background: #1F2937 !important;  
+      @apply bg-base-lvl-1;  
     }
 }
 

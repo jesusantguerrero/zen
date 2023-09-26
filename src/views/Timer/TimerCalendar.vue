@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import {  ElNotification } from 'element-plus'
 // @ts-expect-error
 import VueCal from "vue-cal";
@@ -9,13 +9,14 @@ import { useTrackFirestore } from '@/utils/useTrackFirestore'
 import { functions } from '@/utils/useFirebase'
 import { formatDurationFromMs } from '@/utils/useDateTime';
 import { isSameDateTime} from '@/utils';
-import TimerCalendarCard from './TimerCalendarCard.vue';
-import { format } from 'date-fns';
+import TimerCalendarCard from './Partials/TimerCalendarCard.vue';
+import { format, subDays, addDays } from 'date-fns';
 
 
 const { tempoEvents, tracks }= defineProps<{
   tempoEvents: any[];
   tracks: any[];
+  date: Date;
   activeView: string;
 }>()
 
@@ -114,6 +115,10 @@ const syncTempoUpdate = async (event: any, autoUpdateTrack = true) => {
   })
 }
 
+onMounted(() => {
+  document.querySelector('.vuecal__body .vuecal__bg')?.classList.add('ic-scroller');
+})
+
 
 const syncZenUpdate = async (event: any, autoUpdateTrack = true) => {
   const alreadyInZen = events.value
@@ -182,6 +187,15 @@ const getTotalTimeByDate = (date: Date) => {
   return formatDurationFromMs(milliseconds)?.toFormat?.('hh:mm:ss')
 }
 
+const formatDate = (date: Date) => {
+  try {
+    format(date, "EEEE, dd ")
+  } catch (err) {
+    console.log(err, "date")
+    return date;
+  }
+}
+
 const events = computed(() => {
   const appEvents = tracks.filter(item => item.ended_at && !item.relations?.tempo).map(event => ({
         ...event,
@@ -210,33 +224,25 @@ const events = computed(() => {
         style="height: 500px"
         :events="events"
         :disable-views="['years', 'year']"
-        hide-view-selector
         :active-view="activeView"
         :time-cell-height="110"
-        today-button
+        :selected-date="date"
+        :start-week-on-sunday="true"
+        hide-view-selector
+        watchRealTime
       >
-
-        <template #today-button>
-            <ElTooltip
-                class="box-item"
-                effect="dark"
-                content="Go to Today's date"
-                placement="top-start"
-              >
-                <ElButton>Today</ElButton>
-            </ElTooltip>
-        </template>
-        <template v-slot:weekday-heading="{ heading : { label, date } }">
+        <template v-slot:weekday-heading="{ heading  }">
           <article>
             <h4 class="text-xs">
-              {{  label }}
+              {{ formatDate(addDays(heading.date, 1)) }}
+               {{ heading.label }}
             </h4>
             <section v-if="activeView == 'week'">
-              {{ getTotalTimeByDate(date) }}
+              {{ getTotalTimeByDate(addDays(heading.date, 1)) }}
             </section>
           </article>
-
         </template>
+
         <template #event="{ event }"> 
           <TimerCalendarCard 
             :event="event"
@@ -249,28 +255,35 @@ const events = computed(() => {
 
 <style lang="scss">
 .tempo-event, .zen-event {
+  @apply dark:bg-base-lvl-2 dark:border-base-lvl-3 dark:text-white;
   position: relative;
-    height: 102.667px;
-    width: 168px;
-    min-height: 20px;
-    border: 1px solid rgb(188, 216, 224);
-    border-radius: 4px;
-    box-shadow: rgba(0, 0, 0, 0.08) 0px 1px 3px 0px;
-    font-size: 14px;
-    flex-direction: column;
-    display: flex;
-    transition: min-height 0.3s ease 0s, box-shadow 0.3s ease-in-out 0s;
-    text-decoration: none;
-    background: rgb(238, 243, 248);
-    line-height: 1.42857;
-    touch-action: none;
-    -webkit-box-pack: justify;
-    justify-content: space-between;
-    padding: 8px;
-    opacity: 1;
-    cursor: grab;
-    margin-bottom: 0px;
-    color: rgba(0, 28, 61, 0.72);
-    user-select: none;
+  height: 102.667px;
+  width: 168px;
+  min-height: 20px;
+  border: 1px solid rgb(188, 216, 224);
+  border-radius: 4px;
+  box-shadow: rgba(0, 0, 0, 0.08) 0px 1px 3px 0px;
+  font-size: 14px;
+  flex-direction: column;
+  display: flex;
+  transition: min-height 0.3s ease 0s, box-shadow 0.3s ease-in-out 0s;
+  text-decoration: none;
+  background: rgb(238, 243, 248);
+  line-height: 1.42857;
+  touch-action: none;
+  -webkit-box-pack: justify;
+  justify-content: space-between;
+  padding: 8px;
+  opacity: 1;
+  cursor: grab;
+  margin-bottom: 0px;
+  color: rgba(0, 28, 61, 0.72);
+  user-select: none;
+}
+
+.vuecal {
+  &__title-bar, &__weekdays-headings {
+    @apply dark:bg-base-lvl-2 dark:text-white;
+  }
 }
 </style>

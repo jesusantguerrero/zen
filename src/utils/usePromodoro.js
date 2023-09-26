@@ -21,7 +21,7 @@ export function usePromodoro() {
               label: "Long Rest",
               min: LONG_BREAK_MINUTES,
               sec: 0,
-              color: "text-green-400",
+              color: "text-green-400 dark:text-accent",
               colorBg: "bg-green-400",
               colorBorder: "border-green-400",
               text: "Long break",
@@ -29,7 +29,7 @@ export function usePromodoro() {
             promodoro: {
               min: SESSION_MINUTES,
               sec: 0,
-              color: "text-red-400",
+              color: "text-red-400 dark:text-error",
               colorBg: "bg-red-400",
               colorBorder: "border-red-400",
               text: "Pomodoro session",
@@ -37,7 +37,7 @@ export function usePromodoro() {
             rest: {
               min: SHORT_BREAK_MINUTES,
               sec: 0,
-              color: "text-blue-400",
+              color: "text-blue-400 dark:text-info",
               colorBg: "bg-blue-400",
               colorBorder: "border-blue-400",
               text: "Take a short break",

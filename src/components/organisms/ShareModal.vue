@@ -58,7 +58,7 @@
 </template>
 
 <script setup>
-import { defineProps, ref, watch, computed, reactive, defineEmit} from "vue"
+import { ref, watch, reactive, defineEmit} from "vue"
 import ModalBase from "../molecules/ModalBase.vue";
 import { firebaseInstance } from "../../utils/useFirebase";
 

@@ -50,9 +50,9 @@
 </template>
 
 <script setup>
-import WelcomeForm from "../components/molecules/WelcomeForm.vue"
-import AboutForm from "../components/molecules/AboutForm.vue"
-import HelpView from "../components/molecules/HelpView.vue"
+import WelcomeForm from "@/components/molecules/WelcomeForm.vue"
+import AboutForm from "@/components/molecules/AboutForm.vue"
+import HelpView from "@/components/molecules/HelpView.vue"
 import { reactive } from "vue";
 
 const state = reactive({

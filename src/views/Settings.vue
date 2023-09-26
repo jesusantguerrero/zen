@@ -37,13 +37,13 @@
 
 <script setup>
 import { computed, reactive } from "vue"
-import SettingsProfile from "../components/templates/SettingsProfile.vue"
-import SettingsTags from "../components/templates/SettingsTags.vue"
-import SettingsNotification from "../components/templates/SettingsNotification.vue"
-import SettingsIntegrations from "../components/templates/SettingsIntegrations.vue"
-import SettingsOauth from "../components/templates/SettingsOauth.vue"
-import SettingsPomodoro from "../components/templates/SettingsPomodoro.vue"
-import SettingsMatrixVue from "../components/templates/SettingsMatrix.vue"
+import SettingsProfile from "@/components/templates/SettingsProfile.vue"
+import SettingsTags from "@/components/templates/SettingsTags.vue"
+import SettingsNotification from "@/components/templates/SettingsNotification.vue"
+import SettingsIntegrations from "@/components/templates/SettingsIntegrations.vue"
+import SettingsOauth from "@/components/templates/SettingsOauth.vue"
+import SettingsPomodoro from "@/components/templates/SettingsPomodoro.vue"
+import SettingsMatrixVue from "@/components/templates/SettingsMatrix.vue"
 
 const state = reactive({
   menu: {

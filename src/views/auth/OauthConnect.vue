@@ -17,9 +17,10 @@
 
 <script setup>
 import { useRoute, useRouter } from "vue-router";
-import { functions } from "../../utils/useFirebase"
 import { onMounted, ref } from "vue";
-import IntegrationModal from "../../components/organisms/modals/IntegrationModal.vue"; 
+
+import { functions } from "@/utils/useFirebase"
+import IntegrationModal from "@/components/organisms/modals/IntegrationModal.vue"; 
 
 const route = useRoute();
 const formData = ref({});
