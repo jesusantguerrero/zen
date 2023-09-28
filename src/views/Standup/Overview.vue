@@ -20,6 +20,7 @@
     </h4>
     <TaskItem 
         v-for="(task) in dateGroup.list"
+        :type="task.type"
         :task="task"
         :handle-mode="false"
         :show-select="false"
@@ -31,7 +32,7 @@
         :allow-update="false"
         @undo="onUndo(task)"
     >
-      <template #append-actions>
+      <template #append-actions v-if="task.commit_date">
         <AtButton 
           v-if="!isYesterday(parseISO(task.commit_date))" 
           class="flex items-center h-6 px-2 ml-2 text-xs font-bold text-white transition-colors bg-gray-600 rounded-md hover:bg-gray-500"
@@ -53,33 +54,6 @@
   <div class="w-8/12 mx-auto mt-10 text-center md:w-6/12" v-if="!state.committed.length && state.isFirstLoaded">
     <img src="@/assets/undraw_following.svg" class="mx-auto w-12/12 md:w-5/12"> 
     <div class="mt-10 font-bold text-gray-500 md:mt-5 dark:text-gray-300"> There's no tasks</div>
-  </div>
-  
-  <h5 class="block mt-5 mb-2 font-bold text-left text-gray-500 dark:text-white capitalize md:text-lg">
-    ⏳ Worked on ({{ trackedUnfinished.length }}) 
-  </h5>
-  <div v-for="track in trackedUnfinished">
-    <TaskItem
-      :task="parseTrack(track)" 
-      type="backlog"
-      :handle-mode="false"
-      :show-select="false"
-      :show-controls="false"
-      :is-item-as-handler="false"
-      :is-compact="true"
-      :class="''"
-      :allow-run="false"
-      :allow-update="false"
-    >
-    <template #append-actions>
-        <AtButton
-        class="flex items-center h-6 px-2 ml-2 text-xs font-bold text-white transition-colors bg-gray-600 rounded-md hover:bg-gray-500"
-        @click="commitTrackTaskAsToday(track)"
-      >
-        Finish
-      </AtButton>
-    </template>
-    </TaskItem>
   </div>
 
   <h5 class="block mt-5 mb-2 font-bold text-left text-gray-500 dark:text-white capitalize md:text-lg">
@@ -132,7 +106,7 @@ const state = reactive({
   date: startOfDay(new Date()),
   selectedTags: [],
   humanDate: computed(() => {
-    return format(state.date, 'dd LLL, yyyy')
+    return format(state.date, 'iii dd LLL, yyyy')
   }),
 })
 
@@ -152,7 +126,7 @@ const getCommitTitle = (dateString) => {
     }
     
     const dateName = formatRelative(parseISO(dateString), new Date(), { locale });
-    return `${dateName} I finished:`
+    return `${dateName}`
   }
 
 const  { getCommittedTasks, updateTask } = useTaskFirestore()
@@ -165,21 +139,7 @@ const fetchCommitted = (date) => {
   })
 }
 
-const committedByDate = computed(() => {
-  return state.committed.reduce((byDate, task) => {
-    if (!byDate[task.commit_date]) {
-      byDate[task.commit_date] = {
-        date: task.commit_date,
-        list: [task],
-      }
-    } else {
-      byDate[task.commit_date].list.push(task);
-    }
-    return byDate;
-  }, {})
-})
-
-// tracked tasks
+// Tracked tasks
 const  { getTracksByDates } = useTrackFirestore()
 const fetchTracked = (date) => {
   const startDate = subDays(startOfDay(date), 1);
@@ -202,9 +162,26 @@ const fetchTracked = (date) => {
   })
 }
 
-const trackedUnfinished = computed(() => {
+const committedByDate = computed(() => {
+
   const doneTasks = state.committed.map(task => task.title);
-  return state.tracked.filter(track => !doneTasks.includes(track.description));
+  const unfinished =  state.tracked.filter(track => !doneTasks.includes(track.description));
+
+
+  return [...state.committed, ...unfinished].reduce((byDate, task) => {
+    const taskDate = task.commit_date ?? format(task.started_at,  'yyyy-MM-dd');
+    const parsedTask = task.commit_date ? task : parseTrack(task);
+
+    if (!byDate[taskDate]) {
+      byDate[taskDate] = {
+        date: task.commit_date,
+        list: [parsedTask],
+      }
+    } else {
+      byDate[taskDate].list.push(parsedTask);
+    }
+    return byDate;
+  }, {})
 })
 
 // suggestions [todo + schedule]
@@ -271,7 +248,7 @@ const parseTrack = (track) => {
     task_id: track.task_id,
     tags: [],
     title: track.description,
-    type: 'todo',
+    type: 'backlog',
     tracks: [track]
   }
 }

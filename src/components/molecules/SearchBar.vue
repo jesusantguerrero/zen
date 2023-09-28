@@ -11,7 +11,7 @@ import { format } from "date-fns";
 
 import SearchBox from "./SearchBox.vue";
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   modelValue: string,
   date: Date;
   startDate?: Date;
@@ -21,7 +21,9 @@ const props = defineProps<{
   pagerMode?: string;
   hideDate?: boolean;
   hideTags?: boolean;
-}>();
+}>(), {
+  pagerMode: 'day'
+});
 
 const emit = defineEmits<{
   "update:modelValue": [value: string],
@@ -111,8 +113,7 @@ const displayDate = computed(() => {
     <!-- /search -->
 
     <div class="flex justify-between mt-2 md:mt-0" v-if="!hideDate">
-        <!-- date-pager -->
-        <AtDatePager 
+      <AtDatePager 
             v-model="searchOptions.date" 
             @change="emit('date-changed', $event)"
             @update:startDate="emit('update:startDate', $event)"
@@ -121,7 +122,7 @@ const displayDate = computed(() => {
             class="date-pager h-12 dark:bg-base-lvl-2 dark:border-base-lvl-3 dark:text-white"
             controlsClass="dark:hover:bg-base-lvl-1 dark:bg-transparent dark:text-white"
           >
-          <span  :class="[props.pagerMode == 'week' ? 'w-48 text-center' : 'w-32 text-center']">
+          <span :class="[props.pagerMode == 'week' ? 'w-48 text-center' : 'w-32 text-center']">
             {{  displayDate }}
           </span>
         </AtDatePager>
