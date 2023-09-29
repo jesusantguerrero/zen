@@ -10,12 +10,11 @@
 
       <div class="items-center ml-5 sessions md:flex md:text-2xl">
         <div v-if="task.title" class="md:flex">
-          <span class="ml-2 font-bold">{{ timeTracked }} </span> 
           <div class="mx-2 font-bold" v-if="!hideSessions">{{ task.tracks && task.tracks.length }}x</div>
         </div>
         
         <div class="text-lg">
-          (Tracked today: {{ totalTimeToday }})
+          Tracked today: {{ totalTimeToday }}
         </div>
       </div>
   </div>
@@ -27,7 +26,7 @@ import { computed, toRefs, onUnmounted, reactive } from "vue";
 import { useTracker } from "@/utils/useTracker";
 import { useTaskFirestore } from "@/utils/useTaskFirestore";
 import { useTrackFirestore } from "@/utils/useTrackFirestore";
-import { formatDurationFromMs, getDurationOfTracks } from "@/utils/useDateTime";
+import { formatDurationFromMs, getDurationInMs } from "@/utils/useDateTime";
 
 const { updateTask } = useTaskFirestore()
 // tracked tasks
@@ -50,14 +49,13 @@ const props = defineProps({
 
 const { task, currentTimer } = toRefs(props)
 
-const completedPomodoros= computed(() => {
-  return task.value.tracks ? task.value.tracks.filter(track => track.completed).length : 0
-})
-const { timeTracked } = useTracker(task, currentTimer)
-
 const state = reactive({
   firebaseRefs: {},
   tracked: []
+})
+
+const completedPomodoros= computed(() => {
+  return state.tracked ? state.tracked.filter(track => track.completed).length : 0
 })
 
 const  { getTracksByDates } = useTrackFirestore()
@@ -78,8 +76,12 @@ fetchTracked(new Date());
 
 
 const totalTimeToday = computed(() => {
- 
-  return getDurationOfTracks(state.tracked);
+  const duration = currentTimer && currentTimer.value && currentTimer.value.currentTime
+  let todayTrackedTime = getDurationInMs(state.tracked);
+  if (duration) {
+      todayTrackedTime +=  duration;
+  }
+  return formatDurationFromMs(todayTrackedTime).toFormat('hh:mm:ss');
 })
 
 onUnmounted(() => {

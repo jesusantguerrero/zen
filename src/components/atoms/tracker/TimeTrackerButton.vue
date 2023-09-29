@@ -1,8 +1,8 @@
 <template>
   <div
-    class="task-item__tracked ml-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 md:text-md text-sm md:text-base flex items-center"
+    class="task-item__tracked ml-2  text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 md:text-md text-sm md:text-base flex items-center"
     title="Time tracked"
-    :class="[allowRun ? 'cursor-pointer' : 'cursor-default']"
+    :class="[allowRun ? 'cursor-pointer' : 'cursor-default', isRunning ? 'dark:text-accent' : 'dark:text-white']"
     @click="$emit('toggle-timer', isCurrent)"
   >
     <i
@@ -13,14 +13,12 @@
   </div>
 </template>
 
-<script>
-import { computed, reactive, toRefs } from "vue";
+<script setup>
+import { computed, toRefs } from "vue";
 import { useTracker } from "../../../utils/useTracker";
 import { useDateTime } from "../../../utils/useDateTime";
 
-export default {
-  name: "TimeTrackerButton",
-  props: {
+const  props = defineProps({
     allowRun: {
       type: Boolean,
     },
@@ -47,30 +45,24 @@ export default {
     hideSessions: {
       type: Boolean,
     },
-  },
-  setup(props) {
-    const { task, currentTimer } = toRefs(props);
+});
+ 
+const { task, currentTimer } = toRefs(props);
 
-    const { timeTracked, savedTime } = useTracker(task, currentTimer);
-    const { formatDurationFromMs } = useDateTime();
+const { timeTracked, savedTime } = useTracker(task, currentTimer);
+const { formatDurationFromMs } = useDateTime();
 
-    const state = reactive({
-      completedPromodoros: computed(() => {
-        return task.value.tracks
-          ? task.value.tracks.filter((track) => track.completed).length
-          : 0;
-      }),
-      trackerIcon: computed(() =>
-        props.isCurrent && props.currentTimer.currentTime ? "fas fa-stop" : "fas fa-play"
-      ),
-    });
+const completedPomodoros = computed(() => {
+  return task.value.tracks
+    ? task.value.tracks.filter((track) => track.completed).length
+    : 0;
+});
 
-    return {
-      ...toRefs(state),
-      timeTracked,
-      savedTime,
-      formatDurationFromMs,
-    };
-  },
-};
+const isRunning = computed(() => {
+  return props.isCurrent && props.currentTimer.currentTime
+})
+
+const trackerIcon=  computed(() =>
+  isRunning.value ? "fas fa-stop" : "fas fa-play"
+);
 </script>

@@ -1,5 +1,10 @@
 module.exports = {
-  content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}', './node_modules/atmosphere-ui/**/*.{vue,js}', './node_modules/vue-temporal-components/**/*.{vue,js}'],
+  content: [
+    './index.html', 
+    './src/**/*.{vue,js,ts,jsx,tsx}', 
+    './node_modules/atmosphere-ui/dist/**/*.{vue,js}', 
+    './node_modules/vue-temporal-components/**/*.{vue,js}'
+  ],
   darkMode: 'class', // or 'media' or 'class'
   theme: {
     extend: {
