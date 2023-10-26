@@ -96,7 +96,7 @@ const deleteItem = () => {
         </div>
       </div>
 
-      <div class="flex m-auto opacity-0 w--1/5">
+      <div class="flex m-auto w-1/5">
         <div class="flex time-tracker__relations">
           <div class="time-tracker__billable-status custom-check-container">
             <label
@@ -133,9 +133,9 @@ const deleteItem = () => {
           </div>
         </div>
       </div>
-      <div class="flex w-2/5 ml-auto">
+      <div class="flex w-2/5 ml-auto items-center">
         <div class="flex time-tracker__controls ">
-          <span disabled class="flex items-center px-2 rounded-md cursor-pointer start-dates hover:bg-gray-100/20"
+          <span disabled class="flex items-center px-2  cursor-pointer start-dates hover:bg-gray-100/20 rounded-md"
           @click="emit('editItem', timeEntry)"
           >
             {{ formatDateToTime(timeEntry.started_at) }} -
@@ -147,12 +147,13 @@ const deleteItem = () => {
             name=""
             v-model="duration"
             disabled
-            class="time-duration-display"
+            class="time-duration-display rounded-md"
           />
 
           <button @click="emit('resumeTimer', timeEntry)" class="opacity-0 play-button group-hover:opacity-100">
             <i :class="`fa fa-${timerButtonIcon}`" />
           </button>
+            <slot name="actions-append" />  
           <button @click="deleteItem()" class="opacity-0 play-button group-hover:opacity-100">
             <i class="fa fa-trash" />
           </button>

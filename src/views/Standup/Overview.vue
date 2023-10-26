@@ -14,9 +14,9 @@
       />
   </div> 
 
-  <div v-for="dateGroup in committedByDate" class="mb-4">
+  <div v-for="(dateGroup, dateString) in committedByDate" class="mb-4">
      <h4 class="block mb-2 font-bold text-left text-gray-500 dark:text-white capitalize md:text-xl">
-        ✅ {{ getCommitTitle(dateGroup.date) }} ({{ dateGroup.list.length }}) 
+        ✅ {{ getCommitTitle(dateString) }} ({{ dateGroup.list.length }}) 
     </h4>
     <TaskItem 
         v-for="(task) in dateGroup.list"
@@ -79,7 +79,7 @@
 
 <script setup>
 import { reactive, watch, onUnmounted, computed, toRefs } from 'vue'
-import { format, formatRelative, isYesterday, parseISO, startOfDay, startOfToday, startOfYesterday, subDays } from 'date-fns'
+import { differenceInCalendarDays, format, formatRelative, isYesterday, parseISO, startOfDay, startOfToday, startOfYesterday, subDays } from 'date-fns'
 import { enUS } from 'date-fns/locale'
 import { AtButton } from "atmosphere-ui";
 
@@ -91,7 +91,6 @@ import { useTrackFirestore } from '@/utils/useTrackFirestore'
 import { useTaskFirestore } from '@/utils/useTaskFirestore'
 import { useSnapshot } from '@/utils/firebase/useSnapshot'
 import { formatDate } from '@/utils';
-import { track } from '@vue/reactivity';
 import { ElNotification } from 'element-plus';
 
 // state and ui
@@ -112,6 +111,7 @@ const state = reactive({
 
 // tasks manipulation
 const getCommitTitle = (dateString) => {
+  try {
     const relativeLocale = {
         lastWeek: "'Last' eeee",
         yesterday: "'Yesterday'",
@@ -124,15 +124,22 @@ const getCommitTitle = (dateString) => {
       ...enUS,
       formatRelative: (token) => relativeLocale[token]
     }
+    const selectedDate = parseISO(dateString);
+    const diff = Math.abs(differenceInCalendarDays(new Date, selectedDate))
     
-    const dateName = formatRelative(parseISO(dateString), new Date(), { locale });
-    return `${dateName}`
+    return diff < 2 
+    ? formatRelative(parseISO(dateString), new Date(), { locale })
+    : formatDate(selectedDate);
+  } catch (err) {
+    return dateString;
+  }
   }
 
 const  { getCommittedTasks, updateTask } = useTaskFirestore()
 const fetchCommitted = (date) => {
-  const {committed } = toRefs(state);
-  state.firebaseRefs.committedRef =  useSnapshot(getCommittedTasks(date), committed, {
+  const { committed } = toRefs(state);
+  console.log(date);
+  state.firebaseRefs.committedRef =  useSnapshot(getCommittedTasks(date, subDays(date, 1)), committed, {
     after() {
       state.isFirstLoaded = true;
     }
@@ -169,8 +176,11 @@ const committedByDate = computed(() => {
 
 
   return [...state.committed, ...unfinished].reduce((byDate, task) => {
-    const taskDate = task.commit_date ?? format(task.started_at,  'yyyy-MM-dd');
+    if (!task.commit_date) {
+    }
+    const taskDate = task.commit_date ?? format(state.date,  'yyyy-MM-dd');
     const parsedTask = task.commit_date ? task : parseTrack(task);
+    console.log(task, taskDate)
 
     if (!byDate[taskDate]) {
       byDate[taskDate] = {
@@ -241,6 +251,7 @@ const commitTrackTaskAsToday = (track) => {
 
 const parseTrack = (track) => {
   return {
+    created_at: track.started_at,
     duration_ms: track.duration_ms,
     done: false,
     commit_date: null,

@@ -10,7 +10,7 @@ import { functions } from '@/utils/useFirebase'
 import { formatDurationFromMs } from '@/utils/useDateTime';
 import { isSameDateTime} from '@/utils';
 import TimerCalendarCard from './Partials/TimerCalendarCard.vue';
-import { format, subDays, addDays } from 'date-fns';
+import { format, addDays } from 'date-fns';
 
 
 const { tempoEvents, tracks }= defineProps<{

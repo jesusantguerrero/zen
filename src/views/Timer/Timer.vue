@@ -6,7 +6,6 @@ import { enUS } from 'date-fns/locale'
 import { endOfWeek, format, formatRelative, isToday, parse, startOfDay, startOfMonth, startOfWeek } from 'date-fns'
 import { ref } from 'vue';
 import { ElMessageBox, ElNotification } from 'element-plus'
-// @ts-expect-error
 import { AtButton } from "atmosphere-ui";
 
 import TimeTrackerGroup from '@/components/organisms/TimeTrackerGroup.vue'
@@ -547,7 +546,7 @@ const isView = (viewName: string) => {
             <span>
               {{ getDurationInGroups(tracksInDate) }}
             </span>
-            <AtButton class="flex " type="success" @click="mergeTracks" rounded :disabled="!canMergeTracks">
+            <AtButton class="flex " type="success" v-if="false" @click="mergeTracks" rounded :disabled="!canMergeTracks">
               <IMdiVectorCombine class="mr-2"/>
               <span>
                 Merge
@@ -562,7 +561,7 @@ const isView = (viewName: string) => {
                   Upload tempo
                 </span>
             </AtButton>
-            <AtButton type="success" rounded class="flex" :disabled="!areGroupOptionsActive">
+            <AtButton type="success" rounded class="flex" :disabled="!areGroupOptionsActive" v-if="false">
               <IMdiArrowExpandHorizontal class="mr-2" />
               Extend
             </AtButton>
@@ -588,6 +587,13 @@ const isView = (viewName: string) => {
                 </button>
                 <button v-if="track?.tracks" @click="onDeleteItem(track.tracks)" class="ml-2 opacity-0 play-button group-hover:opacity-100 hover:text-red-400">
                   <i class="fa fa-trash" />
+                </button>
+              </section>
+            </template>
+            <template #item-actions-append>
+              <section class="flex opacity-0 play-button group-hover:opacity-100">
+                <button title="sync as group" :disabled="track.isLoading" @click="syncTempoUpdate(track)">
+                  <IMdiSync />
                 </button>
               </section>
             </template>
