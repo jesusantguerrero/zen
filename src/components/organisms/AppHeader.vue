@@ -102,14 +102,15 @@ const logout = () => {
         </div>
       </div>
   
-      <div class="flex items-center" v-if="user">
+      <div class="flex items-center " v-if="user">
         <TimeTracker 
-        class="mr-4"
-        :task="trackStore.currentTask" 
-        ref="timeTrackerRef"
-        v-model:currentTimer="trackStore.currentTimer"
-        v-model:subType="trackStore.timerSubtype"
-        @track-added="trackStore.onTrackAdded"
+          class="mr-4 bg-black/20 rounded-full px-6 py-1.5"
+          size="sm"
+          :task="trackStore.currentTask" 
+          ref="timeTrackerRef"
+          v-model:currentTimer="trackStore.currentTimer"
+          v-model:subType="trackStore.timerSubtype"
+          @track-added="trackStore.onTrackAdded"
       />
 
         <AppNotification

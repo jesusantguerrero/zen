@@ -521,12 +521,12 @@ const isView = (viewName: string) => {
       </section>
   </header> 
 
-  <section class="w-full mx-auto mt-10 text-center md:w-6/12" v-if="!state.tracked.length && isView('timer')">
+  <section class="w-full mx-auto mt-10 text-center md:w-6/12" v-if="!state.tracked.length && (isView('timer') || isView('week'))">
     <img src="@/assets/undraw_following.svg" class="w-full mx-auto md:w-5/12"> 
     <p class="mt-10 font-bold text-gray-500 md:mt-5 dark:text-gray-300"> There's no tracks</p>
   </section>
 
-  <section v-else-if="isView('timer')">     
+  <section v-else-if="isView('timer') || isView('week')">     
       <div v-for="(tracksInDate, trackDate) in groupedTracks" :key="trackDate" class="mb-12">
         <header class="flex items-center justify-between bg-white dark:bg-gray-700 px-8 text-gray-400 dark:text-gray-300">
           <div class="flex items-center w-full py-4 space-x-2 font-bold">
@@ -603,7 +603,7 @@ const isView = (viewName: string) => {
   </section>
 
   <TimerCalendar
-    v-else-if="['week', 'month'].includes(state.tabSelected)"
+    v-else-if="['month'].includes(state.tabSelected)"
     :date="state.startDate"
     :tracks="state.tracked" 
     :events="events"
