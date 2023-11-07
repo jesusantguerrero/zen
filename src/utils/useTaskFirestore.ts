@@ -186,7 +186,7 @@ export function useTaskFirestore() {
         return committedRef
     }
 
-    const getUncommittedTasks = (userUuid) => {
+    const getUncommittedTasks = (userUuid: string) => {
         const uncommittedRef = db.collection(collectionName)
         .where("user_uid", "==", userUuid || firebaseState?.user?.uid)
         .where("done", "==", false)
@@ -196,7 +196,7 @@ export function useTaskFirestore() {
         return uncommittedRef
     }
 
-    const getTaskByMatrix = async (matrix) => {
+    const getTaskByMatrix = async (matrix: string) => {
         const matrixRef = db.collection(collectionName)
             .where("user_uid", "==", firebaseState.user.uid)
             .where("done", "==", false)
@@ -207,7 +207,7 @@ export function useTaskFirestore() {
         return matrixRef
     }
 
-    const getTaskByType = async (type) => {
+    const getTaskByType = async (type: string) => {
         const tasks = db.collection(collectionName)
             .where("user_uid", "==", firebaseState.user.uid)
             .where("type", "==", type)
@@ -245,10 +245,10 @@ export function useTaskFirestore() {
     const runRecurrence = (task: Partial<ITask>) => {
         nextTick(() => {
             try {
-                // const setReminder = functions.httpsCallable('setRecurrence');
-                // setReminder(task);
+                const setReminder = functions.httpsCallable('setRecurrence');
+                setReminder(task);
             } catch (err) {
-                console.log(err, "HEre is the error")
+                console.log(err, "Here is the error")
             }
         })
     }

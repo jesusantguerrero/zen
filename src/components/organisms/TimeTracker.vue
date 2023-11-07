@@ -1,8 +1,8 @@
 <template>
-  <div class="text-center">
+  <div class="text-center group transition-all animate-duration-[5.3s]">
     <div class="flex items-center justify-between text-2xl font-bold">
       <div
-        class="mr-2 text-sm"
+        class="mr-2 text-sm hidden group-hover:block"
         :class="`${trackerMode.color} ${trackerMode.colorBorder}`"
       >
         {{ trackerMode.text }}
@@ -77,6 +77,7 @@ const track = reactive<Record<string, any>>({
   uid: null,
   task_uid: null,
   started_at: null,
+  currentTime: null,
   ended_at: null,
   type: "promodoro",
   subtype: null,
@@ -212,9 +213,10 @@ const currentTime = computed(() => {
 
 watch(
   () => currentTime.value,
-  () => {
+  (oldTime, current) => {
     if (clock.now) {
       useTitle(`Zen.  ${currentTime.value}`);
+
     } else {
       useTitle("Zen.");
     }
@@ -294,6 +296,7 @@ const resume = (currentTimer: Record<string, any>) => {
     track.completed = false;
     setDurationTarget();
     startClock();
+    emit("update:currentTimer", track);
   }
 };
 

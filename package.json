@@ -19,7 +19,7 @@
     "@headlessui/vue": "^1.7.16",
     "@vee-validate/rules": "^4.11.7",
     "@vueuse/components": "^10.4.1",
-    "atmosphere-ui": "^1.2.2",
+    "atmosphere-ui": "^1.3.0",
     "axios": "^1.5.0",
     "canvas-confetti": "^1.6.0",
     "chart.js": "^2.9.4",

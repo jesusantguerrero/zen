@@ -173,7 +173,11 @@ const toggleEdit = () => {
           @edit-item="emit('editTrack', track)"
           @delete-item="emit('deleteItem', $event)"
           @updated="emit('updated', $event)"
-        />
+        >
+          <template #actions-append>
+              <slot name="item-actions-append" />
+          </template>
+        </TimeEntryItem>
       </template>
     </TransitionGroup>
     <!-- end of child tracks -->
