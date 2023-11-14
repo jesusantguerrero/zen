@@ -231,18 +231,6 @@ const events = computed(() => {
         hide-view-selector
         watchRealTime
       >
-        <template v-slot:weekday-heading="{ heading  }">
-          <article>
-            <h4 class="text-xs">
-              {{ formatDate(addDays(heading.date, 1)) }}
-               {{ heading.label }}
-            </h4>
-            <section v-if="activeView == 'week'">
-              {{ getTotalTimeByDate(addDays(heading.date, 1)) }}
-            </section>
-          </article>
-        </template>
-
         <template #event="{ event }"> 
           <TimerCalendarCard 
             :event="event"
