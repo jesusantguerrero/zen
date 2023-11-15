@@ -3,7 +3,7 @@ import { reactive, watch, onUnmounted, computed  } from 'vue'
 import { ITrack, useTrackFirestore } from '@/utils/useTrackFirestore'
 import SearchBar from "@/components/molecules/SearchBar.vue"
 import { enUS } from 'date-fns/locale'
-import { endOfWeek, format, formatRelative, isToday, parse, startOfDay, startOfMonth, startOfWeek } from 'date-fns'
+import { endOfWeek, format, formatRelative, isSameDay, isToday, parse, startOfDay, startOfMonth, startOfWeek } from 'date-fns'
 import { ref } from 'vue';
 import { ElMessageBox, ElNotification } from 'element-plus'
 import { AtButton } from "atmosphere-ui";
@@ -400,8 +400,10 @@ onUnmounted(() => {
   })
 });
 
-const getDurationInGroups = (tracksInDate: Record<string, any>) => {
-return getDurationOfTracks(state.tracked)
+const getDurationInGroups = (groupDate: string) => {
+  const tracksOfDate = state.tracked.filter((track: ITrack) => format(track.started_at, 'yyyy-MM-dd') == groupDate);
+  console.log({tracksOfDate, groupDate })
+  return getDurationOfTracks(tracksOfDate)
 }
 
 const onDeleteItem = async (tracks: ITrack|ITrack[]) => {
@@ -544,7 +546,7 @@ const isView = (viewName: string) => {
           </div>
           <section class="flex items-center justify-end w-full h-full space-x-4" >
             <span>
-              {{ getDurationInGroups(tracksInDate) }}
+              {{ getDurationInGroups(trackDate) }}
             </span>
             <AtButton class="flex " type="success" v-if="false" @click="mergeTracks" rounded :disabled="!canMergeTracks">
               <IMdiVectorCombine class="mr-2"/>
@@ -568,7 +570,7 @@ const isView = (viewName: string) => {
           </section>
         </header>
 
-        <template  v-if="state.tabSelected=='timer'">
+        <template  v-if="tracksInDate">
           <TimeTrackerGroup
               v-for="track in tracksInDate"
               :time-entry="track"
