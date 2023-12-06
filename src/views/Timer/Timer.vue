@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { reactive, watch, onUnmounted, computed  } from 'vue'
-import { ITrack, useTrackFirestore } from '@/utils/useTrackFirestore'
 import SearchBar from "@/components/molecules/SearchBar.vue"
 import { enUS } from 'date-fns/locale'
-import { endOfWeek, format, formatRelative, isSameDay, isToday, parse, startOfDay, startOfMonth, startOfWeek } from 'date-fns'
+import { endOfWeek, format, formatRelative, isToday, parse, startOfDay, startOfMonth, startOfWeek } from 'date-fns'
 import { ref } from 'vue';
 import { ElMessageBox, ElNotification } from 'element-plus'
 import { AtButton } from "atmosphere-ui";
@@ -15,11 +14,10 @@ import TaskModal from '@/components/organisms/modals/TaskModal.vue';
 import TimerCalendar from './TimerCalendar.vue';
 
 import { isSameDateTime} from '@/utils';
-import { getDurationOfTracks } from '@/utils/useDateTime';
-import { functions } from '@/utils/useFirebase'
-import { ITask, useTaskFirestore } from '@/utils/useTaskFirestore';
-import { durationFromMs } from '@/utils/useTracker';
-
+import { getDurationOfTracks } from '@/composables/useDateTime';
+import { functions } from '@/plugins/useFirebase'
+import { ITrack, useTrackFirestore } from '@/plugins/firebase/useTrackFirestore'
+import { ITask, useTaskFirestore } from '@/plugins/firebase/useTaskFirestore';
 // state and ui
 const state: any = reactive({
   tracked: [],
@@ -98,7 +96,6 @@ const fetchTracked = (date: Date, endDate?: Date) => {
         const track = doc.data()
           list.push({ ...track, uid: doc.id } as ITrack)
       })
-      console.log(list);
       state.tracked = list;
     })
   })
@@ -342,7 +339,6 @@ const mergeTracks = () => {
 
   const mergedTracks = { ...firstTrack}
   mergedTracks.duration_ms += timeToSum;
-  console.log(durationFromMs(mergedTracks.duration_ms))
   // console.log(merge) 
   // syncTempoUpdate
 }

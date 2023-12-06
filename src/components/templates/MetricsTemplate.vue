@@ -1,56 +1,8 @@
-<template>
-<div>
-  <div class="pt-5 bg-white border border-gray-100 rounded-lg shadow-md md:flex dark:bg-base-lvl-2 dark:border-base-lvl-3">
-      <div class="px-5 pt-2 space-y-4 text-gray-400 md:w-3/12  dark:border-gray-600">
-        <div class="mb-10 font-bold text-left text-gray-500 dark:text-gray-300">
-            General Stats
-          </div>
-        <div class="flex items-center w-full px-5 py-8 overflow-hidden bg-white border-2 border-gray-200 rounded-md dark:bg-base-lvl-1 dark:border-gray-500 dark:text-gray-300">
-          <i class="mr-2 text-blue-400 fa fa-clock"></i>
-          <span class="mr-2 font-bold text-blue-400">{{ formattedTime }}  </span>
-          Total focused time
-        </div>
-        <div class="flex items-center w-full px-5 py-8 overflow-hidden bg-white border-2 border-gray-200 rounded-md dark:bg-base-lvl-1 dark:border-gray-500 dark:text-gray-300">
-          <i class="mr-2 text-blue-400 fa fa-stopwatch"></i>
-           <span class="mr-2 font-bold text-blue-400">{{  tracksData.started}}  </span> Started
-           <span class="mx-2 font-bold text-green-500">{{  tracksData.finished }}  </span> Finished
-           <span class="mx-2 font-bold text-red-400">{{  tracksData.started - tracksData.finished }}  </span> Stopped
-        </div>
-
-        <div class="flex items-center w-full px-5 py-8 overflow-hidden bg-white border-2 border-gray-200 rounded-md dark:bg-base-lvl-1 dark:border-gray-500 dark:text-gray-300">
-          <i class="mr-2 text-green-500 fa fa-sticky-note"></i>
-          <span class="mr-2 font-bold text-green-500">
-            {{ tasksWorked.length }}
-          </span>
-          Tasks worked
-        </div>
-      </div>
-
-      <!-- pomodoro stats -->
-      <div class="overflow-auto md:w-9/12">
-          <ReportPomodoro
-            :stats-by-day="statsByDay"
-            :time-data="formattedWeek"
-          >
-            <div class="ml-2 text-left">
-                <AtDatePager 
-                  next-mode="week" 
-                  v-model="state.date" 
-                  v-model:dateSpan="state.week" 
-                />
-            </div>
-          </ReportPomodoro>
-      </div>
-    <!-- pomodoro stats --> 
-  </div>
-</div>
-</template>
-
-<script setup>
+<script setup lang="ts">
 import { reactive, watch, ref, onUnmounted, computed } from 'vue'
-import { useTrackFirestore } from '../../utils/useTrackFirestore'
-import { useDateTime } from '../../utils/useDateTime'
-import { getMilliseconds } from '../../utils/useTracker'
+import { useTrackFirestore } from '@/plugins/firebase/useTrackFirestore'
+import { useDateTime } from '@/composables/useDateTime'
+import { getMilliseconds } from '@/composables/useTracker'
 import ReportPomodoro from "../organisms/ReportPomodoro.vue"
 import { format } from 'date-fns'
 import { AtDatePager } from 'atmosphere-ui';
@@ -190,6 +142,55 @@ onUnmounted(() => {
 });
 
 </script>
+
+<template>
+<div>
+  <div class="pt-5 bg-white border border-gray-100 rounded-lg shadow-md md:flex dark:bg-base-lvl-2 dark:border-base-lvl-3">
+      <div class="px-5 pt-2 space-y-4 text-gray-400 md:w-3/12  dark:border-gray-600">
+        <div class="mb-10 font-bold text-left text-gray-500 dark:text-gray-300">
+            General Stats
+          </div>
+        <div class="flex items-center w-full px-5 py-8 overflow-hidden bg-white border-2 border-gray-200 rounded-md dark:bg-base-lvl-1 dark:border-gray-500 dark:text-gray-300">
+          <i class="mr-2 text-blue-400 fa fa-clock"></i>
+          <span class="mr-2 font-bold text-blue-400">{{ formattedTime }}  </span>
+          Total focused time
+        </div>
+        <div class="flex items-center w-full px-5 py-8 overflow-hidden bg-white border-2 border-gray-200 rounded-md dark:bg-base-lvl-1 dark:border-gray-500 dark:text-gray-300">
+          <i class="mr-2 text-blue-400 fa fa-stopwatch"></i>
+           <span class="mr-2 font-bold text-blue-400">{{  tracksData.started}}  </span> Started
+           <span class="mx-2 font-bold text-green-500">{{  tracksData.finished }}  </span> Finished
+           <span class="mx-2 font-bold text-red-400">{{  tracksData.started - tracksData.finished }}  </span> Stopped
+        </div>
+
+        <div class="flex items-center w-full px-5 py-8 overflow-hidden bg-white border-2 border-gray-200 rounded-md dark:bg-base-lvl-1 dark:border-gray-500 dark:text-gray-300">
+          <i class="mr-2 text-green-500 fa fa-sticky-note"></i>
+          <span class="mr-2 font-bold text-green-500">
+            {{ tasksWorked.length }}
+          </span>
+          Tasks worked
+        </div>
+      </div>
+
+      <!-- pomodoro stats -->
+      <div class="overflow-auto md:w-9/12">
+          <ReportPomodoro
+            :stats-by-day="statsByDay"
+            :time-data="formattedWeek"
+          >
+            <div class="ml-2 text-left">
+                <AtDatePager 
+                  next-mode="week" 
+                  v-model="state.date" 
+                  v-model:dateSpan="state.week" 
+                />
+            </div>
+          </ReportPomodoro>
+      </div>
+    <!-- pomodoro stats --> 
+  </div>
+</div>
+</template>
+
 
 <style lang="scss">
 .el-date-full .el-date-editor.el-input {

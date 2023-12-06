@@ -80,7 +80,7 @@
 <script setup lang="ts">
 import { ref, watch, reactive, inject } from "vue"
 import ModalBase from "../../molecules/ModalBase.vue";
-import { functions } from "../../../utils/useFirebase";
+import { functions } from "@/plugins/useFirebase";
 import { useField} from 'vee-validate';
 import { email } from "@vee-validate/rules"
 import Button from "../../atoms/Button.vue";

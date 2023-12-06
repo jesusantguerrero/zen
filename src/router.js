@@ -26,7 +26,7 @@ import About from "./views/About.vue";
 import Notifications from "./views/Notifications/Notifications.vue";
 
 import { createRouter, createWebHistory } from "vue-router";
-import { isAuthenticated, registerEvent, setScreen } from "./utils/useFirebase";
+import { isAuthenticated, registerEvent, setScreen } from "./plugins/useFirebase";
 
 
 // import { BrainRoutes, BrainView } from "@__apps/brain/routes";

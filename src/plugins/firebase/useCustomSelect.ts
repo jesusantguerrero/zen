@@ -1,5 +1,5 @@
 import { inject, provide, ref } from "vue";
-import { useCollection } from "./firebase/useCollection"
+import { useCollection } from "./useCollection";
 
 const { save, getAll } = useCollection()
 

@@ -116,7 +116,7 @@ import { reactive, ref, computed, nextTick, toRefs } from "vue";
 import { useRouter } from "vue-router"
 import { ElNotification } from "element-plus"
 
-import { register, login, loginWithProvider }  from "@/utils/useFirebase";
+import { register, login, loginWithProvider }  from "@/plugins/useFirebase";
 import IconGithub from "@/components/atoms/icons/IconGithub.vue";
 import IconGoogle from "@/components/atoms/icons/IconGoogle.vue";
 

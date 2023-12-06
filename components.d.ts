@@ -77,6 +77,7 @@ declare module 'vue' {
     SearchBar: typeof import('./src/components/molecules/SearchBar.vue')['default']
     SearchBox: typeof import('./src/components/molecules/SearchBox.vue')['default']
     SettingsIntegrations: typeof import('./src/components/templates/SettingsIntegrations.vue')['default']
+    SettingsJobBundle: typeof import('./src/components/templates/SettingsJobBundle.vue')['default']
     SettingsMatrix: typeof import('./src/components/templates/SettingsMatrix.vue')['default']
     SettingsNotification: typeof import('./src/components/templates/SettingsNotification.vue')['default']
     SettingsOauth: typeof import('./src/components/templates/SettingsOauth.vue')['default']

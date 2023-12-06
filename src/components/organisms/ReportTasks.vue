@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { useDateTime } from "../../utils/useDateTime";
+import { useDateTime } from "@.composable/useDateTime";
 import { reactive, toRefs, computed } from "vue";
 import ReportChart from "./ReportChart.vue"
 
@@ -90,4 +90,4 @@ const durationPromodoros = computed(() => {
 const formatNumber = (number) => {
     return Number(number.toFixed(2))
 }
-</script>
+</script>../../composables/useDateTime

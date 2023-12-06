@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import {  ElNotification } from 'element-plus'
+import { format } from 'date-fns';
 // @ts-expect-error
 import VueCal from "vue-cal";
 import 'vue-cal/dist/vuecal.css'
 
-import { useTrackFirestore } from '@/utils/useTrackFirestore'
-import { functions } from '@/utils/useFirebase'
-import { formatDurationFromMs } from '@/utils/useDateTime';
-import { isSameDateTime} from '@/utils';
 import TimerCalendarCard from './Partials/TimerCalendarCard.vue';
-import { format, addDays } from 'date-fns';
+
+import { useTrackFirestore } from '@/plugins/firebase/useTrackFirestore'
+import { functions } from '@/plugins/useFirebase'
+import { formatDurationFromMs } from '@/composables/useDateTime';
+import { isSameDateTime} from '@/utils';
 
 
 const { tempoEvents, tracks }= defineProps<{

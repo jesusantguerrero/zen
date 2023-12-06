@@ -1,6 +1,6 @@
 // @ts-ignore
 import { DateTime } from "luxon";
-import { db, firebaseState, functions } from "./useFirebase";
+import { db, firebaseState, functions } from "@/plugins/useFirebase";
 import { nextTick } from "vue";
 import { startOfDay, subDays } from "date-fns";
 const collectionName = "tasks";

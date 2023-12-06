@@ -1,78 +1,11 @@
-<template>
-  <div class="task-group">
-    <div class="flex items-center justify-between cursor-pointer" v-if="showTitle">
-      <h4 class="block mb-2 font-bold" :class="[isQuadrant ? `md:text-2xl font-bold ${color} capitalize`: '']">
-         {{ title }} ({{ tasks.length }}) 
-      </h4>
-      
-      <div class="flex">
-        <small class="mr-2 text-sm font-bold text-gray-400 dark:text-gray-300">{{ helpText }}</small>
-        <div @click="toggleExpanded">
-          <icon-expand v-if="!isExpanded" class="fill-current dark:text-gray-50"/>
-          <icon-collapse v-else class="fill-current dark:text-gray-50"/>
-        </div>
-      </div>
-    </div>
-
-      <slot name="addForm"></slot>
-      <slot name="content">
-        <ElCollapseTransition>
-          <div class="w-full list-group ic-scroller" ref="listGroup"  v-show="isExpanded">
-            <draggable
-              class="dragArea"
-              :class="{empty: !tasks.length,  [type]: true , [dragClass]: true}" 
-              :list="tasks" 
-              :handle="handleClass"
-              :group="{name: type, pull: true, put: true }"
-              @move="emitMove"
-              @change="emitChange($event, type)"
-            >
-              <TaskItem 
-                v-for="task in tasks" 
-                :key="task" 
-                :task="task" 
-                :type="type"
-                :handle-mode="displayHandle"
-                :icons="icons"
-                :show-select="showSelect"
-                :show-controls="showControls"
-                :current-task="currentTask"
-                :current-timer="currentTimer"
-                :is-item-as-handler="isItemAsHandler"
-                :is-compact="isCompact"
-                :class="taskClass"
-                :allow-run="allowRun"
-                :allow-update="allowUpdate"
-                class="mb-2"
-                @toggle-key="onToggleKey(task)"
-                @toggle-timer="emit('toggle-timer', task)"
-                @selected="emit('selected', task)"
-                @deleted="emit('deleted', task)"
-                @updated="updateFields"
-                @edited="emit('edited', task)"
-                @undo="onUndo(task)"
-                @done="onDone(task)"
-                @clone="onClone(task)"
-                @up="emit('up', task)"
-                @down="emit('down', task)"
-                @plus="emit('plus', task)"
-                @minus="emit('minus', task)"
-              />
-            </draggable>
-            <slot name="empty" v-if="!tasks.length"></slot>
-          </div>
-        </ElCollapseTransition>
-      </slot>
-  </div>
-</template>
-
-<script setup>
+<script setup lang="ts">
 import { computed, onMounted, ref, toRefs } from "vue"
 import { VueDraggableNext as Draggable } from "vue-draggable-next"
-import { useTaskFirestore } from "../../utils/useTaskFirestore"
-import { useDateTime } from "../../utils/useDateTime"
 import { ElNotification, ElMessageBox } from "element-plus"
 import { useWindowSize } from "@vueuse/core"
+
+import { useTaskFirestore } from "@/plugins/firebase/useTaskFirestore"
+import { useDateTime } from "@/composables/useDateTime"
 import TaskItem from "../molecules/TaskItem.vue"
 import IconExpand from "../atoms/IconExpand.vue"
 import IconCollapse from "../atoms/IconCollapse.vue"
@@ -301,6 +234,76 @@ const onToggleKey = (task) => {
 }
 </script>
 
+<template>
+  <div class="task-group">
+    <div class="flex items-center justify-between cursor-pointer" v-if="showTitle">
+      <h4 class="block mb-2 font-bold" :class="[isQuadrant ? `md:text-2xl font-bold ${color} capitalize`: '']">
+         {{ title }} ({{ tasks.length }}) 
+      </h4>
+      
+      <div class="flex">
+        <small class="mr-2 text-sm font-bold text-gray-400 dark:text-gray-300">{{ helpText }}</small>
+        <div @click="toggleExpanded">
+          <icon-expand v-if="!isExpanded" class="fill-current dark:text-gray-50"/>
+          <icon-collapse v-else class="fill-current dark:text-gray-50"/>
+        </div>
+      </div>
+    </div>
+
+      <slot name="addForm"></slot>
+      <slot name="content">
+        <ElCollapseTransition>
+          <div class="w-full list-group ic-scroller" ref="listGroup"  v-show="isExpanded">
+            <draggable
+              class="dragArea"
+              :class="{empty: !tasks.length,  [type]: true , [dragClass]: true}" 
+              :list="tasks" 
+              :handle="handleClass"
+              :group="{name: type, pull: true, put: true }"
+              @move="emitMove"
+              @change="emitChange($event, type)"
+            >
+              <TaskItem 
+                v-for="task in tasks" 
+                :key="task" 
+                :task="task" 
+                :type="type"
+                :handle-mode="displayHandle"
+                :icons="icons"
+                :show-select="showSelect"
+                :show-controls="showControls"
+                :current-task="currentTask"
+                :current-timer="currentTimer"
+                :is-item-as-handler="isItemAsHandler"
+                :is-compact="isCompact"
+                :class="taskClass"
+                :allow-run="allowRun"
+                :allow-update="allowUpdate"
+                class="mb-2"
+                @toggle-key="onToggleKey(task)"
+                @toggle-timer="emit('toggle-timer', task)"
+                @selected="emit('selected', task)"
+                @deleted="emit('deleted', task)"
+                @updated="updateFields"
+                @edited="emit('edited', task)"
+                @undo="onUndo(task)"
+                @done="onDone(task)"
+                @clone="onClone(task)"
+                @up="emit('up', task)"
+                @down="emit('down', task)"
+                @plus="emit('plus', task)"
+                @minus="emit('minus', task)"
+              />
+            </draggable>
+            <slot name="empty" v-if="!tasks.length"></slot>
+          </div>
+        </ElCollapseTransition>
+      </slot>
+  </div>
+</template>
+
+
+
 <style lang="scss">
 :root {
 --max-height: 340px;
@@ -333,3 +336,4 @@ const onToggleKey = (task) => {
     }
 }
 </style>
+../../plugins/useTaskFirestore../../composables/useDateTime

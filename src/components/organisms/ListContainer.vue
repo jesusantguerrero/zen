@@ -59,10 +59,10 @@
 </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { formatDate, onClickOutside } from "@vueuse/core";
 import { ElNotification } from "element-plus";
-import { useTaskFirestore } from "../../utils/useTaskFirestore"
+import { useTaskFirestore } from "@/plugins/firebase/useTaskFirestore"
 import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { VueDraggableNext as Draggable } from "vue-draggable-next"
 import { format } from "date-fns";
@@ -178,4 +178,4 @@ onUnmounted(() => {
         }
     }
 }
-</style>
+</style>../../plugins/useTaskFirestore

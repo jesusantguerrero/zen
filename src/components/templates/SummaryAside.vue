@@ -40,7 +40,7 @@
 
 <script setup>
     import { computed } from "vue";
-    import { useSearchOptions } from "../../utils/useFuseSearch";
+    import { useSearchOptions } from "../../composables/useFuseSearch";
 
     const props = defineProps({
         matrix: {
@@ -70,4 +70,4 @@
     })
 
     const { searchText }  = useSearchOptions()  
-</script>
+</script>../../composables/useFuseSearch

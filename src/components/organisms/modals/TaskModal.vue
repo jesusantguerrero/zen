@@ -1,146 +1,17 @@
-<template>
-<div>
-  <modal-base v-model:is-open="state.isOpenLocal" title="Edit task" @closed="clearForm()" @click-outside="clearForm()" :click-to-close="false">
-      <template #title>
-           <div class="flex justify-between pr-5">
-                  <div class="flex items-center w-full text-left">
-                      <button class="px-2 py-1 mx-3 rounded-md " :class="typeColor"> 
-                          <i :class="icon"> </i>
-                      </button>
 
-                      <div class="w-full text-left">
-                      <h1
-                          class="w-full px-2 text-lg font-bold" 
-                      >
-                        Edit task
-                      </h1>
-                      </div>
-                  </div>
-
-                  <div class="flex items-center task-item__controls" v-if="!isReminder">
-                      <div class="text-xl transition-colors cursor-pointer hover:text-red-400">
-                        <i class="my-auto fa fa-times" @click="close()"></i>
-                      </div>
-                  </div>
-              </div>
-      </template>
-
-      <template #body>
-          <form 
-              class="items-center px-4 py-3 bg-white border-2 border-transparent cursor-default task-form dark:bg-gray-700 md:rounded-md"
-              @submit.prevent
-          >   
-              <div class="flex justify-between">
-                  <div class="flex items-center w-full">
-                      <div class="w-full">
-                      <input 
-                          type="text" 
-                          class="w-full px-2 border-b-2 border-gray-100 focus:outline-none dark:bg-transparent dark:text-gray-300 dark:border-gray-600 dark:focus:border-gray-500"  
-                          :placeholder="placeholder" 
-                          v-model="task.title"
-                      >
-                      </div>
-                  </div>
-                  <div class="w-32">
-                    <date-select
-                      placeholder="Due date"
-                      class="w-full"
-                      v-model="task.due_date"              
-                    />
-                  </div>
-              </div>
-
-                
-              <div class="w-full p-3 pb-20 task-item__body">
-                  <textarea 
-                    ref="descriptionInput"
-                    v-model="task.description"
-                    class="w-full h-20 pt-2 resize-none task-item__description focus:outline-none dark:bg-transparent dark:text-gray-300" 
-                    placeholder="Add a short description"
-                    @input="setHeight">
-                  </textarea>
-                  
-                  <div class="flex pt-5 text-left task-item__checklist">
-                    <ChecklistContainer 
-                      v-model="state.checklistTitle"
-                      v-model:items="task.checklist" 
-                      :task="task" 
-                      :allow-edit="true" 
-                      class="w-10/12"
-                    />
-                    <div class="w-2/12 px-2 text-sm" v-if="task.matrix == 'delegate'">
-                      <h4 class="text-sm font-bold text-gray-500"> Delegated to: </h4>
-                      <person-select
-                        v-if="task.matrix=='delegate'"
-                        v-model="task.contacts"
-                        :items="contacts"
-                        :multiple="true" 
-                        @selected="addContact"
-                        @added="createContact"
-                      /> 
-                    </div>
-                  </div>
-              </div>
-
-              <div class="text-left" v-if="false">
-                <el-upload
-                  :auto-upload="false"
-                  list-type="picture-card"
-                  :file-list="task.files"
-                  :on-change="handleUpload"
-                >
-                  <template #file="{file}">
-                    <div>
-                      <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
-                    </div>
-                  </template>
-                  <i class="el-icon-plus"></i>
-                </el-upload>
-                <el-dialog v-model="dialogVisible">
-                  <img width="100%" :src="dialogImageUrl" alt="" />
-                </el-dialog>
-              
-              </div>
-          </form>
-      </template>
-
-      <template #footer>
-        <div class="flex items-center justify-between pt-4 border-t-2 dark:border-gray-500">
-          <tags-select
-              v-model="task.tags"
-              :tags="tags"
-              :multiple="true" 
-              @selected="addTag"
-              @added="createTag"
-          /> 
-
-          <div class="text-right">
-              <button class="px-5 py-2 mr-2 text-white bg-gray-400 rounded-md hover:bg-gray-500 focus:outline-none" 
-              @click.prevent="close()"> 
-                Cancel
-              </button>
-              <button class="px-5 py-2 text-white bg-green-400 rounded-md hover:bg-green-500 focus:outline-none" 
-              @click.prevent="save()"> 
-                Save 
-              </button>
-          </div>
-        </div>
-      </template>
-  </modal-base>
-</div>
-</template>
-
-<script setup>
+<script setup lang="ts">
 import { ref, watch, computed, reactive, toRefs } from "vue"
-import { useTaskFirestore } from "../../../utils/useTaskFirestore"
-import { useDateTime } from "../../../utils/useDateTime"
-import { useCustomSelect } from "../../../utils/useCustomSelect"
+import { ElMessageBox, ElNotification } from "element-plus"
+
+import { useTaskFirestore } from "@/plugins/firebase/useTaskFirestore"
+import { useCustomSelect } from "@/plugins/firebase/useCustomSelect"
+import { firebaseInstance, firebaseState } from "@/plugins/useFirebase"
+import { useDateTime } from "@/composables/useDateTime"
+
 import TagsSelect from "../../atoms/TagsSelect.vue"
 import PersonSelect from "../../atoms/PersonSelect.vue"
 import ModalBase from "../../molecules/ModalBase.vue";
 import ChecklistContainer from "../ListContainer.vue";
-import { ElMessageBox, ElNotification } from "element-plus"
-import { firebaseInstance, firebaseState } from "../../../utils/useFirebase"
 import DateSelect from "../../atoms/DateSelect.vue"
 
 const props = defineProps({
@@ -336,10 +207,141 @@ const {list: tags, addToList: createTag, selectItem: addTag} = useCustomSelect(t
 const {list: contacts, addToList: createContact, selectItem: selectContact} = useCustomSelect(task, 'contacts')
 </script>
 
+
+<template>
+<div>
+  <modal-base v-model:is-open="state.isOpenLocal" title="Edit task" @closed="clearForm()" @click-outside="clearForm()" :click-to-close="false">
+      <template #title>
+           <div class="flex justify-between pr-5">
+                  <div class="flex items-center w-full text-left">
+                      <button class="px-2 py-1 mx-3 rounded-md " :class="typeColor"> 
+                          <i :class="icon"> </i>
+                      </button>
+
+                      <div class="w-full text-left">
+                      <h1
+                          class="w-full px-2 text-lg font-bold" 
+                      >
+                        Edit task
+                      </h1>
+                      </div>
+                  </div>
+
+                  <div class="flex items-center task-item__controls" v-if="!isReminder">
+                      <div class="text-xl transition-colors cursor-pointer hover:text-red-400">
+                        <i class="my-auto fa fa-times" @click="close()"></i>
+                      </div>
+                  </div>
+              </div>
+      </template>
+
+      <template #body>
+          <form 
+              class="items-center px-4 py-3 bg-white border-2 border-transparent cursor-default task-form dark:bg-gray-700 md:rounded-md"
+              @submit.prevent
+          >   
+              <div class="flex justify-between">
+                  <div class="flex items-center w-full">
+                      <div class="w-full">
+                      <input 
+                          type="text" 
+                          class="w-full px-2 border-b-2 border-gray-100 focus:outline-none dark:bg-transparent dark:text-gray-300 dark:border-gray-600 dark:focus:border-gray-500"  
+                          :placeholder="placeholder" 
+                          v-model="task.title"
+                      >
+                      </div>
+                  </div>
+                  <div class="w-32">
+                    <date-select
+                      placeholder="Due date"
+                      class="w-full"
+                      v-model="task.due_date"              
+                    />
+                  </div>
+              </div>
+
+                
+              <div class="w-full p-3 pb-20 task-item__body">
+                  <textarea 
+                    ref="descriptionInput"
+                    v-model="task.description"
+                    class="w-full h-20 pt-2 resize-none task-item__description focus:outline-none dark:bg-transparent dark:text-gray-300" 
+                    placeholder="Add a short description"
+                    @input="setHeight">
+                  </textarea>
+                  
+                  <div class="flex pt-5 text-left task-item__checklist">
+                    <ChecklistContainer 
+                      v-model="state.checklistTitle"
+                      v-model:items="task.checklist" 
+                      :task="task" 
+                      :allow-edit="true" 
+                      class="w-10/12"
+                    />
+                    <div class="w-2/12 px-2 text-sm" v-if="task.matrix == 'delegate'">
+                      <h4 class="text-sm font-bold text-gray-500"> Delegated to: </h4>
+                      <person-select
+                        v-if="task.matrix=='delegate'"
+                        v-model="task.contacts"
+                        :items="contacts"
+                        :multiple="true" 
+                        @selected="addContact"
+                        @added="createContact"
+                      /> 
+                    </div>
+                  </div>
+              </div>
+
+              <div class="text-left" v-if="false">
+                <el-upload
+                  :auto-upload="false"
+                  list-type="picture-card"
+                  :file-list="task.files"
+                  :on-change="handleUpload"
+                >
+                  <template #file="{file}">
+                    <div>
+                      <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
+                    </div>
+                  </template>
+                  <i class="el-icon-plus"></i>
+                </el-upload>
+                <el-dialog v-model="dialogVisible">
+                  <img width="100%" :src="dialogImageUrl" alt="" />
+                </el-dialog>
+              
+              </div>
+          </form>
+      </template>
+
+      <template #footer>
+        <div class="flex items-center justify-between pt-4 border-t-2 dark:border-gray-500">
+          <tags-select
+              v-model="task.tags"
+              :tags="tags"
+              :multiple="true" 
+              @selected="addTag"
+              @added="createTag"
+          /> 
+
+          <div class="text-right">
+              <button class="px-5 py-2 mr-2 text-white bg-gray-400 rounded-md hover:bg-gray-500 focus:outline-none" 
+              @click.prevent="close()"> 
+                Cancel
+              </button>
+              <button class="px-5 py-2 text-white bg-green-400 rounded-md hover:bg-green-500 focus:outline-none" 
+              @click.prevent="save()"> 
+                Save 
+              </button>
+          </div>
+        </div>
+      </template>
+  </modal-base>
+</div>
+</template>
 <style lang="scss" scoped>
 .task-form {
   min-height: 400px;
   width: 100%;
 }
 </style>
-

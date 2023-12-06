@@ -8,9 +8,8 @@ import "firebase/functions"
 import "firebase/performance"
 import "firebase/storage"
 import "firebase/app-check"
-import CONFIG from "../config/";
-import { useSettingsFirestore } from "./useSettingsFirestore"
-import { add } from "date-fns";
+import CONFIG from "../config";
+import { useSettingsFirestore } from "./firebase/useSettingsFirestore"
 
 const { getUserSettings, updateUserSettings } = useSettingsFirestore()
 const firebaseConfig = {
@@ -38,7 +37,11 @@ export const setLoaded = (loadedCallback) => {
   onLoaded.value = loadedCallback   
 }
 
-export const firebaseState = reactive({
+export const firebaseState = reactive<{
+    user: null | Record<string, string>;
+    uid: null | string;
+    settings: Record<string, string>;
+}>({
     user: null,
     uid: null,
     settings: {}

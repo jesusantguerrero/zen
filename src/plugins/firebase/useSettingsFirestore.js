@@ -1,4 +1,4 @@
-import { db } from "./useFirebase";
+import { db } from "../useFirebase";
 const collectionName = "settings";
 
 export function useSettingsFirestore() {

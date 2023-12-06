@@ -22,9 +22,8 @@
 
 <script>
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
-import { useWeekPager } from "../../utils/useWeekPager";
-import { watch, toRefs, ref, computed, watchEffect } from "vue";
+import { useWeekPager } from "@/composable/useWeekPager";
+import { watch, toRefs, computed, watchEffect } from "vue";
 
 export default {
   name: "DatePagerWeek",
@@ -141,3 +140,4 @@ $primary-color: var(--primary-color);
   }
 }
 </style>
+../../composables/useWeekPager

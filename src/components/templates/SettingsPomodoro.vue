@@ -93,14 +93,20 @@
 </template>
 
 <script setup>
-import { usePromodoro } from "./../../utils/usePromodoro";
-import { firebaseState, updateSettings } from "../../utils/useFirebase";
+import { usePromodoro } from "./../../composables/usePromodoro";
 import { ElNotification } from "element-plus";
+import {  settingsService } from "@/services/settings.service";
+import { onMounted } from "vue";
+
+const settingsApiService = new settingsService()
 
 // controls
 const { playSound, promodoroState, setSettings } = usePromodoro()
 
-setSettings(firebaseState.settings)
+onMounted(async() => {
+    const settings = await settingsApiService.getSettings();
+    setSettings(settings);
+})
 
 const emit = defineEmits({
     saved: Object,
@@ -120,7 +126,7 @@ const save = () => {
 
         settings.promodoro_modes = formData.modes
         settings.promodoro_alert_volume = promodoroState.volume;
-        updateSettings(settings).then(() => {
+        settingsApiService.updateSettings(settings).then(() => {
             emit('saved', settings)
             setSettings(settings)
             ElNotification({

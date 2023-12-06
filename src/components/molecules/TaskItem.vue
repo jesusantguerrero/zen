@@ -171,9 +171,9 @@ import TagsSelect from "@components/atoms/TagsSelect.vue"
 import DateSelect from "@components/atoms/DateSelect.vue"
 import TimeTrackerButton from "@components/atoms/tracker/TimeTrackerButton.vue";
 
-import { useDateTime } from "@/utils/useDateTime";
-import { useCustomSelect } from "@/utils/useCustomSelect";
-import { durationFromMs } from "@/utils/useTracker";
+import { useDateTime } from "@/composables/useDateTime";
+import { useCustomSelect } from "@/plugins/firebase/useCustomSelect";
+import { durationFromMs } from "@/composables/useTracker";
 
 export default {
   components: {
@@ -363,3 +363,4 @@ export default {
   min-width: 345px;
 }
 </style>
+@/plugins/firebase/useCustomSelect@/composables/useDateTime@/composables/useTracker

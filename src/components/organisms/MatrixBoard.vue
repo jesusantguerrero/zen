@@ -157,10 +157,10 @@ import TaskModal from "./modals/TaskModal.vue"
 import MatrixHelpView from "@components/molecules/MatrixHelpView.vue"
 import JetSelect from "@components/atoms/JetSelect.vue";
 
-import { useFuseSearch } from "@/utils/useFuseSearch"
-import { useTaskFirestore } from "@/utils/useTaskFirestore"
-import { useDateTime } from "@/utils/useDateTime"
-import { firebaseState } from '@/utils/useFirebase';
+import { useFuseSearch } from "@/composables/useFuseSearch"
+import { useTaskFirestore } from "@/plugins/firebase/useTaskFirestore"
+import { useDateTime } from "@/composables/useDateTime"
+import { firebaseState } from '@/plugins/useFirebase';
 
 
 // state and ui
@@ -454,3 +454,4 @@ const onEdittedTask = (task) => {
   taskToEdit.value = null
 }
 </script>
+@/plugins/useTaskFirestore@/composables/useFuseSearch@/composables/useDateTime

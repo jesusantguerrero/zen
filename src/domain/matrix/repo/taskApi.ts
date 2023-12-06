@@ -1,4 +1,4 @@
-import { ITask } from "@/utils/useTaskFirestore";
+import { ITask } from "@/plugins/useTaskFirestore";
 
 export interface TaskApi {
     saveTask(taskForm: Partial<ITask>): Promise<ITask>,

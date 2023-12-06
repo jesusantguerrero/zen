@@ -33,8 +33,8 @@
 <script setup>
     import { ElNotification } from "element-plus";
     import { inject } from "vue";
-    import { useCollection } from "@/utils/firebase/useCollection"
-    import { firebaseInstance } from "@/utils/useFirebase";
+    import { useCollection } from "@/plugins/firebase/useCollection"
+    import { firebaseInstance } from "@/plugins/useFirebase";
 
     const notifications = inject('notifications', []);
     const { update } = useCollection('notifications')
@@ -50,4 +50,4 @@
             });
         })
     }
-</script>
+</script>@/plugins/firebase/useCollection

@@ -92,7 +92,7 @@
   </form>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, reactive, onMounted, ref, watch } from "vue"
 import { onClickOutside } from  "@vueuse/core"
 import { ElMessageBox, ElNotification } from "element-plus";
@@ -102,8 +102,8 @@ import TagsSelect from "@components/atoms/TagsSelect.vue"
 import PersonSelect from "@components/atoms/PersonSelect.vue"
 import ChecklistContainer from "@components/organisms/ListContainer.vue";
 
-import { useCustomSelect } from "@/utils/useCustomSelect"
-import { useDateTime } from "@/utils/useDateTime"
+import { useCustomSelect } from "@/plugins/firebase/useCustomSelect"
+import { useDateTime } from "@/composables/useDateTime"
 
 const props = defineProps({
     mode: {
@@ -263,3 +263,4 @@ defineExpose({
 const {list: tags, addToList: createTag, selectItem: addTag} = useCustomSelect(task, 'tags')
 const {list: contacts, addToList: createContact, selectItem: selectContact} = useCustomSelect(task, 'contacts')
 </script>
+@/plugins/firebase/useCustomSelect@/composables/useDateTime

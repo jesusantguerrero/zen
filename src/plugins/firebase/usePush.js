@@ -1,5 +1,5 @@
 import { ref} from "vue";
-import { updateSettings, firebaseInstance } from "./useFirebase"
+import { updateSettings, firebaseInstance } from "../useFirebase"
 const serverPK = import.meta.VITE_PUSH_PK;
 
 const messaging = firebaseInstance.messaging()

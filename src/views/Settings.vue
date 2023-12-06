@@ -43,6 +43,7 @@ import SettingsNotification from "@/components/templates/SettingsNotification.vu
 import SettingsIntegrations from "@/components/templates/SettingsIntegrations.vue"
 import SettingsOauth from "@/components/templates/SettingsOauth.vue"
 import SettingsPomodoro from "@/components/templates/SettingsPomodoro.vue"
+import SettingsJobBundle from "@/components/templates/SettingsJobBundle.vue"
 import SettingsMatrixVue from "@/components/templates/SettingsMatrix.vue"
 
 const state = reactive({
@@ -72,6 +73,11 @@ const state = reactive({
     integrations: {
       label: 'Integrations',
       component: SettingsIntegrations,
+      active: true
+    },
+    job: {
+      label: 'Job Bundle',
+      component: SettingsJobBundle,
       active: true
     },
     oauth: {

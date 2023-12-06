@@ -73,13 +73,15 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, watch, reactive, inject } from "vue";
-import ModalBase from "../../molecules/ModalBase.vue";
 import { ElNotification } from "element-plus";
 import { AtSteps, AtStep, AtButton } from "atmosphere-ui";
+
+import ModalBase from "../../molecules/ModalBase.vue";
+
+import { useCollection } from "@/plugins/firebase/useCollection";
 import { getProjects, getSites } from "../../../domain/integrations/jira";
-import { useCollection } from "../../../utils/firebase/useCollection";
 
 const props = defineProps({
   isOpen: Boolean,
@@ -223,3 +225,4 @@ const onSubmit = () => {
   width: 100%;
 }
 </style>
+../../../plugins/firebase/useCollection

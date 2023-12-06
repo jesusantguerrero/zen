@@ -90,15 +90,15 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, reactive, watch, ref } from 'vue'
 import { ElMessageBox, ElNotification } from 'element-plus'
-import { useTaskFirestore } from "../../utils/useTaskFirestore"
-import { useDateTime } from "../../utils/useDateTime"
+import { useDateTime } from "@/composables/useDateTime"
 import TaskGroup from "../organisms/TaskGroup.vue"
 import QuickAdd from "../molecules/QuickAdd.vue"
 import TaskModal from "./TaskModal.vue"
 import MatrixHelpView from "../molecules/MatrixHelpView.vue"
+import { useTaskFirestore } from '@/plugins/firebase/useTaskFirestore'
 
 
 // state and ui

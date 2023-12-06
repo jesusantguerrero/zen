@@ -31,10 +31,10 @@
 import QuickAdd from '@/components/molecules/QuickAdd.vue';
 import TaskGroup from '@/components/organisms/TaskGroup.vue';
 import { getNextIndex } from '@/utils';
-import { registerEvent } from '@/utils/useFirebase';
-import { useSearchOptions } from '@/utils/useFuseSearch';
-import { useSnapshot } from '@/utils/firebase/useSnapshot';
-import { useTaskFirestore } from '@/utils/useTaskFirestore';
+import { registerEvent } from '@/plugins/useFirebase';
+import { useSearchOptions } from '@/composables/useFuseSearch';
+import { useSnapshot } from '@/plugins/firebase/useSnapshot';
+import { useTaskFirestore } from '@/plugins/firebase/useTaskFirestore';
 
 const {
   saveTask,
@@ -49,4 +49,4 @@ const addTask = async (task) => {
   await saveTask(task);
   registerEvent('quick_task_added');
 };
-</script>
+</script>@/plugins/useTaskFirestore@/plugins/firebase/useSnapshot@/composables/useFuseSearch

@@ -1,128 +1,17 @@
-<template>
-<div>
-  <modal-base v-model:is-open="state.isOpenLocal" title="Edit task" @closed="clearForm()" @click-outside="clearForm()" :click-to-close="false">
-      <template #title>
-           <div class="flex justify-between pr-5">
-                  <div class="flex items-center w-full text-left">
-                      <button class="mx-3 rounded-md px-2 py-1 " :class="typeColor"> 
-                          <i :class="icon"> </i>
-                      </button>
-
-                      <div class="w-full text-left">
-                      <h1
-                          class="text-lg font-bold w-full px-2" 
-                      >
-                        Edit task
-                      </h1>
-                      </div>
-                  </div>
-
-                  <div class="task-item__controls flex items-center" v-if="!isReminder">
-                      <div class="text-xl cursor-pointer hover:text-red-400 transition-colors">
-                        <i class="fa fa-times my-auto" @click="close()"></i>
-                      </div>
-                  </div>
-              </div>
-      </template>
-
-      <template #body>
-          <form 
-              class="task-form bg-white border-transparent border-2 px-4 py-3 md:rounded-md items-center cursor-default"
-              @submit.prevent
-          >   
-              <div class="flex justify-between">
-                  <div class="flex items-center w-full">
-                      <div class="w-full">
-                      <input 
-                          type="text" 
-                          class="focus:outline-none w-full px-2 border-b-2 border-gray-100"  
-                          :placeholder="placeholder" 
-                          v-model="task.title"
-                      >
-                      </div>
-                  </div>
-
-                  <div class="task-item__controls flex items-center text-sm" v-if="!isReminder">
-                      <div class="mx-2 text-gray-400 hover:text-gray-600 w-24">
-                      <date-select 
-                          v-model="task.due_date"
-                          placeholder="Due to"
-                          class="w-full"
-                      />    
-                      </div>
-                  </div>
-              </div>
-              <div class="task-item__body w-full p-3 pb-20">
-                  <textarea 
-                    ref="descriptionInput"
-                    v-model="task.description"
-                    class="task-item__description w-full pt-2 focus:outline-none h-20 resize-none" 
-                    placeholder="Add a short description"
-                    @input="setHeight">
-                  </textarea>
-                  
-                  <div class="task-item__checklist pt-5 text-left flex">
-                    <checklist-container 
-                      v-model="state.checklistTitle"
-                      :items="task.checklist" 
-                      :task="task" 
-                      :allow-edit="true" 
-                      class="w-10/12"
-                    >
-                    </checklist-container>
-                    <div class="w-2/12 text-sm px-2" v-if="task.matrix == 'delegate'">
-                      <h4 class="font-bold text-gray-500 text-sm"> Delegated to: </h4>
-                      <person-select
-                        v-if="task.matrix=='delegate'"
-                        v-model="task.contacts"
-                        :items="contacts"
-                        :multiple="true" 
-                        @selected="addContact"
-                        @added="createContact"
-                      /> 
-                    </div>
-                  </div>
-              </div>
-          </form>
-      </template>
-
-      <template #footer>
-        <div class="flex justify-between items-center">
-          <tags-select
-              v-model="task.tags"
-              :tags="tags"
-              :multiple="true" 
-              @selected="addTag"
-              @added="createTag"
-          /> 
-
-          <div class="text-right">
-              <button class="bg-gray-400 hover:bg-gray-500 text-white focus:outline-none px-5 py-2 rounded-md mr-2" 
-              @click.prevent="close()"> 
-                Cancel
-              </button>
-              <button class="bg-green-400 hover:bg-green-500 text-white focus:outline-none px-5 py-2 rounded-md" 
-              @click.prevent="save()"> 
-                Save 
-              </button>
-          </div>
-        </div>
-      </template>
-  </modal-base>
-</div>
-</template>
-
-<script setup>
+<script setup lang="ts">
+import { ElMessageBox } from "element-plus"
 import { ref, watch, computed, reactive, toRefs } from "vue"
-import { useTaskFirestore } from "../../utils/useTaskFirestore"
-import { useDateTime } from "./../../utils/useDateTime"
-import { useCustomSelect } from "./../../utils/useCustomSelect"
+
 import DateSelect from "../atoms/DateSelect.vue"
 import TagsSelect from "../atoms/TagsSelect.vue"
 import PersonSelect from "../atoms/PersonSelect.vue"
 import ModalBase from "../molecules/ModalBase.vue";
 import ChecklistContainer from "./ListContainer.vue";
-import { ElMessageBox } from "element-plus"
+
+import { useTaskFirestore } from "@/plugins/firebase/useTaskFirestore"
+import { useDateTime } from "@/composables/useDateTime"
+import { useCustomSelect } from "@/plugins/firebase/useCustomSelect"
+
 
 const props = defineProps({
     isOpen: Boolean,
@@ -288,10 +177,125 @@ const {list: tags, addToList: createTag, selectItem: addTag} = useCustomSelect(t
 const {list: contacts, addToList: createContact, selectItem: selectContact} = useCustomSelect(task, 'contacts')
 </script>
 
+
+<template>
+<div>
+  <modal-base v-model:is-open="state.isOpenLocal" title="Edit task" @closed="clearForm()" @click-outside="clearForm()" :click-to-close="false">
+      <template #title>
+           <div class="flex justify-between pr-5">
+                  <div class="flex items-center w-full text-left">
+                      <button class="mx-3 rounded-md px-2 py-1 " :class="typeColor"> 
+                          <i :class="icon"> </i>
+                      </button>
+
+                      <div class="w-full text-left">
+                      <h1
+                          class="text-lg font-bold w-full px-2" 
+                      >
+                        Edit task
+                      </h1>
+                      </div>
+                  </div>
+
+                  <div class="task-item__controls flex items-center" v-if="!isReminder">
+                      <div class="text-xl cursor-pointer hover:text-red-400 transition-colors">
+                        <i class="fa fa-times my-auto" @click="close()"></i>
+                      </div>
+                  </div>
+              </div>
+      </template>
+
+      <template #body>
+          <form 
+              class="task-form bg-white border-transparent border-2 px-4 py-3 md:rounded-md items-center cursor-default"
+              @submit.prevent
+          >   
+              <div class="flex justify-between">
+                  <div class="flex items-center w-full">
+                      <div class="w-full">
+                      <input 
+                          type="text" 
+                          class="focus:outline-none w-full px-2 border-b-2 border-gray-100"  
+                          :placeholder="placeholder" 
+                          v-model="task.title"
+                      >
+                      </div>
+                  </div>
+
+                  <div class="task-item__controls flex items-center text-sm" v-if="!isReminder">
+                      <div class="mx-2 text-gray-400 hover:text-gray-600 w-24">
+                      <date-select 
+                          v-model="task.due_date"
+                          placeholder="Due to"
+                          class="w-full"
+                      />    
+                      </div>
+                  </div>
+              </div>
+              <div class="task-item__body w-full p-3 pb-20">
+                  <textarea 
+                    ref="descriptionInput"
+                    v-model="task.description"
+                    class="task-item__description w-full pt-2 focus:outline-none h-20 resize-none" 
+                    placeholder="Add a short description"
+                    @input="setHeight">
+                  </textarea>
+                  
+                  <div class="task-item__checklist pt-5 text-left flex">
+                    <checklist-container 
+                      v-model="state.checklistTitle"
+                      :items="task.checklist" 
+                      :task="task" 
+                      :allow-edit="true" 
+                      class="w-10/12"
+                    >
+                    </checklist-container>
+                    <div class="w-2/12 text-sm px-2" v-if="task.matrix == 'delegate'">
+                      <h4 class="font-bold text-gray-500 text-sm"> Delegated to: </h4>
+                      <person-select
+                        v-if="task.matrix=='delegate'"
+                        v-model="task.contacts"
+                        :items="contacts"
+                        :multiple="true" 
+                        @selected="addContact"
+                        @added="createContact"
+                      /> 
+                    </div>
+                  </div>
+              </div>
+          </form>
+      </template>
+
+      <template #footer>
+        <div class="flex justify-between items-center">
+          <tags-select
+              v-model="task.tags"
+              :tags="tags"
+              :multiple="true" 
+              @selected="addTag"
+              @added="createTag"
+          /> 
+
+          <div class="text-right">
+              <button class="bg-gray-400 hover:bg-gray-500 text-white focus:outline-none px-5 py-2 rounded-md mr-2" 
+              @click.prevent="close()"> 
+                Cancel
+              </button>
+              <button class="bg-green-400 hover:bg-green-500 text-white focus:outline-none px-5 py-2 rounded-md" 
+              @click.prevent="save()"> 
+                Save 
+              </button>
+          </div>
+        </div>
+      </template>
+  </modal-base>
+</div>
+</template>
+
+
 <style lang="scss" scoped>
 .task-form {
   height: 400px;
   width: 100%;
 }
 </style>
-

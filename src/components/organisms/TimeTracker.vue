@@ -34,14 +34,14 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, reactive, watch, ref } from "vue";
 import { Duration, Interval, DateTime } from "luxon";
-import { ITrack, useTrackFirestore } from "@/utils/useTrackFirestore";
+import { ITrack, useTrackFirestore } from "@/plugins/firebase/useTrackFirestore";
 import { SESSION_MODES } from "@/utils";
-import { usePromodoro } from "@/utils/usePromodoro";
-import { useSlack } from "@/utils/useSlack";
-import { firebaseState } from "@/utils/useFirebase";
+import { usePromodoro } from "@/composables/usePromodoro";
+import { useSlack } from "@/plugins/useSlack";
+import { firebaseState } from "@/plugins/useFirebase";
 import { ElMessageBox, ElNotification } from "element-plus";
 import { useTitle } from "@vueuse/core";
-import { useTaskFirestore } from "@/utils/useTaskFirestore";
+import { useTaskFirestore } from "@/plugins/firebase/useTaskFirestore";
 
 const { saveTrack, updateTrack, deleteTrack } = useTrackFirestore();
 const { updateTask } = useTaskFirestore();
