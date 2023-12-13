@@ -94,10 +94,10 @@
 import { computed, reactive, watch, ref } from 'vue'
 import { ElMessageBox, ElNotification } from 'element-plus'
 import { useDateTime } from "@/composables/useDateTime"
-import TaskGroup from "../organisms/TaskGroup.vue"
-import QuickAdd from "../molecules/QuickAdd.vue"
-import TaskModal from "./TaskModal.vue"
-import MatrixHelpView from "../molecules/MatrixHelpView.vue"
+import MatrixHelpView from "@/components/molecules/MatrixHelpView.vue"
+import QuickAdd from "@/components/molecules/QuickAdd.vue"
+import TaskGroup from "@/components/organisms/TaskGroup.vue"
+import TaskModal from "@/components/organisms/modals/TaskModal.vue"
 import { useTaskFirestore } from '@/plugins/firebase/useTaskFirestore'
 
 
