@@ -1,4 +1,4 @@
-import { db, firebaseState } from "../useFirebase";
+import { db, firebaseState } from "@/plugins/useFirebase";
 
 export function useCollection(tableName?: string, relationshipTable?: string, relationshipFields?: string[]) {
 

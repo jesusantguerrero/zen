@@ -17,4 +17,4 @@ export const useSnapshot = (
         after && after(list);
       })
   })
-  }
+}

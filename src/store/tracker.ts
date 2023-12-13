@@ -1,10 +1,10 @@
 import {  ref,  watch, nextTick, toValue  } from "vue"
 import { defineStore } from 'pinia'
-import { formatDurationFromMs } from '@/utils/useDateTime';
-import { ITask, useTaskFirestore } from '@/utils/useTaskFirestore';
-import { ITrack, useTrackFirestore } from '@/utils/useTrackFirestore';
-import { timeReducer } from '@/utils/useTracker';
-import { firebaseState } from "@/utils/useFirebase"
+import { formatDurationFromMs } from '@/composables/useDateTime';
+import { ITask, useTaskFirestore } from '@/plugins/firebase/useTaskFirestore';
+import { ITrack, useTrackFirestore } from '@/plugins/firebase/useTrackFirestore';
+import { timeReducer } from '@/composables/useTracker';
+import { firebaseState } from "@/plugins/useFirebase"
 
 const { getRunningTrack, getAllTracksOfTask } = useTrackFirestore();
 const { updateTask, getTaskById } = useTaskFirestore();

@@ -1,3 +1,33 @@
+<script setup lang="ts">
+import { ElNotification } from "element-plus";
+import {  settingsService } from "@/services/settings.service";
+import { onMounted, ref } from "vue";
+
+const settingsApiService = new settingsService();
+const formData = ref()
+
+const emit = defineEmits({
+    saved: Object,
+    cancel: null,
+    "update:isOpen": Boolean
+}) 
+
+onMounted(async () => {
+    formData.value = await settingsApiService.getSettings()
+})
+
+
+const save = () => {
+    settingsApiService.updateSettings(formData).then(() => {
+        emit('saved', formData)
+        ElNotification({
+            title: "Updated",
+            message: "Configuration Updated"
+        })
+    })
+}
+</script>
+
 <template>
     <section>
         <article>
@@ -79,31 +109,6 @@
     </section>
 </template>
 
-<script setup>
-import { firebaseState, updateSettings } from "../../utils/useFirebase";
-import { ElNotification } from "element-plus";
-import { reactive } from "vue";
-
-const formData = reactive(firebaseState.settings)
-
-const emit = defineEmits({
-    saved: Object,
-    cancel: null,
-    "update:isOpen": Boolean
-}) 
-
-
-const save = () => {
-    updateSettings(formData).then(() => {
-        emit('saved', formData)
-        ElNotification({
-            title: "Updated",
-            message: "Configuration Updated"
-        })
-    })
-}
-
-</script>
 
 <style lang="scss">
     .form-control {

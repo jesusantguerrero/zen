@@ -63,7 +63,7 @@ import MatrixBoard from "@/components/organisms/MatrixBoard.vue"
 import ShareBoard from "@/components/organisms/ShareBoard.vue"
 import JetSelect from "@/components/atoms/JetSelect.vue";
 import MatrixTeammates from "@/components/organisms/MatrixTeammates.vue";
-import { firebaseState } from "@/utils/useFirebase";
+import { firebaseState } from "@/plugins/useFirebase";
 
 
 const state = reactive({

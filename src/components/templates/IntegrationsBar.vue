@@ -101,7 +101,7 @@
 
 <script setup>
 import { onUnmounted, reactive } from "vue";
-import { useCollection } from "../../utils/firebase/useCollection";
+import { useCollection } from "@/plugins/firebase/useCollection";
 import { AtButton } from "atmosphere-ui";
 import TagsSelect from "../atoms/TagsSelect.vue";
 import {
@@ -110,7 +110,7 @@ import {
   parseJiraIssue,
 } from "../../domain/integrations/jira";
 import { ElNotification } from "element-plus";
-import { useTaskFirestore } from "../../utils/useTaskFirestore";
+import { useTaskFirestore } from "@/plugins/firebase/useTaskFirestore";
 import IconJira from "../atoms/integrations/IconJira.vue";
 import ButtonCircle from "../atoms/ButtonCircle.vue";
 
@@ -250,3 +250,4 @@ const importSelectedIssues = () => {
   width: 332px;
 }
 </style>
+../../plugins/useTaskFirestore../../plugins/firebase/useCollection

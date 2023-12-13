@@ -92,9 +92,9 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, reactive, watch, ref, toRefs } from "vue";
-import { useFuseSearch } from "../../utils/useFuseSearch"
+import { useFuseSearch } from "../../composables/useFuseSearch"
 import randomcolor from "randomcolor";
 
 const props = defineProps({
@@ -247,4 +247,4 @@ const select = (tag) => {
   emit('update:modelValue', selectedItems.value)
 }
 
-</script>
+</script>../../composables/useFuseSearch

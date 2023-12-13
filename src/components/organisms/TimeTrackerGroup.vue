@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { reactive, computed, nextTick, ref, watch } from "vue";
 import TimeEntryItem from "./TimeTrackerItem.vue";
-import { formatDateToTime } from "@/utils/useTracker";
-import { ITrack } from "@/utils/useTrackFirestore";
-import { formatDurationFromMs } from "@/utils/useDateTime";
-import { ITask } from "@/utils/useTaskFirestore";
+import { formatDateToTime } from "@/composables/useTracker";
+import { ITrack } from "@/plugins/firebase/useTrackFirestore";
+import { formatDurationFromMs } from "@/composables/useDateTime";
+import { ITask } from "@/plugins/firebase/useTaskFirestore";
 
 interface ITrackGroup {
   description: string;

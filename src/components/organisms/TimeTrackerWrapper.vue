@@ -39,9 +39,9 @@
 
 <script>
 import {  reactive, watch, ref} from "vue";
-import { useTrackFirestore } from "../../utils/useTrackFirestore";
-import { usePromodoro } from "./../../utils/usePromodoro";
-import { firebaseState } from "./../../utils/useFirebase";
+import { useTrackFirestore } from "@/composables/useTrackFirestore";
+import { usePromodoro } from "@/composables/usePromodoro";
+import { firebaseState } from "@/plugins/useFirebase";
 import { ElNotification } from "element-plus";
 import TimeTrackerClock from "../molecules/TimeTrackerClock.vue";
 

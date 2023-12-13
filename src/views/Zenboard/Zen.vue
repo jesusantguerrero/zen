@@ -18,10 +18,10 @@ import TabHeader from "@/components/atoms/TabHeader.vue";
 import CardButton from "@/components/molecules/CardButton.vue";
 import SummaryAside from "@/components/templates/SummaryAside.vue";
 
-import { useTaskFirestore, ITask } from "@/utils/useTaskFirestore";
-import { firebaseState, registerEvent, updateSettings } from "@/utils/useFirebase";
-import { useFuseSearch, useSearchOptions } from "@/utils/useFuseSearch";
-import { startFireworks } from "@/utils/useConfetti";
+import { useTaskFirestore, ITask } from "@/plugins/firebase/useTaskFirestore";
+import { firebaseState, registerEvent, updateSettings } from "@/plugins/useFirebase";
+import { useFuseSearch, useSearchOptions } from "@/composables/useFuseSearch";
+import { startFireworks } from "@/composables/useConfetti";
 import { getNextIndex } from "@/utils";
 import SharedWithMe from "./Partials/SharedWithMe.vue";
 
@@ -481,3 +481,4 @@ const toggleQuickAdd = () => {
   min-height: 400px;
 }
 </style>
+@/plugins/useTaskFirestore@/composables/useFuseSearch@/composables/useConfetti

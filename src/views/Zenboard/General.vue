@@ -72,10 +72,10 @@ import {
 import { useRouter } from "vue-router";
 import { ElNotification, ElMessageBox } from "element-plus";
 import { useTaskFirestore } from "@/utils/useTaskFirestore";
-import { useDateTime } from "@/utils/useDateTime";
-import { useCollection } from "@/utils/firebase/useCollection";
-import { firebaseState, updateSettings } from "@/utils/useFirebase";
-import { startFireworks } from "@/utils/useConfetti";
+import { useDateTime } from "@/composables/useDateTime";
+import { useCollection } from "@/plugins/firebase/useCollection";
+import { firebaseState, updateSettings } from "@/plugins/useFirebase";
+import { startFireworks } from "@/composables/useConfetti";
 import TagsSelect from "@/components/atoms/TagsSelect.vue";
 import TabHeader from "@/components/atoms/TabHeader.vue";
 import TaskGroup from "@/components/organisms/TaskGroup.vue";
@@ -430,3 +430,4 @@ export default {
   grid-template-columns: minmax(0, 1fr) 350px;
 }
 </style>
+@/plugins/useTaskFirestore@/plugins/firebase/useCollection@/composables/useDateTime@/composables/useConfetti

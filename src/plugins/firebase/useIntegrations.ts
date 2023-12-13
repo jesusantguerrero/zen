@@ -1,5 +1,5 @@
+import { useCollection } from '@/plugins/firebase/useCollection';
 import { toRef, reactive, toRefs } from "vue";
-import { useCollection } from "./firebase/useCollection";
 
 const { getAll } = useCollection();
 

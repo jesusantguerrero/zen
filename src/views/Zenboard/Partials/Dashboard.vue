@@ -162,7 +162,7 @@ import { ElMessageBox, ElNotification } from "element-plus";
 import { useTaskFirestore } from "../../utils/useTaskFirestore";
 import { useTrackFirestore } from "../../utils/useTrackFirestore";
 import { firebaseState, updateSettings } from "../../utils/useFirebase";
-import { startFireworks } from "../../utils/useConfetti";
+import { startFireworks } from "@/composables/useConfetti";
 import TagsSelect from "../../components/atoms/TagsSelect.vue";
 import TabHeader from "../../components/atoms/TabHeader.vue";
 import Button from "../../components/atoms/Button.vue";

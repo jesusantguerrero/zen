@@ -10,10 +10,12 @@
 </div>
 </template>
 
-<script setup>
-import { useIntegrations } from '../../utils/useIntegrations'
-import IconGithub from '../../components/atoms/icons/IconGithub.vue'
+<script setup lang="ts">
 import { computed, onMounted, reactive } from 'vue';
+
+import IconGithub from '../../components/atoms/icons/IconGithub.vue'
+
+import { useIntegrations } from '@/plugins/firebase/useIntegrations'
 import { getIssues } from '../../domain/integrations/github';
 
 
@@ -34,4 +36,4 @@ const pullTasks = (connection, project) => {
 onMounted(() => {
   state.connections = getList()
 })
-</script>
+</script>../../plugins/firebase/useIntegrations

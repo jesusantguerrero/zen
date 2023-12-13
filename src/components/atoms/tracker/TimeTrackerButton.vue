@@ -15,8 +15,8 @@
 
 <script setup>
 import { computed, toRefs } from "vue";
-import { useTracker } from "../../../utils/useTracker";
-import { useDateTime } from "../../../utils/useDateTime";
+import { useTracker } from "@/composables/useTracker";
+import { useDateTime } from "@/composables/useDateTime";
 
 const  props = defineProps({
     allowRun: {
@@ -66,3 +66,4 @@ const trackerIcon=  computed(() =>
   isRunning.value ? "fas fa-stop" : "fas fa-play"
 );
 </script>
+../../../composables/useTracker../../../composables/useDateTime

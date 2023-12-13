@@ -80,7 +80,7 @@
 <script setup>
 import { ElMessageBox, ElNotification } from "element-plus";
 import { toRefs, computed, ref, nextTick, reactive, watch } from "vue";
-import { useDateTime } from "../../utils/useDateTime";
+import { useDateTime } from "@/composable/useDateTime";
 import ChecklistContainer from "./ListContainer.vue";
 import CustomText from "../atoms/CustomText.vue"
 import DateSelect from "../atoms/DateSelect.vue";
@@ -240,3 +240,4 @@ const { task, isDisabled, isEditMode, markAsDoneLabel, showChecklist } = toRefs(
   overflow-wrap: break-word;
 }
 </style>
+../../composables/useDateTime

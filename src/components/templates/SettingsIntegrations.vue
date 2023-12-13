@@ -34,13 +34,12 @@
 </template>
 
 
-<script setup>
+<script setup lang="ts">
 import { computed, onUnmounted, reactive } from "vue"
-import { firebaseState, functions, } from "../../utils/useFirebase"
+import { firebaseState, functions } from "@/plugins/useFirebase"
 import IconGithubLogo from "../atoms/icons/IconGithubLogo.vue"
-import { useCollection } from "../../utils/firebase/useCollection"
+import { useCollection } from "@/plugins/firebase/useCollection"
 import { connectGoogle } from "../../domain/integrations/google";
-
 
 const state = reactive({
   integrations: [],
@@ -63,15 +62,15 @@ const state = reactive({
 
 const connectJira = computed(() => {
   if (state.hasJira) return '#';
-  const userbound = firebaseState.user.uid;
-  return `https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=umMvvT2NxqxNEnjWMlQ6EnudUiK0jnym&scope=offline_access%20read%3Ajira-user%20read%3Ajira-work%20write%3Ajira-work&redirect_uri=https%3A%2F%2Fzenboards.web.app%2Foauth2%2Fconnect%2Fjira&state=${userbound}&response_type=code&prompt=consent`;
+  const userBound = firebaseState.user.uid;
+  return `https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=umMvvT2NxqxNEnjWMlQ6EnudUiK0jnym&scope=offline_access%20read%3Ajira-user%20read%3Ajira-work%20write%3Ajira-work&redirect_uri=https%3A%2F%2Fzenboards.web.app%2Foauth2%2Fconnect%2Fjira&state=${userBound}&response_type=code&prompt=consent`;
 })
 
 const connectGithub = computed(() => {
   if (state.hasGithub) return '#';
-  const userbound = firebaseState.user.uid;
+  const userBound = firebaseState.user.uid;
   const redirectUri = encodeURIComponent(`${window.location.origin}/oauth2/connect/github`);
-  return `https://github.com/login/oauth/authorize?client_id=3c21758f1ac3d14ea284&redirect_uri=${redirectUri}&scope=user,repo&state=${userbound}`;
+  return `https://github.com/login/oauth/authorize?client_id=3c21758f1ac3d14ea284&redirect_uri=${redirectUri}&scope=user,repo&state=${userBound}`;
 })
 
 const handleGoogleConnect = () => {
@@ -99,3 +98,4 @@ onUnmounted(() => {
   connectionsRef()
 })
 </script>
+../../plugins/firebase/useCollection

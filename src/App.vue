@@ -2,11 +2,11 @@
 import { nextTick, ref, provide, onUnmounted, watch } from 'vue'
 import AppHeader from './components/organisms/AppHeader.vue'
 import IntegrationsBar from './components/templates/IntegrationsBar.vue'
-import { logout, setLoaded, functions, firebaseState, firebaseInstance } from "./utils/useFirebase"
-import { useCustomSelect } from "./utils/useCustomSelect"
-import { useCollection } from "./utils/firebase/useCollection"
-import { useIntegrations } from './utils/useIntegrations'
+import { logout, setLoaded, functions, firebaseState, firebaseInstance } from "./plugins/useFirebase"
 import MobileMenuBar from './components/organisms/mobile/MobileMenuBar.vue'
+import { useCollection } from './plugins/firebase/useCollection'
+import { useIntegrations } from './plugins/firebase/useIntegrations'
+import { useCustomSelect } from './plugins/firebase/useCustomSelect'
 
 const { closeConnections } = useIntegrations()
 const { getAllShared, getAll } = useCollection();

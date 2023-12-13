@@ -20,6 +20,8 @@ exports.dailyNotifications = notificationService.dailyNotifications
 exports.taskReminder = notificationService.taskReminderNotifications
 exports.sendPush = notificationService.sendPushNotifications
 
+exports.uploadTimeLogs = 
+
 // Matrix related functions
 exports.shareMatrix = matrixService.shareMatrix;
 

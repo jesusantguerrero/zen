@@ -10,7 +10,7 @@
 
 <script>
 import { useRouter } from "vue-router"
-import { useCollection } from '../../utils/firebase/useCollection';
+import { useCollection } from '@/plugins/firebase/useCollection';
 
 export default {
     props: {
@@ -45,4 +45,4 @@ export default {
 
 <style>
 
-</style>
+</style>../../plugins/firebase/useCollection

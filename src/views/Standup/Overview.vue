@@ -77,7 +77,7 @@
 
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { reactive, watch, onUnmounted, computed, toRefs } from 'vue'
 import { differenceInCalendarDays, format, formatRelative, isYesterday, parseISO, startOfDay, startOfToday, startOfYesterday, subDays } from 'date-fns'
 import { enUS } from 'date-fns/locale'
@@ -87,9 +87,9 @@ import SearchBar from "@/components/molecules/SearchBar.vue"
 import TaskItem from '@/components/molecules/TaskItem.vue'
 import IntegrationProjects from '@/components/organisms/IntegrationProjects.vue'
 
-import { useTrackFirestore } from '@/utils/useTrackFirestore'
-import { useTaskFirestore } from '@/utils/useTaskFirestore'
-import { useSnapshot } from '@/utils/firebase/useSnapshot'
+import { useTrackFirestore } from '@/plugins/firebase/useTrackFirestore'
+import { useTaskFirestore } from '@/plugins/firebase/useTaskFirestore'
+import { useSnapshot } from '@/plugins/firebase/useSnapshot'
 import { formatDate } from '@/utils';
 import { ElNotification } from 'element-plus';
 

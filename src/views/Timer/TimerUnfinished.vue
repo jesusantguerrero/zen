@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, nextTick, computed } from 'vue'
-import { ITrack, useTrackFirestore } from '@/utils/useTrackFirestore'
+import { ITrack, useTrackFirestore } from '@/plugins/firebase/useTrackFirestore'
 import SearchBar from "@/components/molecules/SearchBar.vue"
 // @ts-expect-error: no types
 import { AtButton } from "atmosphere-ui";
@@ -9,7 +9,7 @@ import { enUS } from 'date-fns/locale'
 import TimeTrackerGroup from '@/components/organisms/TimeTrackerGroup.vue'
 import { ElMessageBox, ElNotification } from 'element-plus'
 import 'vue-cal/dist/vuecal.css'
-import { functions } from '@/utils/useFirebase'
+import { functions } from '@/plugins/useFirebase'
 import TabHeader from '@/components/atoms/TabHeader.vue';
 // state and ui
 const state: any = reactive({
@@ -297,6 +297,3 @@ const onDeleteItem = async (tracks: ITrack[]) => {
   </div>
 </div>
 </template>
-
-
-

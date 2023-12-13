@@ -97,7 +97,7 @@
 
 <script setup lang="ts">
 import { ref, watch, computed, reactive, toRefs } from "vue";
-import { useTrackFirestore } from "@/utils/useTrackFirestore";
+import { useTrackFirestore } from "@/plugins/firebase/useTrackFirestore";
 import { ElNotification } from "element-plus";
 import { Interval } from "luxon";
 import { isSameDay } from "date-fns";
@@ -254,4 +254,3 @@ const save = async () => {
   width: 100%;
 }
 </style>
-

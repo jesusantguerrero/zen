@@ -2,7 +2,7 @@
 // @ts-expect-error: no tyoes for this lib
 import Duration from "duration";
 import { computed, reactive } from "vue";
-import { durationFromMs, formatDateToTime } from "../../utils/useTracker"
+import { durationFromMs, formatDateToTime } from "@/composables/useTracker"
 import { ITrack } from "@/utils/useTrackFirestore";
 
 

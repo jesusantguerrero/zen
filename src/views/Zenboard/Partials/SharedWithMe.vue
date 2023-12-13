@@ -28,11 +28,11 @@ import { useRouter } from "vue-router";
 import { ElNotification } from "element-plus";
 import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
 
-import { useTaskFirestore } from "@/utils/useTaskFirestore";
-import { useDateTime } from "@/utils/useDateTime";
-import { useTrackFirestore } from "@/utils/useTrackFirestore";
-import { firebaseState, updateSettings } from "@/utils/useFirebase";
-import { startFireworks } from "@/utils/useConfetti";
+import { useTaskFirestore } from "@/plugins/firebase/useTaskFirestore";
+import { useDateTime } from "@/composables/useDateTime";
+import { useTrackFirestore } from "@/plugins/firebase/useTrackFirestore";
+import { firebaseState, updateSettings } from "@/plugins/useFirebase";
+import { startFireworks } from "@/composables/useConfetti";
 
 const {
   updateTask,

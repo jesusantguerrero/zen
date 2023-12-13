@@ -1,5 +1,5 @@
 import { DateTime, Duration } from "luxon";
-import { db, firebaseState } from "./useFirebase";
+import { db, firebaseState } from "../useFirebase";
 import { addSeconds, isBefore, parseISO } from "date-fns";
 
 export interface ITrack {

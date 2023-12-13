@@ -21,12 +21,11 @@
 </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, toRefs, onUnmounted, reactive } from "vue";
-import { useTracker } from "@/utils/useTracker";
-import { useTaskFirestore } from "@/utils/useTaskFirestore";
-import { useTrackFirestore } from "@/utils/useTrackFirestore";
-import { formatDurationFromMs, getDurationInMs } from "@/utils/useDateTime";
+import { useTaskFirestore } from "@/plugins/firebase/useTaskFirestore";
+import { useTrackFirestore } from "@/plugins/firebase/useTrackFirestore";
+import { formatDurationFromMs, getDurationInMs } from "@/composables/useDateTime";
 
 const { updateTask } = useTaskFirestore()
 // tracked tasks

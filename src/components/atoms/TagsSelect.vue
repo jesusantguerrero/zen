@@ -141,10 +141,10 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, reactive, watch, ref, toRefs } from "vue";
-import { useFuseSearch } from "../../utils/useFuseSearch"
-import { useCollection } from "../../utils/firebase/useCollection"
+import { useFuseSearch } from "../../composables/useFuseSearch"
+import { useCollection } from "@/plugins/firebase/useCollection"
 import { ElMessageBox, ElNotification } from "element-plus";
 
 const props = defineProps({
@@ -353,4 +353,4 @@ const select = (tag) => {
     @apply bg-gray-700 border-gray-500 text-gray-300;
 }
 }
-</style>
+</style>../../plugins/firebase/useCollection../../composables/useFuseSearch

@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { useWeekPager } from "@/utils/useWeekPager";
+import { useWeekPager } from "@/composables/useWeekPager";
 import { formatDate } from "@/utils";
 import { watch, toRefs, computed } from "vue";
 
@@ -137,3 +137,4 @@ $primary-color: var(--primary-color);
   }
 }
 </style>
+@/composables/useWeekPager

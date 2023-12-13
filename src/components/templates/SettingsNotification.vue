@@ -21,81 +21,75 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import { ElNotification } from "element-plus";
-import { onMounted, reactive, toRefs} from "vue";
-import { firebaseState, updateSettings } from "../../utils/useFirebase";
+import { onMounted, reactive } from "vue";
 import Button from "../atoms/Button.vue";
+import {  settingsService } from "@/services/settings.service";
+import { AppSettings, NotificationSetting } from "@/domain/settings/types/settingsApi";
 
-export default {
-  components: { Button },
-  name: "SettingsNotifications",
-  setup() {
-    const state = reactive({
-      notifications: [
-        {
-          name: 'daily_completion_reminder',
-          label: 'Daily Completion Reminder',
-          app: true,
-          email: false
-        },
-        {
-          name: 'overdue_reminder',
-          label: 'Overdue Tasks Reminder',
-          app: true,
-          email: false
-        },
-        {
-          name: 'stale_reminder',
-          label: 'Stale Tasks Reminder',
-          app: true,
-          email: false
-        },
-        {
-          name: 'task_reminders',
-          label: 'Task Reminders',
-          app: true,
-          email: false
-        },
-      ]
-    });
+const settingsApiService = new settingsService();
 
-    state.notifications = [
-      ...state.notifications,
-    ]
+const state = reactive<{
+  notifications: NotificationSetting[],
+  settings: Partial<AppSettings> | AppSettings
+}>({
+  notifications: [
+    {
+      name: 'daily_completion_reminder',
+      label: 'Daily Completion Reminder',
+      app: true,
+      email: false
+    },
+    {
+      name: 'overdue_reminder',
+      label: 'Overdue Tasks Reminder',
+      app: true,
+      email: false
+    },
+    {
+      name: 'stale_reminder',
+      label: 'Stale Tasks Reminder',
+      app: true,
+      email: false
+    },
+    {
+      name: 'task_reminders',
+      label: 'Task Reminders',
+      app: true,
+      email: false
+    },
+  ],
+  settings: {}
+});
 
+const mergeNotificationSettings = () => {
+  if (!state.settings.notificationSettings) {
+    return
+  }
   
-    
-    const mergeNotificationSettings = () => {
-      if (!firebaseState.settings.notificationSettings) {
-        return
-      }
-      
-      state.notifications = state.notifications.reduce((notifications, notification) => {
-        const serverValue = firebaseState.settings.notificationSettings.find(not => notification.name == not.name);
-        notifications.push(serverValue || notification);
-        return notifications;
-       }, [])
-    }
-    
-    mergeNotificationSettings();
+  state.notifications = state.notifications.reduce((notifications, notification) => {
+    const serverValue = state.settings.notificationSettings.find(not => notification.name == not.name);
+    notifications.push(serverValue || notification);
+    return notifications;
+    }, [])
+}
 
-    const saveNotificationSettings = () => {
-      updateSettings({
-        notificationSettings: state.notifications
-      }).then(() => {
-        ElNotification({
-          title: 'Saved',
-          message: 'Notification settings saved',
-          type: 'success'
-        })
-      });
-    }
+onMounted(async() => {
+  state.settings = await settingsApiService.getSettings();
+  mergeNotificationSettings();
+})
 
-    return {
-      ...toRefs(state),
-      saveNotificationSettings
-    };
-  },
-};
+
+const saveNotificationSettings = () => {
+  settingsApiService.updateSettings({
+    notificationSettings: state.notifications
+  }).then(() => {
+    ElNotification({
+      title: 'Saved',
+      message: 'Notification settings saved',
+      type: 'success'
+    })
+  });
+}
 </script>

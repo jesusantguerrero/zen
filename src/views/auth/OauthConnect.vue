@@ -19,7 +19,7 @@
 import { useRoute, useRouter } from "vue-router";
 import { onMounted, ref } from "vue";
 
-import { functions } from "@/utils/useFirebase"
+import { functions } from "@/plugins/useFirebase"
 import IntegrationModal from "@/components/organisms/modals/IntegrationModal.vue"; 
 
 const route = useRoute();

@@ -235,11 +235,11 @@ import TagsSelect from "@/components/atoms/TagsSelect.vue";
 import TabHeader from "@/components/atoms/TabHeader.vue";
 import TaskGroup from "@/components/organisms/TaskGroup.vue";
 
-import { useTaskFirestore } from "@/utils/useTaskFirestore";
-import { useDateTime } from "@/utils/useDateTime";
-import { useTrackFirestore } from "@/utils/useTrackFirestore";
-import { firebaseState, updateSettings } from "@/utils/useFirebase";
-import { startFireworks } from "@/utils/useConfetti";
+import { useTaskFirestore } from "@/plugins/firebase/useTaskFirestore";
+import { useTrackFirestore } from "@/plugins/firebase/useTrackFirestore";
+import { firebaseState, updateSettings } from "@/plugins/useFirebase";
+import { useDateTime } from "@/composables/useDateTime";
+import { startFireworks } from "@/composables/useConfetti";
 
 
 const {

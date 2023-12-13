@@ -1,7 +1,7 @@
 import Chart from 'chart.js';
 import LineChartDataSet from './LineChartDataSet';
 import BarChartDataSet from './BarChartDataSet';
-import { useDateTime } from "../useDateTime";
+import { useDateTime } from "@/composables/useDateTime";
 
 const {  formatDurationFromMs } = useDateTime()
 export default class SingleChart {
