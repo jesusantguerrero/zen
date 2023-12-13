@@ -2,7 +2,7 @@
   "name": "zen",
   "version": "2.1.0",
   "engines": {
-    "node": "^20.9.0"
+    "node": ">=18"
   },
   "scripts": {
     "dev": "vite",
