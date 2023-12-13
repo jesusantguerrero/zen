@@ -1,9 +1,9 @@
 
 <script setup lang="ts">
-import { ref, watch, computed, reactive, toRefs } from "vue"
+import { ref, watch, computed, reactive } from "vue"
 import { ElMessageBox, ElNotification } from "element-plus"
 
-import { useTaskFirestore } from "@/plugins/firebase/useTaskFirestore"
+import { ITask, useTaskFirestore } from "@/plugins/firebase/useTaskFirestore"
 import { useCustomSelect } from "@/plugins/firebase/useCustomSelect"
 import { firebaseInstance, firebaseState } from "@/plugins/useFirebase"
 import { useDateTime } from "@/composables/useDateTime"
@@ -63,7 +63,7 @@ const setHeight = () => {
   }, 10)
 }
 
-const task = reactive({
+const task = reactive<Record<string, any>>({
   uid: false,
   title: "",
   description: "",
@@ -79,22 +79,23 @@ const task = reactive({
   matrix: props.type || "backlog",
 })
 
-const { taskData } = toRefs(props);
-
-const setTaskData = (taskData) => {
+const setTaskData = (taskData?: Record<string, string>) => {
   if (taskData && task) {
     const data = Object.assign(taskData, {});
+  
     
     Object.keys(data).forEach((key) => {
       const objectData = data[key]
+      console.log(objectData, key);
       task[key] = Array.isArray(objectData) ? [...objectData] : objectData
+      console.log(task[key], key);
     });
   }
 }
 
 watch(()=> props.isOpen, (isOpen) => {
-  if(taskData.value || state.isOpenLocal) {
-    setTaskData(taskData.value)
+  if(props.taskData|| state.isOpenLocal) {
+    setTaskData(props.taskData)
   }
 }, { immediate: true, deep: true })
 
@@ -184,16 +185,12 @@ const confirmChecklist = async () => {
 
 const save = async () => {
   await confirmChecklist();
-  // check item
-
-  const formData =  {...task}
+  const formData =  {...task, uid: props.taskData?.uid } as ITask;
   formData.tracks = [];
-  formData.due_date = formData.due_date && typeof formData.due_date == 'object' ? formatDate(formData.due_date , "yyyy-MM-dd") : formData.due_date
-  updateTask(formData).then(() => {
-    emit('saved', formData)
-    clearForm()
-    state.isOpenLocal = false
-  })
+  formData.due_date = formData.due_date && typeof formData.due_date == 'object' ? formatDate(formData.due_date , "yyyy-MM-dd") : formData.due_date as Date;
+  await updateTask(formData)
+  emit('saved', formData)
+  close()
 }
 
 const close = () => {
@@ -252,9 +249,9 @@ const {list: contacts, addToList: createContact, selectItem: selectContact} = us
                       </div>
                   </div>
                   <div class="w-32">
-                    <date-select
+                    <DateSelect
                       placeholder="Due date"
-                      class="w-full"
+                      class="w-full text-white"
                       v-model="task.due_date"              
                     />
                   </div>

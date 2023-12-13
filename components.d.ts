@@ -94,7 +94,7 @@ declare module 'vue' {
     TagsSelect: typeof import('./src/components/atoms/TagsSelect.vue')['default']
     TaskGroup: typeof import('./src/components/organisms/TaskGroup.vue')['default']
     TaskItem: typeof import('./src/components/molecules/TaskItem.vue')['default']
-    TaskModal: typeof import('./src/components/organisms/TaskModal.vue')['default']
+    TaskModal: typeof import('./src/components/organisms/modals/TaskModal.vue')['default']
     TaskSelect: typeof import('./src/components/atoms/TaskSelect.vue')['default']
     TaskTrackView: typeof import('./src/components/organisms/TaskTrackView.vue')['default']
     TaskView: typeof import('./src/components/organisms/TaskView.vue')['default']
