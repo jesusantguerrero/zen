@@ -6,3 +6,4 @@ functions/.**
 *.local
 .vercel
 firebase-messaging-sw.js
+.runtimeconfig.json

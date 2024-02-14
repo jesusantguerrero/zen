@@ -1,4 +1,4 @@
-import Chart from 'chart.js';
+import { Chart } from 'chart.js';
 import LineChartDataSet from './LineChartDataSet';
 import BarChartDataSet from './BarChartDataSet';
 import { useDateTime } from "@/composables/useDateTime";

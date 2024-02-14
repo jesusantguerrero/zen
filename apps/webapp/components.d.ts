@@ -8,7 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AboutForm: typeof import('./src/components/molecules/AboutForm.vue')['default']
-    AppFooter: typeof import('./src/components/molecules/AppFooter.vue')['default']
+    AppFooter: typeof import('./src/components/organisms/AppFooter.vue')['default']
     AppHeader: typeof import('./src/components/organisms/AppHeader.vue')['default']
     AppNotification: typeof import('./src/components/organisms/AppNotification.vue')['default']
     AppSideMenu: typeof import('./src/components/organisms/AppSideMenu.vue')['default']
@@ -21,7 +21,7 @@ declare module 'vue' {
     CreateSpaceModal: typeof import('./src/components/organisms/modals/CreateSpaceModal.vue')['default']
     CustomText: typeof import('./src/components/atoms/CustomText.vue')['default']
     DatePage: typeof import('./src/components/atoms/DatePage.vue')['default']
-    DatePagerWeek: typeof import('./src/components/atoms/DatePagerWeek.vue')['default']
+    DatePagerWeek: typeof import('./src/components/molecules/DatePagerWeek.vue')['default']
     DateRangeSelect: typeof import('./src/components/atoms/DateRangeSelect.vue')['default']
     DateSelect: typeof import('./src/components/atoms/DateSelect.vue')['default']
     Dropdown: typeof import('./src/components/atoms/Dropdown.vue')['default']
