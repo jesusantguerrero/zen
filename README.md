@@ -16,8 +16,10 @@
 ## About Zen.
 __Zen.__ is a productivity app that integrates Eisenhower Matrix, Pomodoros, and part of the Get Things Done (GTD) principles in a unique way, to improve your developer routine. The purpose of Zen is to help you staying in the zone.
 
-![Zen. Screen Shot](./src/assets/login.png)
-![Zen. Screen Shot](./src/assets/zenboard.png)
+![Zen. Screen Shot](https://github.com/jesusantguerrero/zen/assets/17421742/5c92e398-67ba-484a-9538-408a08455028)
+
+![Zen. Screen Shot](https://github.com/jesusantguerrero/zen/assets/17421742/010d776a-2cc5-469e-ae52-92d3180f8ac4)
+
 
 ## Demo
 
@@ -41,13 +43,23 @@ Will be the standalone screen of Eisenhower Matrix plus the backlog of unpriorit
 
 ## Features
 
-1. Tasks with checklists.
 
-2. Pomodoro + TimeTracker in One.
+1. Pomodoro + TimeTracker + Task List in One.
+![Zen. Screen Shot](https://github.com/jesusantguerrero/zen/assets/17421742/010d776a-2cc5-469e-ae52-92d3180f8ac4)
 
-3. Mobile friendly
+2. Standup summary (From task tracked previous days).
+![image](https://github.com/jesusantguerrero/zen/assets/17421742/f3f5a332-52c7-42fe-a687-18c792aa9019)
 
 4. Eisenhower Matrix
+![Eisenhower Matrix](https://github.com/jesusantguerrero/zen/assets/17421742/bfcc63fd-5b60-42fd-b41b-446152b801fa)
+
+5. Metrics
+![Metrics](https://github.com/jesusantguerrero/zen/assets/17421742/1e3f7eb1-6b89-415f-bc8b-3bcc5846af66)
+
+
+6. Time Logs View
+![Time Logs](https://github.com/jesusantguerrero/zen/assets/17421742/b19c0a16-ae00-4d41-9342-9192b6652cf7)
+
 
 ### Zen vs Sunday
 
