@@ -31,6 +31,13 @@ const appCheck = firebase.appCheck();
 // key is the counterpart to the secret key you set in the Firebase console.
 appCheck.activate('6Lcwaz4lAAAAAPn4-MHWd-a86wvu6XLeT_qL62SM', true);
 
+// Offline Firestore cache. Fails gracefully if multiple tabs are open
+// (only one tab can own the persistence) or the browser doesn't support it.
+firebase.firestore().enablePersistence({ synchronizeTabs: true }).catch((err) => {
+  if (err?.code === 'failed-precondition' || err?.code === 'unimplemented') return
+  console.error('Firestore persistence:', err)
+})
+
 const onLoaded = ref(null)
 
 export const setLoaded = (loadedCallback) => {

@@ -9,6 +9,7 @@ export interface Shortcut {
 }
 
 export const SHORTCUTS: Shortcut[] = [
+  { keys: "Cmd / Ctrl + K", description: "Open command palette", scope: "Global" },
   { keys: "Shift + K", description: "Open quick add", scope: "Zenboard" },
   { keys: "Shift + F", description: "Toggle focus mode", scope: "Zenboard" },
   { keys: "Ctrl + Enter", description: "Save task (in task form)", scope: "Task" },

@@ -3,9 +3,14 @@
     <hero-section></hero-section>
     <learn-more />
     <features-section class="bg-secondary" id="features"></features-section>
+    <use-cases id="use-cases" />
+    <comparison-table id="compare" />
+    <content-video-section />
+    <social-proof id="community" />
+    <landing-faq id="faq" />
     <div class="flex flex-col items-center py-24 bg-white">
       <h2 class="text-4xl font-bold text-green-400">Try Zen for free.</h2>
-      
+
       <div class="mt-5">
         <router-link
           to="/register"
@@ -28,6 +33,10 @@ import FeaturesSection from "./Features.vue";
 import FooterSection from "./Footer.vue";
 import SiteFooter from "./SiteFooter.vue";
 import LearnMore from "./LearnMore.vue";
+import UseCases from "./UseCases.vue";
+import ComparisonTable from "./ComparisonTable.vue";
+import SocialProof from "./SocialProof.vue";
+import LandingFaq from "./LandingFaq.vue";
 </script>
 
 <style lang="scss">

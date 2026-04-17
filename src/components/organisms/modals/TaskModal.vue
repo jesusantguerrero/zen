@@ -213,7 +213,7 @@ const {list: contacts, addToList: createContact, selectItem: selectContact} = us
 
 <template>
 <div>
-  <modal-base v-model:is-open="state.isOpenLocal" title="Edit task" @closed="clearForm()" @click-outside="clearForm()" :click-to-close="false">
+  <modal-base v-model:is-open="state.isOpenLocal" title="Edit task" bottom-sheet @closed="clearForm()" @click-outside="clearForm()" :click-to-close="false">
       <template #title>
            <div class="flex justify-between pr-5">
                   <div class="flex items-center w-full text-left">
