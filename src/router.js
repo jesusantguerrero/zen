@@ -108,6 +108,7 @@ export const routes = [
     meta: {
       title: "Blog - Zen",
       requiresAuth: false,
+      public: true,
     },
   },
   {
@@ -116,6 +117,7 @@ export const routes = [
     name: "blogPost",
     meta: {
       requiresAuth: false,
+      public: true,
     },
   },
   {
@@ -124,6 +126,7 @@ export const routes = [
     name: "publicStandup",
     meta: {
       requiresAuth: false,
+      public: true,
     },
   },
   {
@@ -211,7 +214,9 @@ myRouter.beforeEach(async (to, from, next) => {
   const user = await isAuthenticated();
   if (to.meta.requiresAuth !== false && !user) {
     next({name: "login"})
-  } else if (to.meta.requiresAuth == false && user) {
+  } else if (to.meta.requiresAuth === false && !to.meta.public && user) {
+    // Marketing-only pages (landing, login, register) bounce authed users to the app.
+    // Routes flagged `meta.public: true` (blog, public standup, etc.) are viewable by anyone.
     if (['oauthLogin'].includes(to.name, from.name)) {
       return next({ name: "oauthAccept", query: to.query })
     }

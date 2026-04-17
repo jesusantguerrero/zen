@@ -22,7 +22,10 @@ const authenticate = async (req, res, next) => {
     }
     const idToken = req.headers.authorization.split('Bearer ')[1];
     const decodedIdToken = await exchangeToken(idToken).catch(() => null);
-    if (!decodedIdToken) return
+    if (!decodedIdToken) {
+      res.status(403).send('Unauthorized');
+      return;
+    }
     req.user = decodedIdToken;
     next();
     return;

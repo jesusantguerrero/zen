@@ -1,23 +1,12 @@
-
 'use strict';
 const express = require('express');
-const { setUserSettings } = require('../../utils');
-const router = express.Router;
 
-router.post('/', async (req, res) => {
-   const task = req.body;
- 
-   try {
-     const uid = req.user.uid;
-      setUserSettings(uid, {
-        subscription: data,
-        selectedPrice: state.selectedPrice
-      });
- 
-     res.status(201).json(task);
-   } catch(error) {
-     res.sendStatus(500);
-   }
+const router = express.Router();
+
+// Stub — subscription flow is being rebuilt (Stripe migration, see cycle.md).
+// Returning 501 keeps the Express app bootable without crashing on import.
+router.post('/', (req, res) => {
+  res.status(501).json({ error: 'subscription endpoint not implemented yet' });
 });
- 
+
 exports.default = router;

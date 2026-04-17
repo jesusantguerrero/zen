@@ -1,9 +1,9 @@
 {
   "name": "zen-mcp-server",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "Model Context Protocol server that lets any MCP-compatible AI agent (Claude, ChatGPT, etc.) drive Zen — add tasks, move quadrants, start timers, read standup and metrics.",
+  "description": "Model Context Protocol server that lets any MCP-compatible AI agent (Claude, ChatGPT, etc.) drive Zen by calling its HTTP API on behalf of the authenticated user.",
   "bin": {
     "zen-mcp-server": "./dist/index.js"
   },
@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",
-    "firebase-admin": "^12.7.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

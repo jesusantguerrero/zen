@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { initFirebase, requireUserUid, Timestamp } from "../firebase.js"
+import { apiRequest } from "../apiClient.js"
 
 export const addTaskSchema = {
   title: z.string().min(1).describe("Task title"),
@@ -16,11 +16,11 @@ export const addTaskSchema = {
   tags: z
     .array(z.string())
     .optional()
-    .describe("Tag UIDs (not names) — names resolve to UIDs via the tags collection"),
+    .describe("Tag UIDs (not names)"),
   stage: z
     .enum(["exploring", "in-dev", "in-review", "in-prod", "done"])
     .optional()
-    .describe("Workflow stage. Separate from 'done' flag — a task can be 'in-prod' but not closed."),
+    .describe("Workflow stage. Separate from 'done' flag."),
 }
 
 export async function addTask(args: {
@@ -31,27 +31,5 @@ export async function addTask(args: {
   tags?: string[]
   stage?: "exploring" | "in-dev" | "in-review" | "in-prod" | "done"
 }) {
-  const db = initFirebase()
-  const uid = requireUserUid()
-
-  const doc: Record<string, unknown> = {
-    user_uid: uid,
-    title: args.title,
-    matrix: args.matrix,
-    done: false,
-    order: 0,
-    checklist: [],
-    tags: args.tags ?? [],
-    tracks: [],
-    created_at: Timestamp.now(),
-  }
-  if (args.due_date) doc.due_date = Timestamp.fromDate(new Date(args.due_date))
-  if (args.description) doc.description = args.description
-  if (args.stage) doc.stage = args.stage
-
-  const ref = await db.collection("tasks").add(doc)
-  return {
-    uid: ref.id,
-    ...doc,
-  }
+  return apiRequest("/tasks", { method: "POST", body: args })
 }

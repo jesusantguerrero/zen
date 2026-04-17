@@ -2,42 +2,42 @@
 
 A [Model Context Protocol](https://modelcontextprotocol.io) server that lets any MCP-compatible AI agent (Claude Desktop, Cursor, etc.) drive Zen — add tasks, move Eisenhower quadrants, start pomodoros, read standup and metrics.
 
-## Status
+## Architecture (v0.2)
 
-**v0.1 — scaffold.** Core tools are wired. Single-user mode (you set the target user via env var). Multi-tenant / OAuth support is a later iteration.
+This server is a **client of Zen's HTTP API**. It does not talk to Firestore directly. Every action flows through `https://us-central1-<project>.cloudfunctions.net/api` with the user's API token, so:
+
+- **All business logic (recurrence, stage transitions, validation) lives in Zen** — the MCP can never drift.
+- **No Firebase Admin SDK** — no shared service account, no bypass of Firestore security rules.
+- **Per-user authentication** — each user has their own API token obtained via Zen's OAuth flow. Multi-user and hosted scenarios work naturally.
 
 ## Tools
 
-| Tool | Purpose |
+| Tool | API endpoint |
 |---|---|
-| `add_task` | Create a task in a matrix quadrant, optional due date, stage, tags |
-| `move_task` | Move task between quadrants (todo/schedule/delegate/delete/backlog) |
-| `complete_task` | Mark task done with today's commit date |
-| `start_timer` | Start a pomodoro track on a task; auto-stops any running track |
-| `get_standup` | Tasks completed on a given day (default: yesterday) |
-| `get_metrics` | Aggregated metrics (pomodoros, focus time, completions) over a date range |
+| `add_task` | `POST /tasks` |
+| `move_task` | `PATCH /tasks/:id/move` |
+| `complete_task` | `PATCH /tasks/:id/complete` |
+| `start_timer` | `POST /tracks/start-timer` |
+| `get_standup` | `GET /standup?date=yyyy-MM-dd` |
+| `get_metrics` | `GET /metrics?from=yyyy-MM-dd&to=yyyy-MM-dd` |
 
 ## Setup
 
-1. **Install**:
+1. **Install + build**:
    ```sh
    cd mcp-server
    npm install
    npm run build
    ```
 
-2. **Get a Firebase service account key** for the Zen project:
-   - Firebase Console → Project Settings → Service accounts → Generate new private key
-   - Save the JSON to `service-account.json` (gitignored)
+2. **Get an API token** — go through Zen's OAuth flow from the app (Settings → Integrations → API, once that screen exists). The returned `access_token` is what you'll use.
 
-3. **Find your user UID**:
-   - Firebase Console → Authentication → Users → copy the UID of your account
+   > Short-term bootstrap: if the OAuth UI isn't ready yet, create a `connections` document manually in Firestore with `{ user_uid: "<your-uid>", refreshToken: "<a long random string>", service: "mcp" }` and use that random string as your token. This is a temporary shortcut — proper OAuth flow is the next cycle item.
 
-4. **Environment variables** (set in your MCP client config):
+3. **Environment variables** (set in your MCP client config):
    ```
-   ZEN_FIREBASE_PROJECT_ID=your-project-id
-   ZEN_SERVICE_ACCOUNT_PATH=/absolute/path/to/service-account.json
-   ZEN_USER_UID=your-firebase-auth-uid
+   ZEN_API_BASE=https://us-central1-appzen-367e1.cloudfunctions.net/api
+   ZEN_API_TOKEN=<your-api-token>
    ```
 
 ## Hooking it up to Claude Desktop
@@ -51,16 +51,15 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
       "command": "node",
       "args": ["/absolute/path/to/zen/mcp-server/dist/index.js"],
       "env": {
-        "ZEN_FIREBASE_PROJECT_ID": "your-project-id",
-        "ZEN_SERVICE_ACCOUNT_PATH": "/absolute/path/to/service-account.json",
-        "ZEN_USER_UID": "your-firebase-auth-uid"
+        "ZEN_API_BASE": "https://us-central1-appzen-367e1.cloudfunctions.net/api",
+        "ZEN_API_TOKEN": "your-api-token"
       }
     }
   }
 }
 ```
 
-Restart Claude Desktop. You should now be able to say things like:
+Restart Claude Desktop, then try:
 - *"Add a task 'Review PR #42' to my todo quadrant"*
 - *"What did I complete yesterday?"*
 - *"Start a pomodoro on task XYZ"*
@@ -72,14 +71,22 @@ Restart Claude Desktop. You should now be able to say things like:
 npm run dev   # tsx watch mode
 ```
 
+Health check:
+```sh
+curl https://us-central1-appzen-367e1.cloudfunctions.net/api/health
+```
+
 ## Security notes
 
-- The server runs with **Firebase Admin SDK privileges** — it bypasses Firestore rules. Anything it can query, you as a user can see. Keep `service-account.json` out of version control (already in `.gitignore`).
-- Single-user mode: all operations scope to `ZEN_USER_UID`. There is no auth layer on the MCP stdio transport itself — **don't expose this server over a network**.
-- Future: OAuth device flow so multiple users can share one deployed instance.
+- Your API token is equivalent to your user account. Don't share it. If compromised, delete the corresponding `connections` document in Firestore to revoke.
+- The MCP stdio transport has no auth layer of its own — **don't expose this server over a network**. Run it as a local child process of your MCP client.
 
 ## Known limitations
 
-- Tag operations use tag UIDs (not names). An agent would need to list tags first — a future `list_tags` tool will help.
-- `start_timer` doesn't yet sync with the Zen app's in-memory timer UI — the track shows up on Metrics and via refresh. Real-time reflection needs a different integration point.
-- `get_metrics` is a simpler aggregation than the Zen UI (no per-day bars). Sufficient for AI prompting.
+- **Tags use UIDs, not names.** Tools accept arrays of tag UIDs. A `list_tags` tool is on the roadmap.
+- **No real-time sync with the web app's timer UI.** If the MCP starts a pomodoro, the web app may need a page reload to reflect it.
+- **OAuth UI for generating API tokens is not yet built.** See bootstrap note in setup. Proper OAuth flow is the next cycle item.
+
+## Migration notes
+
+If you set up v0.1 with `ZEN_SERVICE_ACCOUNT_PATH` and `ZEN_USER_UID`, those env vars are no longer used — swap them for `ZEN_API_BASE` and `ZEN_API_TOKEN`. You can delete any `service-account.json` you downloaded.
