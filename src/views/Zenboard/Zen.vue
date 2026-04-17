@@ -5,15 +5,15 @@ import { ElMessageBox, ElNotification } from "element-plus";
 import { useMagicKeys } from "@vueuse/core";
 import { startOfYesterday } from "date-fns";
 import { useTrackerStore } from "@/store/tracker";
-// @ts-ignore
-import { AtButton } from "atmosphere-ui";
-
 import TaskGroup from "@/components/organisms/TaskGroup.vue";
 import QuickAdd from "@/components/molecules/QuickAdd.vue";
 import TaskTrackView from "@/components/organisms/TaskTrackView.vue";
+import DailySummary from "@/components/organisms/DailySummary.vue";
+import FocusMode from "@/components/organisms/FocusMode.vue";
 import WelcomeModal from "@/components/organisms/modals/WelcomeModal.vue";
 import TaskModal from "@/components/organisms/modals/TaskModal.vue";
 import SearchBox from "@/components/molecules/SearchBox.vue";
+import StageFilter from "@/components/molecules/StageFilter.vue";
 import TabHeader from "@/components/atoms/TabHeader.vue";
 import CardButton from "@/components/molecules/CardButton.vue";
 import SummaryAside from "@/components/templates/SummaryAside.vue";
@@ -45,6 +45,7 @@ const state = reactive({
   mobileMode: "zen",
   tabSelected: "todo",
   showAdd: false,
+  isFocusMode: false,
   tabs: [
     {
       label: "Todo",
@@ -103,7 +104,7 @@ state.isWelcomeOpen =
 
 // search
 const tags = inject("tags", []);
-const { selectedTags, searchText, searchTags } = useSearchOptions();
+const { selectedTags, searchText, searchTags, searchStages } = useSearchOptions();
 
 const schedule = computed(() => {
   return matrix.schedule.list;
@@ -116,9 +117,17 @@ const todo = computed(() => {
 const { filteredList: filteredSchedule } = useFuseSearch(
   searchText,
   schedule,
-  selectedTags
+  selectedTags,
+  [],
+  searchStages
 );
-const { filteredList: filteredTodos } = useFuseSearch(searchText, todo, selectedTags);
+const { filteredList: filteredTodos } = useFuseSearch(
+  searchText,
+  todo,
+  selectedTags,
+  [],
+  searchStages
+);
 
 // Current task
 const timeTrackerRef = ref();
@@ -246,6 +255,10 @@ const moveTo = async (task: ITask, matrixName: string) => {
   });
 };
 
+const onMoveTo = ({ task, matrix: target }: { task: ITask; matrix: string }) => {
+  moveTo(task, target);
+};
+
 const { push } = useRouter();
 const closeWelcomeModal = () => {
   updateSettings({
@@ -280,10 +293,13 @@ const handleDragChanges = (e: any, matrixName: string) => {
 };
 
 //  magic keys
-const { Shift_k } = useMagicKeys();
+const { Shift_k, Shift_f } = useMagicKeys();
 const quickAdd = ref();
 watch(Shift_k, () => {
   toggleQuickAdd();
+});
+watch(Shift_f, (v) => {
+  if (v) state.isFocusMode = !state.isFocusMode;
 });
 const toggleQuickAdd = () => {
   state.showAdd = true;
@@ -300,12 +316,21 @@ const toggleQuickAdd = () => {
         class="zen__view md:block md:w-8/12 md:mr-20"
         :class="[state.mobileMode == 'zen' ? 'block' : 'hidden']"
       >
-        <header class="flex justify-between">
+        <header class="flex items-center justify-between">
           <div
             class="flex items-center text-2xl font-bold text-gray-400 md:block dark:text-gray-300"
           >
             <h1 class="inline-block">Dashboard</h1>
           </div>
+          <button
+            type="button"
+            class="flex items-center justify-center w-10 h-10 text-gray-500 transition-colors border-2 border-gray-200 rounded-md focus:outline-none hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-transparent dark:text-gray-300 dark:border-base-lvl-3 dark:hover:border-gray-400"
+            :disabled="!trackStore.currentTask?.uid"
+            title="Enter focus mode (Shift+F)"
+            @click="state.isFocusMode = true"
+          >
+            <i class="fa fa-expand" />
+          </button>
         </header>
         <section class="flex justify-between mt-5">
           <div v-if="!state.showAdd" class="h-10">
@@ -332,9 +357,14 @@ const toggleQuickAdd = () => {
                 :tags="tags"
                 :allow-add="false"
               />
-              <AtButton type="success" class="h-full bg-accent" rounded @click="toggleQuickAdd">
+              <StageFilter v-model="searchStages" dropdown />
+              <button
+                type="button"
+                class="h-10 px-4 text-sm font-semibold text-white transition-colors rounded-md bg-accent hover:opacity-90 focus:outline-none"
+                @click="toggleQuickAdd"
+              >
                 New
-              </AtButton>
+              </button>
             </header>
             <div v-show="state.showAdd" class="w-full mb-4 quick__add">
               <QuickAdd
@@ -383,6 +413,7 @@ const toggleQuickAdd = () => {
               @edited="setTaskToEdit"
               @done="onDone"
               @down="moveTo($event, 'schedule')"
+              @move-to="onMoveTo"
             />
 
             <TaskGroup
@@ -399,6 +430,7 @@ const toggleQuickAdd = () => {
               @deleted="destroyTask"
               @edited="setTaskToEdit"
               @up="moveTo($event, 'todo')"
+              @move-to="onMoveTo"
               @change="handleDragChanges"
             />
           </section>
@@ -431,6 +463,8 @@ const toggleQuickAdd = () => {
               <SummaryAside class="-mt-4 dark:border-gray-600" :matrix="matrix" />
             </section>
 
+            <DailySummary :matrix="matrix" @open-task="setTaskToEdit" />
+
             <TaskTrackView
               :task="trackStore.currentTask"
               :current-timer="trackStore.currentTimer"
@@ -440,9 +474,11 @@ const toggleQuickAdd = () => {
       </div>
     </div>
 
-    <WelcomeModal 
-      :is-open="state.isWelcomeOpen" 
-      @closed="closeWelcomeModal" 
+    <FocusMode v-model:is-open="state.isFocusMode" />
+
+    <WelcomeModal
+      :is-open="state.isWelcomeOpen"
+      @closed="closeWelcomeModal"
     />
 
     <TaskModal

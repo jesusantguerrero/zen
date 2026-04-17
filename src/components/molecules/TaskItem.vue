@@ -1,6 +1,6 @@
 <template>
-  <article 
-    class="items-stretch flex transition-all bg-white relative border-2 border-gray-200 rounded-md cursor-pointer task-item dark:bg-base-lvl-2 dark:border-gray-600 dark:text-gray-300 hover:border-green-200"
+  <article
+    class="group items-stretch flex transition-all bg-white relative border-2 border-gray-200 rounded-md cursor-pointer task-item dark:bg-base-lvl-2 dark:border-gray-600 dark:text-gray-300 hover:border-green-200"
     :class="{'border-green-400': isSelected, 'shadow-md ': !isCompact }"
     @click="$emit('selected', task)"
     @dblclick.prevent="$emit('edited', task)"
@@ -23,6 +23,15 @@
           </div>
   
           <h4 class="m-0 text-sm text-left cursor-pointer task-item__title "> {{ task.title }}</h4>
+          <span
+            v-if="stageMeta"
+            class="flex items-center px-2 py-0.5 ml-2 text-[10px] font-semibold uppercase tracking-wide rounded-full whitespace-nowrap"
+            :class="stageMeta.badgeClass"
+            :title="stageMeta.description"
+          >
+            <span class="inline-block w-1.5 h-1.5 mr-1 rounded-full" :class="stageMeta.dotClass"></span>
+            {{ stageMeta.label }}
+          </span>
         </section>
   
         <section class="flex items-start task-item__controls md:items-center">  
@@ -71,9 +80,9 @@
           </div>
   
           <ElDropdown trigger="click" @command="handleCommand" v-if="showControls && !isDisabled" :disabled="isDisabled" @click.stop>
-            <button 
-              class="px-2 py-1 text-sm text-gray-400 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-50 focus:outline-none hover:text-gray-600" 
-              :title="isDisabled? 'Can updates tasks when timer is running' : ''" 
+            <button
+              class="px-2 py-1 text-sm text-gray-400 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-50 focus:outline-none hover:text-gray-600 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+              :title="isDisabled? 'Can updates tasks when timer is running' : ''"
               @click.prevent.self
             >
               <i class="fa fa-ellipsis-v"></i> {{ isDisabled }}
@@ -81,13 +90,16 @@
             <template #dropdown>
               <ElDropdownMenu>
                 <ElDropdownItem command="edit" icon="el-icon-edit">Edit</ElDropdownItem>
-                <ElDropdownItem command="delete" icon="el-icon-delete">Delete </ElDropdownItem>
                 <ElDropdownItem command="done" icon="el-icon-check" v-if="!task.done"> Mark as done </ElDropdownItem>
                 <ElDropdownItem command="undo" icon="el-icon-refresh-left" v-else> undo </ElDropdownItem>
                 <ElDropdownItem command="clone" icon="el-icon-document-copy"> Duplicate </ElDropdownItem>
                 <ElDropdownItem command="toggle-key" icon="el-icon-s-flag" v-if="task.matrix=='todo'"> Key task </ElDropdownItem>
-                <ElDropdownItem command="up" icon="el-icon-arrow-left" v-if="task.matrix=='schedule'">Move to todo</ElDropdownItem>
-                <ElDropdownItem command="down" icon="el-icon-arrow-right" v-if="task.matrix=='todo'">Move to schedule</ElDropdownItem>
+                <ElDropdownItem divided command="move-todo" v-if="task.matrix !== 'todo'">Move to Do</ElDropdownItem>
+                <ElDropdownItem command="move-schedule" v-if="task.matrix !== 'schedule'">Move to Plan</ElDropdownItem>
+                <ElDropdownItem command="move-delegate" v-if="task.matrix !== 'delegate'">Move to Delegate</ElDropdownItem>
+                <ElDropdownItem command="move-delete" v-if="task.matrix !== 'delete'">Move to Delete</ElDropdownItem>
+                <ElDropdownItem command="move-backlog" v-if="task.matrix && task.matrix !== 'backlog'">Move to Backlog</ElDropdownItem>
+                <ElDropdownItem divided command="delete" icon="el-icon-delete">Delete</ElDropdownItem>
               </ElDropdownMenu>
             </template>
           </ElDropdown>
@@ -174,6 +186,7 @@ import TimeTrackerButton from "@components/atoms/tracker/TimeTrackerButton.vue";
 import { useDateTime } from "@/composables/useDateTime";
 import { useCustomSelect } from "@/plugins/firebase/useCustomSelect";
 import { durationFromMs } from "@/composables/useTracker";
+import { STAGE_META } from "@/domain/matrix/types/enum/taskTypes";
 
 export default {
   components: {
@@ -212,7 +225,8 @@ export default {
     done: Object,
     clone: Object,
     updated: Array,
-    'toggle-timer': Object
+    'toggle-timer': Object,
+    'move-to': Object,
   },
   setup(props, { emit }) {
     const { task, currentTask, currentTimer } = toRefs(props)
@@ -245,6 +259,10 @@ export default {
 
       isSelected: computed(( ) => {
         return currentTask.value && currentTask.value.uid == task.value.uid
+      }),
+
+      stageMeta: computed(() => {
+        return task.value.stage ? STAGE_META[task.value.stage] : null
       }),
 
       dateStates: computed(() => {
@@ -283,6 +301,11 @@ export default {
     task.value.contacts = task.value.contacts || [] 
 
     const handleCommand = (commandName) => {
+      if (typeof commandName === 'string' && commandName.startsWith('move-')) {
+        const target = commandName.slice('move-'.length)
+        emit('move-to', { task: task.value, matrix: target })
+        return
+      }
       switch (commandName) {
         case 'delete':
           emit('deleted', task);

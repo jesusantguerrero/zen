@@ -12,7 +12,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="items-center h-12 w-full rounded-md md:flex border-2 border-gray-200 overflow-hidden bg-white dark:bg-transparent dark:border-transparent">
+  <div class="items-center h-10 w-full rounded-md md:flex border-2 border-gray-200 overflow-hidden bg-white dark:bg-transparent dark:border-base-lvl-3">
     <div class="dark:border-base-lvl-3 border rounded-md">
       <AtInput
         type="search"

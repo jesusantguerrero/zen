@@ -22,7 +22,14 @@ service cloud.firestore {
       match /tracks/{trackId} {
     		allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
         allow delete, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
-    		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid;  
+    		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid;
     	}
+      // Public standup snapshots. Owner can create/update/delete; anyone can read.
+      // Document ID is `{uid}_{yyyy-MM-dd}`.
+      match /public_standups/{standupId} {
+        allow read: if true;
+        allow create, update: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
+        allow delete: if request.auth != null && resource.data.user_uid == request.auth.uid;
+      }
   }
 }

@@ -1,5 +1,5 @@
-@import "./base.scss";
-@import "./element-plus.scss";
+@use "./base.scss";
+@use "./element-plus.scss";
 
 
 html {
@@ -85,11 +85,11 @@ html {
 
 .ic-scroller {
     &::-webkit-scrollbar-thumb {
-        background-color: transparentize($color: #000000, $amount: 0.7);
+        background-color: rgba(0, 0, 0, 0.3);
         border-radius: 4px;
 
         &:hover {
-            background-color: transparentize($color: #000000, $amount: 0.7);
+            background-color: rgba(0, 0, 0, 0.3);
         }
     }
 

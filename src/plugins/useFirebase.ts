@@ -31,6 +31,13 @@ const appCheck = firebase.appCheck();
 // key is the counterpart to the secret key you set in the Firebase console.
 appCheck.activate('6Lcwaz4lAAAAAPn4-MHWd-a86wvu6XLeT_qL62SM', true);
 
+// Offline Firestore cache. Fails gracefully if multiple tabs are open
+// (only one tab can own the persistence) or the browser doesn't support it.
+firebase.firestore().enablePersistence({ synchronizeTabs: true }).catch((err) => {
+  if (err?.code === 'failed-precondition' || err?.code === 'unimplemented') return
+  console.error('Firestore persistence:', err)
+})
+
 const onLoaded = ref(null)
 
 export const setLoaded = (loadedCallback) => {
@@ -109,6 +116,40 @@ const getProvider = (providerName) => {
 
 export const logout = () => {
     return firebase.auth().signOut()
+}
+
+const USER_OWNED_COLLECTIONS = ["tasks", "tracks", "settings", "connections", "notifications"]
+
+const deleteUserOwnedDocs = async (uid: string) => {
+    const dbInstance = firebase.firestore()
+    for (const collection of USER_OWNED_COLLECTIONS) {
+        const snap = await dbInstance
+            .collection(collection)
+            .where("user_uid", "==", uid)
+            .get()
+        if (snap.empty) continue
+        const batches: firebase.default.firestore.WriteBatch[] = []
+        let batch = dbInstance.batch()
+        let count = 0
+        snap.forEach((doc) => {
+            batch.delete(doc.ref)
+            count += 1
+            if (count === 400) {
+                batches.push(batch)
+                batch = dbInstance.batch()
+                count = 0
+            }
+        })
+        if (count > 0) batches.push(batch)
+        for (const b of batches) await b.commit()
+    }
+}
+
+export const deleteAccount = async () => {
+    const user = firebase.auth().currentUser
+    if (!user) throw new Error("No authenticated user")
+    await deleteUserOwnedDocs(user.uid)
+    await user.delete()
 }
 
 // Database

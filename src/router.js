@@ -10,7 +10,6 @@ import OauthConnect from "./views/auth/OauthConnect.vue";
 
 // Zen
 import ZenBoard from "./views/Zenboard/Zen.vue";
-import Home from "./views/Zenboard/Overview.vue";
 
 import Matrix from "./views/Matrix/MatrixBase.vue";
 import MatrixShared from "./views/Matrix/MatrixShared.vue";
@@ -30,16 +29,15 @@ import { isAuthenticated, registerEvent, setScreen } from "./plugins/useFirebase
 
 
 export const routes = [
-  { 
+  {
     path: "/home",
     name: "home",
-    component: Home,
+    redirect: { name: "zenboard" },
   },
-  { 
-    path: "/zenboard", 
+  {
+    path: "/zenboard",
     name: "zenboard",
     component: ZenBoard,
-
   },
   { path: "/matrix", 
     name: 'matrix',
@@ -101,6 +99,34 @@ export const routes = [
     name: "pricing",
     meta: {
       requiresAuth: false,
+    },
+  },
+  {
+    path: "/blog",
+    component: () => import("./views/blog/BlogIndex.vue"),
+    name: "blog",
+    meta: {
+      title: "Blog - Zen",
+      requiresAuth: false,
+      public: true,
+    },
+  },
+  {
+    path: "/blog/:slug",
+    component: () => import("./views/blog/BlogPost.vue"),
+    name: "blogPost",
+    meta: {
+      requiresAuth: false,
+      public: true,
+    },
+  },
+  {
+    path: "/u/:uid/standup/:date",
+    component: () => import("./views/public/PublicStandup.vue"),
+    name: "publicStandup",
+    meta: {
+      requiresAuth: false,
+      public: true,
     },
   },
   {
@@ -188,7 +214,9 @@ myRouter.beforeEach(async (to, from, next) => {
   const user = await isAuthenticated();
   if (to.meta.requiresAuth !== false && !user) {
     next({name: "login"})
-  } else if (to.meta.requiresAuth == false && user) {
+  } else if (to.meta.requiresAuth === false && !to.meta.public && user) {
+    // Marketing-only pages (landing, login, register) bounce authed users to the app.
+    // Routes flagged `meta.public: true` (blog, public standup, etc.) are viewable by anyone.
     if (['oauthLogin'].includes(to.name, from.name)) {
       return next({ name: "oauthAccept", query: to.query })
     }

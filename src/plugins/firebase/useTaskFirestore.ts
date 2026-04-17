@@ -3,6 +3,7 @@ import { DateTime } from "luxon";
 import { db, firebaseState, functions } from "@/plugins/useFirebase";
 import { nextTick } from "vue";
 import { startOfDay, subDays } from "date-fns";
+import { StageTypes } from "@/domain/matrix/types/enum/taskTypes";
 const collectionName = "tasks";
 
 export interface TaskStreak {
@@ -10,13 +11,14 @@ export interface TaskStreak {
     streak: number;
 }
 export interface ITask {
-    uid: string; 
+    uid: string;
     user_uid: string;
     title: string;
     created_at: Date;
     order: number;
     due_date: Date;
     matrix: string;
+    stage?: StageTypes | null;
     tracks: any[];
     tags: any[];
     duration_ms?: number;

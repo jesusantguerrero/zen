@@ -1,5 +1,5 @@
 <template>
-  <form class="items-center px-4 py-3 mb-2 text-sm bg-white border-2 border-gray-200 rounded-md shadow-md cursor-default task-item dark:bg-base-lvl-1 dark:border-base-lvl-3"
+  <form class="group items-center px-4 py-3 mb-2 text-sm bg-white border-2 border-gray-200 rounded-md shadow-md cursor-default task-item dark:bg-base-lvl-1 dark:border-base-lvl-3"
      @submit.prevent
      @keydown.ctrl.enter="save()"
      @keydown.enter.prevent.exact
@@ -24,7 +24,11 @@
         </div>
       </div>
 
-      <div class="flex items-center task-item__controls" v-if="!isReminder">
+      <div
+        class="flex items-center task-item__controls transition-opacity opacity-0 group-hover:opacity-100 focus-within:opacity-100"
+        :class="{ 'opacity-100': state.isExpanded || task.title || task.due_date }"
+        v-if="!isReminder"
+      >
         <div class="mx-2 text-gray-400 hover:text-gray-600">
           <PersonSelect
             v-if="type=='delegate'"
@@ -33,11 +37,11 @@
             :multiple="true"
             @selected="addContact"
             @added="createContact"
-          /> 
-          <DateSelect 
+          />
+          <DateSelect
             v-else
-            v-model="task.due_date" 
-          />    
+            v-model="task.due_date"
+          />
         </div>
 
         <div class="mx-2 text-lg text-gray-400 hover:text-red-400" @click="clearForm()">

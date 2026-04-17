@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="/favicon.ico" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Potta+One&display=swap" rel="stylesheet">
@@ -29,11 +32,80 @@
     <meta name="twitter:image:alt" content="zenboard">
     <script type="application/ld+json">
       {
-        "@context": "http://schema.org/",
-        "@type": "Organization",
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
         "name": "Zen",
-        "logo": "https://www.gstatic.com/devrel-devsite/prod/v1674d466be3b1154327dd11cf186e748303b1e92ae31ff35df0f5192fbd777ea/firebase/images/touchicon-180.png",
-        "url": "https://zenboard.app"
+        "applicationCategory": "ProductivityApplication",
+        "operatingSystem": "Web, iOS, Android (PWA)",
+        "description": "Zen is a productivity app for individual developers that combines the Eisenhower Matrix, Pomodoro timer, time tracking, and a standup generator. Integrates with Jira, GitHub, and Google.",
+        "url": "https://zenboard.app",
+        "image": "https://zenboard.app/zenboard.png",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Jesus Guerrero",
+          "url": "https://jesusantguerrero.com"
+        }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Isn't this just another todo app?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Zen combines the Eisenhower Matrix, Pomodoro timer, time tracking, and an auto-generated standup in one developer-focused flow. It's the Plan → Decide → Work → Standup loop as a product — not a flat list of checkboxes."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is Zen free?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes — core features are free. A Pro tier with advanced integrations and team sharing is planned."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I use Zen with my team?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Zen is built for individual developers. For team collaboration, we recommend Sunday (our team-oriented sibling product) or Linear."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What happens to my data?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Your data lives in your Firebase account. You can export everything (tasks, tracks) as CSV at any time, and delete your account from Settings."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is Zen open source?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes — MIT licensed at github.com/jesusantguerrero/zen."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I use Zen without Jira?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, Zen works fully standalone. Jira, GitHub, and Google integrations are optional — add them if you want two-way issue import and timesheet sync."
+            }
+          }
+        ]
       }
     </script>
     <!-- <script src="https://cdn.paddle.com/paddle/paddle.js"></script>
@@ -73,5 +145,14 @@
     <script async src="https://cdn.headwayapp.co/widget.js"></script>
     <script src="https://apis.google.com/js/api.js"></script>
     <script type="module" src="/src/main.js"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch((err) => {
+            console.error('SW registration failed:', err)
+          })
+        })
+      }
+    </script>
   </body>
 </html>

@@ -1,10 +1,10 @@
 <template>
-<div class="pt-24 mx-5 md:pt-28 md:mx-28">
+<div class="pt-24 pb-20 mx-5 md:pt-28 md:mx-28">
   <div class="items-center justify-between mb-10 section-header md:flex">
-      <h2 class="text-2xl font-bold text-left text-gray-400">
+      <h2 class="text-2xl font-bold text-left text-gray-600 dark:text-gray-300">
          Metrics
       </h2>
-  </div> 
+  </div>
 
   <MetricsTemplate class="w-full" />
   

@@ -15,14 +15,15 @@
                label="name"
                key-track="value"
                class="w-32 "
-            />         
+            />
          </div>
-         <input type="search" 
-            v-model.trim="state.search" 
+         <StageFilter v-model="state.stages" dropdown />
+         <input type="search"
+            v-model.trim="state.search"
             class="w-full h-10 px-2 border-2 border-gray-200 rounded-md text-md focus:outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-300"
-            placeholder="Search task"  
+            placeholder="Search task"
          >
-         <button title="help" class="h-10 px-5 py-1 ml-2 text-white transition-all bg-gray-600 rounded-md hover:bg-gray-700 focus:outline-none" 
+         <button title="help" class="h-10 px-5 py-1 ml-2 text-white transition-all bg-gray-600 rounded-md hover:bg-gray-700 focus:outline-none"
          @click="state.showHelp = !state.showHelp">
             <i class="fa fa-question"></i>
          </button>
@@ -31,22 +32,23 @@
 
    <div class="flex justify-between w-full text-right">
       <div class="flex">
-         <ShareBoard /> 
-         <MatrixTeammates v-model:selected="state.selectedUser" />           
+         <ShareBoard />
+         <MatrixTeammates v-model:selected="state.selectedUser" />
       </div>
-      
+
       <button class="px-5 py-1 font-bold border rounded-md focus:outline-none capitalize dark:border-lvl-3"
       :class="showUncategorized ? 'text-gray-200 bg-gray-600 dark:bg-base-lvl-1' : 'text-gray-700 bg-gray-200 dark:text-white dark:bg-base-lvl-2'"
-         @click="toggleUncategorized">{{ uncategorizedText }} Uncategorized 
+         @click="toggleUncategorized">{{ uncategorizedText }} Uncategorized
       </button>
    </div>
 
-   <MatrixBoard 
-      class="mt-8"
-      :search="state.search" 
-      :show-help="state.showHelp" 
-      :show-uncategorized="showUncategorized" 
-      :mode="state.selectedView" 
+   <MatrixBoard
+      class="mt-4"
+      :search="state.search"
+      :stages="state.stages"
+      :show-help="state.showHelp"
+      :show-uncategorized="showUncategorized"
+      :mode="state.selectedView"
       :user="state.user"
       :allow-update="!state.selectedUser"
       :allow-add="!state.selectedUser"
@@ -63,12 +65,14 @@ import MatrixBoard from "@/components/organisms/MatrixBoard.vue"
 import ShareBoard from "@/components/organisms/ShareBoard.vue"
 import JetSelect from "@/components/atoms/JetSelect.vue";
 import MatrixTeammates from "@/components/organisms/MatrixTeammates.vue";
+import StageFilter from "@/components/molecules/StageFilter.vue";
 import { firebaseState } from "@/plugins/useFirebase";
 
 
 const state = reactive({
    showHelp:  false,
    search: "",
+   stages: [],
    modes: [{
       name: 'Board',
       value: 'matrix'

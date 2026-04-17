@@ -1,0 +1,24 @@
+{
+  "name": "Zen — Productivity for developers",
+  "short_name": "Zen",
+  "description": "Eisenhower matrix, pomodoro timer, time tracking, and standup generator for individual developers.",
+  "start_url": "/zenboard",
+  "display": "standalone",
+  "background_color": "#0F172A",
+  "theme_color": "#00DC82",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/zenboard.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["productivity", "utilities"]
+}

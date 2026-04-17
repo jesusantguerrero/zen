@@ -7,6 +7,7 @@ import { ITask, useTaskFirestore } from "@/plugins/firebase/useTaskFirestore"
 import { useCustomSelect } from "@/plugins/firebase/useCustomSelect"
 import { firebaseInstance, firebaseState } from "@/plugins/useFirebase"
 import { useDateTime } from "@/composables/useDateTime"
+import { StageTypes, STAGE_META, STAGE_ORDER } from "@/domain/matrix/types/enum/taskTypes"
 
 import TagsSelect from "../../atoms/TagsSelect.vue"
 import PersonSelect from "../../atoms/PersonSelect.vue"
@@ -77,7 +78,13 @@ const task = reactive<Record<string, any>>({
   done: false,
   commit_date: null,
   matrix: props.type || "backlog",
+  stage: null,
 })
+
+const stages = STAGE_ORDER.map((key) => ({ key, ...STAGE_META[key] }))
+const setStage = (stage: StageTypes) => {
+  task.stage = task.stage === stage ? null : stage
+}
 
 const setTaskData = (taskData?: Record<string, string>) => {
   if (taskData && task) {
@@ -130,6 +137,7 @@ const clearForm = () => {
   task.tags = [];
   task.contacts = [];
   task.checklist = [];
+  task.stage = null;
 }
 
 const handleUpload = (res) => {
@@ -205,7 +213,7 @@ const {list: contacts, addToList: createContact, selectItem: selectContact} = us
 
 <template>
 <div>
-  <modal-base v-model:is-open="state.isOpenLocal" title="Edit task" @closed="clearForm()" @click-outside="clearForm()" :click-to-close="false">
+  <modal-base v-model:is-open="state.isOpenLocal" title="Edit task" bottom-sheet @closed="clearForm()" @click-outside="clearForm()" :click-to-close="false">
       <template #title>
            <div class="flex justify-between pr-5">
                   <div class="flex items-center w-full text-left">
@@ -238,10 +246,10 @@ const {list: contacts, addToList: createContact, selectItem: selectContact} = us
               <div class="flex justify-between">
                   <div class="flex items-center w-full">
                       <div class="w-full">
-                      <input 
-                          type="text" 
-                          class="w-full px-2 border-b-2 border-gray-100 focus:outline-none dark:bg-transparent dark:text-gray-300 dark:border-gray-600 dark:focus:border-gray-500"  
-                          :placeholder="placeholder" 
+                      <input
+                          type="text"
+                          class="w-full px-2 border-b-2 border-gray-100 focus:outline-none dark:bg-transparent dark:text-gray-300 dark:border-gray-600 dark:focus:border-gray-500"
+                          :placeholder="placeholder"
                           v-model="task.title"
                       >
                       </div>
@@ -250,12 +258,38 @@ const {list: contacts, addToList: createContact, selectItem: selectContact} = us
                     <DateSelect
                       placeholder="Due date"
                       class="w-full text-white"
-                      v-model="task.due_date"              
+                      v-model="task.due_date"
                     />
                   </div>
               </div>
 
-                
+              <div class="flex flex-wrap items-center gap-2 px-2 pt-3 text-xs">
+                  <span class="font-semibold text-gray-500 dark:text-gray-400">Stage:</span>
+                  <button
+                      v-for="stage in stages"
+                      :key="stage.key"
+                      type="button"
+                      :title="stage.description"
+                      class="flex items-center px-2 py-1 transition-all border rounded-full focus:outline-none"
+                      :class="task.stage === stage.key
+                          ? `${stage.badgeClass} border-transparent font-semibold`
+                          : 'border-gray-200 text-gray-500 hover:border-gray-400 dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-400'"
+                      @click.prevent="setStage(stage.key)"
+                  >
+                      <span class="inline-block w-2 h-2 mr-2 rounded-full" :class="stage.dotClass"></span>
+                      {{ stage.label }}
+                  </button>
+                  <button
+                      v-if="task.stage"
+                      type="button"
+                      class="ml-1 text-gray-400 hover:text-red-400 focus:outline-none"
+                      title="Clear stage"
+                      @click.prevent="task.stage = null"
+                  >
+                      <i class="fa fa-times"></i>
+                  </button>
+              </div>
+
               <div class="w-full p-3 pb-20 task-item__body">
                   <textarea 
                     ref="descriptionInput"

@@ -1,12 +1,12 @@
 <template>
     <div class="flex justify-start px-2 py-3 text-xs font-bold bg-white border-b md:px-10 md:justify-between md:flex">
-        <div class="px-2 text-xs text-gray-500 transition cursor-pointer md:text-sm md:px-14 max-w-7xl md:text-left hover:text-green-500">
-            <span class="px-1 py-1 mr-3 text-white bg-green-400 rounded-md"> New </span>
-            Introducing zenboard 2.0 - The Eisenhower Matrix revamped
-            <i class="fa fa-chevron-right"></i>
-        </div>
+        <a href="https://github.com/jesusantguerrero/zen" target="_blank" rel="noopener" class="px-2 text-xs text-gray-500 transition cursor-pointer md:text-sm md:px-14 max-w-7xl md:text-left hover:text-green-500">
+            <span class="px-1 py-1 mr-3 text-white bg-green-400 rounded-md"> Open source </span>
+            Zen is MIT-licensed and built in public on GitHub
+            <i class="ml-1 fa fa-chevron-right"></i>
+        </a>
         <div class="mt-4 space-x-4 md:mt-0">
-          
+
         </div>
     </div>
     <header class="relative w-full px-10 pb-16 antialiased bg-gray-900 select-none md:pb-0 md:px-0">
@@ -15,13 +15,21 @@
         <div class="relative z-50 py-10 mx-auto max-w-7xl md:items-center md:py-32 sm:px-4 md:flex md:justify-between">
             <div class="w-full text-left">
                 <h1 class="text-2xl font-extrabold tracking-tight text-white md:leading-10 md:text-4xl sm:text-5xl sm:leading-none xl:text-3xl"><span class="block">Keep yourself in the zone</span> <span class="inline-block mt-3 text-transparent text-white ">and focus in the moment.</span></h1>
-                <div class="max-w-lg mt-6 text-sm text-green-200 md:mt-4 sm:text-base -md:max-w-xl md:text-lg xl:text-xl">Take the step to improve your daily routine and get things done!</div>
+                <div class="max-w-lg mt-6 text-sm text-green-200 md:mt-4 sm:text-base -md:max-w-xl md:text-lg xl:text-xl">The developer productivity app that runs the Plan -> Decide -> Work -> Standup loop. Matrix, Pomodoro, time tracking, and auto-standup in one tab.</div>
                 <div class="max-w-md mt-12 text-left md:space-x-5 md:items-center md:flex">
-                    <router-link 
-                        to="/register" 
+                    <router-link
+                        to="/register"
                         class="px-5 font-bold border-0 rounded-md btn btn-action">
-                        Organize your daily routine
+                        Start free - no credit card
                     </router-link>
+                    <a
+                        href="https://github.com/jesusantguerrero/zen"
+                        target="_blank"
+                        rel="noopener"
+                        class="inline-flex items-center justify-center h-10 px-5 mt-2 text-sm font-bold text-white transition-colors border-2 rounded-md md:mt-0 border-white/30 hover:border-green-400 hover:text-green-400">
+                        <i class="mr-2 fa fa-github"></i>
+                        Star on GitHub
+                    </a>
                 </div>
             </div>
             <div class="w-full">

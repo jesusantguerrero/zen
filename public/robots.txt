@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Disallow: /zenboard
+Disallow: /matrix
+Disallow: /timer
+Disallow: /standup
+Disallow: /metrics
+Disallow: /notifications
+Disallow: /settings
+Disallow: /collect
+Disallow: /oauth2/
+Disallow: /home
+
+Sitemap: https://zenboard.app/sitemap.xml

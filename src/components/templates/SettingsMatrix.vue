@@ -4,7 +4,7 @@ import {  settingsService } from "@/services/settings.service";
 import { onMounted, ref } from "vue";
 
 const settingsApiService = new settingsService();
-const formData = ref()
+const formData = ref<Record<string, any>>({})
 
 const emit = defineEmits({
     saved: Object,
@@ -13,7 +13,8 @@ const emit = defineEmits({
 }) 
 
 onMounted(async () => {
-    formData.value = await settingsApiService.getSettings()
+    const settings = await settingsApiService.getSettings()
+    formData.value = settings || {}
 })
 
 
@@ -29,7 +30,7 @@ const save = () => {
 </script>
 
 <template>
-    <section>
+    <section class="dark:text-gray-200">
         <article>
             <form action="" @submit.prevent="save" class="px-5 pt-5 mx-auto text-left">
                  <h4 class="font-bold">  Max current tasks in Todo </h4>
@@ -112,13 +113,15 @@ const save = () => {
 
 <style lang="scss">
     .form-control {
-        @apply bg-gray-100;
-        @apply border-gray-400; 
-        @apply px-4;
+        @apply bg-gray-100 border-gray-400 px-4;
         width: 100%;
         border-width: 2;
         height: 37px;
         border-radius: 4px;
+    }
+
+    .dark .form-control {
+        @apply bg-base-lvl-1 border-base-lvl-3 text-gray-200;
     }
 
     h4 {
@@ -131,12 +134,15 @@ const save = () => {
     }
 
     .workflow-item {
-        @apply border-2;
-        @apply border-gray-300;
+        @apply border-2 border-gray-300;
         display: inline-block;
         margin: 2px;
         padding: 2px 5px;
         border-radius: 4px;
         cursor: pointer;
+    }
+
+    .dark .workflow-item {
+        @apply border-base-lvl-3 text-gray-200;
     }
 </style>
