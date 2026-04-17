@@ -23,7 +23,6 @@ const getServiceAccess = async (url, formData) => {
         data: formData
     })
     .then(({ data: responseData }) => {
-        console.log(data);
         data = typeof responseData == 'string' ? JSON.parse(responseData) : responseData;
         return data;
     })
@@ -78,7 +77,7 @@ exports.oauthAccess =  functions.https.onRequest(async (request, response) => {
             codeData = { uid: snap.id, ...snap.data()}
         })
 
-        if (request.body.client_secret && codeData.uid, codeData.code) {
+        if (request.body.client_secret && codeData.uid && codeData.code) {
             // Verify client secret or redirect_uri or both but electron wouldn't work
             const token = await admin.auth().createCustomToken(codeData.user_uid);
             await admin.firestore().collection('connections').doc(codeData.uid).set({

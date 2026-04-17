@@ -28,9 +28,7 @@ const state = reactive({
 })
 
 const pullTasks = (connection, project) => {
-    getIssues(connection, project.orgId, project.key).then(data => {
-        console.log(data)
-    })
+    getIssues(connection, project.orgId, project.key)
 }
 
 onMounted(() => {

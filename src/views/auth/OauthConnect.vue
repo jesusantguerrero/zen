@@ -55,7 +55,7 @@ const registerConnection = () => {
        push({ path: "/zenboard" });
      }
   }).catch(error => {
-    console.log(error);
+    console.error(error);
     push({ path: "/zenboard" });
   });
 }

@@ -101,8 +101,17 @@
                     <router-link class="font-bold text-green-400"  to="/login"> Login </router-link>
                 </div>
 
-                 <div v-else> Dont have an account?
-                    <router-link  to="/register" class="font-bold text-green-400"> Create one </router-link>
+                 <div v-else>
+                    <div> Dont have an account?
+                        <router-link  to="/register" class="font-bold text-green-400"> Create one </router-link>
+                    </div>
+                    <button
+                        type="button"
+                        class="mt-2 text-sm font-bold text-green-400 hover:underline"
+                        @click="handleForgotPassword"
+                    >
+                        Forgot password?
+                    </button>
                 </div>
             </div>
             <p class="pt-10 copyrights">&copy; {{ currentYear }}</p>
@@ -116,7 +125,8 @@ import { reactive, ref, computed, nextTick, toRefs } from "vue";
 import { useRouter } from "vue-router"
 import { ElNotification } from "element-plus"
 
-import { register, login, loginWithProvider }  from "@/plugins/useFirebase";
+import { register, login, loginWithProvider, sendPasswordReset }  from "@/plugins/useFirebase";
+import { ElMessageBox } from "element-plus"
 import IconGithub from "@/components/atoms/icons/IconGithub.vue";
 import IconGoogle from "@/components/atoms/icons/IconGoogle.vue";
 
@@ -178,11 +188,40 @@ const loginUser = () => {
     })
 }
 
+const handleForgotPassword = async () => {
+    try {
+        const { value: email } = await ElMessageBox.prompt(
+            "Enter your email to receive a password reset link",
+            "Reset password",
+            {
+                inputPattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                inputErrorMessage: "Please enter a valid email",
+                inputValue: formData.email,
+                confirmButtonText: "Send reset link",
+                cancelButtonText: "Cancel",
+            }
+        )
+        await sendPasswordReset(email)
+        ElNotification({
+            title: "Check your inbox",
+            message: `Password reset link sent to ${email}`,
+            type: "success",
+        })
+    } catch (err) {
+        if (err === "cancel" || err === "close") return
+        ElNotification({
+            title: "Error",
+            message: err.message || "Could not send reset email",
+            type: "error",
+        })
+    }
+}
+
 const validateRegistration = () => {
    if (mode.value == 'register' && formData.password != formData.confirmPassword) {
          ElNotification({
             title: "Error",
-            message: errorMessage.message,
+            message: "Passwords do not match",
             type: "error"
         })
         return false

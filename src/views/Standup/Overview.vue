@@ -138,7 +138,6 @@ const getCommitTitle = (dateString) => {
 const  { getCommittedTasks, updateTask } = useTaskFirestore()
 const fetchCommitted = (date) => {
   const { committed } = toRefs(state);
-  console.log(date);
   state.firebaseRefs.committedRef =  useSnapshot(getCommittedTasks(date, subDays(date, 1)), committed, {
     after() {
       state.isFirstLoaded = true;
@@ -180,7 +179,6 @@ const committedByDate = computed(() => {
     }
     const taskDate = task.commit_date ?? format(state.date,  'yyyy-MM-dd');
     const parsedTask = task.commit_date ? task : parseTrack(task);
-    console.log(task, taskDate)
 
     if (!byDate[taskDate]) {
       byDate[taskDate] = {

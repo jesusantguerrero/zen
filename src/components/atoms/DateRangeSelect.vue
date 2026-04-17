@@ -139,7 +139,6 @@ export default defineComponent({
         }, { immediate: true })
         
         watch(() => props.to, (value) => {
-           console.log(props.to)
             endDate.value = typeof value == 'string' ? getDateFromString(value) : value
         }, { immediate: true })
 

@@ -121,7 +121,7 @@ const syncTempoLogs = () => {
       })
     })
   }).catch((err) => {
-    console.log(err)
+    console.error(err)
   })
 }
 
@@ -193,7 +193,7 @@ const syncTempoUpdate = async (event: any, autoUpdateTrack = true) => {
     }
     return data;
   }).catch((err) => {
-    console.log(err)
+    console.error(err)
   })
 }
 
@@ -333,16 +333,6 @@ const copyTasksTitles = () => {
  })
 }
 
-const mergeTracks = () => {
-  const timeToSum = selectedItems.value.slice(1).reduce((totalMs: number, track: ITrack) => totalMs + track.duration_ms, 0)
-  const firstTrack = selectedItems.value.at(0);
-
-  const mergedTracks = { ...firstTrack}
-  mergedTracks.duration_ms += timeToSum;
-  // console.log(merge) 
-  // syncTempoUpdate
-}
-
 const isSyncingGroup = ref(false);
 const syncAsGroup = (tracks: ITrack[], group?:|ITrackGroup) => {
   if (group?.isLoading) return
@@ -398,7 +388,6 @@ onUnmounted(() => {
 
 const getDurationInGroups = (groupDate: string) => {
   const tracksOfDate = state.tracked.filter((track: ITrack) => format(track.started_at, 'yyyy-MM-dd') == groupDate);
-  console.log({tracksOfDate, groupDate })
   return getDurationOfTracks(tracksOfDate)
 }
 
@@ -480,10 +469,6 @@ const areGroupOptionsActive = computed(() => {
   return !!selectedItems.value.length && selectedItems.value.every((track: ITrack) => track.description == selectedDescription)
 })
 
-const canMergeTracks = computed(() => {
-  return areGroupOptionsActive.value && selectedItems.value.length > 1;
-})
-
 const canUploadAsGroup = computed(() => {
   return areGroupOptionsActive.value && selectedItems.value.every((track: ITrack) => !track.relations?.tempo);
 })
@@ -544,24 +529,14 @@ const isView = (viewName: string) => {
             <span>
               {{ getDurationInGroups(trackDate) }}
             </span>
-            <AtButton class="flex " type="success" v-if="false" @click="mergeTracks" rounded :disabled="!canMergeTracks">
-              <IMdiVectorCombine class="mr-2"/>
-              <span>
-                Merge
-              </span>
-            </AtButton>
-            <AtButton 
-              title="sync as group" type="success" class="flex" @click="syncAsGroup(selectedItems)" 
+            <AtButton
+              title="sync as group" type="success" class="flex" @click="syncAsGroup(selectedItems)"
               rounded :disabled="!canUploadAsGroup || isSyncingGroup">
                 <IMdiUpload class="mr-2" v-if="!isSyncingGroup"/>
                 <IMdiSync class="mr-2 animate-spin" v-else />
                 <span>
                   Upload tempo
                 </span>
-            </AtButton>
-            <AtButton type="success" rounded class="flex" :disabled="!areGroupOptionsActive" v-if="false">
-              <IMdiArrowExpandHorizontal class="mr-2" />
-              Extend
             </AtButton>
           </section>
         </header>

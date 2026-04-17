@@ -86,9 +86,7 @@ const setTaskData = (taskData?: Record<string, string>) => {
     
     Object.keys(data).forEach((key) => {
       const objectData = data[key]
-      console.log(objectData, key);
       task[key] = Array.isArray(objectData) ? [...objectData] : objectData
-      console.log(task[key], key);
     });
   }
 }

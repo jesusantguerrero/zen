@@ -10,7 +10,7 @@ meta:
 Your privacy is important to us. It is Neatlancer's policy to respect your privacy and comply with any applicable law and regulation regarding any personal information we may collect about you, including across our website, https://zenboard.app, and other sites we own and operate.
 
 
-_This policy is effective as of 12 August 2021 and was last updated on 12 August 2021_.
+_This policy is effective as of 12 August 2021 and was last updated on 17 April 2026_.
 
 ## Information We Collect
 

@@ -106,9 +106,7 @@ const save = () => {
     emit('saved', sharingData)
     clearForm()
     isOpenLocal.value = false
-  }).catch(() =>
-    console.log("error")
-  )
+  }).catch((err) => console.error(err))
 }
 
 const close = () => {

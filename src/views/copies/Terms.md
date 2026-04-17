@@ -20,4 +20,4 @@
 <h2>Contacting us</h2>
 <p>If you have any questions, concerns, or complaints regarding this Agreement, we encourage you to contact us using the details below:</p>
 <p>&#106;&#101;sus&#64;&#110;&#101;a&#116;l&#97;&#110;&#99;er&#46;co&#109;</p>
-<p>This document was last updated on August 17, 2021</p>
+<p>This document was last updated on April 17, 2026</p>

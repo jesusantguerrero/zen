@@ -1,23 +1,16 @@
 const firestore = require('firebase-admin/firestore');
 
 const { getTaskDuration } = require("../utils");
-const { createRecurrenceForTask, crea } = require('../utils/tasks');
-const testId = "zEc2lvJCgbdjxb5pt2Icruo4AN82"
+const { createRecurrenceForTask, createRemindersForTask } = require('../utils/tasks');
 
 exports.setTaskReminder = async (change) => {
     if (change.after.isEqual(change.before)) return;
-    if (change.before.data().user_uid == "zEc2lvJCgbdjxb5pt2Icruo4AN82") {
-        await createRemindersForTask(change.before.data(), change.after.data(), change.after.id);
-        return
-    }
-    return
+    await createRemindersForTask(change.before.data(), change.after.data(), change.after.id);
 };
 
 exports.setTaskRecurrence = async (data) => {
-    if (data.user_uid == testId) {
-        const taskRef = firestore().collection('tasks').doc(data.uid)
-        return await createRecurrenceForTask(taskRef) 
-    }
+    const taskRef = firestore().collection('tasks').doc(data.uid)
+    return await createRecurrenceForTask(taskRef)
 }
 
 exports.calcTaskTime = async (change) => {
@@ -35,10 +28,9 @@ exports.calcTaskTime = async (change) => {
 
         if (tracks.length) {
             const timeTracked = getTaskDuration(tracks, change.after.data().duration_ms || 0);
-        
+
             firestore().collection('tasks').doc(taskUid).set({
-                duration_ms: timeTracked,
-                duration: savedTime
+                duration_ms: timeTracked
             }, { merge: true })
         }
     } catch (e) {

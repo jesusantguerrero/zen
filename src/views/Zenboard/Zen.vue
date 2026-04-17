@@ -23,7 +23,6 @@ import { firebaseState, registerEvent, updateSettings } from "@/plugins/useFireb
 import { useFuseSearch, useSearchOptions } from "@/composables/useFuseSearch";
 import { startFireworks } from "@/composables/useConfetti";
 import { getNextIndex } from "@/utils";
-import SharedWithMe from "./Partials/SharedWithMe.vue";
 
 const {
   saveTask,
@@ -436,9 +435,6 @@ const toggleQuickAdd = () => {
               :task="trackStore.currentTask"
               :current-timer="trackStore.currentTimer"
             />
-
-            <!-- <SharedWithMe /> -->
-          
           </div>
         </div>
       </div>

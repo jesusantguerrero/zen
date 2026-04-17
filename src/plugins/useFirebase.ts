@@ -48,13 +48,30 @@ export const firebaseState = reactive<{
 })
 
 export const register = async (email, password) => {
-    return firebase.auth().createUserWithEmailAndPassword(email, password).catch(reason => {
+    return firebase.auth().createUserWithEmailAndPassword(email, password).then(async (credential) => {
+        await credential.user?.sendEmailVerification().catch(() => null)
+        return credential
+    }).catch(reason => {
         throw new Error(reason.message);
     })
 }
 
 export const login = async (email, password) => {
     return firebase.auth().signInWithEmailAndPassword(email, password).catch((reason) => {
+        throw new Error(reason.message);
+    })
+}
+
+export const sendPasswordReset = async (email) => {
+    return firebase.auth().sendPasswordResetEmail(email).catch((reason) => {
+        throw new Error(reason.message);
+    })
+}
+
+export const sendVerificationEmail = async () => {
+    const user = firebase.auth().currentUser
+    if (!user) throw new Error("No authenticated user")
+    return user.sendEmailVerification().catch((reason) => {
         throw new Error(reason.message);
     })
 }
@@ -130,8 +147,7 @@ export const registerEvent = (eventName, params) => {
 }
 
 export const setScreen = (screenName) => {
-    firebase.analytics().setCurrentScreen(screenName) 
-    console.log("navegating") 
+    firebase.analytics().setCurrentScreen(screenName)
 }
 
 export const functions = firebaseInstance.functions()
