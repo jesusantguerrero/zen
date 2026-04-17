@@ -109,7 +109,7 @@ const syncTempoUpdate = async (event: any, autoUpdateTrack = true) => {
     }
     return data;
   }).catch((err) => {
-    console.log(err)
+    console.error(err)
   })
   .finally(() => {
 
@@ -169,7 +169,7 @@ const syncZenUpdate = async (event: any, autoUpdateTrack = true) => {
       })
     }
   } catch(err) {
-    console.log(err)
+    console.error(err)
   }
 }
 
@@ -192,7 +192,6 @@ const formatDate = (date: Date) => {
   try {
     format(date, "EEEE, dd ")
   } catch (err) {
-    console.log(err, "date")
     return date;
   }
 }

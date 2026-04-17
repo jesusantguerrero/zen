@@ -8,7 +8,8 @@
           connection = snap.data()
       })
       
-      const user = await await admin.auth().getUser(connection.user_uid).catch(() => null)
+      if (!connection) return null;
+      const user = await admin.auth().getUser(connection.user_uid).catch(() => null)
       return user;
   })
 }
@@ -26,7 +27,7 @@ const authenticate = async (req, res, next) => {
     next();
     return;
   } catch(e) {
-    res.status(403).send(`Unauthorized ${idToken}`);
+    res.status(403).send('Unauthorized');
     return;
   }
 };

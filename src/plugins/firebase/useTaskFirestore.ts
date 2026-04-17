@@ -64,7 +64,6 @@ export function useTaskFirestore() {
             task.order = 0
         }
 
-        console.log("saved task with: ", task);
         return trackRef
         .update(taskConverter.toFirestore(task), { merge: true })
         .then(() => {
@@ -147,14 +146,11 @@ export function useTaskFirestore() {
 
     const getTaskById = async (uid: string) => {
         let task = null;
-        console.log("The task uid is", uid);
         await db.collection(collectionName).doc(uid)
         .withConverter(taskConverter)
         .get().then(doc => {
             task = {...doc.data(), uid: doc.id };
         })
-
-        console.log("The task is: ", task);
 
         return task;
     }
@@ -248,7 +244,7 @@ export function useTaskFirestore() {
                 const setReminder = functions.httpsCallable('setRecurrence');
                 setReminder(task);
             } catch (err) {
-                console.log(err, "Here is the error")
+                console.error(err)
             }
         })
     }

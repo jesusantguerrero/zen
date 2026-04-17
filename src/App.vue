@@ -22,9 +22,7 @@ const logoutUser = () => {
 setLoaded(() => {
   isLoaded.value = true;
   const messaging = firebaseInstance.messaging();
-  messaging.onMessage((payload) => {
-    console.log(payload, "Mi mensaje favorito")
-  })
+  messaging.onMessage(() => {})
 })
 
 

@@ -69,7 +69,6 @@ const onSubmit = (e) => {
 }
 
 const isRow = (formRow) => {
-    console.log(Array.isArray(formRow), formRow);
     return Array.isArray(formRow);
 }
 </script>

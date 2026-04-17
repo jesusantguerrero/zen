@@ -61,7 +61,6 @@ watch(() => firebaseState.user, async (user) => {
   if (user) {
     try {
       currentTimer.value = await getRunningTrack() || {}
-      console.log(currentTimer.value)
       if (currentTimer.value.task_uid) {
         const task = await getTaskById(currentTimer.value.task_uid)
         setCurrentTask(task)

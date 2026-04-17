@@ -6,7 +6,6 @@ export const formatDurationFromMs = (ms) => {
     try {
         return Duration.fromMillis(ms)
     } catch (err) {
-        console.log(ms)
         return 0
     }
 }

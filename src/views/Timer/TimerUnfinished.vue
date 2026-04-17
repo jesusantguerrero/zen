@@ -79,7 +79,7 @@ const syncTempoLogs = () => {
       })
     })
   }).catch((err) => {
-    console.log(err)
+    console.error(err)
   })
 }
 
@@ -163,8 +163,6 @@ const mergeTracks = () => {
   const timeToSum = selectedItems.value.slice(1).reduce((totalMs, track) => totalMs + track.duration_ms, 0)
   const firstTrack = selectedItems.value.at(0);
 
-  console.log(timeToSum, firstTrack, selectedItems.value, "Hola");
-
   const mergedTracks = { ...firstTrack}
   mergedTracks.duration_ms += timeToSum;
   // console.log(merge) 
@@ -191,7 +189,6 @@ const syncAsGroup = (group) => {
 
   syncTempoUpdate(mergedTracks, false)
     .then((tempoTrack) => {
-    console.log(tempoTrack)
     groupedTracks.forEach((track) => {
       updateTrack({
         ...track,
