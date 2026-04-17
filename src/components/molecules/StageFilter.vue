@@ -66,20 +66,19 @@ const clear = () => emit("update:modelValue", [])
       <template #reference>
         <button
           type="button"
-          class="flex items-center h-10 px-3 space-x-2 text-xs text-gray-500 transition-colors border-2 border-gray-200 rounded-md hover:border-gray-400 focus:outline-none dark:bg-transparent dark:text-gray-300 dark:border-base-lvl-3"
+          :title="activeStages.length ? `Stage: ${activeStages.map(s => s.label).join(', ')}` : 'Filter by stage'"
+          class="relative flex items-center justify-center h-10 text-xs text-gray-500 transition-colors border-2 border-gray-200 rounded-md hover:border-gray-400 focus:outline-none dark:bg-transparent dark:text-gray-300 dark:border-base-lvl-3"
+          :class="activeStages.length ? 'px-3 space-x-1' : 'w-10'"
         >
           <i class="fa fa-flag"></i>
-          <span v-if="!activeStages.length" class="whitespace-nowrap">Filter by stage</span>
-          <template v-else>
+          <template v-if="activeStages.length">
+            <span class="font-semibold">{{ activeStages.length }}</span>
             <span
-              v-for="stage in activeStages"
+              v-for="stage in activeStages.slice(0, 2)"
               :key="stage.key"
-              class="flex items-center px-2 py-0.5 rounded-full whitespace-nowrap"
-              :class="stage.badgeClass"
-            >
-              <span class="inline-block w-1.5 h-1.5 mr-1 rounded-full" :class="stage.dotClass"></span>
-              {{ stage.label }}
-            </span>
+              class="inline-block w-2 h-2 rounded-full"
+              :class="stage.dotClass"
+            ></span>
           </template>
         </button>
       </template>

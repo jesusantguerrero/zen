@@ -1,6 +1,6 @@
 <template>
-  <article 
-    class="items-stretch flex transition-all bg-white relative border-2 border-gray-200 rounded-md cursor-pointer task-item dark:bg-base-lvl-2 dark:border-gray-600 dark:text-gray-300 hover:border-green-200"
+  <article
+    class="group items-stretch flex transition-all bg-white relative border-2 border-gray-200 rounded-md cursor-pointer task-item dark:bg-base-lvl-2 dark:border-gray-600 dark:text-gray-300 hover:border-green-200"
     :class="{'border-green-400': isSelected, 'shadow-md ': !isCompact }"
     @click="$emit('selected', task)"
     @dblclick.prevent="$emit('edited', task)"
@@ -80,9 +80,9 @@
           </div>
   
           <ElDropdown trigger="click" @command="handleCommand" v-if="showControls && !isDisabled" :disabled="isDisabled" @click.stop>
-            <button 
-              class="px-2 py-1 text-sm text-gray-400 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-50 focus:outline-none hover:text-gray-600" 
-              :title="isDisabled? 'Can updates tasks when timer is running' : ''" 
+            <button
+              class="px-2 py-1 text-sm text-gray-400 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-50 focus:outline-none hover:text-gray-600 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+              :title="isDisabled? 'Can updates tasks when timer is running' : ''"
               @click.prevent.self
             >
               <i class="fa fa-ellipsis-v"></i> {{ isDisabled }}

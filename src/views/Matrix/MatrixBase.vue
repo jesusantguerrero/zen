@@ -15,14 +15,15 @@
                label="name"
                key-track="value"
                class="w-32 "
-            />         
+            />
          </div>
-         <input type="search" 
-            v-model.trim="state.search" 
+         <StageFilter v-model="state.stages" dropdown />
+         <input type="search"
+            v-model.trim="state.search"
             class="w-full h-10 px-2 border-2 border-gray-200 rounded-md text-md focus:outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-300"
-            placeholder="Search task"  
+            placeholder="Search task"
          >
-         <button title="help" class="h-10 px-5 py-1 ml-2 text-white transition-all bg-gray-600 rounded-md hover:bg-gray-700 focus:outline-none" 
+         <button title="help" class="h-10 px-5 py-1 ml-2 text-white transition-all bg-gray-600 rounded-md hover:bg-gray-700 focus:outline-none"
          @click="state.showHelp = !state.showHelp">
             <i class="fa fa-question"></i>
          </button>
@@ -39,10 +40,6 @@
       :class="showUncategorized ? 'text-gray-200 bg-gray-600 dark:bg-base-lvl-1' : 'text-gray-700 bg-gray-200 dark:text-white dark:bg-base-lvl-2'"
          @click="toggleUncategorized">{{ uncategorizedText }} Uncategorized
       </button>
-   </div>
-
-   <div class="flex justify-start w-full mt-3">
-      <StageFilter v-model="state.stages" />
    </div>
 
    <MatrixBoard
