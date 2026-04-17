@@ -1,28 +1,32 @@
 <script setup>
 import NormalWave from "./waves/normal-wave.vue";
+
 const footerSections = {
-    general: {
-        label: "General Resources",
+    product: {
+        label: "Product",
         links: {
-            "Docs": "/docs",
-            "Blog": "/blog",
-            "Use Cases": "/use-cases"
+            "Features": "/#features",
+            "Use cases": "/#use-cases",
+            "Compare": "/#compare",
+            "FAQ": "/#faq",
+            "Pricing": "/pricing"
+        }
+    },
+    community: {
+        label: "Community",
+        links: {
+            "GitHub": "https://github.com/jesusantguerrero/zen",
+            "Report an issue": "https://github.com/jesusantguerrero/zen/issues",
+            "Twitter": "https://twitter.com/zenboard_app",
+            "Blog": "https://freesgen.hashnode.dev"
         }
     },
     more: {
-        label: "More",
+        label: "From the maker",
         links: {
-            // "Atmosphere": "https://github.com/jesusantguerrero/atmosphere",
             "Atmosphere UI": "https://atmosphere-ui.netlify.app",
             "Lumiere": "https://github.com/jesusantguerrero/lumiere",
-            "Insane Code Blog": "https://freesgen.hashnode.dev"
-        }
-    },
-    about: {
-        label: "Zen channels",
-        links: {
-            "Github" : "https://github.com/jesusantguerrero/zen",
-            "Twitter": "https://twitter.com/zenboard_app"
+            "Sunday (team version)": "https://github.com/jesusantguerrero/sunday"
         }
     },
     legal: {
@@ -37,6 +41,8 @@ const footerSections = {
 const getRouterComponent = (link) => {
     if (link.startsWith("http")) {
         return "a"
+    } else if (link.startsWith("/#")) {
+        return "a"
     } else {
         return "router-link"
     }
@@ -47,12 +53,12 @@ const getRouterComponent = (link) => {
 <template>
     <section className="text-gray-700 bg-gray-900 body-font relative px-10 md:px-0">
         <NormalWave />
-        <div className="max-w-7xl mx-auto flex flex-col py-8 pt-24 sm:flex-row">
-            <div className="text-white w-full mb-10 md:mb-0" v-for="section in footerSections" :key="section.label">
-                <h4 className="font-bold text-left"> {{ section.label }} </h4>
-                <ul className="mt-4 text-left">
-                    <li v-for="(link, linkName) in section.links" class="text-white"> 
-                        <component :href="link" :to="link" :is="getRouterComponent(link)">
+        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 py-8 pt-24">
+            <div className="text-white" v-for="section in footerSections" :key="section.label">
+                <h4 className="font-bold text-left text-sm tracking-wider uppercase text-gray-400"> {{ section.label }} </h4>
+                <ul className="mt-4 space-y-2 text-left">
+                    <li v-for="(link, linkName) in section.links" :key="linkName" class="text-white text-sm">
+                        <component :href="link" :to="link" :is="getRouterComponent(link)" class="hover:text-green-400 transition-colors" :target="link.startsWith('http') ? '_blank' : null" :rel="link.startsWith('http') ? 'noopener' : null">
                             {{ linkName }}
                         </component>
                     </li>
@@ -61,4 +67,3 @@ const getRouterComponent = (link) => {
         </div>
     </section>
 </template>
-

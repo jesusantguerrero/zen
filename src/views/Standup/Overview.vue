@@ -6,13 +6,25 @@
          <span class="ml-2 text-lg text-green-500">{{ state.humanDate }}</span>
          <IntegrationProjects />
       </h2>
-      <SearchBar
-        v-model="state.searchText"
-        v-model:date="state.date"
-        v-model:tags="state.tags"
-        v-model:selectedTags="state.selectedTags"
-      />
-  </div> 
+      <div class="flex items-center space-x-2">
+        <SearchBar
+          v-model="state.searchText"
+          v-model:date="state.date"
+          v-model:tags="state.tags"
+          v-model:selectedTags="state.selectedTags"
+        />
+        <button
+          type="button"
+          class="flex items-center h-10 px-3 space-x-2 text-sm text-gray-500 transition-colors border-2 border-gray-200 rounded-md hover:border-gray-400 focus:outline-none dark:bg-transparent dark:text-gray-300 dark:border-base-lvl-3 disabled:opacity-50 disabled:cursor-not-allowed"
+          :disabled="!state.committed.length || state.isPublishing"
+          title="Publish a shareable link for this standup"
+          @click="shareStandup"
+        >
+          <i :class="state.isPublishing ? 'fa fa-spinner fa-pulse' : 'fa fa-share-alt'" />
+          <span>Share</span>
+        </button>
+      </div>
+  </div>
 
   <div v-for="(dateGroup, dateString) in committedByDate" class="mb-4">
      <h4 class="block mb-2 font-bold text-left text-gray-500 dark:text-white capitalize md:text-xl">
@@ -90,6 +102,7 @@ import IntegrationProjects from '@/components/organisms/IntegrationProjects.vue'
 import { useTrackFirestore } from '@/plugins/firebase/useTrackFirestore'
 import { useTaskFirestore } from '@/plugins/firebase/useTaskFirestore'
 import { useSnapshot } from '@/plugins/firebase/useSnapshot'
+import { usePublicStandup } from '@/plugins/firebase/usePublicStandup'
 import { formatDate } from '@/utils';
 import { ElNotification } from 'element-plus';
 
@@ -104,10 +117,53 @@ const state = reactive({
   tags: [],
   date: startOfDay(new Date()),
   selectedTags: [],
+  isPublishing: false,
   humanDate: computed(() => {
     return format(state.date, 'iii dd LLL, yyyy')
   }),
 })
+
+const { publishStandup } = usePublicStandup()
+
+const shareStandup = async () => {
+  state.isPublishing = true
+  try {
+    const dateKey = format(state.date, 'yyyy-MM-dd')
+    const tasksForDate = state.committed.filter((t) => t.commit_date === dateKey)
+    const path = await publishStandup({
+      date: dateKey,
+      tasks: tasksForDate.map((t) => ({
+        title: t.title,
+        matrix: t.matrix,
+        tags: t.tags,
+        stage: t.stage || null,
+      })),
+    })
+    const url = `${window.location.origin}${path}`
+    try {
+      await navigator.clipboard.writeText(url)
+      ElNotification({
+        type: 'success',
+        title: 'Shareable link copied',
+        message: url,
+      })
+    } catch {
+      ElNotification({
+        type: 'success',
+        title: 'Standup published',
+        message: url,
+      })
+    }
+  } catch (err) {
+    ElNotification({
+      type: 'error',
+      title: 'Could not publish',
+      message: err.message || 'Unknown error',
+    })
+  } finally {
+    state.isPublishing = false
+  }
+}
 
 // tasks manipulation
 const getCommitTitle = (dateString) => {

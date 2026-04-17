@@ -30,19 +30,40 @@ const trackedToday = computed(() =>
   formatDurationFromMs(getDurationInMs(state.todayTracks)).toFormat("hh:mm:ss")
 );
 
-const dailyStreak = computed(() => {
-  const days = new Set(
+const committedDays = computed(() =>
+  new Set(
     state.recentCommitted
       .map((t: any) => t.commit_date)
       .filter(Boolean)
-  );
+  )
+);
+
+const dailyStreak = computed(() => {
   let streak = 0;
   let cursor = DateTime.now().startOf("day");
-  while (days.has(cursor.toFormat("yyyy-MM-dd"))) {
+  while (committedDays.value.has(cursor.toFormat("yyyy-MM-dd"))) {
     streak += 1;
     cursor = cursor.minus({ days: 1 });
   }
   return streak;
+});
+
+// Streak that's about to break if today ends with zero completions.
+const streakAtRisk = computed(() => {
+  if (dailyStreak.value > 0) return 0; // already extended today
+  let streak = 0;
+  let cursor = DateTime.now().minus({ days: 1 }).startOf("day");
+  while (committedDays.value.has(cursor.toFormat("yyyy-MM-dd"))) {
+    streak += 1;
+    cursor = cursor.minus({ days: 1 });
+  }
+  return streak;
+});
+
+// Show nudge when we have a real streak to protect and the day is getting late.
+const showStreakNudge = computed(() => {
+  const hour = DateTime.now().hour;
+  return streakAtRisk.value >= 3 && hour >= 14;
 });
 
 const allActiveTasks = computed<ITask[]>(() =>
@@ -127,6 +148,16 @@ defineEmits<{
         </div>
         <div class="text-xs text-gray-400">Streak</div>
       </div>
+    </div>
+
+    <div
+      v-if="showStreakNudge"
+      class="flex items-center p-2 space-x-2 text-sm border rounded-md border-orange-400/40 bg-orange-50/50 dark:bg-orange-500/10"
+    >
+      <i class="text-orange-500 fa fa-fire" />
+      <span class="text-orange-600 dark:text-orange-300">
+        <span class="font-bold">{{ streakAtRisk }}-day streak</span> at risk — finish one task today to keep it alive.
+      </span>
     </div>
 
     <div

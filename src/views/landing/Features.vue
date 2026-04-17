@@ -1,61 +1,65 @@
 <template>
-  <section class="relative py-20">
+  <section class="relative py-24 bg-secondary">
     <normal-wave />
     <div
-      class="container relative items-center px-10 pt-20 mx-auto sm:px-20 md:px-32 lg:px-16"
+      class="container relative items-center px-6 pt-20 mx-auto sm:px-10 md:px-16 lg:px-20 max-w-7xl"
     >
-      <div class="flex flex-wrap -mx-3">
-        <div class="order-1 w-full px-3 lg:w-1/2 lg:order-0">
-          <div class="w-full lg:max-w-md">
-            <h2
-              class="mb-4 text-3xl font-bold leading-tight tracking-tight sm:text-4xl font-heading"
-            >
-              Features
-            </h2>
-            <p class="mb-4 font-bold tracking-tight text-gray-300 xl:mb-10">
-              It's never been easier to build a business of your own. Our tools
-              will help you with the following:
-            </p>
-            <ul>
-              <li
-                class="flex items-center py-2 space-x-4 font-bold text-white transition-colors cursor-pointer xl:py-3 hover:text-green-500"
-                v-for="feat in features"
-                :key="feat.icon"
-              >
-                <i :class="`fa fa-${feat.icon} text-2xl text-green-400`"></i>
-                <span class="font-medium hover:text-green-500">
-                  {{ feat.title }}
-                </span>
-              </li>
-            </ul>
-          </div>
-        </div>
+      <div class="max-w-2xl mx-auto text-center">
+        <span class="inline-block px-3 py-1 text-xs font-bold tracking-wider text-green-400 uppercase border border-green-400 rounded-full">
+          Under the hood
+        </span>
+        <h2 class="mt-4 text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl">
+          The matrix is the core
+        </h2>
+        <p class="mt-4 text-base text-gray-300">
+          Everything else hangs off the four-quadrant decision. Tasks you start become tracks,
+          tracks become standups, standups become weekly metrics.
+        </p>
+      </div>
 
-        <div class="w-full px-3 mb-12 lg:w-1/2 order-0 lg:order-1 lg:mb-0">
-            <h2
-              class="mb-4 text-3xl font-bold leading-tight tracking-tight sm:text-4xl font-heading"
-            >
-              Eisenhower Matrix
-            </h2>
-            <p class="mb-4 font-medium font-bold tracking-tight text-gray-300 xl:mb-10">
-              The app it built around this technique to help find the most important tasks to deliver daily:
-            </p>
+      <div class="grid items-start grid-cols-1 mt-14 gap-10 lg:grid-cols-2">
+        <div class="w-full">
+          <h3 class="text-xl font-bold text-white">Eisenhower Matrix</h3>
+          <p class="mt-3 mb-6 text-sm text-gray-300">
+            Drop every task into one of four quadrants. Zen turns "what should I work on?" into a
+            deterministic answer.
+          </p>
           <div class="grid gap-2 md:grid-cols-2">
             <div
               v-for="(value, matrix) in matrixes"
-              class="pt-5 border-2 border-dashed"
+              class="pt-5 border-2 border-dashed rounded-md"
               :class="[value.border]"
               :key="matrix"
             >
-              <h1 class="font-bold capitalize" :class="[value.color]">{{ matrix }}</h1>
-              <matrix-help-view 
-                :matrix="matrix" 
+              <h4 class="px-4 font-bold capitalize" :class="[value.color]">{{ matrix }}</h4>
+              <matrix-help-view
+                :matrix="matrix"
                 class="text-gray-200 bg-transparent"
                 title-class="text-white"
-                >
-              </matrix-help-view>
+              />
             </div>
           </div>
+        </div>
+
+        <div class="w-full lg:pl-6">
+          <h3 class="text-xl font-bold text-white">What ships in the box</h3>
+          <p class="mt-3 mb-6 text-sm text-gray-300">
+            No paywalls on the daily-driver features. Integrations are optional - most users run
+            standalone for weeks before hooking up Jira.
+          </p>
+          <ul class="space-y-3">
+            <li
+              v-for="feat in features"
+              :key="feat.title"
+              class="flex items-start py-2 space-x-4 text-white"
+            >
+              <i :class="`fa fa-${feat.icon} text-2xl text-green-400 w-8 mt-0.5`" aria-hidden="true"></i>
+              <div>
+                <p class="font-bold">{{ feat.title }}</p>
+                <p class="text-sm text-gray-300">{{ feat.description }}</p>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -68,28 +72,34 @@ import NormalWave from "./waves/normal-wave.vue";
 
 const features = [
   {
-    icon: "tasks",
-    title: "Tasks with checklists.",
+    icon: "stopwatch",
+    title: "Pomodoro + time tracker in one",
+    description: "One timer, one click. Focus blocks log billable time automatically.",
   },
   {
-    icon: "stopwatch",
-    title: "Pomodoro + TimeTracker in One",
+    icon: "tasks",
+    title: "Tasks with checklists and tags",
+    description: "Subtasks, client tags, and keyboard-first quick-add (Shift+K).",
+  },
+  {
+    icon: "retweet",
+    title: "Real-time sync",
+    description: "Firestore backend. Pick up on another device mid-session without refreshing.",
+  },
+  {
+    icon: "plug",
+    title: "Jira, GitHub, Google",
+    description: "Pull issues, push Tempo work logs, sync calendar. Optional - not required.",
   },
   {
     icon: "chart-bar",
-    title: "Stats",
+    title: "Weekly metrics",
+    description: "Completed pomodoros, streak, hours per tag. The receipts for your week.",
   },
   {
-    title: "Eisenhower Matrix",
-    icon: "border-all",
-  },
-  {
-    title: "Mobile Friendly",
     icon: "mobile",
-  },
-  {
-    title: "Realtime",
-    icon: "retweet",
+    title: "Mobile-friendly",
+    description: "Runs from your phone when you need to log a track on the go.",
   },
 ];
 

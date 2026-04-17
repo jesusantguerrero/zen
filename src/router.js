@@ -102,6 +102,31 @@ export const routes = [
     },
   },
   {
+    path: "/blog",
+    component: () => import("./views/blog/BlogIndex.vue"),
+    name: "blog",
+    meta: {
+      title: "Blog - Zen",
+      requiresAuth: false,
+    },
+  },
+  {
+    path: "/blog/:slug",
+    component: () => import("./views/blog/BlogPost.vue"),
+    name: "blogPost",
+    meta: {
+      requiresAuth: false,
+    },
+  },
+  {
+    path: "/u/:uid/standup/:date",
+    component: () => import("./views/public/PublicStandup.vue"),
+    name: "publicStandup",
+    meta: {
+      requiresAuth: false,
+    },
+  },
+  {
     path: "/terms",
     component: Terms,
     name: "terms",
