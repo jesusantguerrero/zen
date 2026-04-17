@@ -7,6 +7,7 @@ import VueFinalModal from "vue-final-modal"
 import router from "./router"
 import { createPinia } from 'pinia'
 import "./assets/scss/main.scss";
+import "./composables/useTheme";
 
 createApp(App)
 .use(createPinia())

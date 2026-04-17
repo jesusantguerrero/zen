@@ -1,12 +1,14 @@
 <script setup>
-import { nextTick, ref, provide, onUnmounted, watch } from 'vue'
+import { nextTick, ref, provide, onMounted, onUnmounted, watch } from 'vue'
 import AppHeader from './components/organisms/AppHeader.vue'
 import IntegrationsBar from './components/templates/IntegrationsBar.vue'
 import { logout, setLoaded, functions, firebaseState, firebaseInstance } from "./plugins/useFirebase"
 import MobileMenuBar from './components/organisms/mobile/MobileMenuBar.vue'
+import KeyboardShortcutsModal from './components/organisms/modals/KeyboardShortcutsModal.vue'
 import { useCollection } from './plugins/firebase/useCollection'
 import { useIntegrations } from './plugins/firebase/useIntegrations'
 import { useCustomSelect } from './plugins/firebase/useCustomSelect'
+import { useKeyboardShortcuts } from './composables/useKeyboardShortcuts'
 
 const { closeConnections } = useIntegrations()
 const { getAllShared, getAll } = useCollection();
@@ -73,7 +75,22 @@ watch(() => isLoaded.value, () => {
   dailyNotifications();
 })
 
+const { toggleShortcutsPanel } = useKeyboardShortcuts()
+const onGlobalKeydown = (event) => {
+  if (event.key !== '?') return
+  const target = event.target
+  const tag = target?.tagName
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || target?.isContentEditable) return
+  event.preventDefault()
+  toggleShortcutsPanel()
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', onGlobalKeydown)
+})
+
 onUnmounted(() => {
+  window.removeEventListener('keydown', onGlobalKeydown)
   tagsRef.value && tagsRef.value()
   contactsRef.value && contactsRef.value()
   sharedRef.value && sharedRef.value()
@@ -89,6 +106,7 @@ onUnmounted(() => {
         <RouterView />
         <IntegrationsBar v-if="firebaseState.user" />
         <MobileMenuBar v-if="firebaseState.user" />
+        <KeyboardShortcutsModal v-if="firebaseState.user" />
     </div>
 </template>
 

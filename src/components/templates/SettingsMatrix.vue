@@ -4,7 +4,7 @@ import {  settingsService } from "@/services/settings.service";
 import { onMounted, ref } from "vue";
 
 const settingsApiService = new settingsService();
-const formData = ref()
+const formData = ref<Record<string, any>>({})
 
 const emit = defineEmits({
     saved: Object,
@@ -13,7 +13,8 @@ const emit = defineEmits({
 }) 
 
 onMounted(async () => {
-    formData.value = await settingsApiService.getSettings()
+    const settings = await settingsApiService.getSettings()
+    formData.value = settings || {}
 })
 
 

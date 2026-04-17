@@ -11,6 +11,8 @@ import { AtButton } from "atmosphere-ui";
 import TaskGroup from "@/components/organisms/TaskGroup.vue";
 import QuickAdd from "@/components/molecules/QuickAdd.vue";
 import TaskTrackView from "@/components/organisms/TaskTrackView.vue";
+import DailySummary from "@/components/organisms/DailySummary.vue";
+import FocusMode from "@/components/organisms/FocusMode.vue";
 import WelcomeModal from "@/components/organisms/modals/WelcomeModal.vue";
 import TaskModal from "@/components/organisms/modals/TaskModal.vue";
 import SearchBox from "@/components/molecules/SearchBox.vue";
@@ -45,6 +47,7 @@ const state = reactive({
   mobileMode: "zen",
   tabSelected: "todo",
   showAdd: false,
+  isFocusMode: false,
   tabs: [
     {
       label: "Todo",
@@ -280,10 +283,13 @@ const handleDragChanges = (e: any, matrixName: string) => {
 };
 
 //  magic keys
-const { Shift_k } = useMagicKeys();
+const { Shift_k, Shift_f } = useMagicKeys();
 const quickAdd = ref();
 watch(Shift_k, () => {
   toggleQuickAdd();
+});
+watch(Shift_f, (v) => {
+  if (v) state.isFocusMode = !state.isFocusMode;
 });
 const toggleQuickAdd = () => {
   state.showAdd = true;
@@ -332,6 +338,15 @@ const toggleQuickAdd = () => {
                 :tags="tags"
                 :allow-add="false"
               />
+              <AtButton
+                class="h-full"
+                rounded
+                :disabled="!trackStore.currentTask?.uid"
+                title="Enter focus mode (Shift+F)"
+                @click="state.isFocusMode = true"
+              >
+                <i class="fa fa-expand" />
+              </AtButton>
               <AtButton type="success" class="h-full bg-accent" rounded @click="toggleQuickAdd">
                 New
               </AtButton>
@@ -431,6 +446,8 @@ const toggleQuickAdd = () => {
               <SummaryAside class="-mt-4 dark:border-gray-600" :matrix="matrix" />
             </section>
 
+            <DailySummary :matrix="matrix" @open-task="setTaskToEdit" />
+
             <TaskTrackView
               :task="trackStore.currentTask"
               :current-timer="trackStore.currentTimer"
@@ -440,9 +457,11 @@ const toggleQuickAdd = () => {
       </div>
     </div>
 
-    <WelcomeModal 
-      :is-open="state.isWelcomeOpen" 
-      @closed="closeWelcomeModal" 
+    <FocusMode v-model:is-open="state.isFocusMode" />
+
+    <WelcomeModal
+      :is-open="state.isWelcomeOpen"
+      @closed="closeWelcomeModal"
     />
 
     <TaskModal

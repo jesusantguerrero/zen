@@ -146,8 +146,8 @@ onUnmounted(() => {
 <template>
 <div>
   <div class="pt-5 bg-white border border-gray-100 rounded-lg shadow-md md:flex dark:bg-base-lvl-2 dark:border-base-lvl-3">
-      <div class="px-5 pt-2 space-y-4 text-gray-400 md:w-3/12  dark:border-gray-600">
-        <div class="mb-10 font-bold text-left text-gray-500 dark:text-gray-300">
+      <div class="px-5 pt-2 space-y-4 text-gray-600 dark:text-gray-300 md:w-3/12  dark:border-gray-600">
+        <div class="mb-10 font-bold text-left text-gray-700 dark:text-gray-300">
             General Stats
           </div>
         <div class="flex items-center w-full px-5 py-8 overflow-hidden bg-white border-2 border-gray-200 rounded-md dark:bg-base-lvl-1 dark:border-gray-500 dark:text-gray-300">

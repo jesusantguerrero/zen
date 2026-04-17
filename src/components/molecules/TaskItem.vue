@@ -23,6 +23,15 @@
           </div>
   
           <h4 class="m-0 text-sm text-left cursor-pointer task-item__title "> {{ task.title }}</h4>
+          <span
+            v-if="stageMeta"
+            class="flex items-center px-2 py-0.5 ml-2 text-[10px] font-semibold uppercase tracking-wide rounded-full whitespace-nowrap"
+            :class="stageMeta.badgeClass"
+            :title="stageMeta.description"
+          >
+            <span class="inline-block w-1.5 h-1.5 mr-1 rounded-full" :class="stageMeta.dotClass"></span>
+            {{ stageMeta.label }}
+          </span>
         </section>
   
         <section class="flex items-start task-item__controls md:items-center">  
@@ -174,6 +183,7 @@ import TimeTrackerButton from "@components/atoms/tracker/TimeTrackerButton.vue";
 import { useDateTime } from "@/composables/useDateTime";
 import { useCustomSelect } from "@/plugins/firebase/useCustomSelect";
 import { durationFromMs } from "@/composables/useTracker";
+import { STAGE_META } from "@/domain/matrix/types/enum/taskTypes";
 
 export default {
   components: {
@@ -245,6 +255,10 @@ export default {
 
       isSelected: computed(( ) => {
         return currentTask.value && currentTask.value.uid == task.value.uid
+      }),
+
+      stageMeta: computed(() => {
+        return task.value.stage ? STAGE_META[task.value.stage] : null
       }),
 
       dateStates: computed(() => {

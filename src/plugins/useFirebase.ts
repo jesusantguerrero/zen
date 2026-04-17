@@ -111,6 +111,40 @@ export const logout = () => {
     return firebase.auth().signOut()
 }
 
+const USER_OWNED_COLLECTIONS = ["tasks", "tracks", "settings", "connections", "notifications"]
+
+const deleteUserOwnedDocs = async (uid: string) => {
+    const dbInstance = firebase.firestore()
+    for (const collection of USER_OWNED_COLLECTIONS) {
+        const snap = await dbInstance
+            .collection(collection)
+            .where("user_uid", "==", uid)
+            .get()
+        if (snap.empty) continue
+        const batches: firebase.default.firestore.WriteBatch[] = []
+        let batch = dbInstance.batch()
+        let count = 0
+        snap.forEach((doc) => {
+            batch.delete(doc.ref)
+            count += 1
+            if (count === 400) {
+                batches.push(batch)
+                batch = dbInstance.batch()
+                count = 0
+            }
+        })
+        if (count > 0) batches.push(batch)
+        for (const b of batches) await b.commit()
+    }
+}
+
+export const deleteAccount = async () => {
+    const user = firebase.auth().currentUser
+    if (!user) throw new Error("No authenticated user")
+    await deleteUserOwnedDocs(user.uid)
+    await user.delete()
+}
+
 // Database
 export const db = firebase.firestore();
 export const updateSettings = (settings) => {

@@ -10,7 +10,6 @@ import OauthConnect from "./views/auth/OauthConnect.vue";
 
 // Zen
 import ZenBoard from "./views/Zenboard/Zen.vue";
-import Home from "./views/Zenboard/Overview.vue";
 
 import Matrix from "./views/Matrix/MatrixBase.vue";
 import MatrixShared from "./views/Matrix/MatrixShared.vue";
@@ -30,16 +29,15 @@ import { isAuthenticated, registerEvent, setScreen } from "./plugins/useFirebase
 
 
 export const routes = [
-  { 
+  {
     path: "/home",
     name: "home",
-    component: Home,
+    redirect: { name: "zenboard" },
   },
-  { 
-    path: "/zenboard", 
+  {
+    path: "/zenboard",
     name: "zenboard",
     component: ZenBoard,
-
   },
   { path: "/matrix", 
     name: 'matrix',
