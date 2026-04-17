@@ -35,6 +35,7 @@
               @minus="addOccurrence($event, 'down')"
               @down="moveTo($event, 'schedule')"
               @up="moveTo($event, 'todo')"
+              @move-to="onMoveTo"
               @move="onMove"
               :is-quadrant="true"
             >
@@ -77,11 +78,12 @@
               @deleted="destroyTask"
               @edited="setTaskToEdit"
               @change="handleDragChanges"
+              @move-to="onMoveTo"
               @move="onMove"
             >
               <template #addForm v-if="!showHelp && allowAdd">
                 <div class="mb-4 quick__add">
-                  <QuickAdd 
+                  <QuickAdd
                     @saved="addTask"
                     :allow-edit="true"
                     type="backlog"
@@ -423,6 +425,10 @@ const moveTo = async (task, matrix) => {
       })
 
     })
+}
+
+const onMoveTo = ({ task, matrix }) => {
+    moveTo(task, matrix)
 }
 
 const handleDragChanges = (e, matrix) => {

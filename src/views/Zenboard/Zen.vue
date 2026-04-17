@@ -255,6 +255,10 @@ const moveTo = async (task: ITask, matrixName: string) => {
   });
 };
 
+const onMoveTo = ({ task, matrix: target }: { task: ITask; matrix: string }) => {
+  moveTo(task, target);
+};
+
 const { push } = useRouter();
 const closeWelcomeModal = () => {
   updateSettings({
@@ -409,6 +413,7 @@ const toggleQuickAdd = () => {
               @edited="setTaskToEdit"
               @done="onDone"
               @down="moveTo($event, 'schedule')"
+              @move-to="onMoveTo"
             />
 
             <TaskGroup
@@ -425,6 +430,7 @@ const toggleQuickAdd = () => {
               @deleted="destroyTask"
               @edited="setTaskToEdit"
               @up="moveTo($event, 'todo')"
+              @move-to="onMoveTo"
               @change="handleDragChanges"
             />
           </section>

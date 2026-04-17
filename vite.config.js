@@ -1,5 +1,5 @@
 import Vue from '@vitejs/plugin-vue'
-import Markdown from 'vite-plugin-md';
+import Markdown from 'unplugin-vue-markdown/vite'
 import { dirname, join, resolve } from "path";
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from "unplugin-icons/resolver"
@@ -35,6 +35,13 @@ export default {
     alias: {
       '@': resolve('./src/'),
       '@components': resolve('./src/components'),
+    },
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern',
+      },
     },
   },
   build: {

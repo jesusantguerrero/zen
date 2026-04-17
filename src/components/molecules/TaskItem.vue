@@ -90,13 +90,16 @@
             <template #dropdown>
               <ElDropdownMenu>
                 <ElDropdownItem command="edit" icon="el-icon-edit">Edit</ElDropdownItem>
-                <ElDropdownItem command="delete" icon="el-icon-delete">Delete </ElDropdownItem>
                 <ElDropdownItem command="done" icon="el-icon-check" v-if="!task.done"> Mark as done </ElDropdownItem>
                 <ElDropdownItem command="undo" icon="el-icon-refresh-left" v-else> undo </ElDropdownItem>
                 <ElDropdownItem command="clone" icon="el-icon-document-copy"> Duplicate </ElDropdownItem>
                 <ElDropdownItem command="toggle-key" icon="el-icon-s-flag" v-if="task.matrix=='todo'"> Key task </ElDropdownItem>
-                <ElDropdownItem command="up" icon="el-icon-arrow-left" v-if="task.matrix=='schedule'">Move to todo</ElDropdownItem>
-                <ElDropdownItem command="down" icon="el-icon-arrow-right" v-if="task.matrix=='todo'">Move to schedule</ElDropdownItem>
+                <ElDropdownItem divided command="move-todo" v-if="task.matrix !== 'todo'">Move to Do</ElDropdownItem>
+                <ElDropdownItem command="move-schedule" v-if="task.matrix !== 'schedule'">Move to Plan</ElDropdownItem>
+                <ElDropdownItem command="move-delegate" v-if="task.matrix !== 'delegate'">Move to Delegate</ElDropdownItem>
+                <ElDropdownItem command="move-delete" v-if="task.matrix !== 'delete'">Move to Delete</ElDropdownItem>
+                <ElDropdownItem command="move-backlog" v-if="task.matrix && task.matrix !== 'backlog'">Move to Backlog</ElDropdownItem>
+                <ElDropdownItem divided command="delete" icon="el-icon-delete">Delete</ElDropdownItem>
               </ElDropdownMenu>
             </template>
           </ElDropdown>
@@ -222,7 +225,8 @@ export default {
     done: Object,
     clone: Object,
     updated: Array,
-    'toggle-timer': Object
+    'toggle-timer': Object,
+    'move-to': Object,
   },
   setup(props, { emit }) {
     const { task, currentTask, currentTimer } = toRefs(props)
@@ -297,6 +301,11 @@ export default {
     task.value.contacts = task.value.contacts || [] 
 
     const handleCommand = (commandName) => {
+      if (typeof commandName === 'string' && commandName.startsWith('move-')) {
+        const target = commandName.slice('move-'.length)
+        emit('move-to', { task: task.value, matrix: target })
+        return
+      }
       switch (commandName) {
         case 'delete':
           emit('deleted', task);

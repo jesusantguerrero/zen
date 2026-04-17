@@ -50,7 +50,7 @@
     "@testing-library/user-event": "^14.5.1",
     "@testing-library/vue": "^8.0.1",
     "@types/luxon": "^3.3.7",
-    "@vitejs/plugin-vue": "^4.5.2",
+    "@vitejs/plugin-vue": "^5.2.1",
     "@vueuse/core": "^10.7.0",
     "@vueuse/head": "^2.0.0",
     "autoprefixer": "^10.4.16",
@@ -67,9 +67,9 @@
     "tailwindcss": "^3.3.6",
     "typescript": "^5.3.3",
     "uuid": "^9.0.1",
-    "vite": "^4.5.1",
-    "vite-plugin-md": "^0.22.5",
-    "vitest": "^1.0.4"
+    "vite": "^5.4.11",
+    "unplugin-vue-markdown": "^0.26.3",
+    "vitest": "^1.6.0"
   },
   "type": "module",
   "description": "Keep yourself in the zone and focus in the moment.",
@@ -90,5 +90,6 @@
   "bugs": {
     "url": "https://github.com/jesusantguerrero/zen/issues"
   },
-  "homepage": "https://github.com/jesusantguerrero/zen#readme"
+  "homepage": "https://github.com/jesusantguerrero/zen#readme",
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

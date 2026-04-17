@@ -77,6 +77,7 @@ const emit = defineEmits({
   plus: Object,
   minus: Object,
   move: Object,
+  'move-to': Object,
   change: Object,
   undo: Object,
   done: Object,
@@ -291,6 +292,7 @@ const onToggleKey = (task) => {
                 @clone="onClone(task)"
                 @up="emit('up', task)"
                 @down="emit('down', task)"
+                @move-to="emit('move-to', $event)"
                 @plus="emit('plus', task)"
                 @minus="emit('minus', task)"
               />
