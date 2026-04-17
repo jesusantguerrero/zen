@@ -31,22 +31,27 @@
 
    <div class="flex justify-between w-full text-right">
       <div class="flex">
-         <ShareBoard /> 
-         <MatrixTeammates v-model:selected="state.selectedUser" />           
+         <ShareBoard />
+         <MatrixTeammates v-model:selected="state.selectedUser" />
       </div>
-      
+
       <button class="px-5 py-1 font-bold border rounded-md focus:outline-none capitalize dark:border-lvl-3"
       :class="showUncategorized ? 'text-gray-200 bg-gray-600 dark:bg-base-lvl-1' : 'text-gray-700 bg-gray-200 dark:text-white dark:bg-base-lvl-2'"
-         @click="toggleUncategorized">{{ uncategorizedText }} Uncategorized 
+         @click="toggleUncategorized">{{ uncategorizedText }} Uncategorized
       </button>
    </div>
 
-   <MatrixBoard 
-      class="mt-8"
-      :search="state.search" 
-      :show-help="state.showHelp" 
-      :show-uncategorized="showUncategorized" 
-      :mode="state.selectedView" 
+   <div class="flex justify-start w-full mt-3">
+      <StageFilter v-model="state.stages" />
+   </div>
+
+   <MatrixBoard
+      class="mt-4"
+      :search="state.search"
+      :stages="state.stages"
+      :show-help="state.showHelp"
+      :show-uncategorized="showUncategorized"
+      :mode="state.selectedView"
       :user="state.user"
       :allow-update="!state.selectedUser"
       :allow-add="!state.selectedUser"
@@ -63,12 +68,14 @@ import MatrixBoard from "@/components/organisms/MatrixBoard.vue"
 import ShareBoard from "@/components/organisms/ShareBoard.vue"
 import JetSelect from "@/components/atoms/JetSelect.vue";
 import MatrixTeammates from "@/components/organisms/MatrixTeammates.vue";
+import StageFilter from "@/components/molecules/StageFilter.vue";
 import { firebaseState } from "@/plugins/useFirebase";
 
 
 const state = reactive({
    showHelp:  false,
    search: "",
+   stages: [],
    modes: [{
       name: 'Board',
       value: 'matrix'

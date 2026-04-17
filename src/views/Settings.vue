@@ -15,7 +15,7 @@
               :class="{
                 'bg-gray-200 dark:bg-base-lvl-2 dark:text-white': state.selectedOption==item.name
               }"
-              @click="state.selectedOption=item.name">
+              @click="selectSection(item.name)">
               {{ item.label }}
             </li>
           </ul>
@@ -38,7 +38,8 @@
 
 
 <script setup>
-import { computed, reactive } from "vue"
+import { computed, reactive, watch } from "vue"
+import { useRoute, useRouter } from "vue-router"
 import SettingsProfile from "@/components/templates/SettingsProfile.vue"
 import SettingsPreferences from "@/components/templates/SettingsPreferences.vue"
 import SettingsTags from "@/components/templates/SettingsTags.vue"
@@ -116,7 +117,27 @@ const settingsMenu = computed(() => {
     })
 })
 
+const route = useRoute()
+const router = useRouter()
 
-state.selectedOption = settingsMenu.value[0].name
+const resolveSection = (name) => {
+  if (name && state.menu[name]?.active) return name
+  return settingsMenu.value[0].name
+}
 
+state.selectedOption = resolveSection(route.query.section)
+
+const selectSection = (name) => {
+  state.selectedOption = name
+  if (route.query.section !== name) {
+    router.replace({ query: { ...route.query, section: name } })
+  }
+}
+
+watch(() => route.query.section, (section) => {
+  const resolved = resolveSection(section)
+  if (resolved !== state.selectedOption) {
+    state.selectedOption = resolved
+  }
+})
 </script>

@@ -172,6 +172,10 @@ const props = defineProps({
     showHelp: Boolean,
     showUncategorized: Boolean,
     search: String,
+    stages: {
+      type: Array,
+      default: () => []
+    },
     user: String,
     allowUpdate: {
       type: Boolean,
@@ -237,9 +241,9 @@ const state = reactive({
   isTimeLine: computed(() => props.mode == 'timeline')
 })
 
-const { search } = toRefs(props);
+const { search, stages } = toRefs(props);
 const { tasks } = toRefs(state);
-const { filteredList } = useFuseSearch(search, tasks);
+const { filteredList } = useFuseSearch(search, tasks, null, [], stages);
 
 // 
 const roadmapState = reactive({
@@ -349,7 +353,8 @@ const getMatrixTasks = (matrix) => {
       return a.order - b.order;
     })
 
-    return search.value ? tasks : state.quadrants[matrix].tasks;
+    const hasFilter = search.value || (stages.value && stages.value.length)
+    return hasFilter ? tasks : state.quadrants[matrix].tasks;
 }
 
 const getMatrixName = (matrix) => {
