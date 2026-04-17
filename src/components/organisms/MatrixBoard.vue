@@ -96,13 +96,13 @@
       </div>
     </div>
 
-    <div class="w-full px-5 py-4 bg-white rounded-md shadow-md" v-if="mode == 'timeline'">
-      <div class="mb-2 font-bold text-left text-gray-500">
+    <div class="zen-timeline w-full px-5 py-4 bg-white rounded-md shadow-md dark:bg-base-lvl-2 dark:border dark:border-base-lvl-3 dark:text-gray-200" v-if="mode == 'timeline'">
+      <div class="mb-2 font-bold text-left text-gray-500 dark:text-gray-300">
             Timeline: <span class="text-sm font-normal">Track the number of days since the task was created until today</span>
       </div>
-      <RoadmapView 
+      <RoadmapView
         :show-toolbar="true"
-        :tasks="roadmapTasks" 
+        :tasks="roadmapTasks"
         @task-clicked="setTaskToEdit"
         focused-text-class="text-green-500"
         marker-bg-class="bg-green-400"
@@ -267,13 +267,22 @@ const roadmapState = reactive({
   ]
 })
 
+const toJsDate = (value) => {
+  if (!value) return null;
+  if (value instanceof Date) return value;
+  if (typeof value.toDate === "function") return value.toDate();
+  return new Date(value);
+}
+
 const roadmapTasks = computed(() => {
-    const filtered =  filteredList.value.map((task) => {
-      task.start = task.created_at;
-      task.end = new Date();
+    const now = new Date();
+    const filtered = filteredList.value.map((task) => {
+      const start = toJsDate(task.created_at) || now;
+      task.start = start;
+      task.end = now;
       const matrix = task.matrix || 'backlog';
       task.colorClass = state.quadrants[matrix]?.background
-      task.diff = differenceInCalendarDays(task.start, task.end)
+      task.diff = differenceInCalendarDays(start, now)
       return task;
     })
 
@@ -459,4 +468,27 @@ const onEdittedTask = (task) => {
   taskToEdit.value = null
 }
 </script>
-@/plugins/useTaskFirestore@/composables/useFuseSearch@/composables/useDateTime
+
+<style lang="scss">
+.dark .zen-timeline {
+  .bg-white { @apply bg-base-lvl-2; }
+  .bg-gray-50 { @apply bg-base-lvl-1; }
+  .bg-gray-100 { @apply bg-base-lvl-1; }
+  .bg-gray-100\/20 { @apply bg-base-lvl-1/40; }
+  .bg-gray-200\/50 { @apply bg-base-lvl-3/40; }
+  .text-gray-400 { @apply text-gray-300; }
+  .text-gray-500 { @apply text-gray-300; }
+  .border,
+  .border-2,
+  .border-b,
+  .border-b-2,
+  .border-r,
+  .border-r-2,
+  .border-t { border-color: theme('colors.base-lvl-3'); }
+  .hover\:bg-gray-100:hover { @apply bg-base-lvl-1; }
+  .hover\:bg-gray-200:hover { @apply bg-base-lvl-3; }
+  select, input {
+    @apply bg-base-lvl-1 border-base-lvl-3 text-gray-200;
+  }
+}
+</style>
