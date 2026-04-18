@@ -1,14 +1,14 @@
 <template>
-  <section class="relative py-24 bg-secondary">
+  <section class="relative py-20 bg-white">
     <div class="container relative px-6 mx-auto sm:px-10 md:px-16 lg:px-20 max-w-7xl">
       <div class="max-w-2xl mx-auto text-center">
-        <span class="inline-block px-3 py-1 text-xs font-bold tracking-wider text-green-400 uppercase border border-green-400 rounded-full">
+        <span class="inline-block px-3 py-1 text-xs font-bold tracking-wider text-green-600 uppercase border border-green-500 rounded-full">
           Who it's for
         </span>
-        <h2 class="mt-4 text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl">
+        <h2 class="mt-4 text-3xl font-extrabold leading-tight tracking-tight text-gray-900 sm:text-4xl">
           Built for how developers actually work
         </h2>
-        <p class="mt-4 text-base text-gray-300">
+        <p class="mt-4 text-base text-gray-500">
           Zen isn't a team Kanban or a blank-page wiki. It's a single-player focus tool for engineers
           who ship on their own schedule.
         </p>
@@ -18,7 +18,7 @@
         <article
           v-for="persona in personas"
           :key="persona.name"
-          class="relative flex flex-col p-6 overflow-hidden transition-all duration-200 bg-gray-900 border-2 rounded-md border-white/10 hover:border-green-400/60 hover:-translate-y-1"
+          class="relative flex flex-col p-6 overflow-hidden transition-all duration-200 bg-gray-900 border-2 rounded-md border-gray-900/10 hover:border-green-400 hover:-translate-y-1 shadow-md"
         >
           <div class="flex items-center space-x-3">
             <div
@@ -80,11 +80,11 @@ const personas = [
     avatarBg: "bg-pink-500",
     title: "Four clients, one matrix, clean invoices.",
     description:
-      "Juggling 2-4 clients across Jira projects. Bills hourly, context-switches constantly, and needs time logs that actually match the work.",
+      "Juggling 2-4 concurrent client projects. Bills hourly, context-switches constantly, and needs time logs that actually match the work.",
     features: [
-      "Two-way Jira + Tempo sync",
-      "Schedule and filter by client tag",
-      "Per-tag standup for weekly client updates",
+      "Weekday project scheduling — Mon = Client A, Tue = Side project",
+      "Per-project time tracking for billable hours",
+      "Per-project standup, ready to paste into each client's Slack",
     ],
   },
   {

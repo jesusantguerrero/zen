@@ -1,124 +1,87 @@
 <template>
-  <section class="relative py-24 bg-secondary">
+  <section class="relative py-20 bg-secondary">
     <normal-wave />
     <div
       class="container relative items-center px-6 pt-20 mx-auto sm:px-10 md:px-16 lg:px-20 max-w-7xl"
     >
       <div class="max-w-2xl mx-auto text-center">
         <span class="inline-block px-3 py-1 text-xs font-bold tracking-wider text-green-400 uppercase border border-green-400 rounded-full">
-          Under the hood
+          Why a matrix
         </span>
         <h2 class="mt-4 text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl">
-          The matrix is the core
+          Four quadrants. One answer.
         </h2>
         <p class="mt-4 text-base text-gray-300">
-          Everything else hangs off the four-quadrant decision. Tasks you start become tracks,
-          tracks become standups, standups become weekly metrics.
+          Todo apps give you a flat list. Zen forces every task into one of four decisions — so "what should I work on?" has a deterministic answer by 9am.
         </p>
       </div>
 
-      <div class="grid items-start grid-cols-1 mt-14 gap-10 lg:grid-cols-2">
-        <div class="w-full">
-          <h3 class="text-xl font-bold text-white">Eisenhower Matrix</h3>
-          <p class="mt-3 mb-6 text-sm text-gray-300">
-            Drop every task into one of four quadrants. Zen turns "what should I work on?" into a
-            deterministic answer.
-          </p>
-          <div class="grid gap-2 md:grid-cols-2">
-            <div
-              v-for="(value, matrix) in matrixes"
-              class="pt-5 border-2 border-dashed rounded-md"
-              :class="[value.border]"
-              :key="matrix"
-            >
-              <h4 class="px-4 font-bold capitalize" :class="[value.color]">{{ matrix }}</h4>
-              <matrix-help-view
-                :matrix="matrix"
-                class="text-gray-200 bg-transparent"
-                title-class="text-white"
-              />
-            </div>
+      <div class="grid items-start grid-cols-1 gap-6 mt-14 md:grid-cols-2">
+        <article
+          v-for="quadrant in quadrants"
+          :key="quadrant.name"
+          class="p-6 transition-all border-2 border-dashed rounded-md hover:bg-white/[0.02]"
+          :class="[quadrant.border]"
+        >
+          <div class="flex items-center justify-between">
+            <h4 class="text-lg font-bold capitalize" :class="[quadrant.color]">
+              {{ quadrant.label }}
+            </h4>
+            <span class="text-xs font-bold tracking-wider text-gray-400 uppercase">
+              {{ quadrant.verdict }}
+            </span>
           </div>
-        </div>
-
-        <div class="w-full lg:pl-6">
-          <h3 class="text-xl font-bold text-white">What ships in the box</h3>
-          <p class="mt-3 mb-6 text-sm text-gray-300">
-            No paywalls on the daily-driver features. Integrations are optional - most users run
-            standalone for weeks before hooking up Jira.
-          </p>
-          <ul class="space-y-3">
-            <li
-              v-for="feat in features"
-              :key="feat.title"
-              class="flex items-start py-2 space-x-4 text-white"
-            >
-              <i :class="`fa fa-${feat.icon} text-2xl text-green-400 w-8 mt-0.5`" aria-hidden="true"></i>
-              <div>
-                <p class="font-bold">{{ feat.title }}</p>
-                <p class="text-sm text-gray-300">{{ feat.description }}</p>
-              </div>
-            </li>
-          </ul>
-        </div>
+          <p class="mt-3 text-sm text-gray-300">{{ quadrant.description }}</p>
+          <p class="mt-3 text-xs italic text-gray-400">e.g. {{ quadrant.example }}</p>
+        </article>
       </div>
+
+      <p class="max-w-2xl mx-auto mt-10 text-sm text-center text-gray-400">
+        Every task you start becomes a tracked pomodoro. Every pomodoro becomes a line in tonight's standup. Every standup becomes next week's metrics.
+      </p>
     </div>
   </section>
 </template>
 
 <script setup>
-import MatrixHelpView from "@/components/molecules/MatrixHelpView.vue";
 import NormalWave from "./waves/normal-wave.vue";
 
-const features = [
+const quadrants = [
   {
-    icon: "stopwatch",
-    title: "Pomodoro + time tracker in one",
-    description: "One timer, one click. Focus blocks log billable time automatically.",
+    name: "todo",
+    label: "Do",
+    verdict: "Today",
+    color: "text-green-400",
+    border: "border-green-400/60",
+    description: "Urgent and important. Pick three and start a pomodoro.",
+    example: "Deploy the payment fix before the client demo.",
   },
   {
-    icon: "tasks",
-    title: "Tasks with checklists and tags",
-    description: "Subtasks, client tags, and keyboard-first quick-add (Shift+K).",
+    name: "schedule",
+    label: "Plan",
+    verdict: "This week",
+    color: "text-blue-400",
+    border: "border-blue-400/60",
+    description: "Important but not urgent. Put it on the calendar before it becomes urgent.",
+    example: "Write the quarterly retro for personal project.",
   },
   {
-    icon: "retweet",
-    title: "Real-time sync",
-    description: "Firestore backend. Pick up on another device mid-session without refreshing.",
+    name: "delegate",
+    label: "Delegate",
+    verdict: "Hand off",
+    color: "text-yellow-400",
+    border: "border-yellow-400/60",
+    description: "Urgent but not yours. Write the Slack message and move on.",
+    example: "Ask the designer to review the onboarding flow.",
   },
   {
-    icon: "plug",
-    title: "Jira, GitHub, Google",
-    description: "Pull issues, push Tempo work logs, sync calendar. Optional - not required.",
-  },
-  {
-    icon: "chart-bar",
-    title: "Weekly metrics",
-    description: "Completed pomodoros, streak, hours per tag. The receipts for your week.",
-  },
-  {
-    icon: "mobile",
-    title: "Mobile-friendly",
-    description: "Runs from your phone when you need to log a track on the go.",
+    name: "delete",
+    label: "Delete",
+    verdict: "Drop it",
+    color: "text-red-400",
+    border: "border-red-400/60",
+    description: "Neither urgent nor important. The quadrant that saves your week.",
+    example: "Tweak the README badge colors (again).",
   },
 ];
-
-const matrixes = {
-  todo: {
-    color: "text-green-500",
-    border: "border-green-500",
-  },
-  schedule: {
-    color: "text-blue-500",
-    border: "border-blue-500",
-  },
-  delegate: {
-    color: "text-yellow-500",
-    border: "border-yellow-500",
-  },
-  delete: {
-    color: "text-red-500",
-    border: "border-red-500",
-  },
-};
 </script>

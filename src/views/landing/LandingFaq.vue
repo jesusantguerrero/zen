@@ -1,5 +1,5 @@
 <template>
-  <section class="relative py-24 bg-gray-900">
+  <section class="relative py-20 bg-gray-900">
     <div class="container relative px-6 mx-auto sm:px-10 md:px-16 lg:px-20 max-w-4xl">
       <div class="text-center">
         <span class="inline-block px-3 py-1 text-xs font-bold tracking-wider text-green-400 uppercase border border-green-400 rounded-full">
@@ -74,7 +74,7 @@ const toggle = (index) => {
 const faqs = [
   {
     q: "Isn't this just another todo app?",
-    a: "Not really. Todo apps give you a flat list; Zen gives you a decision framework (the Eisenhower Matrix), a focus timer, a time log, and a developer standup - in one loop. If you only need a checklist, Todoist is cheaper and simpler. If you want to run the Plan -> Decide -> Work -> Standup loop without five tabs, that's what Zen is for.",
+    a: "No. Todo apps give you a flat list; Zen gives you a decision. The matrix ranks across all your projects, the timer is pinned to the task you picked, and tonight's standup writes itself. If a flat checklist is enough for you, Todoist is cheaper.",
   },
   {
     q: "Does it work offline?",
@@ -95,10 +95,6 @@ const faqs = [
   {
     q: "What's the difference from Todoist or Notion?",
     a: "Todoist is a best-in-class todo list. Notion is a blank-page wiki. Neither ship a built-in Eisenhower Matrix, Pomodoro, time tracker, and auto-generated standup in one flow. Zen is opinionated about the developer workflow; they're general-purpose.",
-  },
-  {
-    q: "Can I use it without Jira?",
-    a: "Absolutely. Jira and GitHub integrations are optional. Most users start fully standalone - add tasks manually, run the matrix and pomodoro, log time. Hook up integrations later if/when you need them.",
   },
   {
     q: "Is it open source?",

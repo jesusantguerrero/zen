@@ -1,16 +1,15 @@
 <template>
-  <section class="relative px-2 py-24 bg-white md:px-0">
+  <section class="relative px-2 pt-10 pb-20 bg-white md:px-0">
     <div class="container items-center max-w-6xl px-8 mx-auto xl:px-5">
       <div class="max-w-3xl mx-auto text-center">
         <span class="inline-block px-3 py-1 text-xs font-bold tracking-wider text-green-600 uppercase border border-green-500 rounded-full">
-          The loop
+          How it works
         </span>
         <h2 class="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
-          One loop instead of five tabs
+          One morning decision. Four projects handled.
         </h2>
         <p class="mx-auto mt-5 text-base text-gray-500 md:text-lg">
-          Zen wires the Eisenhower Matrix, Pomodoro, time tracking, and standup into a single daily
-          flow. Plan what matters, focus on one thing, log the work, ship the update.
+          Dump everything into the matrix once. Zen picks your top 3 across all projects every morning, times your focus, and ships tonight's standup on the way out.
         </p>
       </div>
 
@@ -30,6 +29,25 @@
           <p class="mt-2 text-sm text-gray-500">{{ step.description }}</p>
         </li>
       </ol>
+
+      <figure class="max-w-4xl mx-auto mt-16 overflow-hidden border-2 border-gray-200 rounded-md shadow-md">
+        <figcaption class="sr-only">Zen product demo: plan a day, run a pomodoro, and generate a standup in 60 seconds.</figcaption>
+        <div style="position: relative; padding-bottom: 56.25%; height: 0;">
+          <iframe
+            src="https://www.loom.com/embed/d881ba48b6a44f428080e11853859ebf"
+            frameborder="0"
+            webkitallowfullscreen
+            mozallowfullscreen
+            allowfullscreen
+            loading="lazy"
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+            title="Zen product demo"
+          ></iframe>
+        </div>
+      </figure>
+      <p class="max-w-2xl mx-auto mt-6 text-sm text-center text-gray-500">
+        60 seconds, start to finish — plan, focus, standup.
+      </p>
     </div>
   </section>
 </template>
@@ -38,27 +56,27 @@
 const steps = [
   {
     iconClass: "fa fa-border-all",
-    title: "Plan",
+    title: "Dump",
     description:
-      "Dump the backlog into the Eisenhower Matrix. Decide what's urgent, what's important, what to drop.",
+      "One place for every task across every project. Zen suggests the quadrant so you don't have to sort manually.",
   },
   {
-    iconClass: "fa fa-tasks",
+    iconClass: "fa fa-bolt",
     title: "Decide",
     description:
-      "Pull today's lineup from the matrix. Three to five items you actually commit to shipping.",
+      "Wake up to your top 3 — already picked across projects. No more 'which client am I on today?'",
   },
   {
     iconClass: "fa fa-stopwatch",
-    title: "Work",
+    title: "Focus",
     description:
-      "Pomodoro timer and time tracker run together. One click starts a focus block and logs the time.",
+      "One click starts a pomodoro and logs billable time. The timer is tied to the task — no double entry.",
   },
   {
     iconClass: "fa fa-history",
-    title: "Standup",
+    title: "Ship",
     description:
-      "Yesterday's tracked work becomes today's standup - paste it into Slack, Jira, or your build log.",
+      "Today's tracked work writes tonight's standup. Paste it into Slack, Jira, or your public build log.",
   },
 ];
 </script>

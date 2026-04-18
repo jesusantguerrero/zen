@@ -1,5 +1,5 @@
 <template>
-  <section class="relative py-24 bg-gray-900">
+  <section class="relative py-20 bg-gray-900">
     <div class="container relative px-6 mx-auto sm:px-10 md:px-16 lg:px-20 max-w-7xl">
       <div class="max-w-2xl mx-auto text-center">
         <span class="inline-block px-3 py-1 text-xs font-bold tracking-wider text-green-400 uppercase border border-green-400 rounded-full">
@@ -9,8 +9,7 @@
           A productivity app that speaks developer
         </h2>
         <p class="mt-4 text-base text-gray-400">
-          Todoist, Notion, and Trello are great general tools. Zen is opinionated for the
-          Plan -> Decide -> Work -> Standup loop engineers actually run.
+          Todoist is a clean todo list. Notion is a blank-page wiki. Linear is a team issue tracker. Zen is the only one built for the individual developer running multiple projects at once.
         </p>
       </div>
 
@@ -25,7 +24,7 @@
               </th>
               <th scope="col" class="px-6 py-4 font-bold text-center">Todoist</th>
               <th scope="col" class="px-6 py-4 font-bold text-center">Notion</th>
-              <th scope="col" class="px-6 py-4 font-bold text-center">Trello</th>
+              <th scope="col" class="px-6 py-4 font-bold text-center">Linear</th>
             </tr>
           </thead>
           <tbody>
@@ -46,7 +45,7 @@
                 <cell :value="row.notion" />
               </td>
               <td class="px-6 py-4 text-center">
-                <cell :value="row.trello" />
+                <cell :value="row.linear" />
               </td>
             </tr>
           </tbody>
@@ -94,53 +93,67 @@ import Cell from "./comparison/Cell.vue";
 
 const rows = [
   {
+    feature: "Single-player (not a team tool)",
+    zen: true,
+    todoist: true,
+    notion: true,
+    linear: false,
+  },
+  {
     feature: "Eisenhower Matrix (built-in)",
     zen: true,
     todoist: false,
     notion: "template",
-    trello: false,
+    linear: false,
   },
   {
     feature: "Pomodoro timer (built-in)",
     zen: true,
     todoist: "plugin",
     notion: false,
-    trello: "plugin",
+    linear: false,
   },
   {
     feature: "Time tracking (built-in)",
     zen: true,
     todoist: false,
     notion: false,
-    trello: "plugin",
+    linear: false,
   },
   {
-    feature: "Jira / GitHub sync",
+    feature: "Cross-project daily top 3",
     zen: true,
     todoist: false,
-    notion: "plugin",
-    trello: "plugin",
+    notion: false,
+    linear: false,
   },
   {
     feature: "Auto-generated standup",
     zen: true,
     todoist: false,
     notion: false,
-    trello: false,
+    linear: false,
+  },
+  {
+    feature: "Jira / GitHub sync",
+    zen: true,
+    todoist: false,
+    notion: "plugin",
+    linear: true,
   },
   {
     feature: "Developer-first design",
     zen: true,
     todoist: false,
     notion: false,
-    trello: false,
+    linear: true,
   },
   {
     feature: "Price",
     zen: "Free (Pro soon)",
     todoist: "$4+/mo",
     notion: "$10+/mo",
-    trello: "$5+/mo",
+    linear: "$8+/user/mo",
   },
 ];
 
@@ -148,6 +161,6 @@ const mobileColumns = {
   zen: { name: "Zen", highlight: true },
   todoist: { name: "Todoist", highlight: false },
   notion: { name: "Notion", highlight: false },
-  trello: { name: "Trello", highlight: false },
+  linear: { name: "Linear", highlight: false },
 };
 </script>

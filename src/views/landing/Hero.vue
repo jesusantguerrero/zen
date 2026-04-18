@@ -1,46 +1,61 @@
 <template>
-    <div class="flex justify-start px-2 py-3 text-xs font-bold bg-white border-b md:px-10 md:justify-between md:flex">
-        <a href="https://github.com/jesusantguerrero/zen" target="_blank" rel="noopener" class="px-2 text-xs text-gray-500 transition cursor-pointer md:text-sm md:px-14 max-w-7xl md:text-left hover:text-green-500">
-            <span class="px-1 py-1 mr-3 text-white bg-green-400 rounded-md"> Open source </span>
-            Zen is MIT-licensed and built in public on GitHub
-            <i class="ml-1 fa fa-chevron-right"></i>
-        </a>
-        <div class="mt-4 space-x-4 md:mt-0">
-
-        </div>
-    </div>
-    <header class="relative w-full px-10 pb-16 antialiased bg-gray-900 select-none md:pb-0 md:px-0">
+    <router-link
+        :to="{ name: 'blogPost', params: { slug: 'zen-2-0' } }"
+        class="flex items-center px-2 py-3 text-xs font-bold transition cursor-pointer bg-white border-b md:px-14 text-gray-600 hover:text-green-500"
+    >
+        <span class="px-2 py-1 mr-3 text-white bg-green-400 rounded-md">New · v2.0</span>
+        <span class="md:text-sm">
+            Zen 2.0 is out — decision engine for devs running 5+ projects
+        </span>
+        <i class="ml-2 text-xs fa fa-chevron-right"></i>
+    </router-link>
+    <header class="relative w-full px-6 pb-8 antialiased bg-gray-900 select-none md:pb-0 md:px-0">
         <site-header />
 
-        <div class="relative z-50 py-10 mx-auto max-w-7xl md:items-center md:py-32 sm:px-4 md:flex md:justify-between">
-            <div class="w-full text-left">
-                <h1 class="text-2xl font-extrabold tracking-tight text-white md:leading-10 md:text-4xl sm:text-5xl sm:leading-none xl:text-3xl"><span class="block">Keep yourself in the zone</span> <span class="inline-block mt-3 text-transparent text-white ">and focus in the moment.</span></h1>
-                <div class="max-w-lg mt-6 text-sm text-green-200 md:mt-4 sm:text-base -md:max-w-xl md:text-lg xl:text-xl">The developer productivity app that runs the Plan -> Decide -> Work -> Standup loop. Matrix, Pomodoro, time tracking, and auto-standup in one tab.</div>
-                <div class="max-w-md mt-12 text-left md:space-x-5 md:items-center md:flex">
+        <div class="relative z-50 py-10 mx-auto max-w-7xl md:items-center md:pt-24 md:pb-20 sm:px-4 md:flex md:justify-between md:gap-10">
+            <div class="w-full md:w-6/12 text-left">
+                <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl md:leading-[1.05]">
+                    <span class="block">5 projects.</span>
+                    <span class="block text-green-400">1 decision.</span>
+                </h1>
+                <p class="max-w-lg mt-6 text-base text-gray-200 md:text-lg">
+                    Zen is the decision engine for developers juggling multiple projects. Stop losing ten minutes every morning deciding what to work on — the matrix does it for you.
+                </p>
+                <div class="max-w-md mt-10 text-left md:space-x-4 md:items-center md:flex">
                     <router-link
                         to="/register"
-                        class="px-5 font-bold border-0 rounded-md btn btn-action">
-                        Start free - no credit card
+                        class="inline-flex items-center justify-center w-full h-12 px-6 font-bold text-white transition-colors bg-green-400 rounded-md md:w-auto hover:bg-green-500"
+                    >
+                        Plan my day
+                        <i class="ml-2 text-xs fa fa-arrow-right"></i>
                     </router-link>
                     <a
                         href="https://github.com/jesusantguerrero/zen"
                         target="_blank"
                         rel="noopener"
-                        class="inline-flex items-center justify-center h-10 px-5 mt-2 text-sm font-bold text-white transition-colors border-2 rounded-md md:mt-0 border-white/30 hover:border-green-400 hover:text-green-400">
+                        class="inline-flex items-center justify-center w-full h-12 px-5 mt-3 text-sm font-bold text-white transition-colors border-2 rounded-md md:mt-0 md:w-auto border-white/30 hover:border-green-400 hover:text-green-400">
                         <i class="mr-2 fa fa-github"></i>
                         Star on GitHub
                     </a>
                 </div>
+                <p class="mt-6 text-xs text-gray-400">
+                    Not for teams. Not another Kanban. Not a blank-page wiki.
+                </p>
             </div>
-            <div class="w-full">
-                <div class="mt-10 md:mt-0">
-                    <at-video 
-                        class="overflow-hidden rounded-md shadow-lg"
-                        imageUrl="src\assets\dashboard.png"
-                        src="https://www.framer.com/images/developers/hero.mp4"
-                        :style="{with: '400px'}"
-                    /> 
-                </div>    
+            <div class="w-full md:w-6/12 mt-12 md:mt-0">
+                <figure class="relative">
+                    <div class="absolute inset-0 rounded-xl bg-gradient-to-br from-green-400/30 via-green-400/0 to-blue-400/20 blur-2xl" aria-hidden="true"></div>
+                    <img
+                        :src="dashboardImage"
+                        alt="Zen dashboard — matrix, pomodoro timer, and today's top 3 tasks"
+                        class="relative w-full overflow-hidden border rounded-xl shadow-2xl border-white/10"
+                        loading="eager"
+                        fetchpriority="high"
+                        decoding="async"
+                        width="1280"
+                        height="720"
+                    />
+                </figure>
             </div>
         </div>
 
@@ -50,8 +65,8 @@
 
 <script setup>
 import SiteHeader from "./SiteHeader.vue"
-import { AtVideo } from "atmosphere-ui";
 import DownWave from "./waves/down-wave.vue";
+import dashboardImage from "@/assets/zenboard.png";
 </script>
 
 <style lang="scss" scoped>

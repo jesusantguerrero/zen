@@ -10,7 +10,7 @@
 <style>
     .custom-shape-divider-top-1629465412 {
         position: absolute;
-        top: 0;
+        top: -1px; /* subpixel: avoid a 1px seam with the previous section */
         left: 0;
         width: 100%;
         overflow: hidden;

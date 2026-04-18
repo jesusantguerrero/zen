@@ -10,7 +10,7 @@
 <style>
     .custom-shape-divider-bottom-1629479134 {
         position: absolute;
-        bottom: 0;
+        bottom: -1px; /* subpixel: avoid a 1px seam between the wave and the next section */
         left: 0;
         width: 100%;
         overflow: hidden;

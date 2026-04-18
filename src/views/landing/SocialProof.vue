@@ -1,5 +1,5 @@
 <template>
-  <section class="relative py-24 bg-secondary">
+  <section class="relative py-20 bg-secondary">
     <div class="container relative px-6 mx-auto sm:px-10 md:px-16 lg:px-20 max-w-7xl">
       <div class="max-w-2xl mx-auto text-center">
         <span class="inline-block px-3 py-1 text-xs font-bold tracking-wider text-green-400 uppercase border border-green-400 rounded-full">
