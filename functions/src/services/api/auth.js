@@ -4,12 +4,20 @@
  const exchangeToken = async (token) => {
   return await admin.firestore().collection('connections').where('refreshToken', '==', token).limit(1).get().then(async(result) => {
       let connection;
+      let connectionDocId;
       result.forEach((snap) => {
           connection = snap.data()
+          connectionDocId = snap.id
       })
-      
+
       if (!connection) return null;
       const user = await admin.auth().getUser(connection.user_uid).catch(() => null)
+      if (user && connectionDocId) {
+          // Fire-and-forget: bump last_used_at for token telemetry.
+          admin.firestore().collection('connections').doc(connectionDocId).update({
+              last_used_at: admin.firestore.FieldValue.serverTimestamp(),
+          }).catch(() => { /* telemetry best-effort */ })
+      }
       return user;
   })
 }

@@ -50,6 +50,7 @@ import SettingsPomodoro from "@/components/templates/SettingsPomodoro.vue"
 import SettingsJobBundle from "@/components/templates/SettingsJobBundle.vue"
 import SettingsMatrixVue from "@/components/templates/SettingsMatrix.vue"
 import SettingsData from "@/components/templates/SettingsData.vue"
+import SettingsApiTokens from "@/components/templates/SettingsApiTokens.vue"
 
 const state = reactive({
   menu: {
@@ -78,11 +79,17 @@ const state = reactive({
     },
     notifications: {
       label: 'Notification Preferences',
-      component: SettingsNotification
+      component: SettingsNotification,
+      active: true
     },
     integrations: {
       label: 'Integrations',
       component: SettingsIntegrations,
+      active: true
+    },
+    api: {
+      label: 'API Tokens',
+      component: SettingsApiTokens,
       active: true
     },
     job: {

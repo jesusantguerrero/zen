@@ -30,9 +30,7 @@ This server is a **client of Zen's HTTP API**. It does not talk to Firestore dir
    npm run build
    ```
 
-2. **Get an API token** — go through Zen's OAuth flow from the app (Settings → Integrations → API, once that screen exists). The returned `access_token` is what you'll use.
-
-   > Short-term bootstrap: if the OAuth UI isn't ready yet, create a `connections` document manually in Firestore with `{ user_uid: "<your-uid>", refreshToken: "<a long random string>", service: "mcp" }` and use that random string as your token. This is a temporary shortcut — proper OAuth flow is the next cycle item.
+2. **Get an API token** — in the Zen app, go to **Settings → API Tokens → Generate token**. Give it a label (e.g. "Claude Desktop"), copy the token that appears **once** — you will not be able to see it again.
 
 3. **Environment variables** (set in your MCP client config):
    ```

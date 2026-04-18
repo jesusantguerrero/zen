@@ -20,8 +20,6 @@ exports.dailyNotifications = notificationService.dailyNotifications
 exports.taskReminder = notificationService.taskReminderNotifications
 exports.sendPush = notificationService.sendPushNotifications
 
-exports.uploadTimeLogs = 
-
 // Matrix related functions
 exports.shareMatrix = matrixService.shareMatrix;
 
@@ -33,6 +31,16 @@ exports.getServiceResources = integrationService.integrations;
 // API related functions
 exports.api = baseApi.core;
 exports.subscription = subscriptionService.default;
+
+// API token management (self-service for MCP)
+const apiTokensService = require('./src/services/apiTokens');
+exports.createApiToken = apiTokensService.createApiToken;
+exports.listApiTokens = apiTokensService.listApiTokens;
+exports.revokeApiToken = apiTokensService.revokeApiToken;
+
+// Email digest (scheduled daily, opt-in per user)
+const emailDigestService = require('./src/services/emailDigest');
+exports.dailyEmailDigest = emailDigestService.dailyEmailDigest;
 
 exports.userApplication = functions.runWith({
     enforceAppCheck: true,

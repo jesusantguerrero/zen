@@ -1,21 +1,28 @@
 const { config } = require("firebase-functions");
 
-const { env } = config();
+// Lazy read — functions.config() may not have `env` set in every environment
+// (local dev, cold boots without runtime config). Build the shape on access so
+// module load never crashes, and missing values surface only when actually used.
+const get = (name) => {
+    const env = (config() || {}).env || {};
+    return env[name];
+};
+
 exports.default = {
     mail: {
-        host: env.email_host,
-        port: env.email_port,
-        user: env.email_username,
-        password: env.email_password,
-        from: env.email_from,
-        provider: 'sendgrid'
+        get host() { return get('email_host'); },
+        get port() { return get('email_port'); },
+        get user() { return get('email_username'); },
+        get password() { return get('email_password'); },
+        get from() { return get('email_from'); },
+        provider: 'sendgrid',
     },
-    sendgridKey: env.sendgrid_key,
+    get sendgridKey() { return get('sendgrid_key'); },
     integrations: {
         jira: {
-            clientId: env.jira_client_id,
-            clientSecret: env.jira_client_secret,
-            redirectURI: env.jira_redirect_uri
+            get clientId() { return get('jira_client_id'); },
+            get clientSecret() { return get('jira_client_secret'); },
+            get redirectURI() { return get('jira_redirect_uri'); },
         },
-    }
-}
+    },
+};
