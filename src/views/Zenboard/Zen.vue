@@ -19,6 +19,7 @@ import CardButton from "@/components/molecules/CardButton.vue";
 import SummaryAside from "@/components/templates/SummaryAside.vue";
 
 import { useTaskFirestore, ITask } from "@/plugins/firebase/useTaskFirestore";
+import { STAGE_META } from "@/domain/matrix/types/enum/taskTypes";
 import { firebaseState, registerEvent, updateSettings } from "@/plugins/useFirebase";
 import { useFuseSearch, useSearchOptions } from "@/composables/useFuseSearch";
 import { startFireworks } from "@/composables/useConfetti";
@@ -46,6 +47,7 @@ const state = reactive({
   tabSelected: "todo",
   showAdd: false,
   isFocusMode: false,
+  selectedQuadrant: null as string | null,
   tabs: [
     {
       label: "Todo",
@@ -460,7 +462,50 @@ const toggleQuickAdd = () => {
                   </div>
                 </template>
               </CardButton>
-              <SummaryAside class="-mt-4 dark:border-gray-600" :matrix="matrix" />
+              <SummaryAside
+                class="-mt-4 dark:border-gray-600"
+                :matrix="matrix"
+                v-model:selected="state.selectedQuadrant"
+              />
+              <section
+                v-if="state.selectedQuadrant && matrix[state.selectedQuadrant]"
+                class="p-3 bg-white border border-gray-200 rounded-md shadow-sm dark:bg-base-lvl-2 dark:border-base-lvl-3"
+              >
+                <header class="flex items-center justify-between mb-2 text-xs font-bold text-gray-500 dark:text-gray-400">
+                  <span class="capitalize">
+                    {{ state.selectedQuadrant }} · {{ matrix[state.selectedQuadrant].list.length }} task{{ matrix[state.selectedQuadrant].list.length === 1 ? '' : 's' }}
+                  </span>
+                  <button
+                    type="button"
+                    class="text-gray-400 hover:text-red-400 focus:outline-none"
+                    title="Close"
+                    @click="state.selectedQuadrant = null"
+                  >
+                    <i class="fa fa-times" />
+                  </button>
+                </header>
+                <ul v-if="matrix[state.selectedQuadrant].list.length" class="space-y-1 max-h-64 overflow-y-auto ic-scroller">
+                  <li
+                    v-for="task in matrix[state.selectedQuadrant].list"
+                    :key="task.uid"
+                    class="flex items-center p-2 space-x-2 text-sm transition-colors rounded-md cursor-pointer hover:bg-gray-50 dark:hover:bg-base-lvl-1"
+                    @click="setTaskToEdit(task)"
+                  >
+                    <span class="flex-1 truncate text-gray-700 dark:text-gray-200">{{ task.title }}</span>
+                    <span
+                      v-if="task.stage && STAGE_META[task.stage]"
+                      class="flex items-center px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide rounded-full whitespace-nowrap"
+                      :class="STAGE_META[task.stage].badgeClass"
+                    >
+                      <span class="inline-block w-1.5 h-1.5 mr-1 rounded-full" :class="STAGE_META[task.stage].dotClass"></span>
+                      {{ STAGE_META[task.stage].label }}
+                    </span>
+                  </li>
+                </ul>
+                <div v-else class="py-4 text-sm text-center text-gray-400">
+                  No tasks in this quadrant.
+                </div>
+              </section>
             </section>
 
             <DailySummary :matrix="matrix" @open-task="setTaskToEdit" />

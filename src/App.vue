@@ -61,9 +61,14 @@ const getNotifications = () => {
   .orderBy('created_at', 'desc')
   .where('read_at', '==', false)
   .onSnapshot(snap => {
+    const now = Date.now()
     notifications.value = [];
     snap.forEach((doc) => {
-        notifications.value.push({...doc.data(), uid: doc.id });
+        const data = {...doc.data(), uid: doc.id };
+        // Hide snoozed notifications until their snooze expires.
+        const snoozedUntil = data.snoozed_until && data.snoozed_until.toMillis && data.snoozed_until.toMillis()
+        if (snoozedUntil && snoozedUntil > now) return
+        notifications.value.push(data);
     })
   })
 }
