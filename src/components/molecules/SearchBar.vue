@@ -113,16 +113,16 @@ const displayDate = computed(() => {
     <!-- /search -->
 
     <div class="flex justify-between mt-2 md:mt-0" v-if="!hideDate">
-      <AtDatePager 
-            v-model="searchOptions.date" 
+      <AtDatePager
+            v-model="searchOptions.date"
             @change="emit('date-changed', $event)"
             @update:startDate="emit('update:startDate', $event)"
             @update:endDate="emit('update:endDate', $event)"
             :next-mode="pagerMode"
-            class="date-pager h-12 dark:bg-base-lvl-2 dark:border-base-lvl-3 dark:text-white"
+            class="date-pager h-10 dark:bg-base-lvl-2 dark:border-base-lvl-3 dark:text-white"
             controlsClass="dark:hover:bg-base-lvl-1 dark:bg-transparent dark:text-white"
           >
-          <span :class="[props.pagerMode == 'week' ? 'w-48 text-center' : 'w-32 text-center']">
+          <span :class="[props.pagerMode == 'week' ? 'w-48 text-center text-sm' : 'w-24 text-center text-sm']">
             {{  displayDate }}
           </span>
         </AtDatePager>

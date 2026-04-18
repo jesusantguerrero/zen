@@ -88,15 +88,6 @@
     </div>
   </div>
 
-  <div class="fixed z-50 flex space-x-2 group right-5 bottom-5" v-if="state.integrations.length">
-    <ButtonCircle
-      class="hidden lg:flex"
-      title="integrations"
-      @click="toggleShowIntegration()"
-    >
-      <i class="fa fa-robot"></i>
-    </ButtonCircle>
-  </div>
 </template>
 
 <script setup>
@@ -112,7 +103,6 @@ import {
 import { ElNotification } from "element-plus";
 import { useTaskFirestore } from "@/plugins/firebase/useTaskFirestore";
 import IconJira from "../atoms/integrations/IconJira.vue";
-import ButtonCircle from "../atoms/ButtonCircle.vue";
 
 const state = reactive({
   list: [],

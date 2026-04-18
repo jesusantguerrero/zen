@@ -6,6 +6,12 @@ export interface PublicStandupTask {
   matrix?: string
   tags?: Array<{ uid?: string; name?: string }>
   stage?: string | null
+  // 'completed' = committed/marked-done; 'in_progress' = tracked but not yet done.
+  // Optional for backward compatibility with older published docs.
+  status?: 'completed' | 'in_progress'
+  // Which standup bucket the task belongs to. Standup = what I did yesterday + what I'm doing today.
+  // Optional so pre-existing published standups without this field still render (treated as 'today').
+  when?: 'yesterday' | 'today'
 }
 
 export interface PublicStandup {
@@ -42,6 +48,8 @@ export function usePublicStandup() {
         matrix: t.matrix || null,
         tags: t.tags || [],
         stage: t.stage || null,
+        status: t.status || 'completed',
+        when: t.when || 'today',
       })) as any,
       published_at: firebase.firestore.FieldValue.serverTimestamp(),
     }

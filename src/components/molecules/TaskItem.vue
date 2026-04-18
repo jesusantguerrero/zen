@@ -70,9 +70,9 @@
             />
             
             <div>
-              <DateSelect 
-                v-if="task.due_date || type == 'schedule'"
-                v-model="task.due_date" 
+              <DateSelect
+                v-if="task.due_date || (type == 'schedule' && allowUpdate)"
+                v-model="task.due_date"
                 v-model:schedule="task.schedule"
                 :disabled="!allowUpdate"
                 :class="dateStates.color" 

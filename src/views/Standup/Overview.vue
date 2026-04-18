@@ -1,6 +1,6 @@
 <template>
 <div class="pt-24 mx-5 md:pt-28 md:mx-28 mb-28">
-  <div class="items-center justify-between mb-10 section-header md:flex">
+  <div class="items-center justify-between mb-2 section-header md:flex">
       <h2 class="flex items-center text-2xl font-bold text-left text-gray-400 dark:text-white">
          <span> Standup </span>
          <span class="ml-2 text-lg text-green-500">{{ state.humanDate }}</span>
@@ -16,7 +16,7 @@
         <button
           type="button"
           class="flex items-center h-10 px-3 space-x-2 text-sm text-gray-500 transition-colors border-2 border-gray-200 rounded-md hover:border-gray-400 focus:outline-none dark:bg-transparent dark:text-gray-300 dark:border-base-lvl-3 disabled:opacity-50 disabled:cursor-not-allowed"
-          :disabled="!state.committed.length || state.isPublishing"
+          :disabled="!hasPublishableItems || state.isPublishing"
           title="Publish a shareable link for this standup"
           @click="shareStandup"
         >
@@ -26,9 +26,29 @@
       </div>
   </div>
 
-  <div v-for="(dateGroup, dateString) in committedByDate" class="mb-4">
-     <h4 class="block mb-2 font-bold text-left text-gray-500 dark:text-white capitalize md:text-xl">
-        ✅ {{ getCommitTitle(dateString) }} ({{ dateGroup.list.length }}) 
+  <!-- Summary strip: completed / tracked / suggested -->
+  <div class="flex flex-wrap items-center gap-4 mb-10 text-sm text-gray-500 dark:text-gray-400">
+    <span>
+      <span class="font-bold text-gray-700 dark:text-gray-200">{{ completedTodayCount }}</span>
+      completed
+    </span>
+    <span aria-hidden="true" class="opacity-40">·</span>
+    <span>
+      <span class="font-bold text-gray-700 dark:text-gray-200">{{ totalTrackedTodayFormatted }}</span>
+      tracked
+    </span>
+    <span aria-hidden="true" class="opacity-40">·</span>
+    <span>
+      <span class="font-bold text-gray-700 dark:text-gray-200">{{ state.suggestions.length }}</span>
+      suggested
+    </span>
+  </div>
+
+  <div v-for="(dateGroup, dateString) in committedByDate" class="mb-6">
+     <h4 class="flex items-center mb-3 text-left capitalize dark:text-white md:text-lg">
+        <span class="inline-block w-2 h-2 mr-2 rounded-full bg-accent" aria-hidden="true"></span>
+        <span class="font-bold">{{ getCommitTitle(dateString) }}</span>
+        <span class="ml-2 text-sm font-normal text-gray-400">{{ dateGroup.list.length }}</span>
     </h4>
     <TaskItem 
         v-for="(task) in dateGroup.list"
@@ -68,8 +88,10 @@
     <div class="mt-10 font-bold text-gray-500 md:mt-5 dark:text-gray-300"> There's no tasks</div>
   </div>
 
-  <h5 class="block mt-5 mb-2 font-bold text-left text-gray-500 dark:text-white capitalize md:text-lg">
-    ✨ Suggested for today  ({{ state.suggestions.length }}) 
+  <h5 class="flex items-center mt-8 mb-3 text-left capitalize dark:text-white md:text-lg">
+    <span class="inline-block w-2 h-2 mr-2 rounded-full bg-blue-400" aria-hidden="true"></span>
+    <span class="font-bold">Suggested for today</span>
+    <span class="ml-2 text-sm font-normal text-gray-400">{{ state.suggestions.length }}</span>
   </h5>
   <div v-for="task in state.suggestions">
     <TaskItem
@@ -129,22 +151,111 @@ const state = reactive({
 
 const { publishStandup } = usePublicStandup()
 
+// Summary-strip computeds for the selected date.
+const selectedDateKey = computed(() => format(state.date, 'yyyy-MM-dd'))
+
+const completedTodayCount = computed(() =>
+  state.committed.filter((t: any) => t.commit_date === selectedDateKey.value).length
+)
+
+const trackedForSelectedDate = computed(() =>
+  state.tracked.filter((track: any) => {
+    if (!track?.started_at) return false
+    const startDate = track.started_at instanceof Date
+      ? track.started_at
+      : new Date(track.started_at)
+    if (isNaN(startDate.getTime())) return false
+    return format(startDate, 'yyyy-MM-dd') === selectedDateKey.value
+  })
+)
+
+const totalTrackedTodayFormatted = computed(() => {
+  const ms = trackedForSelectedDate.value.reduce(
+    (sum: number, t: any) => sum + Number(t?.duration_ms || 0),
+    0
+  )
+  if (ms <= 0) return '0m'
+  const totalMinutes = Math.floor(ms / 60000)
+  const hours = Math.floor(totalMinutes / 60)
+  const minutes = totalMinutes % 60
+  if (hours && minutes) return `${hours}h ${minutes}m`
+  if (hours) return `${hours}h`
+  return `${minutes}m`
+})
+
+// Share button enables whenever there's either completed or tracked work for the day.
+const hasPublishableItems = computed(
+  () => completedTodayCount.value > 0 || trackedForSelectedDate.value.length > 0
+)
+
 const shareStandup = async () => {
   state.isPublishing = true
   try {
-    const dateKey = format(state.date, 'yyyy-MM-dd')
-    const tasksForDate = state.committed.filter((t) => t.commit_date === dateKey)
-    const path = await publishStandup({
-      date: dateKey,
-      tasks: tasksForDate.map((t) => ({
+    const todayKey = format(state.date, 'yyyy-MM-dd')
+    const yesterdayKey = format(subDays(state.date, 1), 'yyyy-MM-dd')
+
+    // "What I did yesterday" — committed tasks from the day before.
+    const committedYesterday = state.committed
+      .filter((t: any) => t.commit_date === yesterdayKey)
+      .map((t: any) => ({
         title: t.title,
         matrix: t.matrix,
         tags: t.tags,
         stage: t.stage || null,
-      })),
+        status: 'completed' as const,
+        when: 'yesterday' as const,
+      }))
+
+    // "What I'm doing today" — already-completed + tracked-but-not-done on the selected day.
+    const committedToday = state.committed
+      .filter((t: any) => t.commit_date === todayKey)
+      .map((t: any) => ({
+        title: t.title,
+        matrix: t.matrix,
+        tags: t.tags,
+        stage: t.stage || null,
+        status: 'completed' as const,
+        when: 'today' as const,
+      }))
+
+    const committedTodayTitles = new Set(committedToday.map((t) => t.title))
+    const trackedToday = state.tracked
+      .filter((track: any) => {
+        if (!track?.description || !track?.started_at) return false
+        const startDate = track.started_at instanceof Date
+          ? track.started_at
+          : new Date(track.started_at)
+        if (isNaN(startDate.getTime())) return false
+        return format(startDate, 'yyyy-MM-dd') === todayKey
+          && !committedTodayTitles.has(track.description)
+      })
+      .map((track: any) => ({
+        title: track.description,
+        matrix: null,
+        tags: [],
+        stage: null,
+        status: 'in_progress' as const,
+        when: 'today' as const,
+      }))
+
+    const allTasks = [...committedYesterday, ...committedToday, ...trackedToday]
+
+    if (!allTasks.length) {
+      ElNotification({
+        type: 'warning',
+        title: 'Nothing to publish',
+        message: 'No completed or tracked tasks for yesterday or today yet.',
+      })
+      return
+    }
+
+    const path = await publishStandup({
+      date: todayKey,
+      tasks: allTasks,
     })
+    const dateKey = todayKey
     const url = `${window.location.origin}${path}`
-    registerEvent('standup_shared', { date: dateKey, task_count: tasksForDate.length })
+    registerEvent('standup_shared', { date: dateKey, task_count: allTasks.length })
     try {
       await navigator.clipboard.writeText(url)
       ElNotification({
@@ -159,11 +270,11 @@ const shareStandup = async () => {
         message: url,
       })
     }
-  } catch (err) {
+  } catch (err: any) {
     ElNotification({
       type: 'error',
       title: 'Could not publish',
-      message: err.message || 'Unknown error',
+      message: err?.message || 'Unknown error',
     })
   } finally {
     state.isPublishing = false
