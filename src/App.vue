@@ -11,6 +11,7 @@ import PwaInstallPrompt from './components/molecules/PwaInstallPrompt.vue'
 import { useCollection } from './plugins/firebase/useCollection'
 import { useIntegrations } from './plugins/firebase/useIntegrations'
 import { useCustomSelect } from './plugins/firebase/useCustomSelect'
+import { useProjectsFirestore } from './plugins/firebase/useProjectsFirestore'
 import { useKeyboardShortcuts } from './composables/useKeyboardShortcuts'
 import { useCommandPalette } from './composables/useCommandPalette'
 import { useTheme } from './composables/useTheme'
@@ -75,11 +76,25 @@ const getNotifications = () => {
 
 provide('notifications', notifications);
 
+// Projects — single-select container for tasks (replaces using tags as projects)
+const projectsRef = ref(null)
+const projects = ref([])
+const { listProjects } = useProjectsFirestore()
+const getProjects = () => {
+  projectsRef.value = listProjects().onSnapshot(snap => {
+    const list = []
+    snap.forEach(doc => list.push({ uid: doc.id, ...doc.data() }))
+    projects.value = list
+  })
+}
+provide('projects', projects);
+
 watch(() => isLoaded.value, () => {
   getShared('shared', sharedRef, shared)
   getShared('sharing', sharingRef, sharing)
   getInitialTags()
   getNotifications()
+  getProjects()
   getInitialContacts()
   const dailyNotifications = functions.httpsCallable('dailyNotifications');
   dailyNotifications();
@@ -138,6 +153,7 @@ onUnmounted(() => {
   sharedRef.value && sharedRef.value()
   sharingRef.value && sharingRef.value()
   notificationsRef.value && notificationsRef.value()
+  projectsRef.value && projectsRef.value()
   closeConnections()
 })
 </script>

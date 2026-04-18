@@ -1,11 +1,12 @@
 import Fuse from "fuse.js"
 import { computed, ref } from "vue";
 
-export function useFuseSearch(searchRef, listRef, tagsRef, keys = [], stagesRef) {
+export function useFuseSearch(searchRef, listRef, tagsRef, keys = [], stagesRef, projectsRef) {
     const search = searchRef || ref(null)
     const list = listRef || ref([])
     const tags = tagsRef || ref([])
     const stages = stagesRef || ref([])
+    const projects = projectsRef || ref([])
     const options = {
       threshold: 0.2,
       keys: [
@@ -31,9 +32,13 @@ export function useFuseSearch(searchRef, listRef, tagsRef, keys = [], stagesRef)
          return item.tags && intersection(item.tags.map(tag => tag.uid),  tags.value)
       }) : searchResult;
 
-      return stages.value && stages.value.length
+      const stageFiltered = stages.value && stages.value.length
         ? tagFiltered.filter(item => item.stage && stages.value.includes(item.stage))
         : tagFiltered;
+
+      return projects.value && projects.value.length
+        ? stageFiltered.filter(item => item.project_uid && projects.value.includes(item.project_uid))
+        : stageFiltered;
     }
 
     const filteredList = computed(() => {
@@ -44,6 +49,7 @@ export function useFuseSearch(searchRef, listRef, tagsRef, keys = [], stagesRef)
       searchRef,
       tagsRef,
       stagesRef,
+      projectsRef,
       filteredList,
     }
 }
@@ -52,6 +58,7 @@ export const useSearchOptions = (tagId = 'uid') => {
   const searchText = ref("");
   const searchTags = ref([]);
   const searchStages = ref([]);
+  const searchProjects = ref([]);
   const selectedTags = computed(() => {
     return searchTags.value.map(tag => tag[tagId])
   })
@@ -61,6 +68,7 @@ export const useSearchOptions = (tagId = 'uid') => {
     searchText,
     searchTags,
     searchStages,
+    searchProjects,
   }
 
 }

@@ -23,6 +23,13 @@
           </div>
   
           <h4 class="m-0 text-sm text-left cursor-pointer task-item__title "> {{ task.title }}</h4>
+          <ProjectBadge
+            v-if="project"
+            :project="project"
+            :scheduled-today="projectScheduledToday"
+            compact
+            class="ml-2"
+          />
           <span
             v-if="stageMeta"
             class="flex items-center px-2 py-0.5 ml-2 text-[10px] font-semibold uppercase tracking-wide rounded-full whitespace-nowrap"
@@ -174,7 +181,7 @@
 </template>
 
 <script>
-import { toRefs, computed, reactive } from "vue"
+import { toRefs, computed, reactive, inject, ref } from "vue"
 import { ElDropdown, ElDropdownItem, ElDropdownMenu, ElNotification } from "element-plus";
 
 import ChecklistContainer from "@components/organisms/ListContainer.vue"
@@ -182,11 +189,13 @@ import PersonSelect from "@components/atoms/PersonSelect.vue"
 import TagsSelect from "@components/atoms/TagsSelect.vue"
 import DateSelect from "@components/atoms/DateSelect.vue"
 import TimeTrackerButton from "@components/atoms/tracker/TimeTrackerButton.vue";
+import ProjectBadge from "@components/molecules/ProjectBadge.vue"
 
 import { useDateTime } from "@/composables/useDateTime";
 import { useCustomSelect } from "@/plugins/firebase/useCustomSelect";
 import { durationFromMs } from "@/composables/useTracker";
 import { STAGE_META } from "@/domain/matrix/types/enum/taskTypes";
+import { isScheduledForToday } from "@/plugins/firebase/useProjectsFirestore";
 
 export default {
   components: {
@@ -195,6 +204,7 @@ export default {
     TagsSelect,
     DateSelect,
     TimeTrackerButton,
+    ProjectBadge,
     ElDropdown,
     ElDropdownMenu,
     ElDropdownItem
@@ -230,6 +240,19 @@ export default {
   },
   setup(props, { emit }) {
     const { task, currentTask, currentTimer } = toRefs(props)
+    const projectsList = inject('projects', ref([]))
+
+    const project = computed(() => {
+      const uid = task.value?.project_uid
+      if (!uid) return null
+      const list = projectsList.value || []
+      return list.find(p => p.uid === uid) || null
+    })
+
+    const projectScheduledToday = computed(() => {
+      return project.value ? isScheduledForToday(project.value) : false
+    })
+
     const state = reactive({
       timeTrackedLabel: computed(() => {
         const durationMs = task.value.duration_ms;
@@ -355,6 +378,8 @@ export default {
 
     return {
       ...toRefs(state),
+      project,
+      projectScheduledToday,
       handleCommand,
       toggleTimer,
       toggleExpand,

@@ -51,6 +51,7 @@ import SettingsJobBundle from "@/components/templates/SettingsJobBundle.vue"
 import SettingsMatrixVue from "@/components/templates/SettingsMatrix.vue"
 import SettingsData from "@/components/templates/SettingsData.vue"
 import SettingsApiTokens from "@/components/templates/SettingsApiTokens.vue"
+import SettingsProjects from "@/components/templates/SettingsProjects.vue"
 
 const state = reactive({
   menu: {
@@ -73,9 +74,15 @@ const state = reactive({
       component: SettingsMatrixVue,
       active: true
     },
+    projects: {
+      label: 'Projects',
+      component: SettingsProjects,
+      active: true
+    },
     tags: {
       label: 'Tags',
-      component: SettingsTags
+      component: SettingsTags,
+      active: true
     },
     notifications: {
       label: 'Notification Preferences',

@@ -1,6 +1,6 @@
 
 <script setup lang="ts">
-import { ref, watch, computed, reactive } from "vue"
+import { ref, watch, computed, reactive, inject } from "vue"
 import { ElMessageBox, ElNotification } from "element-plus"
 
 import { ITask, useTaskFirestore } from "@/plugins/firebase/useTaskFirestore"
@@ -14,6 +14,7 @@ import PersonSelect from "../../atoms/PersonSelect.vue"
 import ModalBase from "../../molecules/ModalBase.vue";
 import ChecklistContainer from "../ListContainer.vue";
 import DateSelect from "../../atoms/DateSelect.vue"
+import ProjectPicker from "../../molecules/ProjectPicker.vue"
 
 const props = defineProps({
     isOpen: Boolean,
@@ -79,7 +80,10 @@ const task = reactive<Record<string, any>>({
   commit_date: null,
   matrix: props.type || "backlog",
   stage: null,
+  project_uid: null,
 })
+
+const projects = inject<any>("projects", ref([]))
 
 const stages = STAGE_ORDER.map((key) => ({ key, ...STAGE_META[key] }))
 const setStage = (stage: StageTypes) => {
@@ -138,6 +142,7 @@ const clearForm = () => {
   task.contacts = [];
   task.checklist = [];
   task.stage = null;
+  task.project_uid = null;
 }
 
 const handleUpload = (res) => {
@@ -345,22 +350,29 @@ const {list: contacts, addToList: createContact, selectItem: selectContact} = us
 
       <template #footer>
         <div class="flex items-center justify-between pt-4 border-t-2 dark:border-gray-500">
-          <tags-select
-              v-model="task.tags"
-              :tags="tags"
-              :multiple="true" 
-              @selected="addTag"
-              @added="createTag"
-          /> 
+          <div class="flex items-center space-x-2">
+            <ProjectPicker
+              v-model="task.project_uid"
+              :projects="projects"
+              :allow-create="true"
+            />
+            <tags-select
+                v-model="task.tags"
+                :tags="tags"
+                :multiple="true"
+                @selected="addTag"
+                @added="createTag"
+            />
+          </div>
 
           <div class="text-right">
-              <button class="px-5 py-2 mr-2 text-white bg-gray-400 rounded-md hover:bg-gray-500 focus:outline-none" 
-              @click.prevent="close()"> 
+              <button class="px-5 py-2 mr-2 text-white bg-gray-400 rounded-md hover:bg-gray-500 focus:outline-none"
+              @click.prevent="close()">
                 Cancel
               </button>
-              <button class="px-5 py-2 text-white bg-green-400 rounded-md hover:bg-green-500 focus:outline-none" 
-              @click.prevent="save()"> 
-                Save 
+              <button class="px-5 py-2 text-white bg-green-400 rounded-md hover:bg-green-500 focus:outline-none"
+              @click.prevent="save()">
+                Save
               </button>
           </div>
         </div>

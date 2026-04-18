@@ -19,6 +19,7 @@ export interface ITask {
     due_date: Date;
     matrix: string;
     stage?: StageTypes | null;
+    project_uid?: string | null;
     tracks: any[];
     tags: any[];
     duration_ms?: number;
