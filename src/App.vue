@@ -15,6 +15,7 @@ import { useProjectsFirestore } from './plugins/firebase/useProjectsFirestore'
 import { useKeyboardShortcuts } from './composables/useKeyboardShortcuts'
 import { useCommandPalette } from './composables/useCommandPalette'
 import { useTheme } from './composables/useTheme'
+import { useUndoShortcuts } from './composables/useUndo'
 
 const { closeConnections } = useIntegrations()
 const { getAllShared, getAll } = useCollection();
@@ -100,6 +101,7 @@ watch(() => isLoaded.value, () => {
   dailyNotifications();
 })
 
+useUndoShortcuts()
 const { toggleShortcutsPanel } = useKeyboardShortcuts()
 const { toggle: toggleCommandPalette, register: registerCommands } = useCommandPalette()
 const { toggleTheme } = useTheme()
@@ -139,6 +141,12 @@ const registerDefaultCommands = () => {
     { id: 'action:shortcuts', group: 'Actions', label: 'Show keyboard shortcuts', icon: 'fa fa-keyboard', keywords: ['help', 'shortcuts', 'keys'], action: () => toggleShortcutsPanel() },
     { id: 'action:logout', group: 'Account', label: 'Log out', icon: 'fa fa-sign-out-alt', keywords: ['logout', 'sign out', 'exit'], action: () => logoutUser() },
   ])
+  // Admin-only — gated inside the registry so non-admins never see it.
+  if (firebaseState.isAdmin) {
+    registerCommands([
+      { id: 'admin:users', group: 'Admin', label: 'Admin — Users & AI quotas', icon: 'fa fa-user-shield', keywords: ['admin', 'users', 'quota', 'ai'], action: () => router.push({ name: 'adminUsers' }) },
+    ])
+  }
 }
 
 onMounted(() => {

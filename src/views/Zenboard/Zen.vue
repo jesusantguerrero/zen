@@ -9,8 +9,11 @@ import TaskGroup from "@/components/organisms/TaskGroup.vue";
 import QuickAdd from "@/components/molecules/QuickAdd.vue";
 import TaskTrackView from "@/components/organisms/TaskTrackView.vue";
 import DailySummary from "@/components/organisms/DailySummary.vue";
+import OnboardingProgress from "@/components/organisms/OnboardingProgress.vue";
+import StandupNudge from "@/components/molecules/StandupNudge.vue";
+import MobileQuickAddFab from "@/components/molecules/MobileQuickAddFab.vue";
 import FocusMode from "@/components/organisms/FocusMode.vue";
-import WelcomeModal from "@/components/organisms/modals/WelcomeModal.vue";
+import WelcomeTour from "@/components/organisms/modals/WelcomeTour.vue";
 import TaskModal from "@/components/organisms/modals/TaskModal.vue";
 import SearchBox from "@/components/molecules/SearchBox.vue";
 import StageFilter from "@/components/molecules/StageFilter.vue";
@@ -20,6 +23,7 @@ import SummaryAside from "@/components/templates/SummaryAside.vue";
 
 import { useTaskFirestore, ITask } from "@/plugins/firebase/useTaskFirestore";
 import { STAGE_META } from "@/domain/matrix/types/enum/taskTypes";
+import { useUndo } from "@/composables/useUndo";
 import { firebaseState, registerEvent, updateSettings } from "@/plugins/useFirebase";
 import { useFuseSearch, useSearchOptions } from "@/composables/useFuseSearch";
 import { startFireworks } from "@/composables/useConfetti";
@@ -33,6 +37,7 @@ const {
   getCommittedTasks,
   updateTaskBatch,
 } = useTaskFirestore();
+const undo = useUndo();
 
 nextTick(() => {});
 // state and ui
@@ -106,7 +111,19 @@ state.isWelcomeOpen =
 
 // search
 const tags = inject("tags", []);
-const { selectedTags, searchText, searchTags, searchStages } = useSearchOptions();
+const projects = inject<any>("projects", ref([]));
+const { selectedTags, searchText, searchTags, searchStages, searchProjects } = useSearchOptions();
+
+// Projects scheduled for today (based on schedule.days)
+const todaysProjects = computed(() => {
+  const list = Array.isArray(projects?.value) ? projects.value : []
+  const today = new Date().getDay()
+  return list.filter((p: any) => p.schedule?.days?.includes(today) && !p.archived)
+})
+const isFilteringToday = ref(false)
+watch(isFilteringToday, (active) => {
+  searchProjects.value = active ? todaysProjects.value.map((p: any) => p.uid) : []
+})
 
 const schedule = computed(() => {
   return matrix.schedule.list;
@@ -121,14 +138,16 @@ const { filteredList: filteredSchedule } = useFuseSearch(
   schedule,
   selectedTags,
   [],
-  searchStages
+  searchStages,
+  searchProjects
 );
 const { filteredList: filteredTodos } = useFuseSearch(
   searchText,
   todo,
   selectedTags,
   [],
-  searchStages
+  searchStages,
+  searchProjects
 );
 
 // Current task
@@ -226,6 +245,8 @@ const destroyTask = async (task: ITask) => {
     "Delete Task"
   );
   if (canDelete) {
+    // Snapshot the task before deletion for undo
+    const snapshot = JSON.parse(JSON.stringify(task));
     deleteTask(task).then(() => {
       matrix[task.matrix].list = matrix[task.matrix].list.filter(
         (localTask) => task.uid != localTask.uid
@@ -235,9 +256,17 @@ const destroyTask = async (task: ITask) => {
         onRemoved();
       }
 
+      undo.push({
+        label: `Deleted "${task.title}"`,
+        undo: async () => {
+          // Re-save with the original uid preserved
+          await saveTask(snapshot);
+        },
+      });
+
       ElNotification({
         type: "success",
-        message: "Task deleted",
+        message: "Cmd+Z to undo",
         title: "Task deleted",
       });
     });
@@ -246,12 +275,21 @@ const destroyTask = async (task: ITask) => {
 
 const moveTo = async (task: ITask, matrixName: string) => {
   const oldMatrix = task.matrix;
+  const oldOrder = task.order;
   task.matrix = matrixName;
   task.order = getNextIndex(matrix[oldMatrix]);
   updateTask(task).then(() => {
+    undo.push({
+      label: `Moved "${task.title}" to ${matrixName}`,
+      undo: async () => {
+        task.matrix = oldMatrix;
+        task.order = oldOrder;
+        await updateTask(task);
+      },
+    });
     ElNotification({
       type: "success",
-      message: "Task moved",
+      message: `Moved to ${matrixName} · Cmd+Z to undo`,
       title: "Task moved",
     });
   });
@@ -360,6 +398,19 @@ const toggleQuickAdd = () => {
                 :allow-add="false"
               />
               <StageFilter v-model="searchStages" dropdown />
+              <button
+                v-if="todaysProjects.length"
+                type="button"
+                :title="`Filter to ${todaysProjects.length} project${todaysProjects.length === 1 ? '' : 's'} scheduled for today`"
+                class="flex items-center h-10 px-3 space-x-2 text-xs transition-colors border-2 rounded-md focus:outline-none"
+                :class="isFilteringToday
+                  ? 'bg-accent text-white border-transparent'
+                  : 'text-gray-500 border-gray-200 hover:border-gray-400 dark:bg-transparent dark:text-gray-300 dark:border-base-lvl-3'"
+                @click="isFilteringToday = !isFilteringToday"
+              >
+                <i class="fa fa-calendar-day" />
+                <span class="whitespace-nowrap">Today ({{ todaysProjects.length }})</span>
+              </button>
               <button
                 type="button"
                 class="h-10 px-4 text-sm font-semibold text-white transition-colors rounded-md bg-accent hover:opacity-90 focus:outline-none"
@@ -508,6 +559,8 @@ const toggleQuickAdd = () => {
               </section>
             </section>
 
+            <StandupNudge />
+            <OnboardingProgress :matrix="matrix" />
             <DailySummary :matrix="matrix" @open-task="setTaskToEdit" />
 
             <TaskTrackView
@@ -519,9 +572,10 @@ const toggleQuickAdd = () => {
       </div>
     </div>
 
+    <MobileQuickAddFab @quick-add="toggleQuickAdd" />
     <FocusMode v-model:is-open="state.isFocusMode" />
 
-    <WelcomeModal
+    <WelcomeTour
       :is-open="state.isWelcomeOpen"
       @closed="closeWelcomeModal"
     />

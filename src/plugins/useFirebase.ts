@@ -48,10 +48,12 @@ export const firebaseState = reactive<{
     user: null | Record<string, string>;
     uid: null | string;
     settings: Record<string, string>;
+    isAdmin: boolean;
 }>({
     user: null,
     uid: null,
-    settings: {}
+    settings: {},
+    isAdmin: false,
 })
 
 export const register = async (email, password) => {
@@ -171,6 +173,15 @@ const initFirebase = new Promise(resolve => {
             const settings = await getUserSettings(user.uid)
             firebaseState.settings = settings;
             firebaseState.user = user;
+            // Read admin custom claim from the ID token. Users set via
+            // `gcloud` script or adminSetClaim need to re-login (or call
+            // user.getIdToken(true)) for the claim to appear here.
+            try {
+                const token = await user.getIdTokenResult()
+                firebaseState.isAdmin = Boolean(token.claims && token.claims.admin === true)
+            } catch {
+                firebaseState.isAdmin = false
+            }
             onLoaded.value && onLoaded.value()
         }
         resolve(user);

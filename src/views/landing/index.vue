@@ -5,9 +5,11 @@
     <content-video-section />
     <features-section id="features"></features-section>
     <use-cases id="use-cases" />
+    <before-after id="before-after" />
     <comparison-table id="compare" />
     <social-proof id="community" />
     <landing-faq id="faq" />
+    <email-capture id="notify" />
 
     <section class="relative py-24 bg-secondary">
       <div class="container relative max-w-3xl px-6 mx-auto text-center sm:px-10">
@@ -51,9 +53,11 @@ import FooterSection from "./Footer.vue";
 import SiteFooter from "./SiteFooter.vue";
 import LearnMore from "./LearnMore.vue";
 import UseCases from "./UseCases.vue";
+import BeforeAfter from "./BeforeAfter.vue";
 import ComparisonTable from "./ComparisonTable.vue";
 import SocialProof from "./SocialProof.vue";
 import LandingFaq from "./LandingFaq.vue";
+import EmailCapture from "./EmailCapture.vue";
 </script>
 
 <style lang="scss">

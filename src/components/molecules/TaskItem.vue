@@ -1,10 +1,15 @@
 <template>
   <article
+    ref="itemRef"
     class="group items-stretch flex transition-all bg-white relative border-2 border-gray-200 rounded-md cursor-pointer task-item dark:bg-base-lvl-2 dark:border-gray-600 dark:text-gray-300 hover:border-green-200"
-    :class="{'border-green-400': isSelected, 'shadow-md ': !isCompact }"
+    :class="[
+      { 'border-green-400': isSelected, 'shadow-md ': !isCompact },
+      swipeDirection === 'right' ? 'translate-x-2 border-accent' : '',
+      swipeDirection === 'left' ? '-translate-x-2 border-red-400' : '',
+    ]"
+    :style="swipeHint.style"
     @click="$emit('selected', task)"
     @dblclick.prevent="$emit('edited', task)"
-
   >
     <main class="w-full px-4" :class="{'py-3': !isCompact, 'py-2': isCompact }">
       <header class="flex justify-between">
@@ -182,6 +187,7 @@
 
 <script>
 import { toRefs, computed, reactive, inject, ref } from "vue"
+import { useSwipe } from "@vueuse/core"
 import { ElDropdown, ElDropdownItem, ElDropdownMenu, ElNotification } from "element-plus";
 
 import ChecklistContainer from "@components/organisms/ListContainer.vue"
@@ -241,6 +247,36 @@ export default {
   setup(props, { emit }) {
     const { task, currentTask, currentTimer } = toRefs(props)
     const projectsList = inject('projects', ref([]))
+
+    // Swipe gestures (mobile): right = complete, left = delete
+    const itemRef = ref(null)
+    const swipeDirection = ref(null)
+    const swipeHint = reactive({ style: {} })
+
+    const { lengthX } = useSwipe(itemRef, {
+      threshold: 40,
+      onSwipe() {
+        const absX = Math.abs(lengthX.value)
+        if (absX < 20) {
+          swipeDirection.value = null
+          return
+        }
+        swipeDirection.value = lengthX.value < 0 ? 'right' : 'left'
+      },
+      onSwipeEnd() {
+        const SWIPE_THRESHOLD = 80
+        const direction = swipeDirection.value
+        swipeDirection.value = null
+        swipeHint.style = {}
+        if (!direction) return
+        if (Math.abs(lengthX.value) < SWIPE_THRESHOLD) return
+        if (direction === 'right') {
+          if (!task.value?.done) emit('done', task.value)
+        } else if (direction === 'left') {
+          emit('deleted', task.value)
+        }
+      },
+    })
 
     const project = computed(() => {
       const uid = task.value?.project_uid
@@ -380,6 +416,9 @@ export default {
       ...toRefs(state),
       project,
       projectScheduledToday,
+      itemRef,
+      swipeDirection,
+      swipeHint,
       handleCommand,
       toggleTimer,
       toggleExpand,

@@ -25,7 +25,7 @@ import About from "./views/About.vue";
 import Notifications from "./views/Notifications/Notifications.vue";
 
 import { createRouter, createWebHistory } from "vue-router";
-import { isAuthenticated, registerEvent, setScreen } from "./plugins/useFirebase";
+import { isAuthenticated, registerEvent, setScreen, firebaseState } from "./plugins/useFirebase";
 
 
 export const routes = [
@@ -55,8 +55,14 @@ export const routes = [
     path: "/standup", 
     component: Standup 
   },
-  { path: "/about", 
-    component: About 
+  { path: "/about",
+    name: "about",
+    component: About,
+    meta: {
+      title: 'About - Zen',
+      requiresAuth: false,
+      public: true,
+    },
   },
   { path: "/settings", 
     name: 'settings',
@@ -130,6 +136,16 @@ export const routes = [
     },
   },
   {
+    path: "/admin/users",
+    component: () => import("./views/admin/AdminUsers.vue"),
+    name: "adminUsers",
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: true,
+      title: "Admin — Users",
+    },
+  },
+  {
     path: "/terms",
     component: Terms,
     name: "terms",
@@ -144,6 +160,36 @@ export const routes = [
     meta: {
       title: 'Privacy policy - Zen',
       requiresAuth: false,
+    },
+  },
+  {
+    path: "/security",
+    component: () => import("./views/Security.vue"),
+    name: "security",
+    meta: {
+      title: 'Security - Zen',
+      requiresAuth: false,
+      public: true,
+    },
+  },
+  {
+    path: "/support",
+    component: () => import("./views/Support.vue"),
+    name: "support",
+    meta: {
+      title: 'Support - Zen',
+      requiresAuth: false,
+      public: true,
+    },
+  },
+  {
+    path: "/status",
+    component: () => import("./views/Status.vue"),
+    name: "status",
+    meta: {
+      title: 'Status - Zen',
+      requiresAuth: false,
+      public: true,
     },
   },
   {
@@ -221,6 +267,9 @@ myRouter.beforeEach(async (to, from, next) => {
       return next({ name: "oauthAccept", query: to.query })
     }
     next({name: "zenboard"})
+  } else if (to.meta.requiresAdmin && !firebaseState.isAdmin) {
+    // Admin routes are invisible to non-admins — redirect silently.
+    next({ name: "zenboard" })
   } else {
     next();
   }

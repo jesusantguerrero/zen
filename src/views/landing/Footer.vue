@@ -18,15 +18,16 @@ const footerSections = {
             "GitHub": "https://github.com/jesusantguerrero/zen",
             "Report an issue": "https://github.com/jesusantguerrero/zen/issues",
             "Twitter": "https://twitter.com/zenboard_app",
-            "Blog": "https://freesgen.hashnode.dev"
+            "Blog": "/blog"
         }
     },
-    more: {
-        label: "From the maker",
+    company: {
+        label: "Company",
         links: {
-            "Atmosphere UI": "https://atmosphere-ui.netlify.app",
-            "Lumiere": "https://github.com/jesusantguerrero/lumiere",
-            "Sunday (team version)": "https://github.com/jesusantguerrero/sunday"
+            "About": "/about",
+            "Support": "/support",
+            "Security": "/security",
+            "Status": "/status"
         }
     },
     legal: {

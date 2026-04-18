@@ -87,6 +87,23 @@ const dueTodayTasks = computed(() => {
   );
 });
 
+// Stale tasks: created more than 14 days ago, no tracked activity in the last 7 days,
+// not done, and not overdue (overdue is its own signal).
+const STALE_CREATED_DAYS = 14;
+const STALE_INACTIVE_DAYS = 7;
+const staleTasks = computed(() => {
+  const staleCreatedBefore = DateTime.now().minus({ days: STALE_CREATED_DAYS });
+  const inactiveBefore = DateTime.now().minus({ days: STALE_INACTIVE_DAYS });
+  return allActiveTasks.value.filter((t: any) => {
+    if (!t.created_at) return false;
+    const createdAt = t.created_at.toDate ? t.created_at.toDate() : t.created_at;
+    if (DateTime.fromJSDate(new Date(createdAt)) > staleCreatedBefore) return false;
+    const lastTracked = t.last_tracked_at && (t.last_tracked_at.toDate ? t.last_tracked_at.toDate() : t.last_tracked_at);
+    if (lastTracked && DateTime.fromJSDate(new Date(lastTracked)) > inactiveBefore) return false;
+    return true;
+  });
+});
+
 const loadCommitted = async () => {
   const fromDate = subDays(startOfDay(new Date()), 30);
   const ref = await getCommittedTasks(new Date(), fromDate);
@@ -191,6 +208,28 @@ defineEmits<{
           v-for="task in dueTodayTasks.slice(0, 3)"
           :key="task.uid"
           class="text-xs truncate cursor-pointer hover:text-accent"
+          @click="$emit('open-task', task)"
+        >
+          · {{ task.title }}
+        </li>
+      </ul>
+    </div>
+
+    <div
+      v-if="staleTasks.length"
+      class="p-2 border rounded-md border-gray-300/40 bg-gray-50/50 dark:bg-gray-700/30 dark:border-base-lvl-3"
+    >
+      <div class="flex items-center justify-between text-sm">
+        <span class="font-semibold text-gray-500 dark:text-gray-400">
+          <i class="mr-1 fa fa-hourglass-half" />
+          {{ staleTasks.length }} stale ({{ '>' }}14 days)
+        </span>
+      </div>
+      <ul class="mt-1 space-y-1">
+        <li
+          v-for="task in staleTasks.slice(0, 3)"
+          :key="task.uid"
+          class="text-xs text-gray-500 truncate cursor-pointer dark:text-gray-400 hover:text-accent"
           @click="$emit('open-task', task)"
         >
           · {{ task.title }}

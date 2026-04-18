@@ -2,34 +2,71 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
   		match /users/{userId} {
-    		allow read, write, update: if request.auth != null && resource.data.user_uid == request.auth.uid; 
+    		allow read, write, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
     	}
       match /settings/{id} {
         allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
         allow delete, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
-    		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid; 
+    		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid;
     	}
       match /standups/{standupId} {
     		allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
         allow delete, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
-    		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid;  
+    		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid;
     	}
     	match /tasks/{taskId} {
         allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
         allow delete, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
-    		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid; 
+    		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid;
       }
       match /tracks/{trackId} {
     		allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
         allow delete, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
     		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid;
     	}
+      match /projects/{projectId} {
+        allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
+        allow delete, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
+        allow read: if request.auth != null && resource.data.user_uid == request.auth.uid;
+      }
       // Public standup snapshots. Owner can create/update/delete; anyone can read.
       // Document ID is `{uid}_{yyyy-MM-dd}`.
       match /public_standups/{standupId} {
         allow read: if true;
         allow create, update: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
         allow delete: if request.auth != null && resource.data.user_uid == request.auth.uid;
+      }
+      // AI access control — owner can read own quota; admin can read any.
+      // No client writes — mutations only via Cloud Functions with requireAdmin.
+      match /user_ai_access/{uid} {
+        allow read: if request.auth != null
+          && (request.auth.uid == uid || request.auth.token.admin == true);
+      }
+      // AI request audit log — read-only for owner or admin; no client writes.
+      match /ai_request_log/{logId} {
+        allow read: if request.auth != null
+          && (resource.data.user_uid == request.auth.uid || request.auth.token.admin == true);
+      }
+      // Landing-page newsletter signups. Public write-only endpoint.
+      // Enforce payload shape so the collection can't be used as a free kv store.
+      match /newsletter_signups/{id} {
+        allow create: if request.resource.data.keys().hasOnly(['email', 'source', 'created_at'])
+          && request.resource.data.email is string
+          && request.resource.data.email.size() < 200;
+        allow read, update, delete: if false;
+      }
+      // Landing-page support tickets. Public write-only; no reads from client.
+      // Triage happens in the Firebase console (or via a future admin dashboard).
+      match /support_tickets/{id} {
+        allow create: if request.resource.data.keys().hasOnly(['email', 'subject', 'message', 'created_at', 'user_uid', 'status'])
+          && request.resource.data.email is string
+          && request.resource.data.email.size() < 200
+          && request.resource.data.subject is string
+          && request.resource.data.subject.size() < 200
+          && request.resource.data.message is string
+          && request.resource.data.message.size() < 5000
+          && request.resource.data.status == 'open';
+        allow read, update, delete: if false;
       }
   }
 }
