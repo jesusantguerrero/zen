@@ -103,8 +103,12 @@ import { useTrackFirestore } from '@/plugins/firebase/useTrackFirestore'
 import { useTaskFirestore } from '@/plugins/firebase/useTaskFirestore'
 import { useSnapshot } from '@/plugins/firebase/useSnapshot'
 import { usePublicStandup } from '@/plugins/firebase/usePublicStandup'
+import { registerEvent } from '@/plugins/useFirebase'
 import { formatDate } from '@/utils';
 import { ElNotification } from 'element-plus';
+
+// Usage signal for A8d (AI standup writer) prioritization — see .planning/signals.md
+registerEvent('standup_viewed', { date: formatDate(new Date(), 'yyyy-MM-dd') })
 
 // state and ui
 const state = reactive({
@@ -140,6 +144,7 @@ const shareStandup = async () => {
       })),
     })
     const url = `${window.location.origin}${path}`
+    registerEvent('standup_shared', { date: dateKey, task_count: tasksForDate.length })
     try {
       await navigator.clipboard.writeText(url)
       ElNotification({

@@ -52,9 +52,23 @@
     
     <ElCollapseTransition>
       <div class="w-full py-3 task-item__body" v-if="state.isExpanded">
-        <textarea 
+        <button
+          v-if="suggestion"
+          type="button"
+          :title="suggestion.reason + ' — click to apply'"
+          class="inline-flex items-center px-2 py-1 mb-2 space-x-1 text-xs font-semibold border rounded-full transition-colors hover:brightness-110"
+          :class="MATRIX_PILL_COLORS[suggestion.matrix]"
+          @click.prevent="applySuggestion"
+        >
+          <i class="fa fa-lightbulb" />
+          <span>Suggest: {{ MATRIX_LABELS[suggestion.matrix] }}</span>
+          <span class="opacity-70">·</span>
+          <span class="opacity-70 font-normal">{{ suggestion.reason }}</span>
+        </button>
+
+        <textarea
           v-model="task.description"
-          class="w-full pt-2 task-item__description focus:outline-none dark:bg-base-lvl-2 rounded-md px-4 dark:text-gray-300" 
+          class="w-full pt-2 task-item__description focus:outline-none dark:bg-base-lvl-2 rounded-md px-4 dark:text-gray-300"
           placeholder="Add a short description"
           @keydown.enter.exact.stop="">
         </textarea>
@@ -108,6 +122,7 @@ import ChecklistContainer from "@components/organisms/ListContainer.vue";
 
 import { useCustomSelect } from "@/plugins/firebase/useCustomSelect"
 import { useDateTime } from "@/composables/useDateTime"
+import { suggestMatrix, MatrixName } from "@/domain/matrix/suggestMatrix"
 
 const props = defineProps({
     mode: {
@@ -200,6 +215,41 @@ const typeColor = computed(() => {
 
   return colors[props.type] || colors['todo']
 })
+
+// E4a — Heuristic matrix suggestion. Only offered in non-reminder mode,
+// and only when the suggestion differs from the column the user is already in.
+const MATRIX_LABELS: Record<MatrixName, string> = {
+  todo: 'Do today',
+  schedule: 'Plan',
+  delegate: 'Delegate',
+  delete: 'Delete',
+  backlog: 'Backlog',
+}
+const MATRIX_PILL_COLORS: Record<MatrixName, string> = {
+  todo: 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300 border-green-400/40',
+  schedule: 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 border-blue-400/40',
+  delegate: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300 border-yellow-400/40',
+  delete: 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300 border-red-400/40',
+  backlog: 'bg-gray-100 text-gray-600 dark:bg-base-lvl-1 dark:text-gray-300 border-gray-400/40',
+}
+
+const suggestion = computed(() => {
+  if (isReminder.value) return null
+  if (!task.title || task.title.trim().length < 3) return null
+  const s = suggestMatrix({
+    title: task.title,
+    due_date: task.due_date || null,
+    created_at: new Date(),
+  })
+  // Don't suggest something the user has already picked (QuickAdd in a matrix column).
+  if (s.matrix === task.matrix) return null
+  return s
+})
+
+const applySuggestion = () => {
+  if (!suggestion.value) return
+  task.matrix = suggestion.value.matrix
+}
 
 // functionnality flow
 const clearForm = () => {

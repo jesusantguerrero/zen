@@ -22,8 +22,14 @@ const state = reactive({
 
 const todayKey = () => DateTime.now().toFormat("yyyy-MM-dd");
 
-const doneToday = computed(() =>
-  state.recentCommitted.filter((t: any) => t.commit_date === todayKey()).length
+const doneTodayTasks = computed(() =>
+  state.recentCommitted.filter((t: any) => t.commit_date === todayKey())
+);
+
+const doneToday = computed(() => doneTodayTasks.value.length);
+
+const highImpactDone = computed(
+  () => doneTodayTasks.value.filter((t: any) => t.matrix === "todo").length
 );
 
 const trackedToday = computed(() =>
@@ -153,7 +159,16 @@ defineEmits<{
     <div class="grid grid-cols-3 gap-2 text-center">
       <div>
         <div class="text-2xl font-bold text-accent">{{ doneToday }}</div>
-        <div class="text-xs text-gray-400">Done</div>
+        <div class="text-xs text-gray-400">
+          <template v-if="highImpactDone > 0 && doneToday > 0">
+            Done
+            <span
+              class="font-semibold text-accent"
+              :title="`${highImpactDone} of ${doneToday} completed task${doneToday === 1 ? '' : 's'} were in TODO (important & urgent).`"
+            >({{ highImpactDone }} high-impact)</span>
+          </template>
+          <template v-else>Done</template>
+        </div>
       </div>
       <div>
         <div class="text-2xl font-bold">{{ trackedToday }}</div>
@@ -176,6 +191,18 @@ defineEmits<{
         <span class="font-bold">{{ streakAtRisk }}-day streak</span> at risk — finish one task today to keep it alive.
       </span>
     </div>
+
+    <router-link
+      v-if="doneToday >= 1"
+      :to="{ path: '/standup' }"
+      class="flex items-center justify-between px-3 py-2 text-sm transition-colors border rounded-md border-accent/40 bg-accent/5 hover:bg-accent/10 text-accent"
+    >
+      <span>
+        <i class="mr-1 fa fa-list-ul" />
+        Generate today's standup
+      </span>
+      <i class="fa fa-arrow-right" />
+    </router-link>
 
     <div
       v-if="overdueTasks.length"

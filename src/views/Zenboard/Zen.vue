@@ -147,7 +147,22 @@ const { filteredList: filteredTodos } = useFuseSearch(
   selectedTags,
   [],
   searchStages,
+
   searchProjects
+);
+
+// Top 3 Today (E4b) — visual hierarchy only, no data-model change.
+// Only split when there are more than 3 TODOs, otherwise every task is already "top".
+const TOP_PRIORITY_COUNT = 3;
+const top3Todos = computed(() =>
+  filteredTodos.value.length > TOP_PRIORITY_COUNT
+    ? filteredTodos.value.slice(0, TOP_PRIORITY_COUNT)
+    : filteredTodos.value
+);
+const restTodos = computed(() =>
+  filteredTodos.value.length > TOP_PRIORITY_COUNT
+    ? filteredTodos.value.slice(TOP_PRIORITY_COUNT)
+    : []
 );
 
 // Current task
@@ -443,31 +458,79 @@ const toggleQuickAdd = () => {
           />
 
           <section>
-            <TaskGroup
-              v-if="state.tabSelected == 'todo'"
-              :show-title="false"
-              title="Todo"
-              class="py-3"
-              type="todo"
-              allow-run
-              placeholder="Click a task select"
-              :tasks="filteredTodos"
-              :show-select="true"
-              :show-controls="true"
-              :current-task="trackStore.currentTask"
-              :current-timer="trackStore.currentTimer"
-              :is-item-as-handler="true"
-              :use-external-done="true"
-              @toggle-timer="trackStore.setCurrentTask($event, true)"
-              @selected="trackStore.setCurrentTask"
-              @change="handleDragChanges"
-              @clone="onClone"
-              @deleted="destroyTask"
-              @edited="setTaskToEdit"
-              @done="onDone"
-              @down="moveTo($event, 'schedule')"
-              @move-to="onMoveTo"
-            />
+            <template v-if="state.tabSelected == 'todo'">
+              <div
+                v-if="restTodos.length"
+                class="flex items-baseline justify-between mb-1"
+              >
+                <h5 class="text-xs font-bold tracking-wide uppercase text-accent">
+                  <i class="mr-1 fa fa-bolt" />
+                  Top {{ top3Todos.length }} today
+                </h5>
+                <span class="text-xs text-gray-400 dark:text-gray-500">
+                  Important &amp; urgent
+                </span>
+              </div>
+
+              <TaskGroup
+                :show-title="false"
+                title="Todo"
+                class="py-3"
+                type="todo"
+                allow-run
+                placeholder="Click a task select"
+                :tasks="top3Todos"
+                :show-select="true"
+                :show-controls="true"
+                :current-task="trackStore.currentTask"
+                :current-timer="trackStore.currentTimer"
+                :is-item-as-handler="true"
+                :use-external-done="true"
+                @toggle-timer="trackStore.setCurrentTask($event, true)"
+                @selected="trackStore.setCurrentTask"
+                @change="handleDragChanges"
+                @clone="onClone"
+                @deleted="destroyTask"
+                @edited="setTaskToEdit"
+                @done="onDone"
+                @down="moveTo($event, 'schedule')"
+                @move-to="onMoveTo"
+              />
+
+              <template v-if="restTodos.length">
+                <div class="flex items-center mt-3 mb-1 space-x-2 text-xs uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                  <div class="flex-grow h-px bg-gray-200 dark:bg-base-lvl-3" />
+                  <span>More ({{ restTodos.length }})</span>
+                  <div class="flex-grow h-px bg-gray-200 dark:bg-base-lvl-3" />
+                </div>
+                <div class="opacity-60 hover:opacity-100 transition-opacity">
+                  <TaskGroup
+                    :show-title="false"
+                    title="Todo"
+                    class="py-2"
+                    type="todo"
+                    allow-run
+                    placeholder="Click a task select"
+                    :tasks="restTodos"
+                    :show-select="true"
+                    :show-controls="true"
+                    :current-task="trackStore.currentTask"
+                    :current-timer="trackStore.currentTimer"
+                    :is-item-as-handler="true"
+                    :use-external-done="true"
+                    @toggle-timer="trackStore.setCurrentTask($event, true)"
+                    @selected="trackStore.setCurrentTask"
+                    @change="handleDragChanges"
+                    @clone="onClone"
+                    @deleted="destroyTask"
+                    @edited="setTaskToEdit"
+                    @done="onDone"
+                    @down="moveTo($event, 'schedule')"
+                    @move-to="onMoveTo"
+                  />
+                </div>
+              </template>
+            </template>
 
             <TaskGroup
               v-if="state.tabSelected == 'schedule'"
