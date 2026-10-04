@@ -92,7 +92,7 @@ const props = defineProps<{
 }>()
 
 const router = useRouter()
-const { update } = useCollection()
+const { patch } = useCollection()
 
 const category = computed(() => resolveCategory(props.notification))
 const categoryMeta = computed(() => CATEGORY_META[category.value])
@@ -102,10 +102,9 @@ const snoozeOptions = SNOOZE_OPTIONS
 
 const markRead = async () => {
   if (props.notification.read_at) return
-  await update("notifications", {
-    ...props.notification,
+  await patch(props.notification.uid, {
     read_at: firebaseInstance.firestore.Timestamp.now(),
-  })
+  }, "notifications")
 }
 
 const runAction = async () => {
@@ -119,10 +118,9 @@ const snooze = async (option: { label: string; ms: number }) => {
   const until = computeSnoozeUntil(option)
   // Snooze hides from the visible lists (filtered by snoozed_until > now)
   // without marking read — notification returns when snooze expires.
-  await update("notifications", {
-    ...props.notification,
+  await patch(props.notification.uid, {
     snoozed_until: firebaseInstance.firestore.Timestamp.fromDate(until),
-  })
+  }, "notifications")
   ElNotification({
     type: "success",
     title: "Snoozed",
@@ -131,10 +129,9 @@ const snooze = async (option: { label: string; ms: number }) => {
 }
 
 const dismiss = async () => {
-  await update("notifications", {
-    ...props.notification,
+  await patch(props.notification.uid, {
     read_at: firebaseInstance.firestore.Timestamp.now(),
     dismissed_at: firebaseInstance.firestore.Timestamp.now(),
-  })
+  }, "notifications")
 }
 </script>

@@ -17,6 +17,11 @@ export function useCollection(tableName?: string, relationshipTable?: string, re
         return collectionRef.update(item, { merge: true })
     }
 
+    // Writes only the given fields — needed where rules restrict which keys may change.
+    const patch = (uid: string, fields: Record<string, any>, collectionName = tableName) => {
+        return db.collection(collectionName).doc(uid).update(fields)
+    }
+
     const updateBatch = (items: any[], collectionName = tableName) => {
         const batch = db.batch()
         items.forEach((item) => {
@@ -58,6 +63,7 @@ export function useCollection(tableName?: string, relationshipTable?: string, re
     return {
         save,
         update,
+        patch,
         updateBatch,
         destroy,
         getOne,

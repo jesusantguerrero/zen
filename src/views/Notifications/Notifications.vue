@@ -75,7 +75,7 @@ const notifications = computed(() => {
   const raw = injected && typeof injected === "object" && "value" in injected ? injected.value : injected
   return Array.isArray(raw) ? raw : []
 })
-const { update } = useCollection()
+const { patch } = useCollection()
 
 const activeTab = ref<"all" | NotificationCategory>("all")
 const isMarking = ref(false)
@@ -128,7 +128,7 @@ const markAllRead = async () => {
   try {
     const now = firebaseInstance.firestore.Timestamp.now()
     await Promise.all(
-      targets.map((n: any) => update("notifications", { ...n, read_at: now }))
+      targets.map((n: any) => patch(n.uid, { read_at: now }, "notifications"))
     )
     ElNotification({ type: "success", title: `Marked ${targets.length} as read` })
   } catch (err: any) {

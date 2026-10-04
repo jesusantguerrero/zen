@@ -61,7 +61,7 @@ const notifications = ref([])
 const getNotifications = () => {
   notificationsRef.value = getAll('notifications')
   .orderBy('created_at', 'desc')
-  .where('read_at', '==', false)
+  .where('read_at', '==', null)
   .onSnapshot(snap => {
     const now = Date.now()
     notifications.value = [];
