@@ -1,72 +1,130 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-  		match /users/{userId} {
-    		allow read, write, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
-    	}
-      match /settings/{id} {
-        allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
-        allow delete, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
-    		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid;
-    	}
-      match /standups/{standupId} {
-    		allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
-        allow delete, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
-    		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid;
-    	}
-    	match /tasks/{taskId} {
-        allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
-        allow delete, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
-    		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid;
-      }
-      match /tracks/{trackId} {
-    		allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
-        allow delete, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
-    		allow read: if request.auth != null && resource.data.user_uid == request.auth.uid;
-    	}
-      match /projects/{projectId} {
-        allow create: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
-        allow delete, update: if request.auth != null && resource.data.user_uid == request.auth.uid;
-        allow read: if request.auth != null && resource.data.user_uid == request.auth.uid;
-      }
-      // Public standup snapshots. Owner can create/update/delete; anyone can read.
-      // Document ID is `{uid}_{yyyy-MM-dd}`.
-      match /public_standups/{standupId} {
-        allow read: if true;
-        allow create, update: if request.auth != null && request.resource.data.user_uid == request.auth.uid;
-        allow delete: if request.auth != null && resource.data.user_uid == request.auth.uid;
-      }
-      // AI access control — owner can read own quota; admin can read any.
-      // No client writes — mutations only via Cloud Functions with requireAdmin.
-      match /user_ai_access/{uid} {
-        allow read: if request.auth != null
-          && (request.auth.uid == uid || request.auth.token.admin == true);
-      }
-      // AI request audit log — read-only for owner or admin; no client writes.
-      match /ai_request_log/{logId} {
-        allow read: if request.auth != null
-          && (resource.data.user_uid == request.auth.uid || request.auth.token.admin == true);
-      }
-      // Landing-page newsletter signups. Public write-only endpoint.
-      // Enforce payload shape so the collection can't be used as a free kv store.
-      match /newsletter_signups/{id} {
-        allow create: if request.resource.data.keys().hasOnly(['email', 'source', 'created_at'])
-          && request.resource.data.email is string
-          && request.resource.data.email.size() < 200;
-        allow read, update, delete: if false;
-      }
-      // Landing-page support tickets. Public write-only; no reads from client.
-      // Triage happens in the Firebase console (or via a future admin dashboard).
-      match /support_tickets/{id} {
-        allow create: if request.resource.data.keys().hasOnly(['email', 'subject', 'message', 'created_at', 'user_uid', 'status'])
-          && request.resource.data.email is string
-          && request.resource.data.email.size() < 200
-          && request.resource.data.subject is string
-          && request.resource.data.subject.size() < 200
-          && request.resource.data.message is string
-          && request.resource.data.message.size() < 5000
-          && request.resource.data.status == 'open';
-        allow read, update, delete: if false;
-      }
+
+    function signedIn() {
+      return request.auth != null;
+    }
+    // Existing doc belongs to the caller.
+    function isOwner() {
+      return signedIn() && resource.data.user_uid == request.auth.uid;
+    }
+    // New doc is stamped with the caller's uid.
+    function createsOwn() {
+      return signedIn() && request.resource.data.user_uid == request.auth.uid;
+    }
+    // Updates can't hand a doc over to another account.
+    function keepsOwner() {
+      return request.resource.data.user_uid == resource.data.user_uid;
+    }
+
+    match /users/{userId} {
+      allow read, delete: if isOwner();
+      allow update: if isOwner() && keepsOwner();
+    }
+
+    // Plain per-user collections: create own, read/update/delete own, owner is immutable.
+    match /settings/{id} {
+      allow create: if createsOwn();
+      allow read, delete: if isOwner();
+      allow update: if isOwner() && keepsOwner();
+    }
+    match /standups/{standupId} {
+      allow create: if createsOwn();
+      allow read, delete: if isOwner();
+      allow update: if isOwner() && keepsOwner();
+    }
+    match /tasks/{taskId} {
+      allow create: if createsOwn();
+      allow read, delete: if isOwner();
+      allow update: if isOwner() && keepsOwner();
+    }
+    match /tracks/{trackId} {
+      allow create: if createsOwn();
+      allow read, delete: if isOwner();
+      allow update: if isOwner() && keepsOwner();
+    }
+    match /projects/{projectId} {
+      allow create: if createsOwn();
+      allow read, delete: if isOwner();
+      allow update: if isOwner() && keepsOwner();
+    }
+    match /tags/{tagId} {
+      allow create: if createsOwn();
+      allow read, delete: if isOwner();
+      allow update: if isOwner() && keepsOwner();
+    }
+    match /contacts/{contactId} {
+      allow create: if createsOwn();
+      allow read, delete: if isOwner();
+      allow update: if isOwner() && keepsOwner();
+    }
+
+    // Written by Cloud Functions only. The owner can read them and flip
+    // read/snooze/dismiss state — nothing else.
+    match /notifications/{notificationId} {
+      allow read: if isOwner();
+      allow update: if isOwner()
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['read_at', 'snoozed_until', 'dismissed_at']);
+    }
+
+    // Matrix sharing — written by the shareMatrix function; each side reads its own list.
+    match /shared/{userId}/accounts/{accountId} {
+      allow read: if signedIn() && request.auth.uid == userId;
+    }
+    match /sharing/{userId}/accounts/{accountId} {
+      allow read: if signedIn() && request.auth.uid == userId;
+    }
+
+    // Public standup snapshots. Anyone can read; only the owner writes.
+    // Document ID is `{uid}_{yyyy-MM-dd}`.
+    match /public_standups/{standupId} {
+      allow read: if true;
+      allow create: if createsOwn()
+        && standupId.matches(request.auth.uid + '_[0-9]{4}-[0-9]{2}-[0-9]{2}');
+      allow update: if isOwner() && keepsOwner();
+      allow delete: if isOwner();
+    }
+
+    // AI access control — owner can read own quota; admin can read any.
+    // No client writes — mutations only via Cloud Functions with requireAdmin.
+    match /user_ai_access/{uid} {
+      allow read: if signedIn()
+        && (request.auth.uid == uid || request.auth.token.admin == true);
+    }
+    // AI request audit log — read-only for owner or admin; no client writes.
+    match /ai_request_log/{logId} {
+      allow read: if signedIn()
+        && (resource.data.user_uid == request.auth.uid || request.auth.token.admin == true);
+    }
+
+    // Landing-page newsletter signups. Public write-only endpoint.
+    // Enforce payload shape so the collection can't be used as a free kv store.
+    match /newsletter_signups/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['email', 'source', 'created_at'])
+        && request.resource.data.email is string
+        && request.resource.data.email.size() < 200;
+      allow read, update, delete: if false;
+    }
+    // Landing-page support tickets. Public write-only; no reads from client.
+    // user_uid is optional, but when present it must be the caller's.
+    match /support_tickets/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['email', 'subject', 'message', 'created_at', 'user_uid', 'status'])
+        && request.resource.data.email is string
+        && request.resource.data.email.size() < 200
+        && request.resource.data.subject is string
+        && request.resource.data.subject.size() < 200
+        && request.resource.data.message is string
+        && request.resource.data.message.size() < 5000
+        && request.resource.data.status == 'open'
+        && (!('user_uid' in request.resource.data)
+            || request.resource.data.user_uid == null
+            || (signedIn() && request.resource.data.user_uid == request.auth.uid));
+      allow read, update, delete: if false;
+    }
+
+    // Not listed (connections, tempo, history, services, ...) = denied to clients.
+    // connections holds API and OAuth tokens: keep it server-only.
   }
 }

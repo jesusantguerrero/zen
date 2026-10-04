@@ -11,6 +11,9 @@
       })
 
       if (!connection) return null;
+      // Only self-service API tokens authenticate the API. Legacy OAuth
+      // connections stored Firebase custom tokens in the same field.
+      if (!['mcp', 'api'].includes(connection.service)) return null;
       const user = await admin.auth().getUser(connection.user_uid).catch(() => null)
       if (user && connectionDocId) {
           // Fire-and-forget: bump last_used_at for token telemetry.
